@@ -4,7 +4,7 @@ import {
   useSendTransaction,
   useWaitForTransactionReceipt,
 } from 'wagmi'
-import { formatEther, parseEther } from 'viem'
+import { Chain, formatEther, parseEther } from 'viem'
 import {
   Dialog,
   DialogContent,
@@ -27,10 +27,12 @@ type SendErc20ModalProps = {
     symbol: string
     value: bigint
   }>
+  chain?: Chain
 }
 
 export default function SendNativeTokenModal({
   accountBalance,
+  chain,
 }: SendErc20ModalProps) {
   const [toAddress, setToAddress] = useState('')
   const [ethValue, setEthValue] = useState('')
@@ -40,8 +42,6 @@ export default function SendNativeTokenModal({
     useWaitForTransactionReceipt({
       hash,
     })
-
-  console.log(accountBalance)
 
   async function submitSendTx(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -62,72 +62,106 @@ export default function SendNativeTokenModal({
     }
   }, [isMounted])
 
+  function renderBalance() {
+    const rawBalance = accountBalance.data?.value ?? BigInt(0)
+    const balance = parseFloat(formatEther(rawBalance))
+    // Show 0.00 and 'balance muy bajo' if less than 0.000001
+    if (balance < 0.000001)
+      return (
+        <>
+          <h2>0.00</h2>
+          <h4>{chain?.nativeCurrency.symbol ?? 'ETH'}</h4>
+          <span className="mt-1 text-xs text-destructive">
+            balance muy bajo
+          </span>
+        </>
+      )
+    // Dynamically determine decimals to show the least significant digit
+    let decimals = 2
+    if (balance < 1) {
+      // Count significant decimals
+      const str = balance.toString()
+      const [, dec] = str.split('.')
+      if (dec) {
+        // Find first non-zero digit after decimal
+        const firstNonZero = dec.search(/[^0]/)
+        decimals = Math.max(firstNonZero + 3, 2) // show 3 digits after first non-zero
+        decimals = Math.min(decimals, 18) // never more than 18
+      }
+    }
+    return (
+      <>
+        <h2>{balance.toFixed(decimals)}</h2>
+        <h4>{chain?.nativeCurrency.symbol ?? 'ETH'}</h4>
+      </>
+    )
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Send POL</Button>
+        <Button>enviar {chain?.nativeCurrency.symbol ?? 'ETH'}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-center">Send POL</DialogTitle>
-          <DialogDescription>
-            The amount entered will be sent to the address once you hit the Send
-            button
+          <DialogTitle className="text-center">
+            enviar {chain?.nativeCurrency.symbol ?? 'ETH'}
+          </DialogTitle>
+          <DialogDescription className="text-left">
+            el monto ingresado será enviado a la dirección una vez que presiones
+            el botón enviar
           </DialogDescription>
         </DialogHeader>
         {isMounted ? (
           <div className="w-full">
-            <div className="flex flex-col text-center">
-              <h2>
-                {parseFloat(
-                  formatEther(accountBalance.data?.value ?? BigInt(0)),
-                ).toFixed(2)}
-              </h2>
-              <h4>POL</h4>
-            </div>
+            <div className="flex flex-col text-center">{renderBalance()}</div>
             <form
-              className="flex w-full flex-col gap-y-2"
+              className="flex w-full flex-col gap-y-8"
               onSubmit={submitSendTx}
             >
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  name="address"
-                  placeholder="0xA0Cf…251e"
-                  required
-                  onChange={(event) => setToAddress(event.target.value)}
-                />
+              <div className="flex w-full flex-col gap-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="address">dirección</Label>
+                  <Input
+                    name="address"
+                    placeholder="0xA0Cf…251e"
+                    required
+                    onChange={(event) => setToAddress(event.target.value)}
+                  />
+                </div>
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="value">cantidad</Label>
+                  <Input
+                    name="value"
+                    placeholder="0.05"
+                    required
+                    onChange={(event) => setEthValue(event.target.value)}
+                  />
+                </div>
               </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="value">Amount</Label>
-                <Input
-                  name="value"
-                  placeholder="0.05"
-                  required
-                  onChange={(event) => setEthValue(event.target.value)}
-                />
+              <div className="flex w-full justify-center">
+                <Button type="submit" disabled={isPending || isConfirming}>
+                  {isPending ? 'confirmando...' : 'enviar'}
+                </Button>
               </div>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? 'Confirming...' : 'Send'}
-              </Button>
             </form>
             {hash && (
               <div className="flex flex-col items-center pt-8">
                 <Link
                   className="flex items-center gap-x-1.5 hover:text-accent"
-                  href={`https://cardona-zkevm.polygonscan.com/tx/${hash}`}
+                  href={`https://${chain?.blockExplorers?.default.name}.com/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View tx on explorer <ExternalLinkIcon className="h4 w-4" />
+                  ver tx en explorador <ExternalLinkIcon className="h4 w-4" />
                 </Link>
-                {isConfirming && <div>Waiting for confirmation...</div>}
-                {isConfirmed && <div>Transaction confirmed.</div>}
+                {isConfirming && <div>esperando confirmación...</div>}
+                {isConfirmed && <div>transacción confirmada</div>}
               </div>
             )}
           </div>
         ) : (
-          <p>Loading...</p>
+          <p>cargando...</p>
         )}
       </DialogContent>
     </Dialog>

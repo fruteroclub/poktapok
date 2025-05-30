@@ -18,14 +18,14 @@ export default function AuthButton({
   function login() {
     if (!isLoggedIn) {
       setIsLoggedIn(true)
-      toast.info('mock login - set up auth flow in app')
+      toast.info('mock login - configurar flujo de autenticación en la app')
     } else {
-      toast.warning('user is already logged in')
+      toast.warning('ya existe una sesión activa')
     }
   }
   async function logout() {
     setIsLoggedIn(false)
-    toast.info('mock logout - set up auth flow in app')
+    toast.info('mock logout - configurar flujo de autenticación en la app')
     setIsMenuOpen?.(false)
   }
 
@@ -35,7 +35,7 @@ export default function AuthButton({
       size={size}
       className="font-medium"
     >
-      {isLoggedIn ? 'sign out' : 'sign in'}
+      {isLoggedIn ? 'salir' : 'entrar'}
     </Button>
   )
 }

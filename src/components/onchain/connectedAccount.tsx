@@ -8,8 +8,13 @@ import SendNativeTokenModal from './sendNativeTokenModal'
 import SendErc20Modal from './sendErc20Modal'
 import SwitchNetworkModal from './switchChainModal'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { truncateString } from '@/utils'
 
 export function ConnectedAccount() {
+  const pulpaTokenChainId = parseInt(
+    process.env.NEXT_PUBLIC_PULPA_TOKEN_CHAIN_ID ?? '',
+  )
+
   const [isMounted, setIsMounted] = useState(false)
 
   const { sdkHasLoaded, user } = useDynamicContext()
@@ -37,7 +42,7 @@ export function ConnectedAccount() {
   if (!isMounted || !sdkHasLoaded) {
     return (
       <div>
-        <p className="text-lg">Loading...</p>
+        <p className="text-lg">cargando...</p>
       </div>
     )
   }
@@ -45,7 +50,7 @@ export function ConnectedAccount() {
   if (status === 'disconnected' && sdkHasLoaded) {
     return (
       <div>
-        <p className="text-center text-lg">not connected</p>
+        <p className="text-center text-lg">no conectado</p>
       </div>
     )
   }
@@ -53,7 +58,7 @@ export function ConnectedAccount() {
   return (
     <div className="flex flex-col items-center gap-y-4 text-center">
       <div className="flex flex-col items-center gap-y-2">
-        <p className="text-lg">welcome {user?.username}</p>
+        <p className="text-lg">bienvenido {user?.username}</p>
       </div>
       {ensAvatar && ensName && isMounted && (
         <div className="flex items-center gap-x-2">
@@ -69,14 +74,16 @@ export function ConnectedAccount() {
       )}
       {address && isMounted && (
         <div className="flex flex-col items-center gap-y-2">
-          <p className="text-lg">connected wallet address:</p>
-          <p className="text-lg">{address}</p>
+          <p className="text-lg">dirección de cartera conectada:</p>
+          <p className="text-lg md:hidden">{truncateString(address)}</p>
+          <p className="hidden text-lg md:block">{address}</p>
         </div>
       )}
       <div className="flex flex-col gap-y-2">
         {accountBalance.data?.value !== undefined && isMounted && (
           <p className="text-xl">
-            Balance: {accountBalance.data?.formatted} POL
+            balance: {accountBalance.data?.formatted}{' '}
+            {chain?.nativeCurrency.symbol ?? 'ETH'}
           </p>
         )}
         {chain && chainId && isMounted && (
@@ -86,21 +93,17 @@ export function ConnectedAccount() {
           </>
         )}
       </div>
-      <div className="flex w-full justify-center gap-x-4 px-4">
-        <div className="w-1/3">
-          {chainId === 80002 ? (
-            <SendNativeTokenModal accountBalance={accountBalance} />
-          ) : (
-            <SwitchNetworkModal buttonText="Send POL" requiredChainId={80002} />
-          )}
+      <div className="flex justify-center gap-x-4 px-4">
+        <div className="w-1/2">
+          <SendNativeTokenModal accountBalance={accountBalance} chain={chain} />
         </div>
-        <div className="w-1/3">
-          {chainId === 80002 ? (
-            <SendErc20Modal userAddress={address} />
+        <div className="w-1/2">
+          {chainId === pulpaTokenChainId ? (
+            <SendErc20Modal chain={chain} userAddress={address} />
           ) : (
             <SwitchNetworkModal
-              buttonText="Send ERC20"
-              requiredChainId={80002}
+              buttonText="enviar $PULPA"
+              requiredChainId={pulpaTokenChainId}
             />
           )}
         </div>

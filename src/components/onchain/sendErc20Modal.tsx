@@ -4,7 +4,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from 'wagmi'
-import { formatEther, parseEther } from 'viem'
+import { Chain, formatEther, parseEther } from 'viem'
 
 import {
   Dialog,
@@ -23,18 +23,19 @@ import { ExternalLinkIcon } from 'lucide-react'
 import Link from 'next/link'
 
 type SendErc20ModalProps = {
+  chain?: Chain
   userAddress: `0x${string}` | undefined
 }
 
-export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
+export default function SendErc20Modal({
+  chain,
+  userAddress,
+}: SendErc20ModalProps) {
   const [toAddress, setToAddress] = useState('')
   const [tokenAmount, setTokenAmount] = useState('')
   const [isMounted, setIsMounted] = useState(false)
-  const [isPendingSend, setIsPendingSend] = useState(false)
 
-  const erc20ContractAddress =
-    process.env.NEXT_PUBLIC_ERC20_CONTRACT_ADDRESS ??
-    '0xc3984e7efEab42504CD3F1459D6E5E64A83311FE'
+  const erc20ContractAddress = process.env.NEXT_PUBLIC_PULPA_TOKEN_ADDRESS ?? ''
 
   const {
     data: erc20Balance,
@@ -46,7 +47,7 @@ export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
     functionName: 'balanceOf',
     args: [userAddress ?? '0x0'],
     query: {
-      enabled: Boolean(userAddress),
+      enabled: Boolean(userAddress) && Boolean(erc20ContractAddress),
     },
   })
 
@@ -63,7 +64,10 @@ export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
       toast.warning('You must connect your wallet...')
       return
     }
-    setIsPendingSend(true)
+    if (!erc20Balance) {
+      toast.warning('You must have a balance of $PULPA to send...')
+      return
+    }
     try {
       await writeContractAsync({
         abi: Erc20TokenAbi,
@@ -73,8 +77,6 @@ export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
       })
     } catch (error) {
       console.error(error)
-    } finally {
-      setIsPendingSend(false)
     }
   }
 
@@ -91,21 +93,27 @@ export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
   useEffect(() => {
     if (isConfirmed) {
       refetchBalance()
-      toast.success(`Sent ${tokenAmount} MOODENG`)
+      toast.success(`Sent ${tokenAmount} $PULPA`)
     }
   }, [isConfirmed, refetchBalance, tokenAmount])
 
+  const status = isPending
+    ? 'enviando'
+    : isConfirming
+      ? 'confirmando'
+      : 'enviar'
+
   return (
     <Dialog>
-      <DialogTrigger asChild className="w-full">
-        <Button>Send ERC20</Button>
+      <DialogTrigger asChild>
+        <Button>enviar $PULPA</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-center">Send ERC20</DialogTitle>
+          <DialogTitle className="text-center">enviar $PULPA</DialogTitle>
           <DialogDescription>
-            The amount entered will be sent to the address once you hit the Send
-            button
+            el monto ingresado será enviado a la dirección una vez que presiones
+            el botón enviar
           </DialogDescription>
         </DialogHeader>
         {isMounted ? (
@@ -116,55 +124,59 @@ export default function SendErc20Modal({ userAddress }: SendErc20ModalProps) {
                   <h2>
                     {parseFloat(formatEther(erc20Balance as bigint)).toFixed(2)}
                   </h2>
-                  <h4>ERC20</h4>
+                  <h4>$PULPA</h4>
                 </>
               ) : (
-                <p>Loading...</p>
+                <p>cargando...</p>
               )}
             </div>
             <form
-              className="flex w-full flex-col gap-y-2"
+              className="flex w-full flex-col gap-y-8"
               onSubmit={submitTransferErc20}
             >
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  name="address"
-                  placeholder="0xA0Cf…251e"
-                  required
-                  onChange={(event) => setToAddress(event.target.value)}
-                />
+              <div className="flex w-full flex-col gap-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="address">dirección</Label>
+                  <Input
+                    name="address"
+                    placeholder="0xA0Cf…251e"
+                    required
+                    onChange={(event) => setToAddress(event.target.value)}
+                  />
+                </div>
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="value">cantidad</Label>
+                  <Input
+                    name="value"
+                    placeholder="0.05"
+                    required
+                    onChange={(event) => setTokenAmount(event.target.value)}
+                  />
+                </div>
               </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="value">Amount</Label>
-                <Input
-                  name="value"
-                  placeholder="0.05"
-                  required
-                  onChange={(event) => setTokenAmount(event.target.value)}
-                />
+              <div className="flex w-full justify-center">
+                <Button type="submit" disabled={isPending || isConfirming}>
+                  {status}
+                </Button>
               </div>
-              <Button type="submit" disabled={isPending}>
-                {isPendingSend ? 'Confirming...' : 'Send'}
-              </Button>
             </form>
             {hash && (
               <div className="flex flex-col items-center pt-8">
                 <Link
                   className="flex items-center gap-x-1.5 hover:text-accent"
-                  href={`https://cardona-zkevm.polygonscan.com/tx/${hash}`}
+                  href={`${chain?.blockExplorers?.default.url}/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View tx on explorer <ExternalLinkIcon className="h4 w-4" />
+                  ver tx en explorador <ExternalLinkIcon className="h4 w-4" />
                 </Link>
-                {isConfirming && <div>Waiting for confirmation...</div>}
-                {isConfirmed && <div>Transaction confirmed.</div>}
+                {isConfirming && <div>esperando confirmación...</div>}
+                {isConfirmed && <div>transacción confirmada</div>}
               </div>
             )}
           </div>
         ) : (
-          <p>Loading...</p>
+          <p>cargando...</p>
         )}
       </DialogContent>
     </Dialog>

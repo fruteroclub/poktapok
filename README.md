@@ -1,92 +1,96 @@
-# Hackathon Starter for Polygon Bounties
+# poktapok - aplicación para builders de frutero club
 
-Welcome to your hackathon starter template! This project is designed to get you quickly set up for building decentralized applications on the Polygon blockchains and its testnets. It uses **Next.js**, **shadcn/ui**, and **Dynamic** to handle wallet creation and connection, providing you with the essential tools and configurations to kickstart your hackathon project.
+poktapok es un tercer espacio digital creado especialmente para los builders de frutero club. esta plataforma está diseñada para fomentar el crecimiento colectivo de nuestra comunidad, permitiendo:
 
-## Features
+- compartir conocimientos y experiencias
+- desarrollar nuevas habilidades
+- explorar tendencias emergentes
+- descubrir oportunidades de colaboración
 
-- **Next.js** with App Router for optimal structure and routing.
-- **Shadcn** for beautiful, reusable UI components.
-- **Bun** runtime for faster builds and improved performance.
-- Pre-configured for **Dynamic Wallet** (powered by [dynamic.xyz](https://dynamic.xyz)) to handle wallet creation and connection.
-- Ready-to-deploy starter that integrates well with Polygon and its testnets.
+nuestra visión es crear un ecosistema vibrante donde los builders puedan conectar, aprender y crecer juntos.
 
-## Getting Started
+## características
 
-### Prerequisites
+- **Next.js** con App Router para una estructura y enrutamiento óptimos.
+- **Shadcn** para componentes de UI bien diseñados y reutilizables.
+- **Bun** como runtime para builds más rápidas y mejor rendimiento.
+- pre-configurado para **Dynamic Wallet** (impulsado por [dynamic.xyz](https://dynamic.xyz)) para manejar la creación y conexión de wallets.
 
-- [Node.js](https://nodejs.org/) (Ensure Bun is installed as your runtime)
+## primeros pasos
+
+### requisitos Previos
+
+- [Node.js](https://nodejs.org/) (asegúrate de tener Bun instalado como runtime)
 - [Bun](https://bun.sh/docs/installation)
 - [Git](https://git-scm.com/)
-- [Polygon](https://polygon.technology/) native token POL (Amoy testnet recommended)
 
-### Installation
+### instalación
 
-1. **Clone the repository:**
+1. **clona el repositorio:**
 
    ```bash
-   git clone https://github.com/Dablclub/polygon-hackathon-starter.git
-   cd polygon-hackathon-starter
+   git clone https://github.com/fruteroclub/kiwik.git
+   cd kiwik
    ```
 
-2. **Install dependencies using Bun:**
+2. **instala las dependencias usando Bun:**
 
    ```bash
    bun install
    ```
 
-3. **Set up environment variables:**
+3. **configura las variables de entorno:**
 
-   Create a `.env` file in the root of your project and add the following variables:
+   crea un archivo `.env` en la raíz de tu proyecto y añade las siguientes variables:
 
    ```plaintext
-   NEXT_PUBLIC_DYNAMIC_API_KEY=your_dynamic_api_key
-   NEXT_PUBLIC_POLYGON_RPC_URL=https://polygon-rpc-url
+   NEXT_PUBLIC_DYNAMIC_API_KEY=tu_dynamic_api_key
    ```
 
-   Replace `your_dynamic_api_key` with your API key from [dynamic.xyz](https://dynamic.xyz) and `https://polygon-rpc-url` with your preferred Polygon RPC endpoint.
+   reemplaza `tu_dynamic_api_key` con tu clave API de [dynamic.xyz](https://dynamic.xyz).
 
-### Running the Project
+### ejecutando el proyecto
 
-To start the development server, run:
+para iniciar el servidor de desarrollo, ejecuta:
 
 ```bash
 bun run dev
 ```
 
-This will launch the app at `http://localhost:3000`.
+esto lanzará la aplicación en `http://localhost:3000`.
 
-### Build and Production
+### build y producción
 
-For production builds, use:
+para builds de producción, utiliza:
 
 ```bash
 bun run build
 bun run start
 ```
 
-## Project Structure
+## estructura del proyecto
 
 ```plaintext
 .
-├── public/          # Static assets
-├── src/app/         # Next.js pages and routing
-├── src/components/  # Custom React components
-├── src/styles/      # Global stylesheets
-├── .env             # Environment variables
-├── ...              # Other config files, check the repo!
+├── public/          # archivos estáticos
+├── src/app/         # páginas y rutas de Next.js
+├── src/components/  # componentes React personalizados
+├── src/styles/      # hojas de estilo globales
+├── .env             # variables de entorno
+├── ...              # ¡otros archivos de configuración, revisa el repo!
 ```
 
-## Wallet Integration
+## integración de Wallet
 
-The starter template includes integration with **Dynamic Wallet**, allowing seamless wallet creation and connection for users:
+la plantilla inicial incluye integración con **Dynamic Wallet**, permitiendo una creación y conexión fluida de wallets para los usuarios:
 
-- **Dynamic.xyz** provides an easy-to-use wallet connection UI.
-- Plug-and-play configuration for connecting to Polygon and other EVM-compatible chains.
+- **Dynamic.xyz** proporciona una interfaz de usuario fácil de usar para la conexión de wallets.
+- donfiguración plug-and-play para conectar con cadenas compatibles con EVM.
 
-## Contributing
+## Contribuciones
 
-We welcome contributions! Feel free to submit issues or pull requests to help improve this starter template for the hackathon community.
+¡damos la bienvenida a las contribuciones! siéntete libre de enviar issues o pull requests para ayudar a mejorar este proyecto para el club y la comunidad.
 
-## License
+## Licencia
 
-This project is open-source and available under the [MIT License](LICENSE).
+este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).

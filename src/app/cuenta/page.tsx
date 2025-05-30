@@ -5,11 +5,13 @@ import React from 'react'
 export default function Account() {
   return (
     <PageWithAppbar>
-      <div className="page">
+      <div className="page container">
         <div className="mb-4">
-          <h2>account</h2>
+          <h2>cuenta</h2>
         </div>
-        <ConnectedAccount />
+        <div className="section">
+          <ConnectedAccount />
+        </div>
       </div>
     </PageWithAppbar>
   )

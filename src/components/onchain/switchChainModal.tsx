@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { useSwitchChain } from 'wagmi';
+import { useEffect, useState } from 'react'
+import { useSwitchChain } from 'wagmi'
 
 import {
   Dialog,
@@ -10,40 +10,43 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '../ui/button';
-import { toast } from 'sonner';
+} from '@/components/ui/dialog'
+import { Button } from '../ui/button'
+import { toast } from 'sonner'
 
 export default function SwitchChainModal({
   buttonText,
   requiredChainId,
 }: {
-  buttonText: string;
-  requiredChainId: number;
+  buttonText: string
+  requiredChainId: number
 }) {
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false)
   const { chains, switchChain } = useSwitchChain({
     mutation: {
       onSuccess(data) {
-        console.log(data);
-        toast.success(`Changed to ${data.name} chain`);
-        return null;
+        console.log(data)
+        toast.success(`Changed to ${data.name} chain`)
+        return null
+      },
+      onError(error) {
+        console.error(error)
+        toast.error(`Error switching  chain`)
+        return null
       },
     },
-  });
-  const [selectedChain] = chains.filter(
-    (chain) => chain.id === requiredChainId
-  );
+  })
+  const [selectedChain] = chains.filter((chain) => chain.id === requiredChainId)
 
   useEffect(() => {
     if (!isMounted) {
-      setIsMounted(true);
+      setIsMounted(true)
     }
-  }, [isMounted]);
+  }, [isMounted])
 
   function handleSwitchChain() {
-    switchChain({ chainId: selectedChain.id });
-    toast.info(`Accept change to ${selectedChain.name} chain`);
+    switchChain({ chainId: selectedChain.id })
+    toast.info(`Accept change to ${selectedChain.name} chain`)
   }
 
   return (
@@ -63,5 +66,5 @@ export default function SwitchChainModal({
         </Button>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

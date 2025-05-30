@@ -1,22 +1,28 @@
+import AuthButton from '@/components/buttons/auth-button-dynamic'
 import PageWithAppbar from '@/components/layout/page-wrapper'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 
 export default function Home() {
   return (
     <PageWithAppbar>
-      <div className="page space-y-8 text-center">
-        <h1>Onchain Starter</h1>
-        <h3>
-          Get a head start on your hack with
+      <div className="page container space-y-16 pt-20 text-center md:pt-24 xl:pt-20">
+        <h1>
+          somos la comunidad
           <br />
-          <Link href="https://ethglobal.com/events/bangkok/prizes#polygon">
-            Polygon
-          </Link>
-        </h3>
-        <Link href="https://learn.dabl.club" target="_blank">
-          <Button size="lg">check the tutorial!</Button>
-        </Link>
+          para{' '}
+          <span className="underline decoration-primary underline-offset-8">
+            hackers
+          </span>
+        </h1>
+        <div className="flex-col px-12 text-left md:max-w-lg">
+          <p className="font-serif text-4xl">hackear:</p>
+          <p className="font-sans text-base">Del ingl. to hack y -ear.</p>
+          <p className="mt-2 font-serif text-2xl">
+            rechazar las limitaciones impuestas y crear nuestras propias reglas
+          </p>
+        </div>
+        <AuthButton size="xl" className="font-grotesk text-2xl">
+          unirme al club
+        </AuthButton>
       </div>
     </PageWithAppbar>
   )

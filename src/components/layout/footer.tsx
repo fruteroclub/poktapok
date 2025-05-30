@@ -94,17 +94,17 @@ export default function Footer({
           <div className="md:min-w-1/3 flex items-center justify-center gap-x-3 md:order-1">
             <div className="flex items-center gap-x-1">
               <Image
-                src="/images/logos/dabl-club-logo-black.png"
-                alt="Dabl Club logo"
+                src="/images/logos/kukulcan-logo-color.png"
+                alt="Kukulcan logo"
                 width={512}
                 height={512}
-                className="h-20 w-20 transition duration-300 ease-in-out hover:scale-90"
+                className="w-14 transition duration-500 ease-in-out hover:rotate-[-25deg]"
               />
             </div>
             <div className="flex items-center gap-x-1">
               <Image
-                src="/images/logos/polygon-logo.svg"
-                alt="Polygon logo"
+                src="/images/logos/frutero-club-logo.png"
+                alt="Frutero Club logo"
                 width={512}
                 height={512}
                 className="w-24 transition duration-300 ease-in-out hover:scale-90"
@@ -112,7 +112,7 @@ export default function Footer({
             </div>
 
             <p className="text-center text-lg leading-5 text-foreground">
-              &copy; 2024
+              &copy; 2025
             </p>
           </div>
         )}

@@ -5,13 +5,18 @@ import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 type AuthButtonProps = {
-  size?: 'default' | 'sm' | 'lg' | 'icon' | null | undefined
+  children?: React.ReactNode
+  className?: string
+  size?: 'default' | 'sm' | 'lg' | 'xl' | 'icon' | null | undefined
   setIsMenuOpen?: Dispatch<SetStateAction<boolean>>
 }
 
 export default function AuthButton({
+  children,
+  className,
   size = 'default',
   setIsMenuOpen,
 }: AuthButtonProps) {
@@ -23,7 +28,7 @@ export default function AuthButton({
     if (!isLoggedIn) {
       setShowAuthFlow(true)
     } else {
-      toast.warning('user is already logged in')
+      toast.warning('ya existe una sesión activa')
     }
   }
   async function logout() {
@@ -40,9 +45,9 @@ export default function AuthButton({
     <Button
       onClick={isLoggedIn ? logout : login}
       size={size}
-      className="font-medium"
+      className={cn('font-grotesk font-medium', className)}
     >
-      {isLoggedIn ? 'sign out' : 'sign in'}
+      {isLoggedIn ? 'salir' : children || 'entrar'}
     </Button>
   )
 }

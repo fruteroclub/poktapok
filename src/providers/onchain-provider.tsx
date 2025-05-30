@@ -11,7 +11,7 @@ import { EthereumWalletConnectors } from '@dynamic-labs/ethereum'
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector'
 import { createConfig, WagmiProvider } from 'wagmi'
 import { http } from 'viem'
-import { mainnet, polygon, polygonAmoy } from 'viem/chains'
+import { mainnet, optimism } from 'viem/chains'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { getDynamicCredentials } from '@/helpers/dynamic'
@@ -20,17 +20,12 @@ import { fetchOrCreateUser } from '@/services/auth-services'
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? undefined
 
 const config = createConfig({
-  chains: [mainnet, polygon, polygonAmoy],
+  chains: [mainnet, optimism],
   multiInjectedProviderDiscovery: false,
   transports: {
-    [mainnet.id]: http(
-      `https://polygon-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
-    ),
-    [polygon.id]: http(
-      `https://polygon-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
-    ),
-    [polygonAmoy.id]: http(
-      `https://polygon-amoy.g.alchemy.com/v2/${alchemyApiKey}`,
+    [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
+    [optimism.id]: http(
+      `https://opt-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
     ),
   },
 })
@@ -63,15 +58,15 @@ function OnchainProviderComponent({ children }: { children: ReactNode }) {
         })
 
         if (user) {
-          toast.success('Welcome back! 🍄')
-          router.push('/account')
+          toast.success('¡hola! 🥑')
+          router.push('/cuenta')
         } else {
-          toast.warning('Unable to load your account')
+          toast.warning('no se pudo cargar tu cuenta')
           router.push('/')
         }
       } catch (error) {
         console.error(error)
-        toast.warning('Unable to load your account')
+        toast.warning('no se pudo cargar tu cuenta')
         router.push('/')
       }
     },

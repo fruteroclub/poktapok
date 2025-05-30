@@ -4,7 +4,7 @@ import PageWithAppbar from '@/components/layout/page-wrapper'
 export default function Home() {
   return (
     <PageWithAppbar>
-      <div className="page container space-y-16 pt-20 text-center md:pt-24 xl:pt-20">
+      <div className="page container space-y-16 text-center md:pt-24 xl:pt-20">
         <h1>
           somos la comunidad
           <br />

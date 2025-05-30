@@ -39,7 +39,7 @@ function OnchainProviderComponent({ children }: { children: ReactNode }) {
   const events: DynamicEventsCallbacks = {
     onLogout: (args) => {
       console.log('onLogout was called', args)
-      toast.info('logged out, come back soon!')
+      toast.info('cerrando sesión, ¡vuelve pronto!')
       router.push('/')
     },
   }
@@ -58,7 +58,7 @@ function OnchainProviderComponent({ children }: { children: ReactNode }) {
         })
 
         if (user) {
-          toast.success('¡hola! 🥑')
+          toast.success('¡hola! 🥑 a construir')
           router.push('/cuenta')
         } else {
           toast.warning('no se pudo cargar tu cuenta')

@@ -1,5 +1,5 @@
 import PageWithAppbar from '@/components/layout/page-wrapper'
-import { ConnectedAccount } from '@/components/onchain/connectedAccount'
+import { ConnectedAccount } from '@/components/onchain/connected-account'
 import React from 'react'
 
 export default function Account() {

@@ -45,7 +45,7 @@ export default function Navbar() {
             height={128}
             className="w-12 transition duration-500 ease-in-out hover:rotate-[-25deg]"
           />
-          <span className="sr-only">Dabl Club</span>
+          <span className="sr-only">Frutero Club</span>
         </Link>
         <div className="z-10 col-span-3 flex items-center justify-center">
           <nav className="hidden gap-6 lg:flex">

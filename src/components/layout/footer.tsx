@@ -4,7 +4,7 @@ import Image from 'next/image'
 const navigation = [
   {
     name: 'Farcaster',
-    href: 'https://warpcast.com/~/channel/dabl',
+    href: 'https://warpcast.com/~/channel/fruteroclub',
     icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
       <svg
         viewBox="0 0 169 155"
@@ -29,7 +29,7 @@ const navigation = [
   },
   {
     name: 'X',
-    href: 'https://twitter.com/dablclub',
+    href: 'https://twitter.com/fruteroclub',
     icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
       <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
         <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
@@ -38,7 +38,7 @@ const navigation = [
   },
   {
     name: 'Telegram',
-    href: 'https://t.me/dablclub',
+    href: 'https://t.me/fruteroclub',
     icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z" />
@@ -47,7 +47,7 @@ const navigation = [
   },
   {
     name: 'GitHub',
-    href: 'https://github.com/dablclub',
+    href: 'https://github.com/fruteroclub',
     icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
       <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
         <path

@@ -45,7 +45,7 @@ export default function AuthButton({
     <Button
       onClick={isLoggedIn ? logout : login}
       size={size}
-      className={cn('font-grotesk font-medium', className)}
+      className={cn('font-funnel font-medium', className)}
     >
       {isLoggedIn ? 'salir' : children || 'entrar'}
     </Button>

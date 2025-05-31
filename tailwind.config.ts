@@ -11,8 +11,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        grotesk: ['var(--font-grotesk)'],
+        funnel: ['var(--font-funnel)'],
+        ledger: ['var(--font-ledger)'],
+        grotesk: ['var(--space-grotesk)'],
+        raleway: ['var(--raleway)'],
+        sans: ['var(--raleway)', ...fontFamily.sans],
       },
       colors: {
         background: 'hsl(var(--background))',

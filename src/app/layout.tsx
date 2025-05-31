@@ -1,21 +1,11 @@
 import type { Metadata } from 'next'
 import { cn } from '@/lib/utils'
 
-import { Raleway, Space_Grotesk as SpaceGrotesk } from 'next/font/google'
 import OnchainProvider from '@/providers/onchain-provider'
 
 import '@/styles/globals.css'
 import { Toaster } from '@/components/ui/sonner'
-
-const fontSans = Raleway({
-  subsets: ['latin'],
-  variable: '--font-sans',
-})
-
-const fontGrotesk = SpaceGrotesk({
-  subsets: ['latin'],
-  variable: '--font-grotesk',
-})
+import { fonts } from '@/lib/fonts'
 
 export const metadata: Metadata = {
   title: 'frutero club',
@@ -31,8 +21,10 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable,
-          fontGrotesk.variable,
+          fonts.funnelDisplay.variable,
+          fonts.ledger.variable,
+          fonts.raleway.variable,
+          fonts.spaceGrotesk.variable,
         )}
       >
         <OnchainProvider>

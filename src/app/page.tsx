@@ -14,8 +14,10 @@ export default function Home() {
           </span>
         </h1>
         <div className="flex-col px-12 text-left md:max-w-lg">
-          <p className="font-serif text-4xl">hackear:</p>
-          <p className="font-sans text-base">Del ingl. to hack y -ear.</p>
+          <p className="font-ledger text-4xl">hackear:</p>
+          <p className="text-base">
+            Del inglés <span className="mr-0.5 italic">to hack</span> y -ear.
+          </p>
           <p className="mt-2 font-serif text-2xl">
             rechazar las limitaciones impuestas y crear nuestras propias reglas
           </p>

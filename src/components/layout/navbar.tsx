@@ -18,13 +18,16 @@ const MENU_ITEMS: MenuItemType[] = [
   {
     displayText: 'club',
     href: '/club',
-    isExternal: false,
+    isMobileOnly: false,
+  },
+  {
+    displayText: 'feria',
+    href: '/feria',
     isMobileOnly: false,
   },
   {
     displayText: 'ecosistema',
     href: '/ecosistema',
-    isExternal: true,
     isMobileOnly: false,
   },
   { displayText: 'recursos', href: '/recursos', isMobileOnly: false },
@@ -53,10 +56,9 @@ export default function Navbar() {
               (menuItem, index) => (
                 <Link
                   key={`${menuItem.displayText}-menuItem-${index}`}
-                  className={`font-funnel inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${
-                    pathname === menuItem.href &&
+                  className={`font-funnel inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${pathname === menuItem.href &&
                     'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:!text-foreground'
-                  }`}
+                    }`}
                   href={menuItem.href}
                   target={menuItem.isExternal ? '_blank' : ''}
                 >

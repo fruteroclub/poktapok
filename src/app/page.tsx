@@ -1,9 +1,9 @@
 import AuthButton from '@/components/buttons/auth-button-dynamic'
-import PageWithAppbar from '@/components/layout/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 
 export default function Home() {
   return (
-    <PageWithAppbar>
+    <PageWrapper>
       <div className="page container space-y-16 text-center md:pt-24 xl:pt-20">
         <h1>
           somos la comunidad
@@ -26,6 +26,6 @@ export default function Home() {
           unirme al club
         </AuthButton>
       </div>
-    </PageWithAppbar>
+    </PageWrapper>
   )
 }

@@ -1,22 +1,28 @@
 'use client'
 
+import { useCallback } from 'react'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useAccount, useBalance } from 'wagmi'
+
+import config from '@/config'
 import PageWrapper from '@/components/layout/page-wrapper'
 import AuthButton from '@/components/buttons/auth-button-dynamic'
 import { Skeleton } from "@/components/ui/skeleton"
-
-const XOC_CONTRACT = '0xa411c9Aa00E020e4f88Bc19996d29c5B7ADB4ACf'
-const BASE_CHAIN_ID = 8453
+import SendMxnModal from '@/components/onchain/send-mxn-modal'
 
 export default function FeriaPage() {
+  const { xoc } = config.tokens
   const { sdkHasLoaded } = useDynamicContext()
   const { address, isConnected, isConnecting } = useAccount()
-  const { data: balance, isLoading, status } = useBalance({
+  const { data: balance, isLoading, refetch: refetchBalance, status } = useBalance({
     address,
-    token: XOC_CONTRACT,
-    chainId: BASE_CHAIN_ID,
+    token: xoc.address,
+    chainId: xoc.chains.base.id,
   })
+
+  const refetchMxnBalance = useCallback(async () => {
+    await refetchBalance()
+  }, [refetchBalance])
 
   return (
     <PageWrapper>
@@ -28,7 +34,7 @@ export default function FeriaPage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-col items-center w-full md:max-w-xl lg:max-w-lg mx-auto">
+            <div className="flex flex-col items-center w-full md:max-w-xl lg:max-w-lg mx-auto gap-y-2">
               <div className="w-full">
                 <h2 className="text-primary text-2xl text-left">balance feria</h2>
               </div>
@@ -51,6 +57,15 @@ export default function FeriaPage() {
                 <p className="text-2xl lg:text-xl font-medium">MXN</p>
               </div>
             </div>
+            {balance && (
+              <div className="flex justify-center">
+                <SendMxnModal
+                  mxnBalance={balance}
+                  refetchMxnBalance={refetchMxnBalance}
+                  userAddress={address!}
+                />
+              </div>)
+            }
           </>
         )}
       </div>

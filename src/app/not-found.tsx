@@ -1,10 +1,10 @@
-import PageWithAppbar from '@/components/layout/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <PageWithAppbar>
+    <PageWrapper>
       <div className="w-5xl flex h-[calc(100vh-64px)] flex-col items-center px-4 text-center">
         <h2 className="pt-40 text-5xl">
           404 <span className="text-primary">|</span> no encontrada
@@ -21,6 +21,6 @@ export default function NotFound() {
           </Button>
         </Link>
       </div>
-    </PageWithAppbar>
+    </PageWrapper>
   )
 }

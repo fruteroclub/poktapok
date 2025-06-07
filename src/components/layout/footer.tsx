@@ -67,7 +67,7 @@ export default function Footer({
 }) {
   return (
     <footer className="w-full bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-2 md:flex md:items-center md:justify-between md:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-4 md:flex md:items-center md:justify-between md:px-6 md:py-6 lg:px-8 lg:pb-4">
         <div className="flex items-center justify-center gap-x-8 md:order-2">
           {navigation.map((item) => (
             <div key={item.name}>
@@ -79,11 +79,10 @@ export default function Footer({
               >
                 <span className="sr-only">{item.name}</span>
                 <item.icon
-                  className={`${
-                    item.name === 'Telegram'
-                      ? '-mr-1 mb-0.5 h-7 w-7'
-                      : 'h-6 w-6'
-                  } text-foreground hover:text-primary`}
+                  className={`${item.name === 'Telegram'
+                    ? '-mr-1 mb-0.5 h-7 w-7'
+                    : 'h-6 w-6'
+                    } text-foreground hover:text-primary`}
                   aria-hidden="true"
                 />
               </a>
@@ -98,7 +97,7 @@ export default function Footer({
                 alt="Kukulcan logo"
                 width={512}
                 height={512}
-                className="w-14 transition duration-500 ease-in-out hover:rotate-[-25deg]"
+                className="w-12 transition duration-500 ease-in-out hover:rotate-[-25deg]"
               />
             </div>
             <div className="flex items-center gap-x-1">

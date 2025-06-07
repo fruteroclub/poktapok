@@ -77,7 +77,7 @@
   }
 
   .page {
-    @apply flex h-full w-full flex-col items-center py-8 md:py-12;
+    @apply flex h-full w-full flex-col items-center pb-8 pt-2 md:py-12;
   }
 
   .container {

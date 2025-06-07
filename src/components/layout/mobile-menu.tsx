@@ -12,6 +12,7 @@ import {
 import { MenuIcon } from 'lucide-react'
 import { type MenuItemType } from './navbar'
 import AuthButton from '../buttons/auth-button-dummy'
+import { cn } from '@/lib/utils'
 
 type MobileMenuProps = {
   menuItems?: MenuItemType[]
@@ -25,7 +26,7 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
       <SheetTrigger asChild>
         <button className="bg-transparent p-1.5 text-white lg:hidden">
-          <MenuIcon className="h-8 w-8 text-primary" />
+          <MenuIcon className="h-10 w-10 text-primary" />
           <span className="sr-only">Toggle navigation menu</span>
         </button>
       </SheetTrigger>
@@ -38,10 +39,11 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
           {menuItems?.map((menuItem, index) => (
             <Link
               key={`${menuItem.displayText}-menuItem-${index}`}
-              className={`inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-secondary-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${
+              className={cn(
+                'inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-secondary-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none',
                 pathname === menuItem.href &&
                 'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:!text-secondary-foreground'
-              }`}
+              )}
               href={menuItem.href}
             >
               {menuItem.displayText}

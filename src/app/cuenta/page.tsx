@@ -1,10 +1,10 @@
-import PageWithAppbar from '@/components/layout/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { ConnectedAccount } from '@/components/onchain/connected-account'
 import React from 'react'
 
 export default function Account() {
   return (
-    <PageWithAppbar>
+    <PageWrapper>
       <div className="page container">
         <div className="mb-4">
           <h2>cuenta</h2>
@@ -13,6 +13,6 @@ export default function Account() {
           <ConnectedAccount />
         </div>
       </div>
-    </PageWithAppbar>
+    </PageWrapper>
   )
 }

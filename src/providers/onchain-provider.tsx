@@ -11,7 +11,7 @@ import { EthereumWalletConnectors } from '@dynamic-labs/ethereum'
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector'
 import { createConfig, WagmiProvider } from 'wagmi'
 import { http } from 'viem'
-import { mainnet, optimism } from 'viem/chains'
+import { arbitrum, base, mainnet, optimism, polygon } from 'viem/chains'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { getDynamicCredentials } from '@/helpers/dynamic'
@@ -20,13 +20,16 @@ import { fetchOrCreateUser } from '@/services/auth-services'
 const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? undefined
 
 const config = createConfig({
-  chains: [mainnet, optimism],
+  chains: [arbitrum, base, mainnet, optimism, polygon],
   multiInjectedProviderDiscovery: false,
   transports: {
+    [arbitrum.id]: http(`https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
+    [base.id]: http(`https://base-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
     [optimism.id]: http(
       `https://opt-mainnet.g.alchemy.com/v2/${alchemyApiKey}`,
     ),
+    [polygon.id]: http(`https://polygon-mainnet.g.alchemy.com/v2/${alchemyApiKey}`),
   },
 })
 

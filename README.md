@@ -29,8 +29,8 @@ nuestra visión es crear un ecosistema vibrante donde los builders puedan conect
 1. **clona el repositorio:**
 
    ```bash
-   git clone https://github.com/fruteroclub/kiwik.git
-   cd kiwik
+   git clone https://github.com/fruteroclub/poktapok.git
+   cd poktapok
    ```
 
 2. **instala las dependencias usando Bun:**

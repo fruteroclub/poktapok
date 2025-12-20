@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# poktapok - frutero talent platform
 
-## Getting Started
+poktapok es una plataforma de talento que conecta desarrolladores latinoamericanos con oportunidades globales a través de bounties y aprendizaje práctico.
 
-First, run the development server:
+## propósito
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+ayudar a estudiantes universitarios, recién graduados y personas en transición profesional a ganar dinero en 3 meses aprendiendo IA, cripto/DeFi, y privacidad, a través de desafíos del mundo real.
+
+## arquitectura
+
+```
+talent directory → portfolio showcase → bounty marketplace → onchain funding
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, muestran su trabajo a través de bounties completados, y reciben pagos en criptomonedas.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**frontend**
+- Next.js 16 (app router)
+- React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Zustand + React Query
 
-## Learn More
+**backend**
+- PostgreSQL (Railway)
+- Drizzle ORM
+- Next.js API routes
 
-To learn more about Next.js, take a look at the following resources:
+**web3**
+- Privy (autenticación + wallets)
+- Wagmi (interacción blockchain)
+- Ethereum Sepolia (testnet)
+- Monad, Base, Polygon, Arbitrum (alpha)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## primeros pasos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### requisitos previos
 
-## Deploy on Vercel
+- [Node.js](https://nodejs.org/) (asegúrate de tener Bun instalado como runtime)
+- [Bun](https://bun.sh/docs/installation)
+- [Git](https://git-scm.com/)
+- [Alchemy](https://alchemy.com/)
+- [Privy](https://privy.io/)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### instalación
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **clona el repositorio:**
+
+   ```bash
+   git clone https://github.com/fruteroclub/frutero-app.git
+   cd frutero-app
+   ```
+
+2. **instala las dependencias usando Bun:**
+
+   ```bash
+   bun install
+   ```
+
+3. **configura las variables de entorno:**
+
+   crea un archivo `.env.local` en la raíz de tu proyecto y añade las variables de acuerdo a tus necesidades, ejemplo:
+
+   ```plaintext
+   DATABASE_URL=tu_base_de_datos_url
+
+   NEXT_PUBLIC_ALCHEMY_API_KEY=tu_alchemy_api_key
+
+   NEXT_PUBLIC_PRIVY_APP_ID=tu_privy_app_id
+   NEXT_PUBLIC_PRIVY_CLIENT_ID=tu_privy_client_id
+   NEXT_PUBLIC_PRIVY_APP_SECRET=tu_privy_app_secret
+   ```
+
+### ejecutando el proyecto
+
+para iniciar el servidor de desarrollo, ejecuta:
+
+```bash
+bun run dev
+```
+
+esto lanzará la aplicación en `http://localhost:3000`.
+
+### build y producción
+
+para builds de producción, utiliza:
+
+```bash
+bun run build
+bun run start
+```
+
+## estructura del proyecto
+
+```plaintext
+frutero-app/
+├── src/
+│   ├── app/                 # next.js app router (páginas y rutas)
+│   ├── components/          # componentes react
+│   │   ├── ui/             # componentes shadcn/ui
+│   │   ├── layout/         # navbar, footer, etc.
+│   │   └── ...
+│   ├── lib/                # utilidades y configuración
+│   │   ├── db/             # drizzle client y queries
+│   │   ├── auth/           # privy helpers
+│   │   └── utils.ts
+│   ├── providers/          # context providers
+│   ├── store/              # zustand stores
+│   └── styles/             # estilos globales
+├── drizzle/
+│   ├── schema/             # esquemas de base de datos
+│   └── migrations/         # migraciones SQL
+├── public/                 # archivos estáticos
+└── ...                     # archivos de configuración
+```
+
+## contribuciones
+
+¡damos la bienvenida a las contribuciones! siéntete libre de enviar issues o pull requests para ayudar a mejorar este proyecto para el club y la comunidad.
+
+todo el código debe ser TypeScript con tipos apropiados.
+
+---
+
+construido por frutero club para builders latinoamericanos

@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Frutero Club is a Next.js 16 application built with React 19, TypeScript, and Tailwind CSS v4. It's a landing page application with Web3 wallet integration via Privy, supporting multiple EVM chains (Arbitrum, Base, Ethereum, Optimism, Polygon, Scroll).
+**Current State:** Frutero Club is a Next.js 16 landing page application built with React 19, TypeScript, and Tailwind CSS v4. It features Web3 wallet integration via Privy, supporting multiple EVM chains (Arbitrum, Base, Ethereum, Optimism, Polygon, Scroll).
+
+**Vision (from README.md):** The long-term goal is "poktapok" - a talent platform connecting Latin American developers with global opportunities through bounties and practical learning. The planned architecture includes PostgreSQL database, Drizzle ORM, Zustand state management, and a bounty marketplace with on-chain funding. However, **these backend features are not yet implemented** - the current codebase is a frontend-only landing page.
 
 ## Development Commands
 
@@ -78,6 +80,7 @@ src/
 - Components in `src/components/ui/` should not be manually edited (regenerate with shadcn CLI)
 - Custom animations via `motion` library and `tw-animate-css`
 - Path aliases configured in `components.json` (`@/components`, `@/lib`, etc.)
+- **MagicUI** registry configured for additional components (`@magicui` registry in `components.json`)
 
 ### Error Handling
 
@@ -100,3 +103,24 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
 - Strict TypeScript mode enabled
 - All components should be typed
 - Use `import type` for type-only imports when possible
+
+## Important Notes
+
+### Database & Backend
+The README.md describes future features including PostgreSQL, Drizzle ORM, Zustand stores, and API routes for a bounty marketplace. **These are not yet implemented.** The current codebase has no:
+- Database configuration or schema files
+- Drizzle setup or migrations
+- Zustand stores
+- Backend API routes beyond Next.js defaults
+
+When implementing these features, refer to the architecture described in README.md but verify it aligns with current project needs.
+
+### Adding shadcn/ui Components
+To add new UI components from shadcn or MagicUI:
+```bash
+# shadcn/ui components
+bunx shadcn@latest add [component-name]
+
+# MagicUI components (via configured registry)
+bunx shadcn@latest add @magicui/[component-name]
+```

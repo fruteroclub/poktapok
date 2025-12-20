@@ -31,20 +31,21 @@ Each epic is broken into sequential tickets that can be worked on by different d
 ## Epic 0: Project Setup & Infrastructure
 
 ### Ticket E0-T0: PostgreSQL Database Setup
-**Story Points:** 3
+**Story Points:** 2
 **Dependencies:** None
 **Assignee:** Backend Developer
 
-**Objective:** Set up local PostgreSQL database with Docker Compose and Drizzle ORM for the team.
+**Objective:** Set up hosted PostgreSQL database (Railway/Vercel) with Drizzle ORM and migration-based synchronization for the team.
 
 **Implementation Details:** See [0-setup.md](./0-setup.md)
 
 **Success Criteria:**
-- ✅ PostgreSQL running in Docker container
-- ✅ Drizzle ORM configured and connected
-- ✅ All developers can run `bun run db:setup` successfully
+- ✅ Hosted PostgreSQL database provisioned (Vercel Postgres or Railway)
+- ✅ Drizzle ORM configured with connection pooling
+- ✅ All developers can pull env variables via `vercel env pull .env.local`
+- ✅ Migration system working (`bun run db:migrate` syncs everyone)
 - ✅ Drizzle Studio accessible at `https://local.drizzle.studio`
-- ✅ Schema definitions for Epic 1 tables created
+- ✅ Schema definitions for Epic 1 tables created and migrated
 
 ---
 

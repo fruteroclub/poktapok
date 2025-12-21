@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
-import { type Dispatch, type SetStateAction } from 'react'
-import { useLogin, useLogout, usePrivy } from '@privy-io/react-auth'
-import { toast } from 'sonner'
-import { Button } from '../ui/button'
-import { useRouter } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { type Dispatch, type SetStateAction } from "react";
+import { useLogin, useLogout, usePrivy } from "@privy-io/react-auth";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type AuthButtonProps = {
-  children?: React.ReactNode
-  className?: string
-  size?: 'default' | 'sm' | 'lg' | 'xl' | 'icon' | null | undefined
-  setIsMenuOpen?: Dispatch<SetStateAction<boolean>>
-}
+  children?: React.ReactNode;
+  className?: string;
+  size?: "default" | "sm" | "lg" | "xl" | "icon" | null | undefined;
+  setIsMenuOpen?: Dispatch<SetStateAction<boolean>>;
+};
 
 export default function AuthButton({
   children,
   className,
-  size = 'default',
+  size = "default",
   setIsMenuOpen,
 }: AuthButtonProps) {
-  const { ready: isPrivyReady, authenticated } = usePrivy()
-  const router = useRouter()
+  const { ready: isPrivyReady, authenticated } = usePrivy();
+  const router = useRouter();
 
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
@@ -31,126 +31,163 @@ export default function AuthButton({
       loginMethod,
       loginAccount,
     }) => {
-      console.log('User logged in successfully', user)
-      console.log('Is new user:', isNewUser)
-      console.log('Was already authenticated:', wasAlreadyAuthenticated)
-      console.log('Login method:', loginMethod)
-      console.log('Login account:', loginAccount)
+      console.log("User logged in successfully", user);
+      console.log("Is new user:", isNewUser);
+      console.log("Was already authenticated:", wasAlreadyAuthenticated);
+      console.log("Login method:", loginMethod);
+      console.log("Login account:", loginAccount);
 
       try {
         // Get the Ethereum embedded wallet address (not Solana)
-        const ethereumWallet = user.linkedAccounts?.find(
+        const embeddedWallet = user.linkedAccounts?.find(
           (account) =>
-            account.type === 'wallet' &&
-            'walletClientType' in account &&
-            account.walletClientType === 'privy' &&
-            'chainType' in account &&
-            account.chainType === 'ethereum',
-        )
+            account.type === "wallet" &&
+            "walletClientType" in account &&
+            account.walletClientType === "privy" &&
+            "chainType" in account &&
+            account.chainType === "ethereum"
+        );
         const appWallet =
-          ethereumWallet && 'address' in ethereumWallet
-            ? ethereumWallet.address
-            : undefined
+          embeddedWallet && "address" in embeddedWallet
+            ? embeddedWallet.address
+            : undefined;
 
-        console.log('All linked accounts:', user.linkedAccounts)
-        console.log('Ethereum wallet found:', appWallet)
+        // Get the Ethereum embedded wallet address (not Solana)
+        const externalWallet = user.linkedAccounts?.find(
+          (account) =>
+            account.type === "wallet" &&
+            "walletClientType" in account &&
+            account.walletClientType !== "privy" &&
+            "chainType" in account &&
+            account.chainType === "ethereum"
+        );
+        const extWallet =
+          externalWallet && "address" in externalWallet
+            ? externalWallet.address
+            : undefined;
+
+        console.log("All linked accounts:", user.linkedAccounts);
+        console.log("Ethereum embedded wallet:", appWallet);
+        console.log("Ethereum external wallet:", extWallet);
+
+        // Try to get email from Privy (optional - will be collected in onboarding if missing)
+        const userEmail = user.email?.address ||
+                         user.google?.email ||
+                         user.github?.email ||
+                         user.discord?.email ||
+                         null;
+
+        console.log("User email:", userEmail || "Not available");
+
+        // Map Privy's loginMethod to our auth_method enum
+        // Privy returns: email, sms, siwe (wallet), google, github, discord, twitter, etc.
+        // Our enum: email, wallet, social
+        let authMethod: "email" | "wallet" | "social" = "social";
+        if (loginMethod === "email" || loginMethod === "sms") {
+          authMethod = "email";
+        } else if (loginMethod === "siwe" || loginMethod === "siws") {
+          // Sign In With Ethereum/Solana = wallet auth
+          authMethod = "wallet";
+        } else {
+          // github, google, discord, twitter, etc. → social
+          authMethod = "social";
+        }
 
         // Prepare user data for API
-        const userData: {
-          id: string
-          username: string
-          displayName: string
-          appWallet?: string
-          email?: string
-        } = {
-          id: user.id,
-          username: user.email?.address || user.phone?.number || user.id,
-          displayName: user.email?.address || user.phone?.number || user.id,
-        }
-
-        // Only add optional fields if they exist and are valid
-        if (appWallet && appWallet.startsWith('0x')) {
-          userData.appWallet = appWallet
-        }
-        if (user.email?.address) {
-          userData.email = user.email.address
-        }
+        const userData = {
+          privyDid: user.id,
+          email: userEmail,
+          appWallet: appWallet || null,
+          extWallet: extWallet || null,
+          primaryAuthMethod: authMethod,
+        };
 
         // Create or fetch user from database
-        const response = await fetch('/api/users', {
-          method: 'POST',
+        const response = await fetch("/api/auth/check-user", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-        })
+        });
 
         if (!response.ok) {
-          throw new Error('Failed to create/fetch user')
+          const errorData = await response.json();
+          console.error("API Error:", errorData);
+          throw new Error(errorData.error || "Failed to create/fetch user");
         }
 
-        const { user: fruteroUser } = await response.json()
+        const { user: fruteroUser } = await response.json();
 
-
-        // Only redirect if this is a fresh login (not already authenticated)
+        // Redirect based on account status
         if (!wasAlreadyAuthenticated) {
-          // Redirect to profile page for new logins
-          router.push('/profile')
+          if (fruteroUser.accountStatus === "incomplete") {
+            // User created but needs to complete onboarding
+            router.push("/onboarding");
+            toast.success("¡Bienvenido! Completa tu perfil para continuar");
+          } else if (fruteroUser.accountStatus === "pending") {
+            // Onboarding complete, waiting for approval
+            router.push("/profile");
+            toast.success("Perfil completo. Esperando aprobación");
+          } else if (fruteroUser.accountStatus === "active") {
+            // Approved and active
+            router.push("/profile");
+            toast.success("Sesión iniciada correctamente");
+          } else {
+            // Suspended or banned
+            toast.error("Cuenta suspendida. Contacta soporte");
+          }
         }
 
-        if (!isNewUser) {
-          toast.success('Sesión iniciada correctamente')
-        } else {
-          toast.success('Cuenta creada correctamente')
-        }
-
-        setIsMenuOpen?.(false)
+        setIsMenuOpen?.(false);
       } catch (error) {
-        console.error('Error creating/fetching user:', error)
-        toast.error('Error al iniciar sesión. Por favor, intenta de nuevo.')
+        console.error("Error creating/fetching user:", error);
+        toast.error("Error al iniciar sesión. Por favor, intenta de nuevo.");
       }
     },
     onError: (error) => {
-      console.log('Login failed', error)
-      toast.error('Inicio de sesión fallido')
+      console.log("Login failed", error);
+      toast.error("Inicio de sesión fallido");
     },
-  })
-  const { logout: logoutWithPrivy } = useLogout()
+  });
+  const { logout: logoutWithPrivy } = useLogout();
 
   // const disableLogin = !isPrivyReady || (isPrivyReady && authenticated);
 
   function login() {
     if (!authenticated) {
-      loginWithPrivy()
+      loginWithPrivy();
     } else {
-      toast.warning('ya existe una sesión activa')
+      toast.warning("ya existe una sesión activa");
     }
   }
   async function logout() {
-    await logoutWithPrivy()
-    router.push('/')
-    setIsMenuOpen?.(false)
-    toast.success('Sesión cerrada correctamente')
+    await logoutWithPrivy();
+    router.push("/");
+    setIsMenuOpen?.(false);
+    toast.success("Sesión cerrada correctamente");
   }
 
   if (!isPrivyReady) {
-    return <Button
-      onClick={() => console.log('Privy not ready')}
-      size={size}
-      className={cn('font-funnel font-medium', className)}
-      disabled
-    >
-      {authenticated ? 'Salir' : children || 'Entrar'}
-    </Button>
+    return (
+      <Button
+        onClick={() => console.log("Privy not ready")}
+        size={size}
+        className={cn("font-funnel font-medium", className)}
+        disabled
+      >
+        {authenticated ? "Salir" : children || "Entrar"}
+      </Button>
+    );
   }
 
   return (
     <Button
       onClick={authenticated ? logout : login}
       size={size}
-      className={cn('font-funnel font-medium', className)}
+      className={cn("font-funnel font-medium", className)}
     >
-      {authenticated ? 'Salir' : children || 'Entrar'}
+      {authenticated ? "Salir" : children || "Entrar"}
     </Button>
-  )
+  );
 }

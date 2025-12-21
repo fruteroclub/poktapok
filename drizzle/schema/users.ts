@@ -15,7 +15,8 @@ export const userRoleEnum = pgEnum('user_role', ['member', 'moderator', 'admin']
  * Account status for user lifecycle management
  */
 export const accountStatusEnum = pgEnum('account_status', [
-  'pending',      // Applied, waiting for approval
+  'incomplete',   // Authenticated but onboarding not completed
+  'pending',      // Onboarding complete, waiting for approval
   'active',       // Approved and active
   'suspended',    // Temporarily disabled
   'banned',       // Permanently disabled
@@ -63,17 +64,14 @@ export const users = pgTable(
       .unique()
       .notNull(),
 
-    // Contact & Identity
+    // Contact & Identity (optional for some auth methods like GitHub)
     email: varchar('email', { length: 255 })
-      .unique()
-      .notNull(),
+      .unique(),
 
-    // Profile Identifiers (Core User Identity)
+    // Profile Identifiers (collected during onboarding)
     username: varchar('username', { length: 50 })
-      .unique()
-      .notNull(),
-    displayName: varchar('display_name', { length: 100 })
-      .notNull(),
+      .unique(),
+    displayName: varchar('display_name', { length: 100 }),
     bio: text('bio'),                                      // Max 280 characters enforced at app level
     avatarUrl: varchar('avatar_url', { length: 500 }),
 

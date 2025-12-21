@@ -1,4 +1,4 @@
-CREATE TYPE "public"."account_status" AS ENUM('pending', 'active', 'suspended', 'banned');--> statement-breakpoint
+CREATE TYPE "public"."account_status" AS ENUM('incomplete', 'pending', 'active', 'suspended', 'banned');--> statement-breakpoint
 CREATE TYPE "public"."auth_method" AS ENUM('email', 'wallet', 'social');--> statement-breakpoint
 CREATE TYPE "public"."user_role" AS ENUM('member', 'moderator', 'admin');--> statement-breakpoint
 CREATE TYPE "public"."availability_status" AS ENUM('available', 'open_to_offers', 'unavailable');--> statement-breakpoint
@@ -8,9 +8,9 @@ CREATE TYPE "public"."application_status" AS ENUM('pending', 'approved', 'reject
 CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"privy_did" varchar(255) NOT NULL,
-	"email" varchar(255) NOT NULL,
-	"username" varchar(50) NOT NULL,
-	"display_name" varchar(100) NOT NULL,
+	"email" varchar(255),
+	"username" varchar(50),
+	"display_name" varchar(100),
 	"bio" text,
 	"avatar_url" varchar(500),
 	"ext_wallet" varchar(42),

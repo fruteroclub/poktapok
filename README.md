@@ -23,8 +23,8 @@ la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, mues
 - Zustand + React Query
 
 **backend**
-- PostgreSQL (Railway)
-- Drizzle ORM
+- PostgreSQL (Neon DB via Vercel)
+- Drizzle ORM + node-postgres
 - Next.js API routes
 
 **web3**
@@ -60,16 +60,37 @@ la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, mues
 
 3. **configura las variables de entorno:**
 
-   crea un archivo `.env.local` en la raíz de tu proyecto y añade las variables de acuerdo a tus necesidades, ejemplo:
+   **opción 1: vercel (recomendado)**
+   ```bash
+   vercel env pull .env.local
+   ```
+
+   **opción 2: manual**
+   crea un archivo `.env.local` en la raíz de tu proyecto:
 
    ```plaintext
-   DATABASE_URL=tu_base_de_datos_url
+   DATABASE_URL=postgresql://...
+   DATABASE_URL_UNPOOLED=postgresql://...
 
    NEXT_PUBLIC_ALCHEMY_API_KEY=tu_alchemy_api_key
 
    NEXT_PUBLIC_PRIVY_APP_ID=tu_privy_app_id
    NEXT_PUBLIC_PRIVY_CLIENT_ID=tu_privy_client_id
    NEXT_PUBLIC_PRIVY_APP_SECRET=tu_privy_app_secret
+   ```
+
+4. **configura la base de datos:**
+
+   ejecuta las migraciones:
+
+   ```bash
+   bun run db:migrate
+   ```
+
+   verifica la conexión:
+
+   ```bash
+   bun run scripts/test-db-connection.ts
    ```
 
 ### ejecutando el proyecto
@@ -91,10 +112,39 @@ bun run build
 bun run start
 ```
 
+## base de datos
+
+el proyecto utiliza **PostgreSQL** con **Drizzle ORM** para gestión de esquemas y migraciones.
+
+### esquema
+
+- **users** - identidad y autenticación (integración con Privy)
+- **profiles** - datos extendidos del perfil de usuario
+- **applications** - cola de solicitudes de incorporación
+- **invitations** - sistema de referidos
+
+### comandos disponibles
+
+```bash
+bun run db:generate   # generar migraciones desde cambios en esquema
+bun run db:migrate    # aplicar migraciones pendientes
+bun run db:studio     # abrir Drizzle Studio (navegador visual)
+bun run db:check      # verificar drift del esquema
+```
+
+### documentación completa
+
+consulta [docs/database-setup.md](docs/database-setup.md) para:
+- guía de configuración completa
+- referencia del esquema de tablas
+- patrones de consulta comunes
+- workflow de migraciones
+- solución de problemas
+
 ## estructura del proyecto
 
 ```plaintext
-frutero-app/
+poktapok/
 ├── src/
 │   ├── app/                 # next.js app router (páginas y rutas)
 │   ├── components/          # componentes react
@@ -102,15 +152,23 @@ frutero-app/
 │   │   ├── layout/         # navbar, footer, etc.
 │   │   └── ...
 │   ├── lib/                # utilidades y configuración
-│   │   ├── db/             # drizzle client y queries
+│   │   ├── db/             # drizzle client y schema exports
 │   │   ├── auth/           # privy helpers
 │   │   └── utils.ts
 │   ├── providers/          # context providers
 │   ├── store/              # zustand stores
 │   └── styles/             # estilos globales
 ├── drizzle/
-│   ├── schema/             # esquemas de base de datos
-│   └── migrations/         # migraciones SQL
+│   ├── schema/             # definiciones del esquema
+│   │   ├── utils.ts        # helpers compartidos
+│   │   ├── users.ts        # tabla de usuarios
+│   │   ├── profiles.ts     # perfiles de usuario
+│   │   ├── applications.ts # solicitudes
+│   │   ├── invitations.ts  # sistema de referidos
+│   │   └── index.ts        # exports del esquema
+│   └── migrations/         # migraciones SQL generadas
+├── scripts/                # scripts de testing y verificación
+├── docs/                   # documentación del proyecto
 ├── public/                 # archivos estáticos
 └── ...                     # archivos de configuración
 ```

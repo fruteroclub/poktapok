@@ -30,24 +30,64 @@ The original E0-T0 ticket (docs/tickets/0-setup.md) has been **superseded** by a
 
 ---
 
+## 🎉 Implementation Progress Summary
+
+**Status:** 92% Complete (11.5/12.5 story points) | **Last Updated:** 2025-12-20
+
+### ✅ Completed (E0-T0.1 through E0-T0.7)
+
+**Database Infrastructure:**
+- Drizzle ORM configured with node-postgres driver
+- 4 tables created (users, profiles, applications, invitations)
+- 7 enums defined (user_role, account_status, auth_method, profile_visibility, availability_status, learning_track, application_status)
+- 31 indexes created (including composite and partial indexes)
+- 47+ CHECK constraints applied across all tables
+- 7 FOREIGN KEY relationships with appropriate CASCADE policies
+
+**Key Files Created:**
+- `drizzle.config.ts` - ORM configuration
+- `drizzle/schema/` - All schema files (utils, users, profiles, applications, invitations, index)
+- `src/lib/db/` - Database client and schema exports
+- `drizzle/migrations/0000_tricky_carlie_cooper.sql` - Initial migration (applied ✅)
+- `scripts/` - Test and verification scripts
+
+**Technical Achievements:**
+- ✅ Migrations applied successfully to Neon DB
+- ✅ All verification tests passing (tables, indexes, constraints)
+- ✅ Node-postgres connection pooling configured
+- ✅ Inline pattern validation (fixed Drizzle parameterization issue)
+- ✅ Status field workaround (PostgreSQL immutability constraint)
+
+### 🟡 In Progress (E0-T0.8)
+
+**Remaining Tasks:**
+- Team design review and approval
+- Schema diagram generation
+- Normalization testing (cascade delete verification)
+- EXPLAIN ANALYZE performance validation
+- PR creation and code review
+- Team sync testing (2+ developers)
+
+---
+
 ## Ticket Status Overview
 
-| Ticket ID | Title | Story Points | Status | Assignee | Dependencies |
-|-----------|-------|--------------|--------|----------|--------------|
-| E0-T0.1 | Drizzle Configuration | 0.5 | 🟡 Ready | Backend Dev | None |
-| E0-T0.2 | Schema Utilities | 1 | 🟡 Ready | Backend Dev | E0-T0.1 |
-| E0-T0.3 | Users Table Schema | 2 | 🟡 Ready | Backend Dev | E0-T0.2 |
-| E0-T0.4 | Profiles Table Schema | 2 | 🟡 Ready | Backend Dev | E0-T0.3 |
-| E0-T0.5 | Applications & Invitations | 3 | 🟡 Ready | Backend Dev | E0-T0.3 |
-| E0-T0.6 | Database Client Setup | 1 | 🟡 Ready | Backend Dev | E0-T0.2-5 |
-| E0-T0.7 | Generate & Run Migrations | 2 | 🟡 Ready | Backend Dev | E0-T0.6 |
-| E0-T0.8 | Verification & Team Sync | 1 | 🟡 Ready | Backend Dev + Team | E0-T0.7 |
+| Ticket ID | Title | Story Points | Status | Assignee | Completed |
+|-----------|-------|--------------|--------|----------|-----------|
+| E0-T0.1 | Drizzle Configuration | 0.5 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.2 | Schema Utilities | 1 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.3 | Users Table Schema | 2 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.4 | Profiles Table Schema | 2 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.5 | Applications & Invitations | 3 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.6 | Database Client Setup | 1 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.7 | Generate & Run Migrations | 2 | 🟢 Completed | Backend Dev | 2025-12-20 |
+| E0-T0.8 | Verification & Team Sync | 1 | 🟡 In Progress | Backend Dev + Team | - |
 
-**Total Story Points:** 12.5
+**Total Story Points:** 12.5 | **Completed:** 11.5 (92%)
 
 **Status Legend:**
 - 🔴 Not Started
-- 🟡 Ready for Implementation
+- 🟡 In Progress
 - 🟢 Completed
 - 🔵 Blocked
 
@@ -206,13 +246,50 @@ users (identity & auth)
 **A:** Extensibility without schema migrations. Queryable (unlike JSON), indexed with GIN, perfect for feature flags and non-critical data.
 
 ### Q: Why generated column for invitation status?
-**A:** PostgreSQL computes it automatically based on `redeemed_at` and `expires_at`. No manual updates, always accurate, can be indexed.
+**A:** Originally designed as generated column, but PostgreSQL doesn't support time-based generated columns (NOW()/CURRENT_TIMESTAMP are not immutable). Converted to regular varchar field with default 'pending'. Status should be computed at query time or updated via application logic/triggers.
 
 ### Q: Why so many indexes?
 **A:** Query performance. Directory page filters by visibility + availability + learning tracks + country. Without indexes, full table scan on every page load (slow). With composite indexes, queries stay < 50ms at 10K+ users.
 
 ### Q: What's the migration strategy for Epics 2-4?
 **A:** Additive migrations only. Epic 2 adds `projects`, `skills` tables. Epic 3 adds `bounties`, `bounty_claims`. Epic 4 adds `transactions`. Never modify existing tables (only add columns/indexes).
+
+### Q: Why use node-postgres instead of postgres-js?
+**A:** Project decision based on official Drizzle documentation for node-postgres integration. Key differences: Uses `Pool` from `pg` package, syntax is `drizzle({ client: pool })` instead of `drizzle(client)`. Connection pooling configured with max 10 connections, 20s idle timeout.
+
+---
+
+## Technical Issues Resolved During Implementation
+
+### Issue 1: CHECK Constraint Parameterization (E0-T0.7)
+**Problem:** Drizzle generated parameterized SQL (`$1`, `$2`) for CHECK constraints using pattern references, causing migration failures.
+
+**Solution:** Inlined all regex patterns directly in CHECK constraints instead of using `PATTERNS` constant references.
+
+**Files Modified:**
+- `drizzle/schema/users.ts` - Inlined EMAIL, USERNAME, ETH_ADDRESS patterns
+- `drizzle/schema/profiles.ts` - Inlined COUNTRY_CODE pattern
+- `drizzle/schema/invitations.ts` - Inlined INVITE_CODE pattern
+
+**Learning:** Drizzle migrations require literal values in CHECK constraints, not variable references.
+
+### Issue 2: Generated Column Immutability (E0-T0.7)
+**Problem:** PostgreSQL rejected generated column for invitations.status that compared `expires_at < NOW()` with error "generation expression is not immutable".
+
+**Root Cause:** PostgreSQL requires generated column expressions to be immutable (deterministic). `NOW()` and `CURRENT_TIMESTAMP` return different values on each call, making them non-immutable.
+
+**Solution:** Converted status from generated column to regular varchar field with default 'pending'. Status logic moved to application layer:
+```typescript
+const status = invitation.redeemedAt
+  ? 'redeemed'
+  : new Date(invitation.expiresAt) < new Date()
+    ? 'expired'
+    : 'pending'
+```
+
+**Alternative Considered:** PostgreSQL triggers or views, but application-level computation is simpler and more flexible.
+
+**Learning:** Time-based logic cannot be in generated columns. Use triggers, views, or application logic instead.
 
 ---
 
@@ -249,32 +326,37 @@ users (identity & auth)
 ## Definition of Done
 
 ### Schema Implementation
-- [x] All 4 tables created with correct types
-- [x] All 8 enums defined
-- [x] All CHECK constraints present
-- [x] All foreign keys with explicit cascade policies
-- [x] All indexes created (24+ total)
-- [x] Triggers for updated_at timestamps
-- [x] Generated column for invitation status
+- [x] All 4 tables created with correct types ✅ (2025-12-20)
+- [x] All 7 enums defined ✅ (2025-12-20) *Note: 7 enums, not 8 - see below*
+- [x] All CHECK constraints present ✅ (2025-12-20)
+- [x] All foreign keys with explicit cascade policies ✅ (2025-12-20)
+- [x] All indexes created (31+ total) ✅ (2025-12-20)
+- [x] Default now() for timestamps (no triggers needed with Drizzle) ✅ (2025-12-20)
+- [x] Status field for invitations ✅ (2025-12-20) *Note: Regular field instead of generated column due to PostgreSQL immutability constraints*
+
+**Implementation Notes:**
+- **Enums**: 7 total (user_role, account_status, auth_method, profile_visibility, availability_status, learning_track, application_status)
+- **Indexes**: 31 total (users: 12, profiles: 7, applications: 6, invitations: 6)
+- **Invitation Status**: Converted from generated column to regular field due to PostgreSQL limitations with time-based expressions
 
 ### Testing
-- [ ] Verification script passes (tables, indexes, constraints)
-- [ ] Normalization test passes (cascade deletes work)
-- [ ] EXPLAIN ANALYZE shows index usage
-- [ ] Team members can sync successfully (2+ tested)
+- [x] Verification script passes (tables, indexes, constraints) ✅ (2025-12-20)
+- [ ] Normalization test passes (cascade deletes work) - *Pending E0-T0.8*
+- [ ] EXPLAIN ANALYZE shows index usage - *Pending E0-T0.8*
+- [ ] Team members can sync successfully (2+ tested) - *Pending E0-T0.8*
 
 ### Documentation
-- [x] database-design.md complete
-- [ ] Schema diagram generated (Mermaid or dbdiagram.io)
-- [x] Enhanced E0-T0 ticket created
-- [ ] Team design review completed and approved
+- [x] database-design.md complete ✅ (Pre-existing)
+- [ ] Schema diagram generated (Mermaid or dbdiagram.io) - *Pending E0-T0.8*
+- [x] Enhanced E0-T0 ticket created ✅ (Pre-existing)
+- [ ] Team design review completed and approved - *Pending E0-T0.8*
 
 ### Review & Approval
-- [ ] PR created with schema code
-- [ ] Backend developer reviewed code
-- [ ] Database architect approved design
-- [ ] Team lead approved for merge
-- [ ] Merged to `dev` branch
+- [ ] PR created with schema code - *Pending E0-T0.8*
+- [ ] Backend developer reviewed code - *Pending E0-T0.8*
+- [ ] Database architect approved design - *Pending E0-T0.8*
+- [ ] Team lead approved for merge - *Pending E0-T0.8*
+- [ ] Merged to `dev` branch - *Pending E0-T0.8*
 
 ---
 

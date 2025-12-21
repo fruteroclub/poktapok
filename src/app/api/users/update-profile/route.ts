@@ -50,7 +50,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Update user profile and change status to pending (awaiting approval)
+    // Update user profile and change status to active (auto-approve for MVP)
     const updatedUser = await db
       .update(users)
       .set({
@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest) {
         displayName,
         bio: bio || null,
         avatarUrl: avatarUrl || null,
-        accountStatus: "pending", // Move from incomplete to pending
+        accountStatus: "active", // Auto-approve for MVP (was: "pending")
         updatedAt: new Date(),
       })
       .where(eq(users.privyDid, privyDid))

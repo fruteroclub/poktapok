@@ -124,30 +124,42 @@ export default function AuthButton({
           if (fruteroUser.accountStatus === "incomplete") {
             // User created but needs to complete onboarding
             router.push("/onboarding");
-            toast.success("¡Bienvenido! Completa tu perfil para continuar");
+            toast.success("¡Bienvenido! Completa tu perfil para continuar", {
+              id: "auth-welcome", // Deduplicate toasts
+            });
           } else if (fruteroUser.accountStatus === "pending") {
             // Onboarding complete, waiting for approval
             router.push("/profile");
-            toast.success("Perfil completo. Esperando aprobación");
+            toast.success("Perfil completo. Esperando aprobación", {
+              id: "auth-pending", // Deduplicate toasts
+            });
           } else if (fruteroUser.accountStatus === "active") {
             // Approved and active
             router.push("/profile");
-            toast.success("Sesión iniciada correctamente");
+            toast.success("Sesión iniciada correctamente", {
+              id: "auth-success", // Deduplicate toasts
+            });
           } else {
             // Suspended or banned
-            toast.error("Cuenta suspendida. Contacta soporte");
+            toast.error("Cuenta suspendida. Contacta soporte", {
+              id: "auth-suspended", // Deduplicate toasts
+            });
           }
         }
 
         setIsMenuOpen?.(false);
       } catch (error) {
         console.error("Error creating/fetching user:", error);
-        toast.error("Error al iniciar sesión. Por favor, intenta de nuevo.");
+        toast.error("Error al iniciar sesión. Por favor, intenta de nuevo.", {
+          id: "auth-error", // Deduplicate toasts across multiple AuthButton instances
+        });
       }
     },
     onError: (error) => {
       console.log("Login failed", error);
-      toast.error("Inicio de sesión fallido");
+      toast.error("Inicio de sesión fallido", {
+        id: "login-failed", // Deduplicate toasts across multiple AuthButton instances
+      });
     },
   });
   const { logout: logoutWithPrivy } = useLogout();
@@ -158,14 +170,18 @@ export default function AuthButton({
     if (!authenticated) {
       loginWithPrivy();
     } else {
-      toast.warning("ya existe una sesión activa");
+      toast.warning("ya existe una sesión activa", {
+        id: "auth-already-active", // Deduplicate toasts
+      });
     }
   }
   async function logout() {
     await logoutWithPrivy();
     router.push("/");
     setIsMenuOpen?.(false);
-    toast.success("Sesión cerrada correctamente");
+    toast.success("Sesión cerrada correctamente", {
+      id: "auth-logout", // Deduplicate toasts
+    });
   }
 
   if (!isPrivyReady) {

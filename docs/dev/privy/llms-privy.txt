@@ -1,0 +1,931 @@
+# Privy Documentation - LLM Assistant Context
+# Source: https://docs.privy.io
+# This file provides comprehensive context for Privy integration, authentication, and wallet management
+
+# Authorization signatures
+Source: https://docs.privy.io/api-reference/authorization-signatures
+
+Securing Privy API requests with authorization signatures
+
+## Overview
+
+Owners provide an additional layer of security for actions taken by your app's wallets. This primitive helps ensure that only actions explicitly authorized by your server are executed on user wallets.
+
+When you specify an owner of a resource, all requests to update that resource must be signed with the associated key (user, authorization key, or key quorum). Requests to take actions with a wallet must also be signed by the wallet's owner. This security measure verifies that each request comes from your authorized backend systems and helps prevent unauthorized operations.
+
+Authorization signatures are an important security measure and we strongly recommend registering authorization keys for all production resources.
+
+## When are they necessary?
+
+Authorization signatures are necessary in the following cases.
+
+### Updating wallets and policies
+
+All critical resources, such as wallets and policies, have an `owner_id` field, which indicates the authorization key or quorum whose signatures are required in order to modify the given resource.
+
+This means, if the `owner_id` is set, authorization signatures are required for all `PATCH` and `DELETE` requests to the resource. This includes:
+
+* `PATCH /v1/wallets/[wallet_id]`
+* `DELETE /v1/wallets/[wallet_id]`
+* `PATCH /v1/policies/[policy_id]`
+* `DELETE /v1/policies/[policy_id]`
+
+Signatures from the wallet's owner are required to take actions on a wallet by default. If an `owner_id` is set, authorization signatures are required for:
+
+* `POST /v1/wallets/<wallet_id>/rpc`
+
+### Executing actions with wallets
+
+Executing actions with wallets requires authorization signature(s) from the wallet's owner, if the wallet has an owner. This includes:
+
+* `POST /v1/wallets/[wallet_id]/rpc`
+
+### Updating key quorums
+
+Though key quorums do not have owners, updating or deleting a key quorum requires a satisfying set of signatures from the *existing* key quorum that meet the authorization threshold. This includes:
+
+* `PATCH /v1/key_quorums/[key_quorum_id]`
+* `DELETE /v1/key_quorum/[key_quorum_id]`
+
+## Usage
+
+At a high-level, the flow of using authorization signatures is as follows:
+
+1. Get your private keys - Get the private keys that you will use to sign your request. This might be retrieved from the private keys you saved locally (app owners and key quorum owners) or requested from the Privy API using a user JWT (user owners).
+
+2. Construct your request - Construct the request that you intend to make to Privy. This might be updating or deleting wallets, updating or deleting policies, updating or deleting key quorums, or taking actions with wallets.
+
+3. Sign the request - Format and sign the request with your private key(s).
+
+4. Include the signature as a request header - Finally, when making your request to Privy, include the authorization signature(s) as a string in the `privy-authorization-signature` header.
+
+### Getting authorization keys
+
+To start, get the private keys for the authorization key(s) that owner your resource.
+
+If the owner of your resource is an authorization key, get the private key(s) that you saved locally when creating your owner in the Privy API or Dashboard. Privy does not save these private key(s) and cannot help you recover them.
+
+If the owner of your resource is a user, request a time-bound user key to take actions with or update the resource.
+
+### Signing requests
+
+Next, sign the request with your authorization key(s). Make sure to correctly format your request before signing the request.
+
+If the owner of your resource is a key quorum, make sure to sign the request with enough authorization keys to meet the authorization threshold.
+
+### Setting required headers
+
+Once you have collected your authorization signature(s), set the following header on your request to the Privy API.
+
+**Header: `privy-authorization-signature`** (string)
+The authorization signature. If multiple signatures are required, include them as a comma-delimited string.
+
+If you are using Privy's SDKs, the appropriate authorization signature header is added automatically to your requests.
+
+
+# React SDK - Authentication Hooks
+Source: https://docs.privy.io/react-sdk/authentication
+
+## usePrivy Hook
+
+The `usePrivy` hook provides access to the Privy authentication state and user information.
+
+### Usage
+
+```typescript
+import { usePrivy } from '@privy-io/react-auth'
+
+function MyComponent() {
+  const { ready, authenticated, user } = usePrivy()
+  
+  if (!ready) {
+    return <div>Loading...</div>
+  }
+  
+  if (!authenticated) {
+    return <div>Please log in</div>
+  }
+  
+  return <div>Welcome, {user?.id}</div>
+}
+```
+
+### Return Values
+
+- `ready` (boolean): Whether Privy has finished initializing
+- `authenticated` (boolean): Whether the user is currently authenticated
+- `user` (User | null): The authenticated user object, or null if not authenticated
+- `login` (function): Function to trigger login
+- `logout` (function): Function to trigger logout
+
+### User Object Structure
+
+The user object contains:
+
+- `id` (string): Privy DID (decentralized identifier), format: `did:privy:...`
+- `email` (object | null): Email account information
+  - `address` (string): Email address
+  - `verified` (boolean): Whether email is verified
+- `linkedAccounts` (array): Array of linked accounts (wallets, social accounts, etc.)
+- `wallet` (object | null): Embedded wallet information
+- `google`, `github`, `discord`, `twitter` (object | null): Social account information
+
+### Linked Accounts
+
+Each linked account in `user.linkedAccounts` has:
+
+- `type` (string): Account type (`"wallet"`, `"email"`, `"google"`, etc.)
+- `walletClientType` (string): For wallets, either `"privy"` (embedded) or external wallet name
+- `chainType` (string): For wallets, either `"ethereum"` or `"solana"`
+- `address` (string): For wallets, the wallet address
+
+## useLogin Hook
+
+The `useLogin` hook provides a function to trigger the login flow.
+
+### Usage
+
+```typescript
+import { useLogin } from '@privy-io/react-auth'
+
+function LoginButton() {
+  const { login } = useLogin({
+    onComplete: async ({ user, isNewUser, wasAlreadyAuthenticated, loginMethod, loginAccount }) => {
+      console.log('User logged in:', user)
+      console.log('Is new user:', isNewUser)
+      console.log('Login method:', loginMethod) // 'email', 'siwe', 'google', etc.
+    },
+    onError: (error) => {
+      console.error('Login failed:', error)
+    }
+  })
+  
+  return <button onClick={login}>Log In</button>
+}
+```
+
+### Login Method Values
+
+- `"email"`: Email/password or magic link
+- `"sms"`: SMS authentication
+- `"siwe"`: Sign In With Ethereum (wallet)
+- `"siws"`: Sign In With Solana (wallet)
+- `"google"`, `"github"`, `"discord"`, `"twitter"`: Social login
+
+### Callback Parameters
+
+- `user` (User): The authenticated user object
+- `isNewUser` (boolean): Whether this is a new user (first login)
+- `wasAlreadyAuthenticated` (boolean): Whether user was already logged in
+- `loginMethod` (string): The method used to log in
+- `loginAccount` (object): Details about the account used to log in
+
+## useLogout Hook
+
+The `useLogout` hook provides a function to log out the current user.
+
+### Usage
+
+```typescript
+import { useLogout } from '@privy-io/react-auth'
+
+function LogoutButton() {
+  const { logout } = useLogout()
+  
+  return <button onClick={logout}>Log Out</button>
+}
+```
+
+## useWallets Hook
+
+The `useWallets` hook provides access to user wallets.
+
+### Usage
+
+```typescript
+import { useWallets } from '@privy-io/react-auth'
+
+function WalletInfo() {
+  const { wallets, ready } = useWallets()
+  
+  // Get embedded wallet
+  const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+  
+  // Get external wallets
+  const externalWallets = wallets.filter(w => w.walletClientType !== 'privy')
+  
+  return (
+    <div>
+      <p>Embedded: {embeddedWallet?.address}</p>
+      <p>External: {externalWallets.map(w => w.address).join(', ')}</p>
+    </div>
+  )
+}
+```
+
+### Wallet Object Structure
+
+- `address` (string): Wallet address
+- `walletClientType` (string): `"privy"` for embedded, or external wallet name
+- `chainType` (string): `"ethereum"` or `"solana"`
+- `connectorType` (string): Connection type
+
+
+# PrivyProvider Configuration
+Source: https://docs.privy.io/react-sdk/setup
+
+## Basic Setup
+
+```typescript
+import { PrivyProvider } from '@privy-io/react-auth'
+import { WagmiProvider } from '@privy-io/wagmi'
+
+function App() {
+  return (
+    <PrivyProvider
+      appId="your-app-id"
+      clientId="your-client-id"
+      config={{
+        defaultChain: arbitrum,
+        supportedChains: [arbitrum, base, mainnet, optimism, polygon, scroll],
+        embeddedWallets: {
+          ethereum: {
+            createOnLogin: 'all-users',
+          },
+        },
+        appearance: {
+          showWalletLoginFirst: false,
+          walletList: ['metamask', 'coinbase_wallet', 'rainbow', 'wallet_connect'],
+        },
+        legal: {
+          termsAndConditionsUrl: 'https://example.com/terms',
+          privacyPolicyUrl: 'https://example.com/privacy',
+        },
+      }}
+    >
+      <WagmiProvider config={wagmiConfig}>
+        {/* Your app */}
+      </WagmiProvider>
+    </PrivyProvider>
+  )
+}
+```
+
+## Configuration Options
+
+### embeddedWallets
+
+Controls embedded wallet creation behavior.
+
+- `createOnLogin`: When to create embedded wallets
+  - `'all-users'`: Create for all users on login
+  - `'users-without-wallets'`: Only create if user has no external wallet
+  - `'off'`: Don't create automatically
+
+### appearance
+
+Controls the UI appearance of the Privy modal.
+
+- `showWalletLoginFirst` (boolean): Show wallet login options first
+- `walletList` (array): List of wallets to show in modal
+  - Options: `'metamask'`, `'coinbase_wallet'`, `'rainbow'`, `'wallet_connect'`, etc.
+
+### legal
+
+Legal document URLs.
+
+- `termsAndConditionsUrl` (string): Terms and conditions URL
+- `privacyPolicyUrl` (string): Privacy policy URL
+
+### defaultChain
+
+The default blockchain network for the app.
+
+### supportedChains
+
+Array of supported blockchain networks. Users can switch between these chains.
+
+
+# Embedded Wallets
+Source: https://docs.privy.io/react-sdk/wallets/embedded
+
+## Overview
+
+Embedded wallets are smart contract wallets created and managed by Privy. They are automatically created for users when configured with `createOnLogin: 'all-users'`.
+
+## Accessing Embedded Wallets
+
+### From User Object
+
+```typescript
+const { user } = usePrivy()
+
+// Find embedded Ethereum wallet
+const embeddedWallet = user?.linkedAccounts?.find(
+  (account) =>
+    account.type === 'wallet' &&
+    'walletClientType' in account &&
+    account.walletClientType === 'privy' &&
+    'chainType' in account &&
+    account.chainType === 'ethereum'
+)
+
+const walletAddress = embeddedWallet && 'address' in embeddedWallet
+  ? embeddedWallet.address
+  : undefined
+```
+
+### From useWallets Hook
+
+```typescript
+const { wallets } = useWallets()
+
+const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+const walletAddress = embeddedWallet?.address
+```
+
+## Wallet Creation Timing
+
+Embedded wallets are created asynchronously. The wallet may not exist immediately after login:
+
+1. User authenticates
+2. Privy creates embedded wallet in background
+3. Wallet address becomes available (may take a few seconds)
+
+Always check if wallet exists before using it:
+
+```typescript
+if (!embeddedWallet || !walletAddress) {
+  // Wallet not yet created, show loading state
+  return <div>Creating wallet...</div>
+}
+```
+
+## Wallet Address Format
+
+- Ethereum wallets: `0x` prefixed, 42 characters
+- Example: `0x1234567890123456789012345678901234567890`
+
+
+# External Wallets
+Source: https://docs.privy.io/react-sdk/wallets/external
+
+## Overview
+
+External wallets are user-owned wallets (MetaMask, Coinbase Wallet, Rainbow, WalletConnect, etc.) that users connect to your app.
+
+## Accessing External Wallets
+
+### From User Object
+
+```typescript
+const { user } = usePrivy()
+
+// Find external Ethereum wallet
+const externalWallet = user?.linkedAccounts?.find(
+  (account) =>
+    account.type === 'wallet' &&
+    'walletClientType' in account &&
+    account.walletClientType !== 'privy' &&
+    'chainType' in account &&
+    account.chainType === 'ethereum'
+)
+
+const walletAddress = externalWallet && 'address' in externalWallet
+  ? externalWallet.address
+  : undefined
+```
+
+### From useWallets Hook
+
+```typescript
+const { wallets } = useWallets()
+
+const externalWallets = wallets.filter(w => w.walletClientType !== 'privy')
+```
+
+## Supported External Wallets
+
+- MetaMask
+- Coinbase Wallet
+- Rainbow
+- WalletConnect
+- Trust Wallet
+- Frame
+- And more...
+
+
+# Server-Side Authentication
+Source: https://docs.privy.io/server-sdk/authentication
+
+## Verifying User Sessions
+
+On the server, you need to verify the user's session token to authenticate requests.
+
+### Next.js API Routes
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+import { getPrivyClient } from '@privy-io/server-auth'
+
+const privy = getPrivyClient({
+  appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
+  appSecret: process.env.PRIVY_APP_SECRET!,
+})
+
+export async function GET(request: NextRequest) {
+  // Get access token from Authorization header or cookies
+  const accessToken = request.headers.get('authorization')?.replace('Bearer ', '')
+    || request.cookies.get('privy-token')?.value
+  
+  if (!accessToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
+  try {
+    // Verify the token
+    const claims = await privy.verifyAuthToken(accessToken)
+    
+    // Get user ID (Privy DID)
+    const privyDid = claims.userId
+    
+    // Use privyDid to look up user in your database
+    // ...
+    
+    return NextResponse.json({ privyDid })
+  } catch (error) {
+    return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  }
+}
+```
+
+### Getting User Information
+
+```typescript
+import { getPrivyClient } from '@privy-io/server-auth'
+
+const privy = getPrivyClient({
+  appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
+  appSecret: process.env.PRIVY_APP_SECRET!,
+})
+
+// Get user by Privy DID
+const user = await privy.getUser(privyDid)
+
+// Access user properties
+const email = user.email?.address
+const linkedAccounts = user.linkedAccounts
+```
+
+## Environment Variables
+
+Required environment variables:
+
+- `NEXT_PUBLIC_PRIVY_APP_ID`: Your Privy App ID (public)
+- `NEXT_PUBLIC_PRIVY_CLIENT_ID`: Your Privy Client ID (public)
+- `PRIVY_APP_SECRET`: Your Privy App Secret (private, server-only)
+
+
+# User Object Structure
+Source: https://docs.privy.io/react-sdk/authentication
+
+## Complete User Object
+
+```typescript
+interface User {
+  id: string                    // Privy DID: "did:privy:..."
+  email?: {
+    address: string
+    verified: boolean
+  }
+  phone?: {
+    number: string
+    verified: boolean
+  }
+  google?: {
+    email: string
+    name: string
+    picture: string
+  }
+  github?: {
+    email: string
+    username: string
+    avatarUrl: string
+  }
+  discord?: {
+    email: string
+    username: string
+    avatarUrl: string
+  }
+  twitter?: {
+    username: string
+    name: string
+    avatarUrl: string
+  }
+  linkedAccounts: LinkedAccount[]
+  wallet?: {
+    address: string
+    walletClientType: string
+    chainType: string
+  }
+  createdAt: number
+  updatedAt: number
+}
+
+interface LinkedAccount {
+  type: string                  // "wallet", "email", "google", etc.
+  walletClientType?: string     // "privy" for embedded, or external wallet name
+  chainType?: string            // "ethereum" or "solana"
+  address?: string              // Wallet address (for wallet accounts)
+  verified?: boolean
+}
+```
+
+## Extracting User Information
+
+### Email
+
+```typescript
+const email = user.email?.address
+  || user.google?.email
+  || user.github?.email
+  || user.discord?.email
+  || null
+```
+
+### Embedded Wallet Address
+
+```typescript
+const embeddedWallet = user.linkedAccounts?.find(
+  (account) =>
+    account.type === 'wallet' &&
+    'walletClientType' in account &&
+    account.walletClientType === 'privy' &&
+    'chainType' in account &&
+    account.chainType === 'ethereum'
+)
+
+const appWallet = embeddedWallet && 'address' in embeddedWallet
+  ? embeddedWallet.address
+  : undefined
+```
+
+### External Wallet Address
+
+```typescript
+const externalWallet = user.linkedAccounts?.find(
+  (account) =>
+    account.type === 'wallet' &&
+    'walletClientType' in account &&
+    account.walletClientType !== 'privy' &&
+    'chainType' in account &&
+    account.chainType === 'ethereum'
+)
+
+const extWallet = externalWallet && 'address' in externalWallet
+  ? externalWallet.address
+  : undefined
+```
+
+### Primary Auth Method
+
+```typescript
+function getPrimaryAuthMethod(loginMethod: string): 'email' | 'wallet' | 'social' {
+  if (loginMethod === 'email' || loginMethod === 'sms') {
+    return 'email'
+  } else if (loginMethod === 'siwe' || loginMethod === 'siws') {
+    return 'wallet'
+  } else {
+    return 'social'  // google, github, discord, twitter, etc.
+  }
+}
+```
+
+
+# Best Practices
+Source: https://docs.privy.io
+
+## Authentication Flow
+
+1. **Check if Privy is ready**: Always check `ready` from `usePrivy()` before accessing user data
+2. **Handle loading states**: Show loading UI while `ready === false`
+3. **Handle authentication state**: Check `authenticated` before accessing protected content
+4. **Handle wallet creation delay**: Embedded wallets may not exist immediately after login
+
+## Error Handling
+
+```typescript
+const { login } = useLogin({
+  onComplete: async ({ user }) => {
+    try {
+      // Process user data
+    } catch (error) {
+      console.error('Error processing login:', error)
+      // Show error to user
+    }
+  },
+  onError: (error) => {
+    console.error('Login failed:', error)
+    // Show error to user
+  }
+})
+```
+
+## Session Management
+
+- Privy handles session management automatically
+- Sessions persist across page refreshes
+- No need to manually manage JWT tokens on the client
+- Use `usePrivy().authenticated` to check auth state
+
+## Server-Side Verification
+
+- Always verify tokens on the server for API routes
+- Never trust client-side authentication state for sensitive operations
+- Use `@privy-io/server-auth` to verify tokens
+
+## Wallet Address Validation
+
+- Always validate wallet addresses before storing in database
+- Ethereum addresses: 42 characters, `0x` prefix
+- Check if wallet exists before using it (embedded wallets may be delayed)
+
+## Database Integration
+
+- Store `privyDid` (user.id) as the unique identifier
+- Embedded wallet (`appWallet`) may be null initially
+- External wallet (`extWallet`) is optional
+- Map Privy login methods to your auth method enum:
+  - `email`/`sms` → `email`
+  - `siwe`/`siws` → `wallet`
+  - `google`/`github`/`discord`/`twitter` → `social`
+
+
+# Common Patterns
+
+## Complete Login Flow
+
+```typescript
+import { useLogin, usePrivy } from '@privy-io/react-auth'
+
+function AuthButton() {
+  const { ready, authenticated } = usePrivy()
+  const router = useRouter()
+  
+  const { login } = useLogin({
+    onComplete: async ({ user, isNewUser, loginMethod }) => {
+      // Extract user data
+      const privyDid = user.id
+      
+      const embeddedWallet = user.linkedAccounts?.find(
+        (account) =>
+          account.type === 'wallet' &&
+          'walletClientType' in account &&
+          account.walletClientType === 'privy' &&
+          'chainType' in account &&
+          account.chainType === 'ethereum'
+      )
+      const appWallet = embeddedWallet && 'address' in embeddedWallet
+        ? embeddedWallet.address
+        : undefined
+      
+      const externalWallet = user.linkedAccounts?.find(
+        (account) =>
+          account.type === 'wallet' &&
+          'walletClientType' in account &&
+          account.walletClientType !== 'privy' &&
+          'chainType' in account &&
+          account.chainType === 'ethereum'
+      )
+      const extWallet = externalWallet && 'address' in externalWallet
+        ? externalWallet.address
+        : undefined
+      
+      const email = user.email?.address
+        || user.google?.email
+        || user.github?.email
+        || user.discord?.email
+        || null
+      
+      // Map login method
+      let authMethod: 'email' | 'wallet' | 'social' = 'social'
+      if (loginMethod === 'email' || loginMethod === 'sms') {
+        authMethod = 'email'
+      } else if (loginMethod === 'siwe' || loginMethod === 'siws') {
+        authMethod = 'wallet'
+      }
+      
+      // Send to API
+      const response = await fetch('/api/auth/check-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          privyDid,
+          email,
+          appWallet,
+          extWallet,
+          primaryAuthMethod: authMethod,
+        }),
+      })
+      
+      if (response.ok) {
+        const { user: dbUser } = await response.json()
+        // Handle redirect based on account status
+        if (dbUser.accountStatus === 'incomplete') {
+          router.push('/onboarding')
+        } else {
+          router.push('/profile')
+        }
+      }
+    },
+  })
+  
+  if (!ready) {
+    return <button disabled>Loading...</button>
+  }
+  
+  return (
+    <button onClick={authenticated ? logout : login}>
+      {authenticated ? 'Log Out' : 'Log In'}
+    </button>
+  )
+}
+```
+
+## Server-Side User Lookup
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+import { getPrivyClient } from '@privy-io/server-auth'
+import { db } from '@/db'
+import { users } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+
+const privy = getPrivyClient({
+  appId: process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
+  appSecret: process.env.PRIVY_APP_SECRET!,
+})
+
+export async function GET(request: NextRequest) {
+  // Get token from header or cookie
+  const accessToken = request.headers.get('authorization')?.replace('Bearer ', '')
+    || request.cookies.get('privy-token')?.value
+  
+  if (!accessToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
+  try {
+    // Verify token
+    const claims = await privy.verifyAuthToken(accessToken)
+    const privyDid = claims.userId
+    
+    // Look up user in database
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.privyDid, privyDid))
+      .limit(1)
+    
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+    
+    return NextResponse.json({ user })
+  } catch (error) {
+    return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  }
+}
+```
+
+## Protected Route Component
+
+```typescript
+'use client'
+
+import { usePrivy } from '@privy-io/react-auth'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { ready, authenticated } = usePrivy()
+  const router = useRouter()
+  
+  useEffect(() => {
+    if (ready && !authenticated) {
+      router.push('/')
+    }
+  }, [ready, authenticated, router])
+  
+  if (!ready) {
+    return <div>Loading...</div>
+  }
+  
+  if (!authenticated) {
+    return null
+  }
+  
+  return <>{children}</>
+}
+```
+
+
+# Troubleshooting
+
+## Common Issues
+
+### Wallet not available immediately after login
+
+Embedded wallets are created asynchronously. Wait a few seconds or poll for the wallet:
+
+```typescript
+const { user } = usePrivy()
+const [walletAddress, setWalletAddress] = useState<string | undefined>()
+
+useEffect(() => {
+  if (!user) return
+  
+  const checkWallet = () => {
+    const embeddedWallet = user.linkedAccounts?.find(
+      (account) =>
+        account.type === 'wallet' &&
+        'walletClientType' in account &&
+        account.walletClientType === 'privy' &&
+        'chainType' in account &&
+        account.chainType === 'ethereum'
+    )
+    
+    if (embeddedWallet && 'address' in embeddedWallet) {
+      setWalletAddress(embeddedWallet.address)
+    } else {
+      // Retry after delay
+      setTimeout(checkWallet, 1000)
+    }
+  }
+  
+  checkWallet()
+}, [user])
+```
+
+### Session not persisting
+
+Privy handles sessions automatically. If sessions aren't persisting:
+
+1. Check that `PrivyProvider` wraps your entire app
+2. Ensure cookies are enabled
+3. Check browser console for errors
+
+### Server-side token verification failing
+
+1. Ensure `PRIVY_APP_SECRET` is set correctly
+2. Check that token is being passed correctly (header or cookie)
+3. Verify token format (should start with `Bearer ` if in Authorization header)
+
+### TypeScript errors with user object
+
+The user object properties are optional. Always use optional chaining:
+
+```typescript
+// Good
+const email = user?.email?.address
+
+// Bad
+const email = user.email.address  // May be undefined
+```
+
+
+# API Reference Summary
+
+## Client-Side Hooks
+
+- `usePrivy()`: Get auth state and user
+- `useLogin()`: Trigger login flow
+- `useLogout()`: Log out user
+- `useWallets()`: Get user wallets
+
+## Server-Side Functions
+
+- `getPrivyClient()`: Create Privy client
+- `privy.verifyAuthToken()`: Verify user token
+- `privy.getUser()`: Get user by Privy DID
+
+## Configuration
+
+- `PrivyProvider`: Main provider component
+- `WagmiProvider`: Wallet provider (from `@privy-io/wagmi`)
+
+## Environment Variables
+
+- `NEXT_PUBLIC_PRIVY_APP_ID`: App ID (public)
+- `NEXT_PUBLIC_PRIVY_CLIENT_ID`: Client ID (public)
+- `PRIVY_APP_SECRET`: App secret (server-only)
+
+
+# Additional Resources
+
+- Privy Documentation: https://docs.privy.io
+- React SDK: https://docs.privy.io/react-sdk
+- Server SDK: https://docs.privy.io/server-sdk
+- API Reference: https://docs.privy.io/api-reference
+- Support: https://privy.io/slack
+

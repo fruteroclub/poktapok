@@ -37,8 +37,8 @@
 
 | Ticket ID | Title | Story Points | Status | Progress | Next Steps |
 |-----------|-------|--------------|--------|----------|------------|
-| E1-T1 | Authentication Integration | 5 | 🟡 In Progress | 60% - Auth flow working | Complete onboarding form, add /api/auth/me |
-| E1-T2 | Profile Creation Flow | 5 | 🔴 Not Started | 0% | Blocked by E1-T1 |
+| E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | Ready for E1-T2 |
+| E1-T2 | Profile Creation Flow | 5 | 🔴 Not Started | 0% | Can start immediately |
 | E1-T3 | Public Directory Page | 5 | 🔴 Not Started | 0% | Blocked by E1-T2 |
 | E1-T4 | Individual Profile Page | 3 | 🔴 Not Started | 0% | Blocked by E1-T2 |
 | E1-T5 | Application System | 5 | 🔴 Not Started | 0% | Can start (optional, deprioritized) |
@@ -131,28 +131,30 @@
 
 ## Current Implementation Status
 
-### 🟡 E1-T1: Authentication Integration (IN PROGRESS - 60%)
+### 🟢 E1-T1: Authentication Integration (COMPLETED - 100%)
 
-**✅ Completed:**
+**✅ Completed (2025-12-21):**
 - Privy authentication working (wallet + email + social)
 - Auth button component ([auth-button-privy.tsx](../../src/components/buttons/auth-button-privy.tsx))
 - User creation API endpoint ([/api/auth/check-user](../../src/app/api/auth/check-user/route.ts))
 - User record creation with `accountStatus` flow
 - Onboarding page with ProtectedRoute wrapper ([/onboarding](../../src/app/onboarding/page.tsx))
+- Onboarding form component ([onboarding-form.tsx](../../src/components/onboarding/onboarding-form.tsx))
+- Profile update endpoint ([/api/users/update-profile](../../src/app/api/users/update-profile/route.ts))
+- `/api/auth/me` endpoint with Privy token verification ([route.ts](../../src/app/api/auth/me/route.ts))
+- `useAuth()` hook for client-side session management ([useAuth.ts](../../src/lib/hooks/useAuth.ts))
+- Auto-approve users (status → "active" immediately)
 - PageWrapper for consistent layout
 - Redirect logic based on account status (incomplete → onboarding, active → profile)
 
-**🔧 In Progress:**
-- Onboarding form component (OnboardingForm - needs implementation)
-- Profile data collection during onboarding
+**Key Features:**
+- Server-side token verification using `@privy-io/server-auth`
+- React Query integration for session caching (5-minute stale time)
+- Username/email uniqueness validation
+- HTML5 form validation with character limits
+- Complete error handling for all flows
 
-**⏳ Still Needed:**
-- `/api/auth/me` endpoint (get current user + profile)
-- Session management hook (useAuth)
-- Profile completion logic
-- Update user status from "incomplete" → "pending" → "active"
-
-**Next Step:** Complete the onboarding form to collect username, email, display name, bio
+**Next Step:** Move to E1-T2 (Profile Creation Flow)
 
 ---
 
@@ -173,9 +175,9 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 
 ### 🎯 Updated Critical Path
 
-1. **E1-T1** (complete onboarding form) → 40% remaining
-2. **E1-T2** (profile creation/edit flow) → Next priority
-3. **E1-T3** (directory page) → After profiles exist
+1. **E1-T1** ✅ COMPLETED (2025-12-21)
+2. **E1-T2** (profile creation/edit flow) → **READY TO START**
+3. **E1-T3** (directory page) → After E1-T2 profiles exist
 4. **E1-T4** (individual profile page) → Parallel with E1-T3
 
 **Later:**
@@ -189,7 +191,7 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 _Use this section to track impediments, questions, or coordination needs._
 
 ### Current Blockers
-- None - focusing on completing E1-T1 onboarding form
+- None - E1-T1 completed, ready to start E1-T2
 
 ### Decisions Made
 - ✅ Database schema finalized (4 tables ready)
@@ -204,15 +206,20 @@ _Use this section to track impediments, questions, or coordination needs._
 - **2025-12-20:** E1-T1 started - auth flow + user creation working
 - **2025-12-20:** Onboarding page created with ProtectedRoute wrapper
 - **2025-12-20:** Deprioritized E1-T5 and E1-T6 for MVP simplicity
+- **2025-12-21:** E1-T1 COMPLETED - Full auth flow with token verification
+- **2025-12-21:** Installed `@privy-io/server-auth` for backend token verification
+- **2025-12-21:** Created `/api/auth/me` endpoint with Privy token verification
+- **2025-12-21:** Created `useAuth()` hook for session management
+- **2025-12-21:** Enabled auto-approval (users → "active" immediately)
 
 ### Immediate Next Steps
-1. Complete OnboardingForm component (collect username, email, display name, bio)
-2. Create profile record on onboarding completion
-3. Update user status: `incomplete` → `active`
-4. Add `/api/auth/me` endpoint for session management
-5. Move to E1-T3 (directory page) once users can create profiles
+1. ✅ ~~Complete OnboardingForm component~~ DONE
+2. ✅ ~~Update user status: `incomplete` → `active`~~ DONE
+3. ✅ ~~Add `/api/auth/me` endpoint for session management~~ DONE
+4. ✅ ~~Create `useAuth()` hook~~ DONE
+5. **START E1-T2:** Profile Creation/Edit Flow
 
 ---
 
-**Last Updated:** 2025-12-20
-**Next Review:** After E1-T1 completion
+**Last Updated:** 2025-12-21
+**Next Review:** After E1-T2 completion

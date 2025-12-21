@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, real, integer, pgEnum, foreignKey, check, index } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
-import { timestamps, softDelete, metadata, PATTERNS } from './utils'
+import { timestamps, softDelete, metadata } from './utils'
 import { users } from './users'
 
 // ============================================================
@@ -116,7 +116,7 @@ export const profiles = pgTable(
     // Constraints
     countryCodeFormatCheck: check(
       'country_code_format',
-      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* ${PATTERNS.COUNTRY_CODE}`
+      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* '^[A-Z]{2}$'`
     ),
 
     completedBountiesPositiveCheck: check(

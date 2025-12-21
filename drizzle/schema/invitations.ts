@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, timestamp, foreignKey, index, check } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
-import { timestamps, metadata, PATTERNS } from './utils'
+import { timestamps, metadata } from './utils'
 import { users } from './users'
 
 // ============================================================
@@ -42,21 +42,16 @@ export const invitations = pgTable(
     expiresAt: timestamp('expires_at', { withTimezone: true })
       .notNull(),
 
-    // Generated Status (computed column)
+    // Status field
+    // Note: Originally designed as generated column, but PostgreSQL doesn't support
+    // time-based generated columns (NOW()/CURRENT_TIMESTAMP are not immutable).
+    // Status is computed at query time or updated via triggers:
     // 'pending': Not redeemed and not expired
     // 'redeemed': Has redeemed_at timestamp
     // 'expired': Past expires_at and not redeemed
     status: varchar('status', { length: 20 })
-      .generatedAlwaysAs(
-        sql`
-          CASE
-            WHEN redeemed_at IS NOT NULL THEN 'redeemed'
-            WHEN expires_at < NOW() THEN 'expired'
-            ELSE 'pending'
-          END
-        `,
-        { mode: 'stored' }
-      ),
+      .default('pending')
+      .notNull(),
 
     // Timestamps & Audit
     ...timestamps,
@@ -81,7 +76,7 @@ export const invitations = pgTable(
     // Constraints
     inviteCodeFormatCheck: check(
       'invite_code_format',
-      sql`${table.inviteCode} ~* ${PATTERNS.INVITE_CODE}`
+      sql`${table.inviteCode} ~* '^[A-Za-z0-9_-]{16,32}$'`
     ),
 
     // Indexes

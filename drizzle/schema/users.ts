@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp, pgEnum, jsonb, foreignKey, check, index } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
-import { timestamps, softDelete, metadata, PATTERNS } from './utils'
+import { timestamps, softDelete, metadata } from './utils'
 
 // ============================================================
 // ENUMS
@@ -128,22 +128,22 @@ export const users = pgTable(
     // Constraints
     emailFormatCheck: check(
       'email_format',
-      sql`${table.email} ~* ${PATTERNS.EMAIL}`
+      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'`
     ),
 
     usernameFormatCheck: check(
       'username_format',
-      sql`${table.username} ~* ${PATTERNS.USERNAME}`
+      sql`${table.username} ~* '^[a-z0-9_]{3,50}$'`
     ),
 
     extWalletFormatCheck: check(
       'ext_wallet_format',
-      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* ${PATTERNS.ETH_ADDRESS}`
+      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* '^0x[a-fA-F0-9]{40}$'`
     ),
 
     appWalletFormatCheck: check(
       'app_wallet_format',
-      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* ${PATTERNS.ETH_ADDRESS}`
+      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* '^0x[a-fA-F0-9]{40}$'`
     ),
 
     // Indexes

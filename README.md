@@ -76,7 +76,7 @@ la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, mues
 
    NEXT_PUBLIC_PRIVY_APP_ID=tu_privy_app_id
    NEXT_PUBLIC_PRIVY_CLIENT_ID=tu_privy_client_id
-   NEXT_PUBLIC_PRIVY_APP_SECRET=tu_privy_app_secret
+   PRIVY_APP_SECRET=tu_privy_app_secret
    ```
 
 4. **configura la base de datos:**

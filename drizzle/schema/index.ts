@@ -1,0 +1,11 @@
+/**
+ * Schema index for Drizzle migrations
+ *
+ * This file is used by drizzle-kit to discover all tables when generating migrations
+ */
+
+export * from './utils'
+export * from './users'
+export * from './profiles'
+export * from './applications'
+export * from './invitations'

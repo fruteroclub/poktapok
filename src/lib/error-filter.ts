@@ -36,6 +36,16 @@ console.error = (...args: unknown[]) => {
     return
   }
 
+  // Suppress Radix UI hydration mismatch warnings
+  // Radix generates random IDs that differ between SSR and CSR
+  if (
+    errorString.includes('hydration') &&
+    errorString.includes('aria-controls') &&
+    errorString.includes('radix-')
+  ) {
+    return
+  }
+
   originalError.apply(console, args)
 }
 

@@ -1,5 +1,5 @@
 {
-  "id": "75f13f44-1e08-499c-bd8d-9cff06fada58",
+  "id": "bcf2570f-4d2b-423a-abc7-c3fc72edf86a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -25,19 +25,19 @@
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "username": {
           "name": "username",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "display_name": {
           "name": "display_name",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "bio": {
           "name": "bio",
@@ -1032,6 +1032,7 @@
       "name": "account_status",
       "schema": "public",
       "values": [
+        "incomplete",
         "pending",
         "active",
         "suspended",

@@ -4,27 +4,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Current State:** Frutero Club is a Next.js 16 landing page application built with React 19, TypeScript, and Tailwind CSS v4. It features Web3 wallet integration via Privy, supporting multiple EVM chains (Arbitrum, Base, Ethereum, Optimism, Polygon, Scroll).
+**Poktapok** is a talent platform connecting Latin American developers with global opportunities through bounties and practical learning. The platform helps university students, recent graduates, and career transitioners earn money in 3 months learning AI, crypto/DeFi, and privacy through real-world challenges.
 
-**Vision (from README.md):** The long-term goal is "poktapok" - a talent platform connecting Latin American developers with global opportunities through bounties and practical learning. The planned architecture includes PostgreSQL database, Drizzle ORM, Zustand state management, and a bounty marketplace with on-chain funding. However, **these backend features are not yet implemented** - the current codebase is a frontend-only landing page.
+**Current State:** Full-stack Next.js 16 application with React 19, TypeScript, Tailwind CSS v4, PostgreSQL database via Neon DB, Drizzle ORM, and Web3 wallet integration via Privy.
+
+**Architecture Flow:** `talent directory → portfolio showcase → bounty marketplace → onchain funding`
 
 ## Development Commands
 
 ```bash
-# Start development server (http://localhost:3000)
-bun dev
+# Development
+bun dev                    # Start dev server (http://localhost:3000)
+bun run build              # Build for production (uses Turbopack)
+bun start                  # Run production build
+bun run lint               # Lint codebase
 
-# Build for production
-bun run build
+# Database
+bun run db:generate        # Generate migrations from schema changes
+bun run db:migrate         # Apply pending migrations
+bun run db:studio          # Open Drizzle Studio (visual DB browser)
+bun run db:check           # Check for schema drift
+bun run db:push            # Push schema changes directly (dev only)
 
-# Run production build
-bun start
+# Database Testing
+bun run scripts/test-db-connection.ts      # Test database connectivity
+bun run scripts/verify-migration.ts        # Verify all database objects
+bun run scripts/test-crud-operations.ts    # Test CRUD operations
 
-# Lint codebase
-bun run lint
+# Environment Setup
+vercel env pull .env.local # Pull environment variables from Vercel
 ```
 
-The project uses Bun as its package manager and runtime.
+The project uses **Bun** as its package manager and runtime.
 
 ## Architecture
 
@@ -38,39 +49,92 @@ The application uses a layered provider architecture that wraps all pages:
 
 This creates a provider chain: `Suspense` → `Privy` → `QueryClient` → `Wagmi` → `{children}`
 
+### Database Architecture
+
+The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** and **node-postgres**.
+
+**Schema Structure:**
+- **users** - Core identity & authentication (linked to Privy DID)
+- **profiles** - Extended user data (location, social links, learning tracks, stats)
+- **applications** - Onboarding queue (pending/approved/rejected signup applications)
+- **invitations** - Referral system (invite codes with expiration tracking)
+
+**Connection Strategy:**
+- `DATABASE_URL` - Pooled connection for application queries (10 connections max)
+- `DATABASE_URL_UNPOOLED` - Direct connection for migrations
+- Database client: `src/lib/db/index.ts` (exports `db`, `pool`, `closeDatabase`)
+- Schema exports: `src/lib/db/schema.ts` (re-exports all tables for app use)
+
+**Key Patterns:**
+- Soft deletes via `deletedAt` timestamp (in users table)
+- Timestamps (`createdAt`, `updatedAt`) on all tables
+- Metadata JSONB column (default `'{}'::jsonb`) on all tables
+- CHECK constraints with inlined regex patterns (required by Drizzle migrations)
+- Composite indexes for common query patterns
+
+**Important Notes:**
+- Schema files are in `drizzle/schema/` (utils.ts, users.ts, profiles.ts, applications.ts, invitations.ts)
+- Never use parameterized CHECK constraints - inline all patterns directly
+- Generated columns cannot use time-based functions (NOW(), CURRENT_TIMESTAMP)
+- Application-level status computation for time-dependent fields
+
+See [docs/database-setup.md](docs/database-setup.md) for complete setup guide, schema reference, and query patterns.
+
 ### Authentication & Web3
 
 - **Privy** handles wallet authentication (embedded + external wallets)
 - **Wagmi** manages blockchain interactions
-- Default chain is Arbitrum; supports 6 chains total
+- Default chain is Arbitrum; supports 6 chains total (Base, Ethereum, Optimism, Polygon, Scroll)
 - Alchemy API key is optional (falls back to public RPCs)
 
 Required environment variables:
 ```
-NEXT_PUBLIC_PRIVY_APP_ID
-NEXT_PUBLIC_PRIVY_CLIENT_ID
-NEXT_PUBLIC_PRIVY_APP_SECRET
-NEXT_PUBLIC_ALCHEMY_API_KEY (optional)
+# Database
+DATABASE_URL=postgresql://...              # Pooled connection
+DATABASE_URL_UNPOOLED=postgresql://...     # Direct connection for migrations
+
+# Web3
+NEXT_PUBLIC_ALCHEMY_API_KEY=...            # Optional
+NEXT_PUBLIC_PRIVY_APP_ID=...
+NEXT_PUBLIC_PRIVY_CLIENT_ID=...
+PRIVY_APP_SECRET=...
 ```
 
-### Component Organization
+### Project Structure
 
 ```
-src/
-├── app/                    # Next.js App Router pages
-├── components/
-│   ├── ui/                # shadcn/ui components (Radix UI primitives)
-│   ├── layout/            # Navbar, PageWrapper, ProtectedRoute, MobileMenu
-│   ├── landing/           # Landing page sections (Hero, Stats, FAQ, etc.)
-│   ├── buttons/           # Auth buttons (Privy integration)
-│   ├── common/            # Shared components
-│   └── stats/             # Stats display components
-├── lib/
-│   ├── utils.ts          # cn() utility (clsx + tailwind-merge)
-│   ├── fonts.ts          # Font definitions (Funnel Display, Ledger, Raleway, Space Grotesk)
-│   └── error-filter.ts   # Console error suppression for third-party libraries
-├── providers/            # React context providers
-└── styles/               # Global CSS
+poktapok/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   ├── components/
+│   │   ├── ui/                # shadcn/ui components (Radix UI primitives)
+│   │   ├── layout/            # Navbar, PageWrapper, ProtectedRoute, MobileMenu
+│   │   ├── landing/           # Landing page sections (Hero, Stats, FAQ, etc.)
+│   │   ├── buttons/           # Auth buttons (Privy integration)
+│   │   ├── common/            # Shared components
+│   │   └── stats/             # Stats display components
+│   ├── lib/
+│   │   ├── db/                # Database client and schema exports
+│   │   │   ├── index.ts       # Pool + Drizzle client
+│   │   │   └── schema.ts      # Re-exports all tables
+│   │   ├── utils.ts           # cn() utility (clsx + tailwind-merge)
+│   │   ├── fonts.ts           # Font definitions
+│   │   └── error-filter.ts    # Console error suppression
+│   ├── providers/             # React context providers (AppProvider, PrivyProvider)
+│   ├── store/                 # Zustand stores (future)
+│   └── styles/                # Global CSS
+├── drizzle/
+│   ├── schema/                # Database schema definitions
+│   │   ├── utils.ts           # Shared helpers (timestamps, softDelete, metadata)
+│   │   ├── users.ts           # Users table
+│   │   ├── profiles.ts        # Profiles table
+│   │   ├── applications.ts    # Applications table
+│   │   ├── invitations.ts     # Invitations table
+│   │   └── index.ts           # Schema exports
+│   └── migrations/            # SQL migrations (auto-generated)
+├── scripts/                   # Database test scripts
+├── docs/                      # Project documentation
+└── ...                        # Config files (tsconfig, drizzle.config, next.config)
 ```
 
 ### UI Component System
@@ -103,17 +167,52 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
 - Strict TypeScript mode enabled
 - All components should be typed
 - Use `import type` for type-only imports when possible
+- TypeScript configuration excludes `scripts/**/*` and `drizzle/**/*` from Next.js build
 
 ## Important Notes
 
-### Database & Backend
-The README.md describes future features including PostgreSQL, Drizzle ORM, Zustand stores, and API routes for a bounty marketplace. **These are not yet implemented.** The current codebase has no:
-- Database configuration or schema files
-- Drizzle setup or migrations
-- Zustand stores
-- Backend API routes beyond Next.js defaults
+### Database Schema Changes (Local Development)
 
-When implementing these features, refer to the architecture described in README.md but verify it aligns with current project needs.
+**For local development and fast iteration**, use `db:push` to apply schema changes directly without generating migrations:
+
+1. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts)
+2. **Push changes directly**: `bun run db:push`
+3. **Verify**: `bun run scripts/test-db-connection.ts`
+
+**Important constraints to follow:**
+- **CHECK constraints must use inlined patterns** - never use variable references:
+  ```typescript
+  // ✅ CORRECT
+  check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@...'`)
+
+  // ❌ WRONG
+  check('email_format', sql`${table.email} ~* ${PATTERNS.EMAIL}`)
+  ```
+- **Generated columns cannot use time-based functions** - use application-level computation:
+  ```typescript
+  // ❌ WRONG - PostgreSQL rejects as non-immutable
+  status: varchar('status').generatedAlwaysAs(sql`CASE WHEN expires_at < NOW() ...`)
+
+  // ✅ CORRECT - compute at query time
+  status: varchar('status').default('pending').notNull()
+  ```
+
+**Migration workflow (v1 MVP freeze only):**
+- During active development: Use `db:push` for all schema changes
+- Once MVP schema is finalized: Generate a single comprehensive migration with `bun run db:generate`
+- Future changes: Will use proper migration workflow (`db:generate` → `db:migrate`)
+
+### Build Configuration (Next.js 16 + Turbopack)
+
+The build configuration has been optimized for Next.js 16 with Turbopack:
+
+- **TypeScript**: Excludes `scripts/` and `drizzle/` directories to prevent build failures
+- **Turbopack**: Configured to resolve only production extensions (`.tsx`, `.ts`, `.jsx`, `.js`, `.mjs`, `.json`)
+- **Server externals**: Packages like `thread-stream`, `pino`, and `@reown/appkit` are externalized to avoid bundling issues
+
+If you encounter build errors related to test files or node_modules, check:
+1. [tsconfig.json](tsconfig.json) - `include` and `exclude` arrays
+2. [next.config.ts](next.config.ts) - `turbopack.resolveExtensions` and `serverExternalPackages`
 
 ### Adding shadcn/ui Components
 To add new UI components from shadcn or MagicUI:

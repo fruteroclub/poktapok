@@ -31,16 +31,13 @@ export default function OnboardingForm() {
         throw new Error("User not authenticated");
       }
 
-      // Update user profile
+      // Update user profile (privyDid extracted from token by middleware)
       const response = await fetch("/api/users/update-profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          privyDid: user.id,
-          ...formData,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {

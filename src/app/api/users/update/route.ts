@@ -2,18 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "@/lib/privy/middleware";
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
   try {
     const body = await request.json();
-    const { privyDid, email, username, displayName, bio, avatarUrl } = body;
+    const { email, username, displayName, bio, avatarUrl } = body;
 
-    if (!privyDid) {
-      return NextResponse.json(
-        { error: "privyDid is required" },
-        { status: 400 }
-      );
-    }
+    // Use privyDid from verified token, not from request body
+    const privyDid = authUser.privyDid;
 
     if (!email || !username || !displayName) {
       return NextResponse.json(
@@ -29,7 +26,10 @@ export async function PATCH(request: NextRequest) {
       .where(eq(users.username, username))
       .limit(1);
 
-    if (existingUsername.length > 0 && existingUsername[0].privyDid !== privyDid) {
+    if (
+      existingUsername.length > 0 &&
+      existingUsername[0].privyDid !== privyDid
+    ) {
       return NextResponse.json(
         { error: "Username already taken" },
         { status: 409 }
@@ -84,4 +84,4 @@ export async function PATCH(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

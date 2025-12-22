@@ -55,3 +55,56 @@ export interface CreateProfileResponse {
   profile: Profile;
   message: string;
 }
+
+// ============================================================================
+// Directory Types
+// ============================================================================
+
+export interface DirectoryProfile {
+  id: string;
+  userId: string;
+  username: string;
+  displayName: string | null;
+  bio: string | null;
+  avatarUrl: string | null;
+  city: string | null;
+  country: string | null;
+  countryCode: string | null;
+  learningTracks: ("ai" | "crypto" | "privacy")[] | null;
+  availabilityStatus: "available" | "open_to_offers" | "unavailable";
+  completedBounties: number;
+  totalEarningsUsd: number;
+  githubUrl: string | null;
+  twitterUrl: string | null;
+  linkedinUrl: string | null;
+  telegramHandle: string | null;
+  createdAt: Date;
+}
+
+export interface DirectoryFilters {
+  search?: string;
+  learningTrack?: "ai" | "crypto" | "privacy";
+  availabilityStatus?: "available" | "open_to_offers" | "unavailable";
+  country?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface DirectoryPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface DirectoryResponse {
+  profiles: DirectoryProfile[];
+  pagination: DirectoryPagination;
+}
+
+export interface DirectoryCountry {
+  country: string;
+  countryCode: string;
+  count: number;
+}

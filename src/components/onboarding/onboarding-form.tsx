@@ -32,7 +32,7 @@ export default function OnboardingForm() {
       }
 
       // Update user profile (privyDid extracted from token by middleware)
-      const response = await fetch("/api/users/update-profile", {
+      const response = await fetch("/api/users/update", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -40,9 +40,13 @@ export default function OnboardingForm() {
         body: JSON.stringify(formData),
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update profile");
+        // Handle new error format: { success: false, error: { message, code?, details? } }
+        const errorMessage =
+          responseData.error?.message || responseData.error || "Failed to update profile";
+        throw new Error(errorMessage);
       }
 
       toast.success("¡Perfil completado exitosamente!");

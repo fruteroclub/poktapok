@@ -88,7 +88,7 @@
   --accent-foreground: oklch(0.0969 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --foreground: oklch(0.0969 0 0);
-  --input: oklch(1 0 0 / 15%);
+  --foreground: oklch(0.0969 0 0);
   --ring: oklch(0.554 0.135 66.442);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -156,7 +156,7 @@
     @apply flex h-full w-full flex-col items-center pt-2 pb-8 md:py-12 lg:pb-16;
   }
 
-  .container {
+  .page-content {
     @apply flex w-full max-w-3xl flex-col items-center px-4 sm:px-6 lg:max-w-7xl lg:px-8;
   }
 

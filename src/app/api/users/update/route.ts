@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/privy/middleware";
+import { apiSuccess, apiError, apiErrors } from "@/lib/api/response";
+import { API_ERROR_CODES } from "@/types/api-response";
 
 export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
   try {
@@ -13,10 +15,10 @@ export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
     const privyDid = authUser.privyDid;
 
     if (!email || !username || !displayName) {
-      return NextResponse.json(
-        { error: "email, username and displayName are required" },
-        { status: 400 }
-      );
+      return apiError("email, username and displayName are required", {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      });
     }
 
     // Check if username is already taken by another user
@@ -30,10 +32,7 @@ export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
       existingUsername.length > 0 &&
       existingUsername[0].privyDid !== privyDid
     ) {
-      return NextResponse.json(
-        { error: "Username already taken" },
-        { status: 409 }
-      );
+      return apiErrors.conflict("Username already taken");
     }
 
     // Check if email is already taken by another user
@@ -44,10 +43,7 @@ export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
       .limit(1);
 
     if (existingEmail.length > 0 && existingEmail[0].privyDid !== privyDid) {
-      return NextResponse.json(
-        { error: "Email already taken" },
-        { status: 409 }
-      );
+      return apiErrors.conflict("Email already taken");
     }
 
     // Update user profile and change status to active (auto-approve for MVP)
@@ -66,22 +62,15 @@ export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
       .returning();
 
     if (updatedUser.length === 0) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return apiErrors.notFound("User");
     }
 
-    return NextResponse.json({
-      success: true,
-      user: updatedUser[0],
-      message: "Profile updated successfully",
-    });
+    return apiSuccess(
+      { user: updatedUser[0] },
+      { message: "Profile updated successfully" }
+    );
   } catch (error) {
     console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
+    return apiErrors.internal("Failed to update profile");
   }
 });

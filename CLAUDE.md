@@ -80,6 +80,155 @@ The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** an
 
 See [docs/database-setup.md](docs/database-setup.md) for complete setup guide, schema reference, and query patterns.
 
+### API Response Pattern
+
+All API endpoints follow a **standardized envelope pattern** with discriminated unions for type-safe response handling.
+
+#### Response Structure
+
+**Success Response:**
+```typescript
+{
+  success: true,
+  data: { ... },           // The actual response data
+  message?: string,        // Optional success message
+  meta?: { ... }           // Optional metadata (pagination, etc.)
+}
+```
+
+**Error Response:**
+```typescript
+{
+  success: false,
+  error: {
+    message: string,       // Human-readable error message
+    code?: string,         // Machine-readable error code
+    details?: unknown      // Additional error details (e.g., validation errors)
+  }
+}
+```
+
+#### Server-Side Usage (API Routes)
+
+Use the response helpers from `src/lib/api/response.ts`:
+
+```typescript
+import { apiSuccess, apiError, apiValidationError, apiErrors } from "@/lib/api/response";
+
+// Success response
+return apiSuccess({ user, profile });
+
+// Success with message
+return apiSuccess({ profile }, { message: "Profile created successfully" });
+
+// Success with metadata (e.g., pagination)
+return apiSuccess(
+  { profiles },
+  { meta: { pagination: { page: 1, total: 100, hasMore: true } } }
+);
+
+// Validation error (from Zod)
+const result = schema.safeParse(data);
+if (!result.success) {
+  return apiValidationError(result.error);
+}
+
+// Specific error shortcuts
+return apiErrors.unauthorized();               // 401
+return apiErrors.notFound("User");            // 404
+return apiErrors.conflict("Username taken");  // 409
+return apiErrors.internal("Database error");  // 500
+
+// Custom error
+return apiError("Custom error message", {
+  code: "CUSTOM_ERROR",
+  details: { field: "email" },
+  status: 400
+});
+```
+
+#### Client-Side Usage (Services)
+
+Use the `apiFetch` wrapper from `src/lib/api/fetch.ts` for automatic error handling:
+
+```typescript
+import { apiFetch } from "@/lib/api/fetch";
+
+// Simple GET request
+export async function fetchMe(): Promise<MeResponse> {
+  return apiFetch<MeResponse>("/api/auth/me");
+}
+
+// POST request with body
+export async function createProfile(data: ProfileFormData): Promise<CreateProfileResponse> {
+  return apiFetch<CreateProfileResponse>("/api/profiles", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+```
+
+The `apiFetch` wrapper:
+- Automatically unwraps the `{ success, data }` envelope
+- Throws structured `ApiError` on failure with `code`, `details`, and `status`
+- Handles JSON parsing errors gracefully
+- Provides type-safe responses
+
+#### Error Handling in Hooks
+
+```typescript
+import { ApiError } from "@/lib/api/fetch";
+import { toast } from "sonner";
+
+const mutation = useMutation({
+  mutationFn: createProfile,
+  onSuccess: (data) => {
+    toast.success("Profile created successfully");
+  },
+  onError: (error: ApiError) => {
+    // Access structured error data
+    toast.error(error.message);
+    console.error("Error code:", error.code);
+    console.error("Error details:", error.details);
+  }
+});
+```
+
+#### HTTP Status Code Standards
+
+| Status | Use Case | Helper |
+|--------|----------|--------|
+| 200 | Success | `apiSuccess()` |
+| 400 | Bad Request / Validation | `apiValidationError()` or `apiError(..., { status: 400 })` |
+| 401 | Unauthorized | `apiErrors.unauthorized()` |
+| 404 | Not Found | `apiErrors.notFound(resource)` |
+| 409 | Conflict (duplicate) | `apiErrors.conflict(message)` |
+| 500 | Internal Server Error | `apiErrors.internal()` |
+
+#### Type Definitions
+
+All API types are centralized in `src/types/api-v1.ts`. Response wrappers are defined in `src/types/api-response.ts`.
+
+**Example:**
+```typescript
+// src/types/api-v1.ts
+export interface User { id: string; username: string; ... }
+export interface Profile { id: string; userId: string; ... }
+
+export interface MeResponse {
+  user: User;
+  profile: Profile | null;
+}
+
+// Service returns unwrapped data
+export async function fetchMe(): Promise<MeResponse> {
+  return apiFetch<MeResponse>("/api/auth/me");
+}
+```
+
+**Important:** Never mix patterns. Always use the envelope pattern for all new endpoints and migrations.
+
 ### Authentication & Web3
 
 - **Privy** handles wallet authentication (embedded + external wallets)

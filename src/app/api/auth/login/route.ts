@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { users, profiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/privy/middleware";
+import { apiSuccess, apiErrors } from "@/lib/api/response";
 
 /**
  * POST /api/auth/login
@@ -51,7 +52,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         .where(eq(profiles.userId, dbUser.id))
         .limit(1);
 
-      return NextResponse.json({
+      return apiSuccess({
         user: {
           id: dbUser.id,
           privyDid: dbUser.privyDid,
@@ -91,7 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     const newUser = newUserResults[0];
     console.log("New user created:", newUser.id);
 
-    return NextResponse.json({
+    return apiSuccess({
       user: {
         id: newUser.id,
         privyDid: newUser.privyDid,
@@ -108,9 +109,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     });
   } catch (error) {
     console.error("Error during login get-or-create:", error);
-    return NextResponse.json(
-      { error: "Failed to login" },
-      { status: 500 }
-    );
+    return apiErrors.internal("Failed to login");
   }
 });

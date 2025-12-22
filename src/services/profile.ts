@@ -2,43 +2,28 @@
  * Profile Service - API abstractions for profile endpoints
  */
 
+import { apiFetch } from "@/lib/api/fetch";
 import type { ProfileFormData } from "@/lib/validators/profile";
-
-interface CreateProfileResponse {
-  success: boolean;
-  profile: {
-    id: string;
-    userId: string;
-    city: string;
-    country: string;
-    countryCode: string;
-    learningTracks: string[];
-    availabilityStatus: string;
-    socialLinks: Record<string, string> | null;
-  };
-  message: string;
-}
+import type { CreateProfileResponse } from "@/types/api-v1";
 
 /**
  * Create or update a profile
+ *
+ * Uses the new apiFetch wrapper for automatic error handling
+ * and type-safe responses.
+ *
  * @param data - Profile form data
- * @throws Error if request fails or validation errors occur
+ * @throws ApiError if request fails or validation errors occur
  */
 export async function createProfile(
   data: ProfileFormData
 ): Promise<CreateProfileResponse> {
-  const response = await fetch("/api/profiles", {
+  // apiFetch automatically unwraps { success: true, data: { profile }, message }
+  return apiFetch<CreateProfileResponse>("/api/profiles", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create profile");
-  }
-
-  return response.json();
 }

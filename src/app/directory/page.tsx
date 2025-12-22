@@ -12,10 +12,21 @@ import {
 } from "@/hooks/use-directory";
 import { formatProfileCount } from "@/lib/utils/directory";
 import type { DirectoryFilters } from "@/types/api-v1";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { Section } from "@/components/layout/section";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { SlidersHorizontal } from "lucide-react";
 
 export default function DirectoryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [currentFilters, setCurrentFilters] = useState<DirectoryFilters>({
     search: searchParams.get("search") || undefined,
@@ -76,88 +87,124 @@ export default function DirectoryPage() {
   const countries = countriesData || [];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Talent Directory</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Discover talented builders from Latin America
-          </p>
-        </div>
+    <PageWrapper>
+      <div className="page">
+        <div className="page-content">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">Talent Directory</h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Discover talented builders from Latin America
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <aside className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Filters
-                filters={currentFilters}
-                countries={countries}
-                onFilterChange={updateFilter}
-                onClearAll={handleClearAll}
-              />
-            </div>
-          </aside>
-
-          <main className="lg:col-span-3">
-            <div className="mb-6">
-              <SearchBar
-                value={currentFilters.search || ""}
-                onChange={(value) => updateFilter("search", value || null)}
-                placeholder="Search by name or bio..."
-              />
-            </div>
-
-            {pagination && !isLoading && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {formatProfileCount(pagination.total)}
-                </p>
-              </div>
-            )}
-
-            {isError && (
-              <div className="text-center py-8">
-                <p className="text-red-500">
-                  Failed to load directory. Please try again.
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.reload()}
-                  className="mt-4"
-                >
-                  Retry
-                </Button>
-              </div>
-            )}
-
-            {!isError && (
-              <>
-                <DirectoryGrid
-                  profiles={profiles}
-                  isLoading={isLoading}
-                  onClearFilters={handleClearAll}
-                  hasActiveFilters={!!hasActiveFilters}
+          <Section className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            {/* Desktop Sidebar - Hidden on mobile */}
+            <aside className="hidden lg:block lg:col-span-1">
+              <div className="lg:sticky lg:top-8">
+                <Filters
+                  filters={currentFilters}
+                  countries={countries}
+                  onFilterChange={updateFilter}
+                  onClearAll={handleClearAll}
                 />
+              </div>
+            </aside>
 
-                {pagination && pagination.hasMore && !isLoading && (
-                  <div className="mt-8 flex justify-center">
-                    <Button onClick={handleLoadMore} size="lg">
-                      Load More
-                    </Button>
-                  </div>
-                )}
+            <div className="lg:col-span-3 min-h-[600px]">
+              <div className="mb-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  {/* Mobile Filter Button */}
+                  <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" className="lg:hidden">
+                        <SlidersHorizontal className="h-4 w-4 mr-2" />
+                        Filters
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-[300px] sm:w-[400px] px-4">
+                      <SheetHeader>
+                        <SheetTitle>Filters</SheetTitle>
+                      </SheetHeader>
+                      <div className="mt-6">
+                        <Filters
+                          filters={currentFilters}
+                          countries={countries}
+                          onFilterChange={(key, value) => {
+                            updateFilter(key, value);
+                            setMobileFiltersOpen(false);
+                          }}
+                          onClearAll={() => {
+                            handleClearAll();
+                            setMobileFiltersOpen(false);
+                          }}
+                        />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
 
-                {pagination && !pagination.hasMore && profiles.length > 0 && (
-                  <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      You've reached the end of the directory
-                    </p>
+                  {/* Search Bar */}
+                  <div className="flex-1">
+                    <SearchBar
+                      value={currentFilters.search || ""}
+                      onChange={(value) => updateFilter("search", value || null)}
+                      placeholder="Search by name or bio..."
+                    />
                   </div>
-                )}
-              </>
-            )}
-          </main>
-        </div>
-      </div>
-    </div>
+                </div>
+              </div>
+
+              {pagination && !isLoading && (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {formatProfileCount(pagination.total)}
+                  </p>
+                </div>
+              )}
+
+              {isError && (
+                <div className="text-center py-8">
+                  <p className="text-red-500">
+                    Failed to load directory. Please try again.
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="mt-4"
+                  >
+                    Retry
+                  </Button>
+                </div>
+              )}
+
+              {!isError && (
+                <>
+                  <DirectoryGrid
+                    profiles={profiles}
+                    isLoading={isLoading}
+                    onClearFilters={handleClearAll}
+                    hasActiveFilters={!!hasActiveFilters}
+                  />
+
+                  {pagination && pagination.hasMore && !isLoading && (
+                    <div className="mt-8 flex justify-center">
+                      <Button onClick={handleLoadMore} size="lg">
+                        Load More
+                      </Button>
+                    </div>
+                  )}
+
+                  {pagination && !pagination.hasMore && profiles.length > 0 && (
+                    <div className="mt-8 text-center">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        You've reached the end of the directory
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </Section>
+        </div></div>
+    </PageWrapper>
   );
 }

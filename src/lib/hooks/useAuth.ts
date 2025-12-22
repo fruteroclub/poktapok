@@ -45,7 +45,16 @@ export function useAuth() {
         if (res.status === 401) return null;
         throw new Error("Failed to fetch user");
       }
-      return res.json();
+
+      const responseData = await res.json();
+
+      // Handle new API response pattern: { success: true, data: { user, profile } }
+      if (responseData.success && responseData.data) {
+        return responseData.data;
+      }
+
+      // Fallback for old format (backward compatibility)
+      return responseData;
     },
     enabled: ready && authenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes

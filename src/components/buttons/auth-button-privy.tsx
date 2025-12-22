@@ -126,13 +126,21 @@ export default function AuthButton({
           body: JSON.stringify(userData),
         });
 
+        const responseData = await response.json();
+
         if (!response.ok) {
-          const errorData = await response.json();
-          console.error("API Error:", errorData);
-          throw new Error(errorData.error || "Failed to create/fetch user");
+          console.error("API Error:", responseData);
+          const errorMessage = responseData.error?.message || responseData.error || "Failed to create/fetch user";
+          throw new Error(errorMessage);
         }
 
-        const { user: fruteroUser } = await response.json();
+        // Handle new API response pattern: { success: true, data: { user, profile } }
+        const fruteroUser = responseData.data?.user || responseData.user;
+
+        if (!fruteroUser) {
+          console.error("No user data in response:", responseData);
+          throw new Error("Failed to get user data from server");
+        }
 
         // Redirect based on account status
         if (!wasAlreadyAuthenticated) {

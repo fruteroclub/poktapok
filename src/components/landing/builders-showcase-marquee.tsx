@@ -188,7 +188,7 @@ export default function BuildersShowcaseMarquee() {
               >
                 {/* Top section: Avatar + Name/Track + Earnings */}
                 <div className="flex items-center gap-3 p-4">
-                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border">
+                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full  ring-1 ring-border">
                     <div className="flex h-full items-center justify-center text-xl font-bold text-foreground">
                       {builder.name.charAt(0)}
                     </div>
@@ -255,7 +255,7 @@ export default function BuildersShowcaseMarquee() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <div className="relative h-16 w-16 overflow-hidden rounded-full bg-muted ring-2 ring-primary/20">
+              <div className="relative h-16 w-16 overflow-hidden rounded-full  ring-2 ring-primary/20">
                 <div className="flex h-full items-center justify-center text-2xl font-bold text-foreground">
                   {selectedBuilder?.name.charAt(0)}
                 </div>

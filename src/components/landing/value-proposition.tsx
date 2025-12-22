@@ -34,7 +34,7 @@ export default function ValueProposition() {
         </div>
       </div>
       <div className='w-full px-4 md:flex md:flex-col md:items-center lg:col-span-5 lg:px-0'>
-        <Card className='bg-muted text-background md:max-w-md md:w-full py-8'>
+        <Card className=' text-background md:max-w-md md:w-full py-8'>
           <CardHeader className='text-center'>
             <CardTitle className="font-funnel text-2xl font-normal">
               ¿Quieres dar el<br /><span className='underline underline-offset-8 decoration-primary'>siguiente</span> paso?

@@ -169,6 +169,57 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
 - Use `import type` for type-only imports when possible
 - TypeScript configuration excludes `scripts/**/*` and `drizzle/**/*` from Next.js build
 
+## Development Best Practices
+
+### Data Fetching
+
+**NEVER use `useEffect` for data fetching.** Always prefer TanStack Query for all API interactions.
+
+Follow this abstraction pattern:
+1. **Service Layer** (`src/services/`) - Abstract API calls into dedicated service functions
+2. **Hooks Layer** (`src/hooks/`) - Create custom hooks using TanStack Query (queries and mutations)
+3. **Components** - Import and use the custom hooks
+
+**Example:**
+```typescript
+// ❌ WRONG - Never do this
+useEffect(() => {
+  fetch('/api/auth/me')
+    .then(res => res.json())
+    .then(data => setUser(data.user));
+}, []);
+
+// ✅ CORRECT - Service + Hook pattern
+// 1. Service (src/services/auth.ts)
+export async function fetchMe(): Promise<MeResponse> {
+  const response = await fetch("/api/auth/me");
+  if (!response.ok) throw new Error("Failed to fetch user data");
+  return response.json();
+}
+
+// 2. Hook (src/hooks/use-auth.ts)
+export function useMe() {
+  return useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: fetchMe,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// 3. Component
+const { data, isLoading, isError } = useMe();
+```
+
+**Error Handling:**
+- Use try-catch blocks in service functions
+- Throw descriptive errors that can be displayed to users
+- Use toast notifications (via `sonner`) for user-facing error messages
+- Let TanStack Query handle loading and error states
+
+### Styling
+
+**NEVER use `bg-muted` or any variation of it** (e.g., `bg-muted/50`, `hover:bg-muted`) in component styling. Use explicit color classes or semantic alternatives from the design system.
+
 ## Important Notes
 
 ### Database Schema Changes (Local Development)

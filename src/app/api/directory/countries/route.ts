@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { getDirectoryCountries } from "@/lib/db/queries/profiles";
+import { apiSuccess, apiError } from "@/lib/api/response";
+import { API_ERROR_CODES } from "@/types/api-response";
 
 /**
  * GET /api/directory/countries
@@ -8,21 +9,26 @@ import { getDirectoryCountries } from "@/lib/db/queries/profiles";
  * Used to populate the country filter dropdown
  *
  * Response:
- * [
- *   { country: "Argentina", countryCode: "AR", count: 15 },
- *   { country: "Brazil", countryCode: "BR", count: 23 },
- *   ...
- * ]
+ * {
+ *   success: true,
+ *   data: {
+ *     countries: [
+ *       { country: "Argentina", countryCode: "AR", count: 15 },
+ *       { country: "Brazil", countryCode: "BR", count: 23 },
+ *       ...
+ *     ]
+ *   }
+ * }
  */
 export async function GET() {
   try {
     const countries = await getDirectoryCountries();
-    return NextResponse.json(countries);
+    return apiSuccess({ countries });
   } catch (error) {
     console.error("Error fetching directory countries:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch countries" },
-      { status: 500 }
-    );
+    return apiError("Failed to fetch countries", {
+      code: API_ERROR_CODES.INTERNAL_ERROR,
+      status: 500,
+    });
   }
 }

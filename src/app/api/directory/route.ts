@@ -1,9 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import {
   getDirectoryProfiles,
   getDirectoryProfilesCount,
   type DirectoryFilters,
 } from "@/lib/db/queries/profiles";
+import { apiSuccess, apiError } from "@/lib/api/response";
+import { API_ERROR_CODES } from "@/types/api-response";
 
 /**
  * GET /api/directory
@@ -55,10 +57,10 @@ export async function GET(request: NextRequest) {
 
     // Validate search length
     if (search && search.length < 2) {
-      return NextResponse.json(
-        { error: "Search query must be at least 2 characters" },
-        { status: 400 }
-      );
+      return apiError("Search query must be at least 2 characters", {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      });
     }
 
     // Validate enum values
@@ -66,10 +68,10 @@ export async function GET(request: NextRequest) {
       learningTrack &&
       !["ai", "crypto", "privacy"].includes(learningTrack)
     ) {
-      return NextResponse.json(
-        { error: "Invalid learning track" },
-        { status: 400 }
-      );
+      return apiError("Invalid learning track", {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      });
     }
 
     if (
@@ -78,10 +80,10 @@ export async function GET(request: NextRequest) {
         availabilityStatus
       )
     ) {
-      return NextResponse.json(
-        { error: "Invalid availability status" },
-        { status: 400 }
-      );
+      return apiError("Invalid availability status", {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      });
     }
 
     const filters: DirectoryFilters = {
@@ -102,21 +104,25 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit);
     const hasMore = page < totalPages;
 
-    return NextResponse.json({
-      profiles,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasMore,
-      },
-    });
+    return apiSuccess(
+      { profiles },
+      {
+        meta: {
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasMore,
+          },
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching directory profiles:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch directory profiles" },
-      { status: 500 }
-    );
+    return apiError("Failed to fetch directory profiles", {
+      code: API_ERROR_CODES.INTERNAL_ERROR,
+      status: 500,
+    });
   }
 }

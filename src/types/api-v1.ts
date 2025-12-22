@@ -98,6 +98,17 @@ export interface DirectoryPagination {
   hasMore: boolean;
 }
 
+/**
+ * Directory data structure (wrapped in ApiResponse)
+ */
+export interface DirectoryData {
+  profiles: DirectoryProfile[];
+}
+
+/**
+ * Directory response type (API returns this wrapped in success envelope)
+ * The pagination is in the meta field
+ */
 export interface DirectoryResponse {
   profiles: DirectoryProfile[];
   pagination: DirectoryPagination;
@@ -107,4 +118,11 @@ export interface DirectoryCountry {
   country: string;
   countryCode: string;
   count: number;
+}
+
+/**
+ * Directory countries data structure (wrapped in ApiResponse)
+ */
+export interface DirectoryCountriesData {
+  countries: DirectoryCountry[];
 }

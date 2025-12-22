@@ -1,15 +1,21 @@
+import { apiFetch } from "@/lib/api/fetch";
 import type {
   DirectoryResponse,
   DirectoryFilters,
   DirectoryCountry,
+  DirectoryData,
+  DirectoryCountriesData,
 } from "@/types/api-v1";
 
 /**
  * Fetch directory profiles with filters and pagination
  *
+ * Uses the new apiFetch wrapper for automatic error handling
+ * and type-safe responses.
+ *
  * @param filters - DirectoryFilters object
  * @returns DirectoryResponse with profiles and pagination data
- * @throws Error if fetch fails
+ * @throws ApiError if fetch fails
  */
 export async function fetchDirectoryProfiles(
   filters: DirectoryFilters
@@ -26,21 +32,23 @@ export async function fetchDirectoryProfiles(
 
   const url = `/api/directory?${params.toString()}`;
 
-  try {
-    const response = await fetch(url);
+  // apiFetch automatically unwraps the { success, data, meta } envelope
+  // and throws ApiError on failure
+  const response = await apiFetch<DirectoryData & { meta?: { pagination: any } }>(url);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || "Failed to fetch directory profiles");
-    }
+  // Extract pagination from meta
+  const pagination = response.meta?.pagination || {
+    page: filters.page || 1,
+    limit: filters.limit || 24,
+    total: 0,
+    totalPages: 0,
+    hasMore: false,
+  };
 
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Failed to fetch directory profiles");
-  }
+  return {
+    profiles: response.profiles,
+    pagination,
+  };
 }
 
 /**
@@ -48,22 +56,10 @@ export async function fetchDirectoryProfiles(
  * Used for country filter dropdown
  *
  * @returns Array of countries with count
- * @throws Error if fetch fails
+ * @throws ApiError if fetch fails
  */
 export async function fetchDirectoryCountries(): Promise<DirectoryCountry[]> {
-  try {
-    const response = await fetch("/api/directory/countries");
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || "Failed to fetch countries");
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Failed to fetch countries");
-  }
+  // apiFetch unwraps { success: true, data: { countries: [...] } }
+  const data = await apiFetch<DirectoryCountriesData>("/api/directory/countries");
+  return data.countries;
 }

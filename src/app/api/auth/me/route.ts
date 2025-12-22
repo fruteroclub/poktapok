@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { users, profiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/privy/middleware";
+import { apiSuccess, apiErrors } from "@/lib/api/response";
+import { API_ERROR_CODES } from "@/types/api-response";
 
 export const GET = requireAuth(async (_request: NextRequest, authUser) => {
   try {
@@ -17,7 +19,7 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
       .limit(1);
 
     if (userResults.length === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrors.notFound("User");
     }
 
     const dbUser = userResults[0];
@@ -29,7 +31,7 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
       .where(eq(profiles.userId, dbUser.id))
       .limit(1);
 
-    return NextResponse.json({
+    return apiSuccess({
       user: {
         id: dbUser.id,
         privyDid: dbUser.privyDid,
@@ -46,9 +48,6 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
     });
   } catch (error) {
     console.error("Error fetching current user:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch user" },
-      { status: 500 }
-    );
+    return apiErrors.internal("Failed to fetch user");
   }
 });

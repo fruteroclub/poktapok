@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { users, profiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/privy/middleware";
 import { profileSchema } from "@/lib/validators/profile";
 import { z } from "zod";
+import { apiSuccess, apiValidationError, apiErrors } from "@/lib/api/response";
 
 /**
  * POST /api/profiles
@@ -43,7 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       .limit(1);
 
     if (userResults.length === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrors.notFound("User");
     }
 
     const user = userResults[0];
@@ -79,28 +80,18 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
 
     console.log("Profile created/updated for user:", user.id);
 
-    return NextResponse.json({
-      success: true,
-      profile,
-      message: "Profile created successfully",
-    });
+    return apiSuccess(
+      { profile },
+      { message: "Profile created successfully" }
+    );
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: "Validation failed",
-          details: error.issues,
-        },
-        { status: 400 }
-      );
+      return apiValidationError(error);
     }
 
     // Handle unexpected errors
     console.error("Error creating profile:", error);
-    return NextResponse.json(
-      { error: "Failed to create profile" },
-      { status: 500 }
-    );
+    return apiErrors.internal("Failed to create profile");
   }
 });

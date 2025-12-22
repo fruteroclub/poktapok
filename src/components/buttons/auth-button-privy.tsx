@@ -103,7 +103,7 @@ export default function AuthButton({
         };
 
         // Create or fetch user from database
-        const response = await fetch("/api/auth/check-user", {
+        const response = await fetch("/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

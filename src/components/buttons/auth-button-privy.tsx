@@ -37,7 +37,22 @@ export default function AuthButton({
       console.log("Login method:", loginMethod);
       console.log("Login account:", loginAccount);
 
+      // Skip if user was already authenticated (page refresh/navigation)
+      if (wasAlreadyAuthenticated) {
+        console.log("User was already authenticated, skipping login API call");
+        return;
+      }
+
+      // Check session storage to prevent duplicate calls
+      const sessionKey = `privy_login_processed_${user.id}`;
+      if (sessionStorage.getItem(sessionKey)) {
+        console.log("Login already processed this session, skipping duplicate call");
+        return;
+      }
+
       try {
+        // Mark this login as processed
+        sessionStorage.setItem(sessionKey, "true");
         // Get the Ethereum embedded wallet address (not Solana)
         const embeddedWallet = user.linkedAccounts?.find(
           (account) =>
@@ -176,6 +191,13 @@ export default function AuthButton({
     }
   }
   async function logout() {
+    // Clear session storage on logout
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith("privy_login_processed_")) {
+        sessionStorage.removeItem(key);
+      }
+    });
+
     await logoutWithPrivy();
     router.push("/");
     setIsMenuOpen?.(false);

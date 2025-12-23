@@ -2,7 +2,7 @@
 
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useMe } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { EditableUserCard } from "@/components/profile/editable-user-card";
 import { EditableProfileCard } from "@/components/profile/editable-profile-card";
 import { Loader2 } from "lucide-react";
@@ -16,11 +16,12 @@ import { Section } from "@/components/layout/section";
  * - Displays user data (User table) in editable card
  * - Displays profile data (Profile table) in editable card
  * - Each card has edit button that enables inline editing
+ * - Uses Zustand store for state management (no refetching on mutations)
  */
 export default function ProfilePage() {
   const { authenticated, ready } = usePrivy();
   const router = useRouter();
-  const { data, isLoading, isError } = useMe();
+  const { data, isLoading, isError } = useAuth();
 
   // Redirect if not authenticated
   useEffect(() => {

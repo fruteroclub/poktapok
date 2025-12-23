@@ -20,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { getCountryFlag } from "@/lib/utils/country-flags";
 import { COUNTRIES } from "@/data/countries";
 import { getCitiesByCountry } from "@/data/cities";
+import { useAuthStore } from "@/store/auth-store";
+import type { Profile } from "@/types/api-v1";
 
 interface EditableProfileCardProps {
   className?: string;
@@ -55,7 +57,13 @@ interface ProfileData {
   };
 }
 
-async function upsertProfile(data: ProfileData) {
+interface UpsertProfileResponse {
+  data?: {
+    profile: Profile;
+  };
+}
+
+async function upsertProfile(data: ProfileData): Promise<UpsertProfileResponse> {
   return apiFetch("/api/profiles", {
     method: "POST", // POST handles both create and update via upsert
     headers: { "Content-Type": "application/json" },
@@ -75,7 +83,7 @@ const AVAILABILITY_STATUS = [
   { value: "unavailable", label: "Unavailable", color: "bg-gray-400" },
 ];
 
-export function EditableProfileCard({ className, profile, userId }: EditableProfileCardProps) {
+export function EditableProfileCard({ className, profile }: EditableProfileCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     city: profile?.city || "",
@@ -89,6 +97,7 @@ export function EditableProfileCard({ className, profile, userId }: EditableProf
     telegram: profile?.socialLinks?.telegram || "",
   });
 
+  const { setProfile } = useAuthStore();
   const queryClient = useQueryClient();
 
   // Get cities for selected country
@@ -99,9 +108,14 @@ export function EditableProfileCard({ className, profile, userId }: EditableProf
 
   const mutation = useMutation({
     mutationFn: upsertProfile,
-    onSuccess: () => {
-      toast.success(profile ? "Profile updated successfully" : "Profile created successfully");
+    onSuccess: (response: UpsertProfileResponse) => {
+      // Update store directly with response data
+      if (response.data?.profile) {
+        setProfile(response.data.profile);
+      }
+      // Invalidate React Query cache to trigger parent re-render
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      toast.success(profile ? "Profile updated successfully" : "Profile created successfully");
       setIsEditing(false);
     },
     onError: (error: Error) => {
@@ -110,10 +124,16 @@ export function EditableProfileCard({ className, profile, userId }: EditableProf
   });
 
   const handleSave = () => {
+    // Validate required fields
+    if (!formData.city.trim() || !formData.country.trim() || !formData.countryCode.trim()) {
+      toast.error("Please fill in all location fields");
+      return;
+    }
+
     mutation.mutate({
-      city: formData.city.trim() || undefined,
-      country: formData.country.trim() || undefined,
-      countryCode: formData.countryCode.trim() || undefined,
+      city: formData.city.trim(),
+      country: formData.country.trim(),
+      countryCode: formData.countryCode.trim(),
       learningTrack: formData.learningTrack,
       availabilityStatus: formData.availabilityStatus,
       socialLinks: {

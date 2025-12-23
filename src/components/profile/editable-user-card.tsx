@@ -11,6 +11,8 @@ import { AvatarUpload } from "./avatar-upload";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api/fetch";
+import { useAuthStore } from "@/store/auth-store";
+import type { User } from "@/types/api-v1";
 
 interface EditableUserCardProps {
   className?: string;
@@ -29,7 +31,13 @@ interface UpdateUserData {
   bio?: string;
 }
 
-async function updateUser(data: UpdateUserData) {
+interface UpdateUserResponse {
+  data?: {
+    user: User;
+  };
+}
+
+async function updateUser(data: UpdateUserData): Promise<UpdateUserResponse> {
   return apiFetch("/api/users/update", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -41,13 +49,19 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.displayName || "");
   const [bio, setBio] = useState(user.bio || "");
+  const { setUser } = useAuthStore();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: () => {
-      toast.success("Profile updated successfully");
+    onSuccess: (response: UpdateUserResponse) => {
+      // Update store directly with response data
+      if (response.data?.user) {
+        setUser(response.data.user);
+      }
+      // Invalidate React Query cache to trigger parent re-render
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      toast.success("Profile updated successfully");
       setIsEditing(false);
     },
     onError: (error: Error) => {
@@ -89,7 +103,18 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
                 currentAvatarUrl={user.avatarUrl}
                 username={user.username || ""}
                 displayName={user.displayName}
-                onUploadComplete={() => {
+                onUploadComplete={(avatarUrl) => {
+                  // Update store with new avatar URL
+                  setUser({
+                    id: user.id,
+                    username: user.username || "",
+                    displayName: user.displayName,
+                    email: user.email,
+                    bio: user.bio,
+                    avatarUrl,
+                    accountStatus: "active",
+                  });
+                  // Invalidate React Query cache to trigger parent re-render
                   queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
                 }}
               />

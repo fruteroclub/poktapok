@@ -1,6 +1,6 @@
 "use client";
 
-import { useMe } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
  */
 export default function DashboardPage() {
   const router = useRouter();
-  const { data, isLoading, isError } = useMe();
+  const { data, isLoading, isError } = useAuth();
 
   // Redirect if user hasn't completed onboarding
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
   const { user, profile } = data;
 
-  const initials = (user.displayName || user.username)
+  const initials = (user.displayName || user.username || "")
     .split(" ")
     .map((n) => n[0])
     .join("")

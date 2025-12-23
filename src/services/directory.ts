@@ -5,7 +5,14 @@ import type {
   DirectoryCountry,
   DirectoryData,
   DirectoryCountriesData,
+  DirectoryPagination,
 } from "@/types/api-v1";
+
+interface DirectoryResponseWithMeta extends DirectoryData {
+  meta?: {
+    pagination: DirectoryPagination;
+  };
+}
 
 /**
  * Fetch directory profiles with filters and pagination
@@ -34,7 +41,7 @@ export async function fetchDirectoryProfiles(
 
   // apiFetch automatically unwraps the { success, data, meta } envelope
   // and throws ApiError on failure
-  const response = await apiFetch<DirectoryData & { meta?: { pagination: any } }>(url);
+  const response = await apiFetch<DirectoryResponseWithMeta>(url);
 
   // Extract pagination from meta
   const pagination = response.meta?.pagination || {

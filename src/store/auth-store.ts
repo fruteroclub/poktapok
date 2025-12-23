@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { User, Profile } from "@/lib/db/schema";
+import type { User, Profile } from "@/types/api-v1";
 
 interface AuthState {
   user: User | null;

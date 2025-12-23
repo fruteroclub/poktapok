@@ -13,7 +13,7 @@ export function Section({ children, className }: SectionProps) {
     <section
       className={cn(
         'flex w-full flex-col items-center py-8',
-        'md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl',
+        'md:max-w-screen-sm lg:max-w-3xl xl:max-w-5xl 2xl:max-w-7xl',
         className,
       )}
     >

@@ -31,6 +31,26 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
       .where(eq(profiles.userId, dbUser.id))
       .limit(1);
 
+    // Transform database profile to API Profile format
+    const dbProfile = profileResults.length > 0 ? profileResults[0] : null;
+    const profile = dbProfile
+      ? {
+          id: dbProfile.id,
+          userId: dbProfile.userId,
+          city: dbProfile.city || "",
+          country: dbProfile.country || "",
+          countryCode: dbProfile.countryCode || "",
+          learningTracks: dbProfile.learningTracks || [],
+          availabilityStatus: dbProfile.availabilityStatus,
+          socialLinks: {
+            github: dbProfile.githubUrl || undefined,
+            twitter: dbProfile.twitterUrl || undefined,
+            linkedin: dbProfile.linkedinUrl || undefined,
+            telegram: dbProfile.telegramHandle || undefined,
+          },
+        }
+      : null;
+
     return apiSuccess({
       user: {
         id: dbUser.id,
@@ -44,7 +64,7 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
         role: dbUser.role,
         createdAt: dbUser.createdAt,
       },
-      profile: profileResults.length > 0 ? profileResults[0] : null,
+      profile,
     });
   } catch (error) {
     console.error("Error fetching current user:", error);

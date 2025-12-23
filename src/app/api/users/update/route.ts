@@ -14,50 +14,75 @@ export const PATCH = requireAuth(async (request: NextRequest, authUser) => {
     // Use privyDid from verified token, not from request body
     const privyDid = authUser.privyDid;
 
-    if (!email || !username || !displayName) {
-      return apiError("email, username and displayName are required", {
-        code: API_ERROR_CODES.VALIDATION_ERROR,
-        status: 400,
-      });
+    // Build update object with only provided fields
+    const updateData: Partial<typeof users.$inferInsert> & { updatedAt: Date } = {
+      updatedAt: new Date(),
+    };
+
+    // Only validate and update fields that are provided
+    if (username !== undefined) {
+      if (!username || username.trim() === "") {
+        return apiError("Username cannot be empty", {
+          code: API_ERROR_CODES.VALIDATION_ERROR,
+          status: 400,
+        });
+      }
+
+      // Check if username is already taken by another user
+      const existingUsername = await db
+        .select()
+        .from(users)
+        .where(eq(users.username, username))
+        .limit(1);
+
+      if (
+        existingUsername.length > 0 &&
+        existingUsername[0].privyDid !== privyDid
+      ) {
+        return apiErrors.conflict("Username already taken");
+      }
+
+      updateData.username = username;
     }
 
-    // Check if username is already taken by another user
-    const existingUsername = await db
-      .select()
-      .from(users)
-      .where(eq(users.username, username))
-      .limit(1);
+    if (email !== undefined) {
+      if (!email || email.trim() === "") {
+        return apiError("Email cannot be empty", {
+          code: API_ERROR_CODES.VALIDATION_ERROR,
+          status: 400,
+        });
+      }
 
-    if (
-      existingUsername.length > 0 &&
-      existingUsername[0].privyDid !== privyDid
-    ) {
-      return apiErrors.conflict("Username already taken");
+      // Check if email is already taken by another user
+      const existingEmail = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (existingEmail.length > 0 && existingEmail[0].privyDid !== privyDid) {
+        return apiErrors.conflict("Email already taken");
+      }
+
+      updateData.email = email;
     }
 
-    // Check if email is already taken by another user
-    const existingEmail = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
-
-    if (existingEmail.length > 0 && existingEmail[0].privyDid !== privyDid) {
-      return apiErrors.conflict("Email already taken");
+    if (displayName !== undefined) {
+      updateData.displayName = displayName.trim() || null;
     }
 
-    // Update user profile and change status to active (auto-approve for MVP)
+    if (bio !== undefined) {
+      updateData.bio = bio ? bio.trim() : null;
+    }
+
+    if (avatarUrl !== undefined) {
+      updateData.avatarUrl = avatarUrl || null;
+    }
+
+    // Update user profile
     const updatedUser = await db
       .update(users)
-      .set({
-        email,
-        username,
-        displayName,
-        bio: bio || null,
-        avatarUrl: avatarUrl || null,
-        accountStatus: "active", // Auto-approve for MVP (was: "pending")
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(users.privyDid, privyDid))
       .returning();
 

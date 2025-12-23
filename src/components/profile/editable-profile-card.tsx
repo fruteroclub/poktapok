@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { apiFetch } from "@/lib/api/fetch";
 import { Badge } from "@/components/ui/badge";
 import { getCountryFlag } from "@/lib/utils/country-flags";
+import { COUNTRIES } from "@/data/countries";
+import { getCitiesByCountry } from "@/data/cities";
 
 interface EditableProfileCardProps {
   className?: string;
@@ -39,12 +41,12 @@ interface EditableProfileCardProps {
   userId: string;
 }
 
-interface UpdateProfileData {
-  city?: string;
-  country?: string;
-  countryCode?: string;
-  learningTrack?: "ai" | "crypto" | "privacy";
-  availabilityStatus?: "available" | "open_to_offers" | "unavailable";
+interface ProfileData {
+  city: string;
+  country: string;
+  countryCode: string;
+  learningTrack: "ai" | "crypto" | "privacy";
+  availabilityStatus: "available" | "open_to_offers" | "unavailable";
   socialLinks?: {
     github?: string;
     twitter?: string;
@@ -53,17 +55,9 @@ interface UpdateProfileData {
   };
 }
 
-async function updateProfile(data: UpdateProfileData) {
+async function upsertProfile(data: ProfileData) {
   return apiFetch("/api/profiles", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-}
-
-async function createProfile(data: UpdateProfileData) {
-  return apiFetch("/api/profiles", {
-    method: "POST",
+    method: "POST", // POST handles both create and update via upsert
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
@@ -97,8 +91,14 @@ export function EditableProfileCard({ className, profile, userId }: EditableProf
 
   const queryClient = useQueryClient();
 
+  // Get cities for selected country
+  const cities = useMemo(
+    () => getCitiesByCountry(formData.countryCode),
+    [formData.countryCode]
+  );
+
   const mutation = useMutation({
-    mutationFn: profile ? updateProfile : createProfile,
+    mutationFn: upsertProfile,
     onSuccess: () => {
       toast.success(profile ? "Profile updated successfully" : "Profile created successfully");
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
@@ -158,34 +158,51 @@ export function EditableProfileCard({ className, profile, userId }: EditableProf
               {isEditing ? (
                 <>
                   <div>
-                    <Label>City</Label>
-                    <Input
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      placeholder="City"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
                     <Label>Country</Label>
-                    <Input
-                      value={formData.country}
-                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      placeholder="Country"
-                      className="mt-1"
-                    />
+                    <Select
+                      value={formData.countryCode}
+                      onValueChange={(value) => {
+                        const country = COUNTRIES.find((c) => c.code === value);
+                        setFormData({
+                          ...formData,
+                          countryCode: value,
+                          country: country?.name || "",
+                          city: "", // Reset city when country changes
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            {country.flag} {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
-                    <Label>Country Code</Label>
-                    <Input
-                      value={formData.countryCode}
-                      onChange={(e) =>
-                        setFormData({ ...formData, countryCode: e.target.value.toUpperCase() })
+                    <Label>City</Label>
+                    <Select
+                      value={formData.city}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, city: value })
                       }
-                      placeholder="US"
-                      maxLength={2}
-                      className="mt-1"
-                    />
+                      disabled={!formData.countryCode}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select city" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label>Learning Track</Label>

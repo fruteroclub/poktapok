@@ -28,7 +28,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         <CardContent className="flex flex-col h-full">
           {/* Top Section: Identity (30%) */}
           <div className="flex items-center gap-2 border-b" style={{ minHeight: '30%' }}>
-            <Avatar className="h-16 w-16 flex-shrink-0">
+            <Avatar className="h-16 w-16 shrink-0">
               <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
               <AvatarFallback className="text-lg font-semibold">
                 {initials}

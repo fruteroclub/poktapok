@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { usePrivy } from "@privy-io/react-auth";
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/auth-store";
 
 export type AuthUser = {
   user: {
@@ -21,6 +23,7 @@ export type AuthUser = {
 
 /**
  * Hook to fetch and cache the current authenticated user's data
+ * Syncs with Zustand store for global auth state management
  *
  * @returns React Query result with user data or null if not authenticated
  *
@@ -34,8 +37,9 @@ export type AuthUser = {
  */
 export function useAuth() {
   const { authenticated, ready } = usePrivy();
+  const { setAuthData, setLoading, clearAuth } = useAuthStore();
 
-  return useQuery<AuthUser | null>({
+  const query = useQuery<AuthUser | null>({
     queryKey: ["auth", "me"],
     queryFn: async () => {
       if (!authenticated) return null;
@@ -60,4 +64,24 @@ export function useAuth() {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   });
+
+  // Sync React Query data with Zustand store
+  useEffect(() => {
+    if (query.isLoading) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+
+      if (query.data) {
+        setAuthData({
+          user: query.data.user as any,
+          profile: query.data.profile,
+        });
+      } else if (!authenticated) {
+        clearAuth();
+      }
+    }
+  }, [query.data, query.isLoading, authenticated, setAuthData, setLoading, clearAuth]);
+
+  return query;
 }

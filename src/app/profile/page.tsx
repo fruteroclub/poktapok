@@ -3,18 +3,19 @@
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/hooks/use-auth";
-import { UserInfoDisplay } from "@/components/profile/user-info-display";
-import { ProfileForm } from "@/components/profile/profile-form";
+import { EditableUserCard } from "@/components/profile/editable-user-card";
+import { EditableProfileCard } from "@/components/profile/editable-profile-card";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import PageWrapper from "@/components/layout/page-wrapper";
 import { ProtectedRoute } from "@/components/layout/protected-route-wrapper";
+import { Section } from "@/components/layout/section";
 
 /**
- * Profile Page - Profile creation/edit page
- * - Uses TanStack Query to fetch current user data
- * - Shows profile form if no profile exists
- * - Will show edit form if profile exists (future enhancement)
+ * Profile Page - User's own profile with inline editing
+ * - Displays user data (User table) in editable card
+ * - Displays profile data (Profile table) in editable card
+ * - Each card has edit button that enables inline editing
  */
 export default function ProfilePage() {
   const { authenticated, ready } = usePrivy();
@@ -64,57 +65,31 @@ export default function ProfilePage() {
     <ProtectedRoute>
       <PageWrapper>
         <div className="page">
-          <div className="space-y-8">
             {/* Page Header */}
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {profile ? "Editar Perfil" : "Crear tu Perfil"}
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                {profile
-                  ? "Actualiza tu información de perfil"
-                  : "Completa tu perfil para aparecer en el directorio de talento"}
+              <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                View and edit your profile information
               </p>
             </div>
-
-            {/* User Info (Read-only) */}
-            <UserInfoDisplay
-              username={user.username}
-              displayName={user.displayName}
-              email={user.email}
-              bio={user.bio}
-              avatarUrl={user.avatarUrl}
+          <Section className="space-y-4">
+            {/* User Card - User table data */}
+            <EditableUserCard
+              className="w-full md:w-4/5 lg:w-2/3"
+              user={{
+                id: user.id,
+                username: user.username,
+                displayName: user.displayName,
+                email: user.email,
+                bio: user.bio,
+                avatarUrl: user.avatarUrl,
+              }}
             />
 
-            {/* Profile Form */}
-            {!profile ? (
-              <div className="space-y-6">
-                <div className="p-4 border rounded-lg ">
-                  <h3 className="font-semibold mb-1">Completa tu perfil</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Ayúdanos a conocerte mejor completando la siguiente información.
-                    Esto nos permitirá conectarte con oportunidades relevantes.
-                  </p>
-                </div>
-
-                <ProfileForm
-                  userInfo={{
-                    username: user.username,
-                    displayName: user.displayName,
-                    avatarUrl: user.avatarUrl,
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="p-8 border rounded-lg text-center">
-                <h3 className="text-lg font-semibold mb-2">Perfil ya creado</h3>
-                <p className="text-muted-foreground mb-4">
-                  Tu perfil ya existe. La función de edición estará disponible
-                  próximamente.
-                </p>
-              </div>
-            )}
-          </div>
+            {/* Profile Card - Profile table data */}
+            <EditableProfileCard
+              className="w-full md:w-4/5 lg:w-2/3" profile={profile} userId={user.id} />
+          </Section>
         </div>
       </PageWrapper>
     </ProtectedRoute>

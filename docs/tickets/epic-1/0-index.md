@@ -40,7 +40,7 @@
 | E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
 | E1-T2 | Profile Creation Flow | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
 | E1-T3 | Public Directory Page | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T4 | Individual Profile Page | 3 | 🔴 Not Started | 0% | Can start immediately |
+| E1-T4 | Individual Profile Page | 3 | 🟢 Completed | 100% - All features working | ✅ Done |
 | E1-T5 | Application System | 5 | 🔴 Not Started | 0% | Can start (optional, deprioritized) |
 | E1-T6 | Invitation System | 3 | 🔴 Not Started | 0% | Blocked by E1-T1, E1-T5 |
 
@@ -210,6 +210,49 @@
 
 ---
 
+### 🟢 E1-T4: Individual Profile Page (COMPLETED - 100%)
+
+**✅ Completed (2025-12-22):**
+- Profile page at [/profile/[username]](../../src/app/profile/[username]/page.tsx)
+- Zustand store for global auth state ([auth-store.ts](../../src/store/auth-store.ts))
+- Auth helpers for server components ([helpers.ts](../../src/lib/auth/helpers.ts))
+- Profile database query ([getProfileByUsername](../../src/lib/db/queries/profiles.ts))
+- Visibility system with field-level permissions ([visibility.ts](../../src/lib/utils/visibility.ts))
+- Social URL builders ([social-urls.ts](../../src/lib/utils/social-urls.ts))
+- Country flag emoji helper ([country-flags.ts](../../src/lib/utils/country-flags.ts))
+- Profile API endpoint ([/api/profiles/[username]](../../src/app/api/profiles/[username]/route.ts))
+- Profile header component ([profile-header.tsx](../../src/components/profile/profile-header.tsx))
+- Profile info component ([profile-info.tsx](../../src/components/profile/profile-info.tsx))
+- Social links component ([social-links.tsx](../../src/components/profile/social-links.tsx))
+- Share button component ([share-button.tsx](../../src/components/profile/share-button.tsx))
+- Avatar upload component ([avatar-upload.tsx](../../src/components/profile/avatar-upload.tsx))
+- Avatar upload API endpoint ([/api/profiles/avatar](../../src/app/api/profiles/avatar/route.ts))
+- Profile edit page ([/profile/edit](../../src/app/profile/edit/page.tsx))
+- SEO metadata (Open Graph + Twitter Cards)
+- SSR with dynamic rendering
+
+**Key Features:**
+- Three-tier visibility (public, members-only, private)
+- Private profiles show basic data (username, displayName, avatar, bio) to everyone
+- Field-level visibility permissions
+- Owner-only edit access
+- Web Share API with clipboard fallback
+- Avatar upload with validation (5MB max, JPEG/PNG/WebP)
+- "New" member badge for users < 7 days old
+- Country flag emojis with location formatting
+- Responsive design (mobile to desktop)
+- Full SEO support with metadata generation
+
+**Technical Implementation:**
+- Zustand + React Query for state management
+- Privy server-side auth with `@privy-io/server-auth`
+- Server Components with SSR
+- Dynamic rendering for auth-protected pages
+- Type-safe visibility rules
+- Placeholder for Vercel Blob Storage (avatar upload)
+
+---
+
 ### 📋 Simplified Flow (No Application/Email System for MVP)
 
 **Decision:** Deprioritize E1-T5 (Application System) and E1-T6 (Invitations) for initial MVP
@@ -230,7 +273,12 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 1. **E1-T1** ✅ COMPLETED (2025-12-21)
 2. **E1-T2** (profile creation/edit flow) → ✅ COMPLETED (2025-12-22)
 3. **E1-T3** (directory page) → ✅ COMPLETED (2025-12-22)
-4. **E1-T4** (individual profile page) → **READY TO START**
+4. **E1-T4** (individual profile page) → ✅ COMPLETED (2025-12-22)
+
+**🎉 MVP Core Features Complete!**
+- All critical path tickets (E1-T1 through E1-T4) finished
+- Full user journey working: auth → profile → directory → individual profiles
+- Ready for testing and deployment
 
 **Later:**
 - E1-T5 (Application System) - when we need quality control
@@ -243,7 +291,7 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 _Use this section to track impediments, questions, or coordination needs._
 
 ### Current Blockers
-- None - E1-T1, E1-T2, and E1-T3 completed, ready to start E1-T4
+- None - All MVP core features (E1-T1 through E1-T4) completed
 
 ### Decisions Made
 - ✅ Database schema finalized (4 tables ready)
@@ -265,6 +313,7 @@ _Use this section to track impediments, questions, or coordination needs._
 - **2025-12-21:** Enabled auto-approval (users → "active" immediately)
 - **2025-12-22:** E1-T2 COMPLETED - Profile creation/edit flow with validation
 - **2025-12-22:** E1-T3 COMPLETED - Directory page with search, filters, pagination
+- **2025-12-22:** E1-T4 COMPLETED - Individual profile pages with visibility system
 
 ### Immediate Next Steps
 1. ✅ ~~Complete OnboardingForm component~~ DONE
@@ -273,7 +322,9 @@ _Use this section to track impediments, questions, or coordination needs._
 4. ✅ ~~Create `useAuth()` hook~~ DONE
 5. ✅ ~~Complete E1-T2: Profile Creation/Edit Flow~~ DONE
 6. ✅ ~~Complete E1-T3: Public Directory Page~~ DONE
-7. **START E1-T4:** Individual Profile Page
+7. ✅ ~~Complete E1-T4: Individual Profile Page~~ DONE
+
+**🎉 All MVP core features completed! Ready for testing and deployment.**
 
 ---
 

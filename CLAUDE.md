@@ -236,6 +236,15 @@ export async function fetchMe(): Promise<MeResponse> {
 - Default chain is Arbitrum; supports 6 chains total (Base, Ethereum, Optimism, Polygon, Scroll)
 - Alchemy API key is optional (falls back to public RPCs)
 
+### File Storage
+
+- **Vercel Blob Storage** for avatar uploads
+- Upload endpoint: `POST /api/profiles/avatar` (multipart/form-data)
+- Delete endpoint: `DELETE /api/profiles/avatar`
+- File validation: 5MB max, JPEG/PNG/WebP only
+- Auto-cleanup: Old avatars deleted when new ones uploaded
+- Storage location: `avatars/{userId}/{filename}` with random suffix
+
 Required environment variables:
 ```
 # Database
@@ -247,6 +256,9 @@ NEXT_PUBLIC_ALCHEMY_API_KEY=...            # Optional
 NEXT_PUBLIC_PRIVY_APP_ID=...
 NEXT_PUBLIC_PRIVY_CLIENT_ID=...
 PRIVY_APP_SECRET=...
+
+# Vercel Blob Storage (for avatar uploads)
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...  # From Vercel Storage dashboard
 ```
 
 ### Project Structure
@@ -317,6 +329,23 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
 - All components should be typed
 - Use `import type` for type-only imports when possible
 - TypeScript configuration excludes `scripts/**/*` and `drizzle/**/*` from Next.js build
+- **NEVER use `any` type** - ESLint will reject it as an error
+  - Use proper type definitions or `unknown` for truly unknown types
+  - For error handling: Use `error instanceof Error` pattern instead of `error: any`
+  - Example:
+    ```typescript
+    // ❌ WRONG
+    catch (error: any) {
+      console.error(error.message);
+    }
+
+    // ✅ CORRECT
+    catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+    ```
 
 ## Development Best Practices
 
@@ -368,6 +397,17 @@ const { data, isLoading, isError } = useMe();
 ### Styling
 
 **NEVER use `bg-muted` or any variation of it** (e.g., `bg-muted/50`, `hover:bg-muted`) in component styling. Use explicit color classes or semantic alternatives from the design system.
+
+### File Naming
+
+**Always use kebab-case (snake-case with hyphens) for file names:**
+- ✅ `user-card.tsx`, `profile-header.tsx`, `avatar-upload.tsx`
+- ❌ `UserCard.tsx`, `profileHeader.tsx`, `AvatarUpload.tsx`
+
+**Before creating new files:**
+1. Search for existing files with similar names using Glob or Grep
+2. Check the project structure to avoid duplicates
+3. Follow the existing naming conventions in the directory
 
 ## Important Notes
 

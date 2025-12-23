@@ -1,4 +1,4 @@
-import { ProfileCard } from "./profile-card";
+import { ProfileCard } from "./user-card";
 import { SkeletonCard } from "./skeleton-card";
 import { EmptyState } from "./empty-state";
 import type { DirectoryProfile } from "@/types/api-v1";

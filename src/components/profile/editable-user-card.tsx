@@ -56,6 +56,7 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
   });
 
   const handleSave = () => {
+    // Only send fields that are being updated
     mutation.mutate({
       displayName: displayName.trim() || undefined,
       bio: bio.trim() || undefined,

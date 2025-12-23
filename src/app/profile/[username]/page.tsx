@@ -9,6 +9,8 @@ import {
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileInfo } from "@/components/profile/profile-info";
 import { SocialLinks } from "@/components/profile/social-links";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { Section } from "@/components/layout/section";
 
 // Force dynamic rendering (uses cookies for auth)
 export const dynamic = "force-dynamic";
@@ -97,7 +99,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <PageWrapper>
+      <div className="page">
       {/* Profile Header */}
       <ProfileHeader
         username={user.username!}
@@ -117,7 +120,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       />
 
       {/* Content Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <Section  className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {/* Main Content (2/3 width on desktop) */}
         <div className="md:col-span-2">
           <ProfileInfo
@@ -151,7 +154,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
             )}
         </div>
-      </div>
+      </Section>
     </div>
+    </PageWrapper>
   );
 }

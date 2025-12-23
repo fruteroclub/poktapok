@@ -34,14 +34,14 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
   const [showPreview, setShowPreview] = useState(false);
   const createProfileMutation = useCreateProfile();
 
-  const form = useForm({
+  const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     mode: "onBlur",
     defaultValues: {
       city: "",
       country: "",
       countryCode: "",
-      learningTrack: undefined as any,
+      learningTrack: undefined as "ai" | "crypto" | "privacy" | undefined,
       availabilityStatus: "available" as const,
       socialLinks: {
         github: "",

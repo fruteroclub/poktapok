@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth-store";
+import type { Profile } from "@/types/api-v1";
 
 export type AuthUser = {
   user: {
@@ -18,7 +19,7 @@ export type AuthUser = {
     role: string;
     createdAt: string;
   };
-  profile: any | null;
+  profile: Profile | null;
 };
 
 /**
@@ -74,7 +75,7 @@ export function useAuth() {
 
       if (query.data) {
         setAuthData({
-          user: query.data.user as any,
+          user: query.data.user,
           profile: query.data.profile,
         });
       } else if (!authenticated) {

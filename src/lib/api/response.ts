@@ -111,7 +111,7 @@ export function apiError(
  * ```
  */
 export function apiValidationError(
-  zodError: ZodError<any>
+  zodError: ZodError
 ): NextResponse<ApiErrorResponse> {
   return apiError("Validation failed", {
     code: API_ERROR_CODES.VALIDATION_ERROR,

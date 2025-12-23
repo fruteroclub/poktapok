@@ -30,9 +30,9 @@ export default function DirectoryPage() {
 
   const [currentFilters, setCurrentFilters] = useState<DirectoryFilters>({
     search: searchParams.get("search") || undefined,
-    learningTrack: (searchParams.get("learningTrack") as any) || undefined,
+    learningTrack: (searchParams.get("learningTrack") as "ai" | "crypto" | "privacy" | undefined) || undefined,
     availabilityStatus:
-      (searchParams.get("availabilityStatus") as any) || undefined,
+      (searchParams.get("availabilityStatus") as "available" | "open_to_offers" | "unavailable" | undefined) || undefined,
     country: searchParams.get("country") || undefined,
     page: parseInt(searchParams.get("page") || "1"),
     limit: 24,
@@ -196,7 +196,7 @@ export default function DirectoryPage() {
                   {pagination && !pagination.hasMore && profiles.length > 0 && (
                     <div className="mt-8 text-center">
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        You've reached the end of the directory
+                        You&apos;ve reached the end of the directory
                       </p>
                     </div>
                   )}

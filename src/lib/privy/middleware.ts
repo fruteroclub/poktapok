@@ -65,7 +65,7 @@ export async function getAuthUser(
  * @param handler - Route handler that receives verified user
  * @returns Protected route handler that verifies authentication first
  */
-export function requireAuth<T = any>(
+export function requireAuth<T = unknown>(
   handler: (req: NextRequest, user: AuthUser) => Promise<Response | T>
 ) {
   return async (req: NextRequest): Promise<Response> => {

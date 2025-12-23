@@ -25,9 +25,9 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   return (
     <Link href={`/profile/${profile.username}`}>
       <Card className="transition-shadow hover:shadow-lg cursor-pointer h-full flex flex-col">
-        <CardContent className="flex flex-col h-full">
+        <CardContent className="flex flex-col h-full gap-y-4">
           {/* Top Section: Identity (30%) */}
-          <div className="flex items-center gap-2 border-b" style={{ minHeight: '30%' }}>
+          <div className="flex items-center gap-2 border-b pb-4">
             <Avatar className="h-16 w-16 shrink-0">
               <AvatarImage src={profile.avatarUrl || undefined} alt={displayName} />
               <AvatarFallback className="text-lg font-semibold">
@@ -44,7 +44,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
           </div>
 
           {/* Bottom Section: Details (70%) */}
-          <div className="flex flex-col pt-4 space-y-3 flex-1">
+          <div className="flex flex-col space-y-3 flex-1">
             {/* Bio */}
             {truncatedBio && (
               <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">

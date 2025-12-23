@@ -260,3 +260,49 @@ export async function getDirectoryCountries(): Promise<
     count: Number(r.count),
   }));
 }
+
+/**
+ * Profile with User Data Type
+ * Combined profile + user data for individual profile pages
+ */
+export type ProfileWithUser = {
+  profile: typeof profiles.$inferSelect;
+  user: typeof users.$inferSelect;
+};
+
+/**
+ * Get profile by username with user data
+ * Returns profile regardless of visibility (visibility check done at component level)
+ *
+ * @param username - The username to search for (case-insensitive)
+ * @returns Profile with user data, or null if not found
+ */
+export async function getProfileByUsername(
+  username: string
+): Promise<ProfileWithUser | null> {
+  const result = await db
+    .select({
+      profile: profiles,
+      user: users,
+    })
+    .from(profiles)
+    .innerJoin(users, eq(profiles.userId, users.id))
+    .where(
+      and(
+        sql`LOWER(${users.username}) = LOWER(${username})`,
+        isNull(profiles.deletedAt),
+        isNull(users.deletedAt),
+        eq(users.accountStatus, "active")
+      )
+    )
+    .limit(1);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  return {
+    profile: result[0].profile,
+    user: result[0].user,
+  };
+}

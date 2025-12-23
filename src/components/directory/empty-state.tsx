@@ -18,7 +18,7 @@ export function EmptyState({ onClearFilters, hasActiveFilters }: EmptyStateProps
       {hasActiveFilters ? (
         <>
           <p className="text-gray-600 dark:text-gray-400 text-center mb-6 max-w-md">
-            We couldn't find any builders matching your filters. Try adjusting your
+            We couldn&apos;t find any builders matching your filters. Try adjusting your
             search criteria.
           </p>
           <Button onClick={onClearFilters} variant="outline">

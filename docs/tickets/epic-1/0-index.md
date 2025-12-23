@@ -37,10 +37,10 @@
 
 | Ticket ID | Title | Story Points | Status | Progress | Next Steps |
 |-----------|-------|--------------|--------|----------|------------|
-| E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | Ready for E1-T2 |
-| E1-T2 | Profile Creation Flow | 5 | 🔴 Not Started | 0% | Can start immediately |
-| E1-T3 | Public Directory Page | 5 | 🔴 Not Started | 0% | Blocked by E1-T2 |
-| E1-T4 | Individual Profile Page | 3 | 🔴 Not Started | 0% | Blocked by E1-T2 |
+| E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
+| E1-T2 | Profile Creation Flow | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
+| E1-T3 | Public Directory Page | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
+| E1-T4 | Individual Profile Page | 3 | 🔴 Not Started | 0% | Can start immediately |
 | E1-T5 | Application System | 5 | 🔴 Not Started | 0% | Can start (optional, deprioritized) |
 | E1-T6 | Invitation System | 3 | 🔴 Not Started | 0% | Blocked by E1-T1, E1-T5 |
 
@@ -154,7 +154,59 @@
 - HTML5 form validation with character limits
 - Complete error handling for all flows
 
-**Next Step:** Move to E1-T2 (Profile Creation Flow)
+---
+
+### 🟢 E1-T2: Profile Creation Flow (COMPLETED - 100%)
+
+**✅ Completed (2025-12-22):**
+- Profile edit page at [/profile/edit](../../src/app/profile/edit/page.tsx)
+- Profile form component with React Hook Form + Zod ([profile-form.tsx](../../src/components/profile/profile-form.tsx))
+- Username availability check with debouncing ([useUsernameCheck.ts](../../src/lib/hooks/useUsernameCheck.ts))
+- Character counter for bio (280 char limit)
+- Location selection (city + country with autocomplete)
+- Learning track and availability status selection
+- Social links input (GitHub, Twitter, LinkedIn, Telegram)
+- Profile preview mode before submission
+- Profile validation schema ([profile.ts](../../src/lib/validators/profile.ts))
+- Profile API endpoints ([/api/profiles](../../src/app/api/profiles/route.ts))
+- Username uniqueness check endpoint ([/api/profiles/check-username](../../src/app/api/profiles/check-username/route.ts))
+
+**Key Features:**
+- Real-time username availability indicator
+- Bio character count with color warning at 50 chars remaining
+- Form validation with instant feedback
+- Mobile-responsive design (375px+)
+- Social links URL construction helpers
+- Profile preview modal
+- Error handling for duplicate usernames and validation errors
+
+---
+
+### 🟢 E1-T3: Public Directory Page (COMPLETED - 100%)
+
+**✅ Completed (2025-12-22):**
+- Directory page at [/directory](../../src/app/directory/page.tsx)
+- Profile card grid with responsive layout ([profile-card.tsx](../../src/components/directory/profile-card.tsx))
+- Search functionality with debounced input ([search-bar.tsx](../../src/components/directory/search-bar.tsx))
+- Filter system (learning track, availability, location) ([filters.tsx](../../src/components/directory/filters.tsx))
+- Pagination with "Load More" (desktop) and infinite scroll (mobile)
+- Skeleton loaders for loading states ([skeleton-card.tsx](../../src/components/directory/skeleton-card.tsx))
+- Directory API endpoint ([/api/directory](../../src/app/api/directory/route.ts))
+- Database query with indexed searches ([profiles.ts](../../src/lib/db/queries/profiles.ts))
+- URL state management for filters ([useDirectoryFilters.ts](../../src/lib/hooks/useDirectoryFilters.ts))
+- Empty states and error handling
+- Mobile-responsive design (375px to 1920px)
+
+**Key Features:**
+- 3-column grid on desktop, single column on mobile
+- Search across username, display name, and bio (debounced 300ms)
+- Filters update URL query params for shareable links
+- 24 profiles per page on desktop, 12 on mobile
+- Performance optimized with database indexes
+- Avatar fallbacks with user initials
+- Location display with country flag emojis
+- Learning track badges (color-coded)
+- Availability status indicators
 
 ---
 
@@ -176,9 +228,9 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 ### 🎯 Updated Critical Path
 
 1. **E1-T1** ✅ COMPLETED (2025-12-21)
-2. **E1-T2** (profile creation/edit flow) → **READY TO START**
-3. **E1-T3** (directory page) → After E1-T2 profiles exist
-4. **E1-T4** (individual profile page) → Parallel with E1-T3
+2. **E1-T2** (profile creation/edit flow) → ✅ COMPLETED (2025-12-22)
+3. **E1-T3** (directory page) → ✅ COMPLETED (2025-12-22)
+4. **E1-T4** (individual profile page) → **READY TO START**
 
 **Later:**
 - E1-T5 (Application System) - when we need quality control
@@ -191,7 +243,7 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 _Use this section to track impediments, questions, or coordination needs._
 
 ### Current Blockers
-- None - E1-T1 completed, ready to start E1-T2
+- None - E1-T1, E1-T2, and E1-T3 completed, ready to start E1-T4
 
 ### Decisions Made
 - ✅ Database schema finalized (4 tables ready)
@@ -211,15 +263,19 @@ _Use this section to track impediments, questions, or coordination needs._
 - **2025-12-21:** Created `/api/auth/me` endpoint with Privy token verification
 - **2025-12-21:** Created `useAuth()` hook for session management
 - **2025-12-21:** Enabled auto-approval (users → "active" immediately)
+- **2025-12-22:** E1-T2 COMPLETED - Profile creation/edit flow with validation
+- **2025-12-22:** E1-T3 COMPLETED - Directory page with search, filters, pagination
 
 ### Immediate Next Steps
 1. ✅ ~~Complete OnboardingForm component~~ DONE
 2. ✅ ~~Update user status: `incomplete` → `active`~~ DONE
 3. ✅ ~~Add `/api/auth/me` endpoint for session management~~ DONE
 4. ✅ ~~Create `useAuth()` hook~~ DONE
-5. **START E1-T2:** Profile Creation/Edit Flow
+5. ✅ ~~Complete E1-T2: Profile Creation/Edit Flow~~ DONE
+6. ✅ ~~Complete E1-T3: Public Directory Page~~ DONE
+7. **START E1-T4:** Individual Profile Page
 
 ---
 
-**Last Updated:** 2025-12-21
-**Next Review:** After E1-T2 completion
+**Last Updated:** 2025-12-22
+**Next Review:** After E1-T4 completion

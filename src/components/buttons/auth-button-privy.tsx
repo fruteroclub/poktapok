@@ -25,13 +25,13 @@ export default function AuthButton({
 
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
-      user,
+      user: privyUser,
       isNewUser,
       wasAlreadyAuthenticated,
       loginMethod,
       loginAccount,
     }) => {
-      console.log("User logged in successfully", user);
+      console.log("User logged in successfully", privyUser);
       console.log("Is new user:", isNewUser);
       console.log("Was already authenticated:", wasAlreadyAuthenticated);
       console.log("Login method:", loginMethod);
@@ -44,7 +44,7 @@ export default function AuthButton({
       }
 
       // Check session storage to prevent duplicate calls
-      const sessionKey = `privy_login_processed_${user.id}`;
+      const sessionKey = `privy_login_processed_${privyUser.id}`;
       if (sessionStorage.getItem(sessionKey)) {
         console.log("Login already processed this session, skipping duplicate call");
         return;
@@ -54,7 +54,7 @@ export default function AuthButton({
         // Mark this login as processed
         sessionStorage.setItem(sessionKey, "true");
         // Get the Ethereum embedded wallet address (not Solana)
-        const embeddedWallet = user.linkedAccounts?.find(
+        const embeddedWallet = privyUser.linkedAccounts?.find(
           (account) =>
             account.type === "wallet" &&
             "walletClientType" in account &&
@@ -68,7 +68,7 @@ export default function AuthButton({
             : undefined;
 
         // Get the Ethereum embedded wallet address (not Solana)
-        const externalWallet = user.linkedAccounts?.find(
+        const externalWallet = privyUser.linkedAccounts?.find(
           (account) =>
             account.type === "wallet" &&
             "walletClientType" in account &&
@@ -81,15 +81,15 @@ export default function AuthButton({
             ? externalWallet.address
             : undefined;
 
-        console.log("All linked accounts:", user.linkedAccounts);
+        console.log("All linked accounts:", privyUser.linkedAccounts);
         console.log("Ethereum embedded wallet:", appWallet);
         console.log("Ethereum external wallet:", extWallet);
 
         // Try to get email from Privy (optional - will be collected in onboarding if missing)
-        const userEmail = user.email?.address ||
-                         user.google?.email ||
-                         user.github?.email ||
-                         user.discord?.email ||
+        const userEmail = privyUser.email?.address ||
+                         privyUser.google?.email ||
+                         privyUser.github?.email ||
+                         privyUser.discord?.email ||
                          null;
 
         console.log("User email:", userEmail || "Not available");
@@ -110,7 +110,7 @@ export default function AuthButton({
 
         // Prepare user data for API
         const userData = {
-          privyDid: user.id,
+          privyDid: privyUser.id,
           email: userEmail,
           appWallet: appWallet || null,
           extWallet: extWallet || null,
@@ -135,30 +135,30 @@ export default function AuthButton({
         }
 
         // Handle new API response pattern: { success: true, data: { user, profile } }
-        const fruteroUser = responseData.data?.user || responseData.user;
+        const user = responseData.data?.user || responseData.user;
 
-        if (!fruteroUser) {
+        if (!user) {
           console.error("No user data in response:", responseData);
           throw new Error("Failed to get user data from server");
         }
 
         // Redirect based on account status
         if (!wasAlreadyAuthenticated) {
-          if (fruteroUser.accountStatus === "incomplete") {
+          if (user.accountStatus === "incomplete") {
             // User created but needs to complete onboarding
             router.push("/onboarding");
             toast.success("¡Bienvenido! Completa tu perfil para continuar", {
               id: "auth-welcome", // Deduplicate toasts
             });
-          } else if (fruteroUser.accountStatus === "pending") {
+          } else if (user.accountStatus === "pending") {
             // Onboarding complete, waiting for approval
             router.push("/profile");
             toast.success("Perfil completo. Esperando aprobación", {
               id: "auth-pending", // Deduplicate toasts
             });
-          } else if (fruteroUser.accountStatus === "active") {
+          } else if (user.accountStatus === "active") {
             // Approved and active
-            router.push("/profile");
+            router.push("/dashboard");
             toast.success("Sesión iniciada correctamente", {
               id: "auth-success", // Deduplicate toasts
             });

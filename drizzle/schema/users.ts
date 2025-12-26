@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, pgEnum, jsonb, foreignKey, check, index } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, text, timestamp, pgEnum, jsonb, check, index } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, softDelete, metadata } from './utils'
 
@@ -50,6 +50,7 @@ export const authMethodEnum = pgEnum('auth_method', [
  * 3. Separate ext_wallet (external) and app_wallet (embedded)
  * 4. Soft deletes for audit trail
  * 5. Separate metadata: privy_metadata (SDK) vs metadata (business logic)
+ * 6. Simplified for MVP: Removed invitedByUserId and approvedByUserId (deferred features)
  */
 export const users = pgTable(
   'users',
@@ -92,10 +93,6 @@ export const users = pgTable(
       .default('pending')
       .notNull(),
 
-    // Referral Tracking
-    invitedByUserId: uuid('invited_by_user_id'),
-    approvedByUserId: uuid('approved_by_user_id'),
-
     // Timestamps & Audit
     ...timestamps,
     lastLoginAt: timestamp('last_login_at', { withTimezone: true })
@@ -110,19 +107,6 @@ export const users = pgTable(
     ...metadata,   // Business logic (NFT memberships, feature flags, preferences)
   },
   (table) => ({
-    // Foreign Keys (self-referencing for referrals and approvals)
-    invitedByFk: foreignKey({
-      columns: [table.invitedByUserId],
-      foreignColumns: [table.id],
-      name: 'users_invited_by_fk',
-    }).onDelete('set null'),
-
-    approvedByFk: foreignKey({
-      columns: [table.approvedByUserId],
-      foreignColumns: [table.id],
-      name: 'users_approved_by_fk',
-    }).onDelete('set null'),
-
     // Constraints
     emailFormatCheck: check(
       'email_format',
@@ -159,7 +143,6 @@ export const users = pgTable(
       .where(sql`${table.appWallet} IS NOT NULL`),
 
     accountStatusIdx: index('idx_users_account_status').on(table.accountStatus),
-    invitedByIdx: index('idx_users_invited_by').on(table.invitedByUserId),
 
     // Soft delete partial index (only index active users)
     deletedAtIdx: index('idx_users_deleted_at')

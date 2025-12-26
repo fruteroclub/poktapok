@@ -8,11 +8,13 @@
 
 ---
 
-## Success Metrics
-- [ ] 100 approved profiles within 2 weeks of launch
+## Success Metrics (MVP)
+- [ ] 50 complete profiles within 2 weeks of launch
 - [ ] < 3-minute average profile creation time
-- [ ] < 5% spam/low-quality applications
-- [ ] 30% of signups via referrals
+- [ ] Profile creation completion rate >70%
+- [ ] Directory page load time <2 seconds
+
+**Note:** Original metrics for approval rate and referral signups deferred with E1-T5/E1-T6
 
 ---
 
@@ -40,15 +42,16 @@
 | E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
 | E1-T2 | Profile Creation Flow | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
 | E1-T3 | Public Directory Page | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T4 | Individual Profile Page | 3 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T5 | Application System | 5 | 🔴 Not Started | 0% | Can start (optional, deprioritized) |
-| E1-T6 | Invitation System | 3 | 🔴 Not Started | 0% | Blocked by E1-T1, E1-T5 |
+| E1-T4 | Individual Profile Page | 3 | 🟢 Completed (MVP) | 100% - Core features, 2 tasks deferred | ✅ Done |
+| E1-T5 | Application System | 5 | ⏭️ Deferred to Epic 2 | - | Quality control feature |
+| E1-T6 | Invitation System | 3 | ⏭️ Deferred to Epic 2 | - | Growth mechanism feature |
 
 **Status Legend:**
 - 🔴 Not Started
 - 🟡 In Progress
 - 🟢 Completed
 - 🔵 Blocked
+- ⏭️ Deferred (moved to future epic)
 
 ---
 
@@ -110,12 +113,18 @@
 
 ## Ticket Files
 
-- [E1-T1: Authentication Integration](./E1-T1-auth-integration.md)
-- [E1-T2: Profile Creation Flow](./E1-T2-profile-creation.md)
-- [E1-T3: Public Directory Page](./E1-T3-directory-page.md)
-- [E1-T4: Individual Profile Page](./E1-T4-profile-page.md)
-- [E1-T5: Application System](./E1-T5-application-system.md)
-- [E1-T6: Invitation System](./E1-T6-invitation-system.md)
+### Core MVP (Completed)
+- [E1-T1: Authentication Integration](./E1-T1-auth-integration.md) ✅
+- [E1-T2: Profile Creation Flow](./E1-T2-profile-creation.md) ✅
+- [E1-T3: Public Directory Page](./E1-T3-directory-page.md) ✅
+- [E1-T4: Individual Profile Page](./E1-T4-profile-page.md) ✅ (MVP features complete)
+
+### Deferred to Epic 2
+- [E1-T5: Application System](../deferred/E1-T5-application-system.md) ⏭️ (Quality Control)
+- [E1-T6: Invitation System](../deferred/E1-T6-invitation-system.md) ⏭️ (Growth Mechanisms)
+
+### Partial Implementations
+- [E1-T4-partial: Profile Page Deferred Features](../deferred/E1-T4-partial-profile-page.md) (Report modal, Custom 404)
 
 ---
 
@@ -210,9 +219,9 @@
 
 ---
 
-### 🟢 E1-T4: Individual Profile Page (COMPLETED - 100%)
+### 🟢 E1-T4: Individual Profile Page (COMPLETED - MVP)
 
-**✅ Completed (2025-12-22):**
+**✅ Completed (2025-12-24):**
 - Profile page at [/profile/[username]](../../src/app/profile/[username]/page.tsx)
 - Zustand store for global auth state ([auth-store.ts](../../src/store/auth-store.ts))
 - Auth helpers for server components ([helpers.ts](../../src/lib/auth/helpers.ts))
@@ -249,7 +258,13 @@
 - Server Components with SSR
 - Dynamic rendering for auth-protected pages
 - Type-safe visibility rules
-- Placeholder for Vercel Blob Storage (avatar upload)
+- Vercel Blob Storage for avatar upload
+
+**Deferred Features (Post-MVP):**
+- Report/abuse modal - Community safety feature for future iteration
+- Custom 404 page - Default Next.js 404 sufficient for MVP
+
+**MVP Status:** Core profile viewing and sharing functionality complete. All critical features working.
 
 ---
 
@@ -286,6 +301,53 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 
 ---
 
+## Deferred Features (Epic 2)
+
+### E1-T5: Application System → [Moved to deferred/](../deferred/E1-T5-application-system.md)
+**Why Deferred:** Quality control not essential for MVP validation. Open signup faster to market.
+
+**Reactivation Triggers:**
+- Spam profiles >10% of total
+- Manual review burden >1 hour/day
+- Companies request developer vetting
+
+**Effort:** ~40 hours (5 days)
+
+---
+
+### E1-T6: Invitation System → [Moved to deferred/](../deferred/E1-T6-invitation-system.md)
+**Why Deferred:** Viral growth premature before product-market fit. Focus on organic acquisition first.
+
+**Reactivation Triggers:**
+- Growth stalls (<10 signups/week)
+- Developers request "invite friends"
+- Need quality signaling mechanism
+
+**Effort:** ~24 hours (3 days)
+
+---
+
+### E1-T4 Partial: Report Feature & Custom 404 → [Tracking doc](../deferred/E1-T4-partial-profile-page.md)
+**Why Deferred:** Community moderation and polish features not critical for launch.
+
+**Report Modal Reactivation:**
+- First abuse report received
+- Community >100 profiles
+- Moderation workload requires tooling
+
+**Custom 404 Reactivation:**
+- User feedback on 404 experience
+- Branding refinement phase
+
+**Effort:** ~12 hours total (1.5 days)
+
+---
+
+### See Also: [Deferred Tickets README](../deferred/README.md)
+Complete documentation of deferred features, reactivation criteria, and migration paths.
+
+---
+
 ## Notes & Blockers
 
 _Use this section to track impediments, questions, or coordination needs._
@@ -314,6 +376,7 @@ _Use this section to track impediments, questions, or coordination needs._
 - **2025-12-22:** E1-T2 COMPLETED - Profile creation/edit flow with validation
 - **2025-12-22:** E1-T3 COMPLETED - Directory page with search, filters, pagination
 - **2025-12-22:** E1-T4 COMPLETED - Individual profile pages with visibility system
+- **2025-12-24:** E1-T4 marked as MVP complete - Report feature and custom 404 deferred
 
 ### Immediate Next Steps
 1. ✅ ~~Complete OnboardingForm component~~ DONE
@@ -328,5 +391,5 @@ _Use this section to track impediments, questions, or coordination needs._
 
 ---
 
-**Last Updated:** 2025-12-22
-**Next Review:** After E1-T4 completion
+**Last Updated:** 2025-12-24
+**Next Review:** Epic 2 planning (Portfolio & Bounty Integration)

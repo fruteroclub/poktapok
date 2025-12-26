@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, real, integer, pgEnum, foreignKey, check, index } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, real, integer, pgEnum, foreignKey, check, index, decimal } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, softDelete, metadata } from './utils'
 import { users } from './users'
@@ -98,6 +98,15 @@ export const profiles = pgTable(
       .default(0)
       .notNull(),
 
+    // $PULPA Activities Stats (Denormalized for Performance)
+    totalPulpaEarned: decimal('total_pulpa_earned', { precision: 18, scale: 8 })
+      .default('0')
+      .notNull(),
+
+    activitiesCompleted: integer('activities_completed')
+      .default(0)
+      .notNull(),
+
     // Timestamps & Audit
     ...timestamps,
     ...softDelete,
@@ -134,6 +143,16 @@ export const profiles = pgTable(
       sql`${table.profileViews} >= 0`
     ),
 
+    pulpaEarnedPositiveCheck: check(
+      'pulpa_earned_positive',
+      sql`${table.totalPulpaEarned} >= 0`
+    ),
+
+    activitiesCompletedPositiveCheck: check(
+      'activities_completed_positive',
+      sql`${table.activitiesCompleted} >= 0`
+    ),
+
     // Indexes
     userIdIdx: index('idx_profiles_user_id').on(table.userId),
     countryCodeIdx: index('idx_profiles_country_code').on(table.countryCode),
@@ -150,6 +169,10 @@ export const profiles = pgTable(
     // Stats indexes for sorting
     completedBountiesIdx: index('idx_profiles_completed_bounties').on(table.completedBounties),
     totalEarningsIdx: index('idx_profiles_total_earnings').on(table.totalEarningsUsd),
+
+    // $PULPA stats indexes
+    pulpaEarnedIdx: index('idx_profiles_pulpa_earned').on(table.totalPulpaEarned),
+    activitiesCompletedIdx: index('idx_profiles_activities_completed').on(table.activitiesCompleted),
   })
 )
 

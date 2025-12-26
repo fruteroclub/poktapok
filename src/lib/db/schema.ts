@@ -26,6 +26,7 @@ export * from '../../../drizzle/schema/applications'
 export * from '../../../drizzle/schema/invitations'
 export * from '../../../drizzle/schema/projects'
 export * from '../../../drizzle/schema/skills'
+export * from '../../../drizzle/schema/activities'
 
 // ============================================================
 // RE-EXPORT TYPES FOR CONVENIENCE
@@ -37,6 +38,7 @@ import type { Application, NewApplication } from '../../../drizzle/schema/applic
 import type { Invitation, NewInvitation } from '../../../drizzle/schema/invitations'
 import type { Project, NewProject } from '../../../drizzle/schema/projects'
 import type { Skill, NewSkill, UserSkill, NewUserSkill, ProjectSkill, NewProjectSkill } from '../../../drizzle/schema/skills'
+import type { Activity, NewActivity, ActivitySubmission, NewActivitySubmission, PulpaDistribution, NewPulpaDistribution, EvidenceRequirements, EvidenceFile } from '../../../drizzle/schema/activities'
 
 export type {
   User,
@@ -55,4 +57,12 @@ export type {
   NewUserSkill,
   ProjectSkill,
   NewProjectSkill,
+  Activity,
+  NewActivity,
+  ActivitySubmission,
+  NewActivitySubmission,
+  PulpaDistribution,
+  NewPulpaDistribution,
+  EvidenceRequirements,
+  EvidenceFile,
 }

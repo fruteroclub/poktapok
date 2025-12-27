@@ -126,3 +126,155 @@ export interface DirectoryCountry {
 export interface DirectoryCountriesData {
   countries: DirectoryCountry[];
 }
+
+// ============================================================================
+// Project Types (Epic 2: Portfolio Showcase)
+// ============================================================================
+
+import type { Project, Skill, UserSkill, ProjectSkill } from '@/lib/db/schema';
+
+/**
+ * Project with related data (skills, user info, etc.)
+ */
+export interface ProjectWithSkills extends Project {
+  skills: Skill[];
+}
+
+/**
+ * Project list item (minimal data for directory/profile views)
+ */
+export interface ProjectListItem {
+  id: string;
+  userId: string;
+  title: string;
+  description: string;
+  logoUrl: string | null;
+  projectType: string;
+  projectStatus: string;
+  featured: boolean;
+  viewCount: number;
+  publishedAt: Date | null;
+  skillCount: number;
+  hasRepository: boolean;
+  hasLiveUrl: boolean;
+  hasVideo: boolean;
+}
+
+/**
+ * Response for POST /api/projects (create project)
+ */
+export interface CreateProjectResponse {
+  project: ProjectWithSkills;
+}
+
+/**
+ * Response for GET /api/projects/:id (single project)
+ */
+export interface GetProjectResponse {
+  project: ProjectWithSkills;
+}
+
+/**
+ * Response for GET /api/projects (list projects)
+ */
+export interface ListProjectsResponse {
+  projects: ProjectWithSkills[];
+  total: number;
+}
+
+/**
+ * Response for PUT /api/projects/:id (update project)
+ */
+export interface UpdateProjectResponse {
+  project: ProjectWithSkills;
+}
+
+/**
+ * Response for DELETE /api/projects/:id (soft delete)
+ */
+export interface DeleteProjectResponse {
+  projectId: string;
+}
+
+/**
+ * Response for PATCH /api/projects/:id/publish (toggle status)
+ */
+export interface PublishProjectResponse {
+  project: ProjectWithSkills;
+}
+
+// ============================================================================
+// Skill Types (Epic 2: Portfolio Showcase)
+// ============================================================================
+
+/**
+ * Skill with usage count
+ */
+export interface SkillWithUsage extends Skill {
+  usageCount: number;
+}
+
+/**
+ * User skill with project count
+ */
+export interface UserSkillWithDetails extends UserSkill {
+  skill: Skill;
+  projectCount: number;
+}
+
+/**
+ * Response for GET /api/skills (list all skills)
+ */
+export interface ListSkillsResponse {
+  skills: SkillWithUsage[];
+  total: number;
+}
+
+/**
+ * Response for GET /api/users/:userId/skills (list user skills)
+ */
+export interface ListUserSkillsResponse {
+  skills: UserSkillWithDetails[];
+  total: number;
+}
+
+/**
+ * Response for POST /api/projects/:projectId/skills (link skill to project)
+ */
+export interface LinkProjectSkillResponse {
+  projectSkill: ProjectSkill;
+}
+
+/**
+ * Response for DELETE /api/projects/:projectId/skills/:skillId (unlink skill)
+ */
+export interface UnlinkProjectSkillResponse {
+  projectId: string;
+  skillId: string;
+}
+
+// ============================================================================
+// Query Parameter Types (Epic 2)
+// ============================================================================
+
+/**
+ * Query params for GET /api/projects
+ */
+export interface ListProjectsQuery {
+  userId?: string;
+  status?: 'draft' | 'wip' | 'completed' | 'archived';
+  type?: 'personal' | 'bootcamp' | 'hackathon' | 'work-related' | 'freelance' | 'bounty';
+  featured?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Query params for GET /api/skills
+ */
+export interface ListSkillsQuery {
+  category?: 'language' | 'framework' | 'tool' | 'blockchain' | 'other';
+  search?: string;
+  limit?: number;
+  offset?: number;
+}

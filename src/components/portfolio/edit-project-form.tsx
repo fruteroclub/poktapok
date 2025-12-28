@@ -120,6 +120,26 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
               errors={form.formState.errors as any}
               selectedSkills={selectedSkills}
               onSkillsChange={handleSkillsChange}
+              projectId={project.id} // Existing project ID for immediate upload
+              currentLogoUrl={project.logoUrl}
+              currentImageUrls={project.imageUrls || []}
+              onLogoUploadComplete={(logoUrl) => {
+                form.setValue('logoUrl', logoUrl);
+              }}
+              onLogoDelete={() => {
+                form.setValue('logoUrl', null);
+              }}
+              onImagesUploadComplete={(imageUrls) => {
+                form.setValue('imageUrls', imageUrls);
+              }}
+              onImageDelete={(imageUrl) => {
+                const current = form.getValues('imageUrls') || [];
+                form.setValue('imageUrls', current.filter((url) => url !== imageUrl));
+              }}
+              onImagesReorder={(imageUrls) => {
+                form.setValue('imageUrls', imageUrls);
+              }}
+              disabled={isSubmitting || isDeleting}
             />
 
             {/* Form actions */}

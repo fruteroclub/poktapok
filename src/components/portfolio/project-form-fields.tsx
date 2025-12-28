@@ -14,6 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProjectTypeSelector } from './project-type-selector';
 import { SkillSelector } from './skill-selector';
+import { LogoUpload } from './logo-upload';
+import { ImagesUpload } from './images-upload';
 import type { Skill } from '@/types/api-v1';
 import type { CreateProjectInput } from '@/lib/validators/project';
 
@@ -22,6 +24,15 @@ interface ProjectFormFieldsProps {
   errors: FieldErrors<CreateProjectInput>;
   selectedSkills: Skill[];
   onSkillsChange: (skills: Skill[]) => void;
+  projectId?: string | null; // For edit mode (existing projects)
+  currentLogoUrl?: string | null; // For edit mode (existing logo)
+  currentImageUrls?: string[]; // For edit mode (existing images)
+  onLogoUploadComplete?: (logoUrl: string) => void;
+  onLogoDelete?: () => void;
+  onImagesUploadComplete?: (imageUrls: string[]) => void;
+  onImageDelete?: (imageUrl: string) => void;
+  onImagesReorder?: (imageUrls: string[]) => void;
+  disabled?: boolean;
 }
 
 export function ProjectFormFields({
@@ -29,6 +40,15 @@ export function ProjectFormFields({
   errors,
   selectedSkills,
   onSkillsChange,
+  projectId,
+  currentLogoUrl,
+  currentImageUrls = [],
+  onLogoUploadComplete,
+  onLogoDelete,
+  onImagesUploadComplete,
+  onImageDelete,
+  onImagesReorder,
+  disabled = false,
 }: ProjectFormFieldsProps) {
   return (
     <div className="space-y-6">
@@ -199,6 +219,59 @@ export function ProjectFormFields({
           <strong>Note:</strong> At least one URL (repository, live demo, or video) is required to verify your project.
         </p>
       </div>
+
+      {/* Project Logo */}
+      <FormField
+        control={control}
+        name="logoUrl"
+        render={({ field }) => (
+          <FormItem>
+            <LogoUpload
+              projectId={projectId ?? null}
+              currentLogoUrl={currentLogoUrl || field.value}
+              onUploadComplete={(logoUrl) => {
+                field.onChange(logoUrl);
+                onLogoUploadComplete?.(logoUrl);
+              }}
+              onDelete={() => {
+                field.onChange(null);
+                onLogoDelete?.();
+              }}
+              disabled={disabled}
+            />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Project Images */}
+      <FormField
+        control={control}
+        name="imageUrls"
+        render={({ field }) => (
+          <FormItem>
+            <ImagesUpload
+              projectId={projectId ?? null}
+              currentImageUrls={currentImageUrls.length > 0 ? currentImageUrls : field.value}
+              onUploadComplete={(imageUrls) => {
+                field.onChange(imageUrls);
+                onImagesUploadComplete?.(imageUrls);
+              }}
+              onDelete={(imageUrl) => {
+                const updated = (field.value || []).filter((url) => url !== imageUrl);
+                field.onChange(updated);
+                onImageDelete?.(imageUrl);
+              }}
+              onReorder={(imageUrls) => {
+                field.onChange(imageUrls);
+                onImagesReorder?.(imageUrls);
+              }}
+              disabled={disabled}
+            />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Skills */}
       <FormField

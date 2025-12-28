@@ -91,6 +91,16 @@ export function CreateProjectForm() {
               errors={form.formState.errors}
               selectedSkills={selectedSkills}
               onSkillsChange={handleSkillsChange}
+              projectId={null} // New projects don't have an ID yet
+              currentLogoUrl={null}
+              currentImageUrls={[]}
+              onLogoUploadComplete={(logoUrl) => {
+                form.setValue('logoUrl', logoUrl);
+              }}
+              onImagesUploadComplete={(imageUrls) => {
+                form.setValue('imageUrls', imageUrls);
+              }}
+              disabled={isSubmitting}
             />
 
             {/* Form actions */}

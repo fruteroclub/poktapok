@@ -5,7 +5,7 @@ import BuildersShowcaseMarquee from './builders-showcase-marquee'
 export default function HeroSection() {
   return (
     <div className="min-h-[70svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
-      <div className="container mx-auto space-y-8 px-4 text-center">
+      <div className="page-content mx-auto space-y-8 px-4 text-center">
         {/* Título Principal */}
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl leading-tight font-semibold text-foreground md:text-5xl">

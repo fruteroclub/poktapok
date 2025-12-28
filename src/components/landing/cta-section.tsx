@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 export default function CTASection() {
   return (
     <section className="py-20 bg-gradient-to-r from-primary via-secondary to-accent">
-      <div className="container mx-auto px-4">
+      <div className="page-content mx-auto px-4">
         <div className="text-center text-white">
           <div className="mb-8">
             <div className="flex justify-center space-x-4 mb-6">

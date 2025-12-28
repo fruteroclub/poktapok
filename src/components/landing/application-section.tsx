@@ -53,7 +53,7 @@ export default function ApplicationSection() {
 
   return (
     <section className="py-20 bg-background/30">
-      <div className="container mx-auto px-4">
+      <div className="page-content mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             ¿Listo para <span className="text-primary">unirte</span> a la elite?

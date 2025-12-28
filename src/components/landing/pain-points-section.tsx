@@ -95,7 +95,7 @@ export default function PainPointsSection() {
       id="pain-points-section"
       className="page bg-gradient-to-b from-card/30 to-card/50 py-8 md:pt-12"
     >
-      <div className="container space-y-6">
+      <div className="page-content space-y-6">
         <div className="space-y-4 text-center">
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             ¿Te suena familiar?

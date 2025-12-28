@@ -2,10 +2,12 @@
 
 import { type Dispatch, type SetStateAction } from "react";
 import { useLogin, useLogout, usePrivy } from "@privy-io/react-auth";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth-store";
 
 type AuthButtonProps = {
   children?: React.ReactNode;
@@ -22,6 +24,8 @@ export default function AuthButton({
 }: AuthButtonProps) {
   const { ready: isPrivyReady, authenticated } = usePrivy();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { clearAuth } = useAuthStore();
 
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
@@ -87,10 +91,10 @@ export default function AuthButton({
 
         // Try to get email from Privy (optional - will be collected in onboarding if missing)
         const userEmail = privyUser.email?.address ||
-                         privyUser.google?.email ||
-                         privyUser.github?.email ||
-                         privyUser.discord?.email ||
-                         null;
+          privyUser.google?.email ||
+          privyUser.github?.email ||
+          privyUser.discord?.email ||
+          null;
 
         console.log("User email:", userEmail || "Not available");
 
@@ -205,6 +209,12 @@ export default function AuthButton({
         sessionStorage.removeItem(key);
       }
     });
+
+    // Clear auth state immediately
+    clearAuth();
+
+    // Invalidate and remove auth queries from cache
+    queryClient.removeQueries({ queryKey: ["auth", "me"] });
 
     await logoutWithPrivy();
     router.push("/");

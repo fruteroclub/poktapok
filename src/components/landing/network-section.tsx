@@ -48,7 +48,7 @@ export default function NetworkSection() {
 
   return (
     <section className="page py-12">
-      <div className="container gap-y-6">
+      <div className="page-content gap-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
             Nuestra <span className="text-primary">red</span> te abre puertas

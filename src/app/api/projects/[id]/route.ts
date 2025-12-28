@@ -13,6 +13,7 @@ import { apiSuccess, apiError, apiErrors, apiValidationError } from '@/lib/api/r
 import { updateProjectSchema } from '@/lib/validators/project';
 import { requireAuth, getAuthUser } from '@/lib/privy/middleware';
 import { eq, and, inArray, isNull, sql } from 'drizzle-orm';
+import { syncUserSkills } from '@/lib/skills/sync-user-skills';
 import type { GetProjectResponse, UpdateProjectResponse, DeleteProjectResponse } from '@/types/api-v1';
 
 /**
@@ -160,14 +161,6 @@ export async function PUT(
         return apiError('Some skills do not exist', { status: 400, code: 'INVALID_SKILLS' });
       }
 
-      // Get old skills
-      const oldSkills = await db
-        .select()
-        .from(projectSkills)
-        .where(eq(projectSkills.projectId, projectId));
-
-      const oldSkillIds = oldSkills.map((ps) => ps.skillId);
-
       // Remove old skill links
       await db.delete(projectSkills).where(eq(projectSkills.projectId, projectId));
 
@@ -181,49 +174,8 @@ export async function PUT(
         );
       }
 
-      // Update user_skills counts
-      const removedSkills = oldSkillIds.filter((id) => !skillIds.includes(id));
-      const addedSkills = skillIds.filter((id) => !oldSkillIds.includes(id));
-
-      // Decrement counts for removed skills
-      for (const skillId of removedSkills) {
-        const [userSkill] = await db
-          .select()
-          .from(userSkills)
-          .where(and(eq(userSkills.userId, userId), eq(userSkills.skillId, skillId)));
-
-        if (userSkill) {
-          if (userSkill.projectCount <= 1) {
-            await db.delete(userSkills).where(eq(userSkills.id, userSkill.id));
-          } else {
-            await db
-              .update(userSkills)
-              .set({ projectCount: userSkill.projectCount - 1 })
-              .where(eq(userSkills.id, userSkill.id));
-          }
-        }
-      }
-
-      // Increment counts for added skills
-      for (const skillId of addedSkills) {
-        const [userSkill] = await db
-          .select()
-          .from(userSkills)
-          .where(and(eq(userSkills.userId, userId), eq(userSkills.skillId, skillId)));
-
-        if (userSkill) {
-          await db
-            .update(userSkills)
-            .set({ projectCount: userSkill.projectCount + 1 })
-            .where(eq(userSkills.id, userSkill.id));
-        } else {
-          await db.insert(userSkills).values({
-            userId,
-            skillId,
-            projectCount: 1,
-          });
-        }
-      }
+      // Auto-sync user skills using centralized utility
+      await syncUserSkills(userId);
     }
 
     // Fetch updated project with skills
@@ -310,24 +262,8 @@ export async function DELETE(
       .set({ deletedAt: new Date() })
       .where(eq(projects.id, projectId));
 
-    // Decrement user skill counts
-    for (const ps of projectSkillsList) {
-      const [userSkill] = await db
-        .select()
-        .from(userSkills)
-        .where(and(eq(userSkills.userId, userId), eq(userSkills.skillId, ps.skillId)));
-
-      if (userSkill) {
-        if (userSkill.projectCount <= 1) {
-          await db.delete(userSkills).where(eq(userSkills.id, userSkill.id));
-        } else {
-          await db
-            .update(userSkills)
-            .set({ projectCount: userSkill.projectCount - 1 })
-            .where(eq(userSkills.id, userSkill.id));
-        }
-      }
-    }
+    // Auto-sync user skills (will remove skills with 0 projects)
+    await syncUserSkills(userId);
 
     return apiSuccess<DeleteProjectResponse>(
       { projectId },

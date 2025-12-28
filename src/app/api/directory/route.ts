@@ -17,6 +17,7 @@ import { API_ERROR_CODES } from "@/types/api-response";
  * - track: "ai" | "crypto" | "privacy" - Filter by learning track
  * - status: "available" | "open_to_offers" | "unavailable" - Filter by availability
  * - country: string - Filter by country name
+ * - skills: string (comma-separated skill IDs) - Filter by skills
  * - page: number (default: 1) - Page number for pagination
  * - limit: number (default: 24, max: 100) - Items per page
  *
@@ -49,6 +50,8 @@ export async function GET(request: NextRequest) {
       | "unavailable"
       | undefined;
     const country = searchParams.get("country") || undefined;
+    const skillsParam = searchParams.get("skills");
+    const skills = skillsParam ? skillsParam.split(',').filter(Boolean) : undefined;
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const limit = Math.min(
       100,
@@ -91,6 +94,7 @@ export async function GET(request: NextRequest) {
       learningTrack,
       availabilityStatus,
       country,
+      skills,
       page,
       limit,
     };

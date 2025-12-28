@@ -38,9 +38,10 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
   };
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
-      {/* Header with logo and title */}
-      <CardHeader className="space-y-2">
+    <Link href={`/portfolio/${id}`} className="block group">
+      <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg group-hover:border-primary">
+        {/* Header with logo and title */}
+        <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             {logoUrl && (
@@ -102,6 +103,7 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <Github className="w-4 h-4" />
@@ -113,6 +115,7 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={liveUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <ExternalLink className="w-4 h-4" />
@@ -124,6 +127,7 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={videoUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <Video className="w-4 h-4" />
@@ -143,18 +147,35 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
         {showActions && (
           <div className="flex items-center gap-2">
             {onEdit && (
-              <Button variant="outline" size="sm" onClick={() => onEdit(id)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onEdit(id);
+                }}
+              >
                 Edit
               </Button>
             )}
             {onDelete && projectStatus === 'draft' && (
-              <Button variant="ghost" size="sm" onClick={() => onDelete(id)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDelete(id);
+                }}
+              >
                 Delete
               </Button>
             )}
           </div>
         )}
       </CardFooter>
-    </Card>
+      </Card>
+    </Link>
   );
 }

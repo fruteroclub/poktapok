@@ -10,7 +10,7 @@ import { CreateProjectForm } from '@/components/portfolio/create-project-form';
 export default function NewProjectPage() {
   return (
     <PageWrapper>
-      <div className="container max-w-4xl mx-auto py-8 px-4">
+      <div className="page-content max-w-4xl mx-auto py-8 px-4">
         <CreateProjectForm />
       </div>
     </PageWrapper>

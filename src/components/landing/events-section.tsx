@@ -35,7 +35,7 @@ export default function EventsSection() {
 
   return (
     <section className="bg-background/50 py-20">
-      <div className="container mx-auto px-4">
+      <div className="page-content mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
             Eventos que <span className="text-primary">transforman</span>{' '}

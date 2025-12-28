@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 export default function PulpaSection() {
   return (
     <div className="page py-12">
-      <div className="container gap-y-6 lg:gap-y-4">
+      <div className="page-content gap-y-6 lg:gap-y-4">
         <div className="text-center space-y-2">
           <h2 className="text-3xl text-foreground md:text-4xl font-normal">
             <span className="text-primary font-bold">$PULPA</span><br />

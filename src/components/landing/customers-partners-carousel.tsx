@@ -65,7 +65,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
@@ -78,7 +78,7 @@ export default function CustomersPartnersCarousel() {
   }, [])
 
   return (
-    <div className="container gap-y-2">
+    <div className="page-content gap-y-2">
       <div className="flex flex-col gap-y-2 text-center">
         <h3 className="text-xl text-foreground md:text-2xl">
           Respaldados por los mejores del ecosistema

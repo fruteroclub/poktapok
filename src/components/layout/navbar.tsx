@@ -40,10 +40,10 @@ const MENU_ITEMS: MenuItemType[] = [
 
 export default function Navbar() {
   const pathname = usePathname()
-  const { ready } = usePrivy()
+  const { ready, authenticated } = usePrivy()
   const { data: authData, isLoading: isLoadingAuth, isFetching: isFetchingAuth } = useAuth();
   const user = authData?.user;
-  const isSignedIn = authData?.isAuthenticated;
+  const isSignedIn = authData?.isAuthenticated && authenticated;
   const isLoading = isLoadingAuth || isFetchingAuth;
 
   return (

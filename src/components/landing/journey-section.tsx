@@ -36,7 +36,7 @@ const phases = [
 export default function JourneyPage() {
   return (
     <section className="page py-12">
-      <div className="container items-center gap-y-12">
+      <div className="page-content items-center gap-y-12">
         <div className="space-y-4 text-center">
           <h2 className="text-4xl font-bold md:text-5xl">
             Tu camino al <span className="text-primary">Éxito</span>

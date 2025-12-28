@@ -12,7 +12,7 @@ import {
 export default function StatsSection() {
   return (
     <section className="page py-12">
-      <div className="container gap-y-8">
+      <div className="page-content gap-y-8">
         <div className="flex flex-col gap-y-4 text-center">
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             Nuestro <span className="text-primary">impacto</span> en números

@@ -95,7 +95,7 @@ export default async function ProjectPage({
 
   return (
     <PageWrapper>
-      <div className="container max-w-5xl mx-auto py-8 px-4 space-y-8">
+      <div className="page-content max-w-5xl mx-auto py-8 px-4 space-y-8">
         {/* View count tracker (client-side) */}
         <ViewCountTracker projectId={id} />
 

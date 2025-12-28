@@ -18,8 +18,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (isPrivyReady && !isAuthenticated) {
-      toast.info('Please login to continue')
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`)
+      router.push('/')
     }
   }, [isAuthenticated, isPrivyReady, router, pathname])
 
@@ -27,7 +26,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return (
       <PageWrapper>
         <div className="page">
-          <div className="container flex flex-col items-center gap-y-8 pb-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+          <div className="page-content flex flex-col items-center gap-y-8 pb-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             <Spinner size="12" />
             <p className="text-center text-2xl">Loading...</p>
           </div>
@@ -40,7 +39,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return (
       <PageWrapper>
         <div className="page">
-          <div className="container flex flex-col items-center gap-y-8 pb-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+          <div className="page-content flex flex-col items-center gap-y-8 pb-12 md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             <Spinner size="12" />
             <p className="text-center text-2xl">Redirecting...</p>
           </div>

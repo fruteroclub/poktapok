@@ -39,7 +39,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   if (isLoading) {
     return (
       <PageWrapper>
-        <div className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="page-content max-w-4xl mx-auto py-8 px-4">
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
@@ -52,7 +52,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   if (isError || !project) {
     return (
       <PageWrapper>
-        <div className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="page-content max-w-4xl mx-auto py-8 px-4">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Project Not Found</AlertTitle>
@@ -72,7 +72,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   if (!isOwner) {
     return (
       <PageWrapper>
-        <div className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="page-content max-w-4xl mx-auto py-8 px-4">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Access Denied</AlertTitle>
@@ -90,7 +90,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
 
   return (
     <PageWrapper>
-      <div className="container max-w-4xl mx-auto py-8 px-4">
+      <div className="page-content max-w-4xl mx-auto py-8 px-4">
         <EditProjectForm project={project} />
       </div>
     </PageWrapper>

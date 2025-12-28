@@ -46,7 +46,7 @@ export default function FAQSection() {
 
   return (
     <div className="page">
-      <div className="container gap-y-6 lg:gap-y-8">
+      <div className="page-content gap-y-6 lg:gap-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             Preguntas frecuentes

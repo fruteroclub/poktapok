@@ -12,6 +12,7 @@ import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/r
 import { createProjectSchema, listProjectsQuerySchema } from '@/lib/validators/project';
 import { requireAuth, getAuthUser } from '@/lib/privy/middleware';
 import { eq, and, inArray, isNull, desc, ne, sql, count } from 'drizzle-orm';
+import { syncUserSkills } from '@/lib/skills/sync-user-skills';
 import type { CreateProjectResponse, ListProjectsResponse } from '@/types/api-v1';
 
 /**
@@ -64,37 +65,24 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       .returning();
 
     // Link skills to project
-    await db.insert(projectSkills).values(
-      skillIds.map((skillId) => ({
-        projectId: newProject.id,
-        skillId,
-      }))
-    );
-
-    // Sync user skills (auto-add skills from this project)
-    for (const skillId of skillIds) {
-      const [existingUserSkill] = await db
-        .select()
-        .from(userSkills)
-        .where(and(eq(userSkills.userId, userId), eq(userSkills.skillId, skillId)));
-
-      if (existingUserSkill) {
-        await db
-          .update(userSkills)
-          .set({ projectCount: existingUserSkill.projectCount + 1 })
-          .where(eq(userSkills.id, existingUserSkill.id));
-      } else {
-        await db.insert(userSkills).values({
-          userId,
+    if (skillIds.length > 0) {
+      await db.insert(projectSkills).values(
+        skillIds.map((skillId) => ({
+          projectId: newProject.id,
           skillId,
-          projectCount: 1,
-        });
+        }))
+      );
+
+      // Increment skill usage counts
+      for (const skillId of skillIds) {
+        await db
+          .update(skills)
+          .set({ usageCount: sql`${skills.usageCount} + 1` })
+          .where(eq(skills.id, skillId));
       }
 
-      await db
-        .update(skills)
-        .set({ usageCount: sql`${skills.usageCount} + 1` })
-        .where(eq(skills.id, skillId));
+      // Auto-sync user skills using centralized utility
+      await syncUserSkills(userId);
     }
 
     // Fetch project with skills

@@ -37,9 +37,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAuthData: (data) =>
     set({
-      user: data.user,
-      profile: data.profile,
       isAuthenticated: !!data.user,
+      profile: data.profile,
+      user: data.user,
     }),
 
   clearAuth: () =>

@@ -3,7 +3,7 @@
 **Epic Goal:** Enable developers to showcase their work through projects, demonstrating skills with real evidence.
 
 **Duration:** 2-3 weeks
-**Story Points:** 21 (MVP) | 24 (with GitHub integration)
+**Story Points:** 24 (MVP) | 27 (with GitHub integration)
 **Dependencies:** Epic 1 (Talent Directory) complete
 
 ---
@@ -42,12 +42,13 @@
 
 | Ticket | Title | Points | Status | Priority | Notes |
 |--------|-------|--------|--------|----------|-------|
-| E2-T1 | Database Schema & Project CRUD API | 5 | 🔴 Not Started | High | Blocks all |
-| E2-T2 | Portfolio Builder UI | 5 | 🔴 Not Started | High | Core feature |
+| E2-T1 | Database Schema & Project CRUD API | 8 | 🟢 Completed | High | ✅ Dec 27, 2024 |
+| E2-T2 | Portfolio Builder UI | 5 | 🟢 Completed | High | ✅ Dec 27, 2024 |
 | E2-T3 | Image Upload System | 5 | 🔴 Not Started | High | Visual proof |
 | E2-T4 | Skills Management System | 3 | 🔴 Not Started | High | Project-validated |
 | E2-T5 | Enhanced Profile Page | 3 | 🔴 Not Started | High | Showcase |
-| E2-T6 | GitHub Integration | 3 | 🔴 Not Started | Medium | Nice-to-have |
+| E2-T6 | Individual Project View Page | 3 | 🔴 Not Started | High | Public showcase |
+| E2-T7 | GitHub Integration | 3 | 🔴 Not Started | Medium | Nice-to-have |
 
 **Status Legend:**
 - 🔴 Not Started
@@ -114,8 +115,21 @@
 
 ---
 
-### Phase 6: GitHub Integration (Optional, Days 14-15)
-**E2-T6: GitHub Repository Integration**
+### Phase 6: Project View Page (Days 14-15)
+**E2-T6: Individual Project View Page**
+- Public-facing project detail page
+- Display all project information, links, skills
+- Image gallery with lightbox
+- View count tracking
+- SEO meta tags (Open Graph, Twitter Card)
+- Owner actions (edit/delete)
+
+**Key Decision:** Server-side rendering for SEO, draft projects only visible to owner
+
+---
+
+### Phase 7: GitHub Integration (Optional, Days 16-17)
+**E2-T7: GitHub Repository Integration**
 - Auto-fetch repo data from GitHub API
 - Extract title, description, topics
 - Suggest skills from repo topics
@@ -347,12 +361,12 @@
 
 ## Notes
 
-- **MVP Scope:** E2-T1 through E2-T5 (21 story points)
-- **Optional:** E2-T6 GitHub integration (defer if time-constrained)
+- **MVP Scope:** E2-T1 through E2-T6 (24 story points)
+- **Optional:** E2-T7 GitHub integration (defer if time-constrained)
 - **Database Changes:** Use `bun run db:push` (no migrations for MVP)
 - **After Tickets:** Create wireframes for user journey validation
 
 ---
 
-**Last Updated:** 2025-12-26
-**Next Review:** After E2-T1 completion
+**Last Updated:** 2024-12-27
+**Next Review:** After E2-T3 completion

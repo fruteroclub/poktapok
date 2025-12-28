@@ -25,12 +25,12 @@ export const listSkillsQuerySchema = z.object({
   search: z.string().optional(),
   limit: z
     .string()
-    .transform((val) => Math.min(parseInt(val, 10), 100))
-    .default('100'),
+    .default('100')
+    .transform((val) => Math.min(parseInt(val, 10), 100)),
   offset: z
     .string()
-    .transform((val) => parseInt(val, 10))
-    .default('0'),
+    .default('0')
+    .transform((val) => parseInt(val, 10)),
 });
 
 /**

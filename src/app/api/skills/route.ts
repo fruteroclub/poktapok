@@ -9,7 +9,7 @@ import { db } from '@/lib/db';
 import { skills } from '@/lib/db/schema';
 import { apiSuccess, apiValidationError, apiErrors } from '@/lib/api/response';
 import { listSkillsQuerySchema } from '@/lib/validators/skill';
-import { eq, like, desc } from 'drizzle-orm';
+import { eq, like, desc, and } from 'drizzle-orm';
 import type { ListSkillsResponse } from '@/types/api-v1';
 
 /**
@@ -27,36 +27,29 @@ export async function GET(request: NextRequest) {
 
     const { category, search, limit, offset } = validation.data;
 
-    // Build query
-    let query = db.select().from(skills);
-
-    // Apply filters
+    // Build conditions array
+    const conditions = [];
     if (category) {
-      query = query.where(eq(skills.category, category));
+      conditions.push(eq(skills.category, category));
     }
-
     if (search) {
-      query = query.where(like(skills.name, `%${search}%`));
+      conditions.push(like(skills.name, `%${search}%`));
     }
 
-    // Order by usage count (most popular first), then alphabetically
-    const skillsList = await query
+    // Build and execute query
+    const skillsList = await db
+      .select()
+      .from(skills)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(skills.usageCount), skills.name)
       .limit(limit)
       .offset(offset);
 
-    // Get total count (without pagination)
-    const totalQuery = db.select({ count: db.$count() }).from(skills);
-
-    if (category) {
-      totalQuery.where(eq(skills.category, category));
-    }
-
-    if (search) {
-      totalQuery.where(like(skills.name, `%${search}%`));
-    }
-
-    const [{ count: total }] = await totalQuery;
+    // Get total count (without pagination) - using the same conditions
+    const [{ count: total }] = await db
+      .select({ count: db.$count(skills) })
+      .from(skills)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
 
     return apiSuccess<ListSkillsResponse>(
       { skills: skillsList, total },

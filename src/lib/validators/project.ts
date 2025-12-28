@@ -38,29 +38,25 @@ export const createProjectSchema = z
     liveUrl: z
       .string()
       .url('Live URL must be a valid URL')
-      .optional()
-      .nullable()
+      .nullish()
       .transform((val) => val || null),
 
     repositoryUrl: z
       .string()
       .url('Repository URL must be a valid URL')
-      .optional()
-      .nullable()
+      .nullish()
       .transform((val) => val || null),
 
     videoUrl: z
       .string()
       .url('Video URL must be a valid URL')
-      .optional()
-      .nullable()
+      .nullish()
       .transform((val) => val || null),
 
     logoUrl: z
       .string()
       .url('Logo URL must be a valid URL')
-      .optional()
-      .nullable()
+      .nullish()
       .transform((val) => val || null),
 
     imageUrls: z
@@ -117,12 +113,12 @@ export const listProjectsQuerySchema = z.object({
     .optional(),
   limit: z
     .string()
-    .transform((val) => Math.min(parseInt(val, 10), 100))
-    .default('20'),
+    .default('20')
+    .transform((val) => Math.min(parseInt(val, 10), 100)),
   offset: z
     .string()
-    .transform((val) => parseInt(val, 10))
-    .default('0'),
+    .default('0')
+    .transform((val) => parseInt(val, 10)),
 });
 
 // ============================================================

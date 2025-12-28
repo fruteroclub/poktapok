@@ -34,6 +34,7 @@ export async function fetchDirectoryProfiles(
   if (filters.availabilityStatus)
     params.set("status", filters.availabilityStatus);
   if (filters.country) params.set("country", filters.country);
+  if (filters.skills && filters.skills.length > 0) params.set("skills", filters.skills.join(","));
   if (filters.page) params.set("page", filters.page.toString());
   if (filters.limit) params.set("limit", filters.limit.toString());
 

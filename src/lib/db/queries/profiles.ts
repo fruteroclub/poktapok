@@ -113,7 +113,14 @@ export async function getDirectoryProfiles(
 
   // Build query - add skills join if filtering by skills
   if (skills && skills.length > 0) {
-    // Query with skills filter
+    // Query with skills filter using subquery to avoid duplicates
+    // The subquery finds distinct user IDs that have any of the selected skills
+    const usersWithSkills = db
+      .selectDistinct({ userId: userSkills.userId })
+      .from(userSkills)
+      .where(inArray(userSkills.skillId, skills));
+
+    // Main query joins with the subquery results
     const results = await db
       .select({
         // Profile fields
@@ -139,8 +146,7 @@ export async function getDirectoryProfiles(
       })
       .from(profiles)
       .innerJoin(users, eq(profiles.userId, users.id))
-      .innerJoin(userSkills, eq(profiles.userId, userSkills.userId))
-      .where(and(...conditions, inArray(userSkills.skillId, skills)))
+      .where(and(...conditions, inArray(profiles.userId, usersWithSkills)))
       .orderBy(desc(profiles.createdAt))
       .limit(limit)
       .offset(offset);
@@ -276,12 +282,17 @@ export async function getDirectoryProfilesCount(
 
   // Build query - add skills join if filtering by skills
   if (skills && skills.length > 0) {
+    // Use DISTINCT count to avoid counting duplicates when user has multiple matching skills
+    const usersWithSkills = db
+      .selectDistinct({ userId: userSkills.userId })
+      .from(userSkills)
+      .where(inArray(userSkills.skillId, skills));
+
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(profiles)
       .innerJoin(users, eq(profiles.userId, users.id))
-      .innerJoin(userSkills, eq(profiles.userId, userSkills.userId))
-      .where(and(...conditions, inArray(userSkills.skillId, skills)));
+      .where(and(...conditions, inArray(profiles.userId, usersWithSkills)));
 
     return Number(result[0]?.count ?? 0);
   }

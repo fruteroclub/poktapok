@@ -86,6 +86,7 @@ export interface DirectoryFilters {
   learningTrack?: "ai" | "crypto" | "privacy";
   availabilityStatus?: "available" | "open_to_offers" | "unavailable";
   country?: string;
+  skills?: string[]; // Filter by skill IDs
   page?: number;
   limit?: number;
 }

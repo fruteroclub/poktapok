@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { profiles, users } from "@/lib/db/schema";
-import { and, or, like, eq, desc, isNull, sql } from "drizzle-orm";
+import { profiles, users, userSkills } from "@/lib/db/schema";
+import { and, or, like, eq, desc, isNull, sql, inArray } from "drizzle-orm";
 
 /**
  * Directory Filters Type
@@ -11,6 +11,7 @@ export type DirectoryFilters = {
   learningTrack?: "ai" | "crypto" | "privacy";
   availabilityStatus?: "available" | "open_to_offers" | "unavailable";
   country?: string;
+  skills?: string[]; // Filter by skill IDs
   page?: number;
   limit?: number;
 };
@@ -61,6 +62,7 @@ export async function getDirectoryProfiles(
     learningTrack,
     availabilityStatus,
     country,
+    skills,
     page = 1,
     limit = 24,
   } = filters;
@@ -109,7 +111,64 @@ export async function getDirectoryProfiles(
 
   const offset = (page - 1) * limit;
 
-  // Execute query with JOIN
+  // Build query - add skills join if filtering by skills
+  if (skills && skills.length > 0) {
+    // Query with skills filter
+    const results = await db
+      .select({
+        // Profile fields
+        id: profiles.id,
+        userId: profiles.userId,
+        city: profiles.city,
+        country: profiles.country,
+        countryCode: profiles.countryCode,
+        learningTracks: profiles.learningTracks,
+        availabilityStatus: profiles.availabilityStatus,
+        completedBounties: profiles.completedBounties,
+        totalEarningsUsd: profiles.totalEarningsUsd,
+        githubUrl: profiles.githubUrl,
+        twitterUrl: profiles.twitterUrl,
+        linkedinUrl: profiles.linkedinUrl,
+        telegramHandle: profiles.telegramHandle,
+        profileCreatedAt: profiles.createdAt,
+        // User fields
+        username: users.username,
+        displayName: users.displayName,
+        bio: users.bio,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(profiles)
+      .innerJoin(users, eq(profiles.userId, users.id))
+      .innerJoin(userSkills, eq(profiles.userId, userSkills.userId))
+      .where(and(...conditions, inArray(userSkills.skillId, skills)))
+      .orderBy(desc(profiles.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    // Map to DirectoryProfile type
+    return results.map((r) => ({
+      id: r.id,
+      userId: r.userId,
+      username: r.username!,
+      displayName: r.displayName,
+      bio: r.bio,
+      avatarUrl: r.avatarUrl,
+      city: r.city,
+      country: r.country,
+      countryCode: r.countryCode,
+      learningTracks: r.learningTracks,
+      availabilityStatus: r.availabilityStatus,
+      completedBounties: r.completedBounties,
+      totalEarningsUsd: r.totalEarningsUsd,
+      githubUrl: r.githubUrl,
+      twitterUrl: r.twitterUrl,
+      linkedinUrl: r.linkedinUrl,
+      telegramHandle: r.telegramHandle,
+      createdAt: r.profileCreatedAt,
+    }));
+  }
+
+  // Query without skills filter
   const results = await db
     .select({
       // Profile fields
@@ -172,7 +231,7 @@ export async function getDirectoryProfiles(
 export async function getDirectoryProfilesCount(
   filters: Omit<DirectoryFilters, "page" | "limit">
 ): Promise<number> {
-  const { search, learningTrack, availabilityStatus, country } = filters;
+  const { search, learningTrack, availabilityStatus, country, skills } = filters;
 
   const conditions = [];
 
@@ -213,6 +272,18 @@ export async function getDirectoryProfilesCount(
   // Filter by country
   if (country) {
     conditions.push(eq(profiles.country, country));
+  }
+
+  // Build query - add skills join if filtering by skills
+  if (skills && skills.length > 0) {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(profiles)
+      .innerJoin(users, eq(profiles.userId, users.id))
+      .innerJoin(userSkills, eq(profiles.userId, userSkills.userId))
+      .where(and(...conditions, inArray(userSkills.skillId, skills)));
+
+    return Number(result[0]?.count ?? 0);
   }
 
   const result = await db

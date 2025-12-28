@@ -1,7 +1,7 @@
 # Epic 2: Portfolio Showcase - Progress Report
 
 **Date:** December 27, 2024
-**Epic Status:** In Progress (2/7 tickets complete)
+**Epic Status:** In Progress (3/7 tickets complete - 18/24 MVP points)
 
 ---
 
@@ -55,7 +55,55 @@
 
 ---
 
+### E2-T3: Image Upload System (5 pts)
+**Status:** 🟢 Complete
+**Completed:** December 27, 2024
+
+**Deliverables:**
+- ✅ Logo upload component with drag-and-drop
+- ✅ Multiple images upload (up to 4 additional)
+- ✅ Image preview and compression (WebP conversion)
+- ✅ Vercel Blob Storage integration
+- ✅ API endpoints for logo and images
+- ✅ Delete with automatic cleanup
+- ✅ Drag-to-reorder images
+- ✅ Image lightbox preview modal
+- ✅ React Hook Form integration
+- ✅ Next.js image optimization config
+
+**Files Created:** 10+ files
+- API Routes: `src/app/api/projects/[id]/logo/`, `src/app/api/projects/[id]/images/`
+- Components: `src/components/portfolio/logo-upload.tsx`, `images-upload.tsx`, `image-lightbox.tsx`
+- Utilities: `src/lib/upload/image-validation.ts`, `image-compression.ts`
+- Config: Updated `next.config.ts` with Vercel Blob Storage hostname
+
+**Build Status:** ✅ Production build successful with image configuration
+
+---
+
 ## Current Ticket 🟡
+
+### E2-T4: Skills Management System (3 pts)
+**Status:** 🔴 Not Started
+**Priority:** High
+**Dependencies:** E2-T1, E2-T2
+
+---
+
+## Upcoming Tickets 🔴
+
+### E2-T5: Enhanced Profile Page (3 pts)
+**Status:** Not Started
+**Priority:** High
+
+**Scope:**
+- Portfolio section with project cards
+- Skills section with badges
+- Filtering by tech stack/type/status
+- Manual reordering for owners
+- Link to individual project pages (E2-T6)
+
+---
 
 ### E2-T6: Individual Project View Page (3 pts)
 **Status:** 🔴 Not Started (newly created)
@@ -82,44 +130,12 @@
 
 ---
 
-## Upcoming Tickets 🔴
-
-### E2-T3: Image Upload System (5 pts)
-**Status:** Not Started
-**Priority:** High
-
-**Scope:**
-- Logo upload for projects
-- Additional images (up to 5 per project)
-- Vercel Blob Storage integration
-- Client-side image compression
-- Delete old images on update
-
----
-
-### E2-T4: Skills Management System (3 pts)
-**Status:** Not Started
-**Priority:** High
-
 **Scope:**
 - Auto-sync user skills from projects
 - Skills cannot be self-reported (enforced)
 - Top 5 skills displayed on profile
 - Directory filtering by skills
 - Skill badges on profile
-
----
-
-### E2-T5: Enhanced Profile Page (3 pts)
-**Status:** Not Started
-**Priority:** High
-
-**Scope:**
-- Portfolio section with project cards
-- Skills section with badges
-- Filtering by tech stack/type/status
-- Manual reordering for owners
-- Link to individual project pages (E2-T6)
 
 ---
 
@@ -138,8 +154,8 @@
 ## Epic Metrics
 
 **Story Points:**
-- Completed: 13/24 (54% of MVP)
-- MVP Target: 24 points (E2-T1 through E2-T6)
+- Completed: 18/24 (75% of MVP) ✅
+- Remaining MVP: 6 points (E2-T4, E2-T5, E2-T6)
 - Optional: 3 points (E2-T7 GitHub integration)
 - Total Epic: 27 points
 
@@ -147,24 +163,27 @@
 - Started: December 27, 2024
 - E2-T1 Complete: December 27, 2024
 - E2-T2 Complete: December 27, 2024
-- Estimated MVP Completion: ~2 weeks from start
+- E2-T3 Complete: December 27, 2024
+- Estimated MVP Completion: ~1 week remaining
 
 **Velocity:**
-- Day 1: 13 story points completed
-- Average: ~1.5-2 days per ticket
-- Projected: 2-3 weeks for full MVP
+- Day 1: 18 story points completed
+- Average: ~6 story points per ticket
+- Projected: 1 more week for remaining 6 MVP points
 
 ---
 
 ## Key Achievements
 
 ### Technical Excellence
-1. **Zero Build Errors:** Full production build successful
+1. **Zero Build Errors:** Full production build successful (all 3 tickets)
 2. **Type Safety:** 100% TypeScript with no `any` types (enforced by ESLint)
 3. **API Patterns:** Consistent envelope pattern for all endpoints
 4. **Error Handling:** Structured error responses with codes and details
-5. **Next.js 16:** Async params pattern implemented correctly
+5. **Next.js 16:** Async params pattern + image optimization configured
 6. **Drizzle ORM:** Query optimization with conditions array pattern
+7. **Image Optimization:** Client-side compression with WebP conversion
+8. **Vercel Blob Storage:** Secure image storage with automatic cleanup
 
 ### Code Quality
 1. **Service Layer Abstraction:** Clean separation of concerns
@@ -180,6 +199,10 @@
 4. **Empty States:** Helpful guidance when no projects exist
 5. **Loading States:** React Query handles loading/error states
 6. **Toast Notifications:** Clear success/error feedback (Sonner)
+7. **Drag-and-Drop:** Intuitive image upload and reordering
+8. **Image Preview:** Real-time preview before and after upload
+9. **Image Compression:** Automatic optimization with user feedback
+10. **Lightbox Modal:** Full-screen image viewing with keyboard navigation
 
 ---
 
@@ -247,37 +270,34 @@
 
 ## Next Steps
 
-### Immediate (Next 2 Days)
-1. **E2-T6: Project View Page**
+### Immediate (Next 2-3 Days)
+1. **E2-T4: Skills Management System** (3 pts)
+   - Auto-sync user skills from projects
+   - Skills cannot be self-reported (enforced)
+   - Top 5 skills calculation and display
+   - Profile display integration
+   - Directory filtering by skills
+
+### Short Term (Days 4-5)
+2. **E2-T5: Enhanced Profile Page** (3 pts)
+   - Portfolio section with project cards
+   - Skills badges display
+   - Filtering by tech stack/type/status
+   - Manual reordering for owners
+   - Link to individual project pages
+
+### Medium Term (Days 6-7)
+3. **E2-T6: Individual Project View Page** (3 pts)
    - Server-side rendering setup
    - Project information display
+   - Image gallery with lightbox integration
    - Owner action buttons
    - SEO meta tags
    - View count tracking
    - Draft access control
 
-### Short Term (Week 2)
-2. **E2-T3: Image Upload System**
-   - Logo upload component
-   - Additional images gallery
-   - Vercel Blob integration
-   - Image compression
-
-3. **E2-T4: Skills Management**
-   - Auto-sync from projects
-   - Top 5 skills calculation
-   - Profile display
-   - Directory filtering
-
-### Medium Term (Week 3)
-4. **E2-T5: Enhanced Profile Page**
-   - Portfolio section with project cards
-   - Skills badges display
-   - Filtering and sorting
-   - Manual reordering for owners
-
 ### Optional (Post-MVP)
-5. **E2-T7: GitHub Integration**
+4. **E2-T7: GitHub Integration** (3 pts)
    - Auto-fetch repo data
    - Skill suggestions from topics
    - README parsing
@@ -314,12 +334,13 @@
 2. **RENAMED:** `E2-T6-github-integration.md` → `E2-T7-github-integration.md`
 3. **UPDATED:** `0-index.md` (status table, story points)
 4. **UPDATED:** `E2-T2-portfolio-builder-ui.md` (completion status)
-5. **NEW:** `EPIC-2-PROGRESS.md` (this document)
+5. **UPDATED:** `E2-T3-image-upload.md` (completion status with summary)
+6. **UPDATED:** `EPIC-2-PROGRESS.md` (this document)
 
 ### Story Point Adjustments
 - MVP: 21 → 24 points (added E2-T6)
 - Total: 24 → 27 points (includes optional E2-T7)
-- Completion: 13/24 MVP points (54%)
+- Completion: 18/24 MVP points (75%) ✅
 
 ---
 

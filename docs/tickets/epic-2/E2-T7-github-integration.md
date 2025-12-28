@@ -2,10 +2,11 @@
 
 **Epic:** Epic 2 - Portfolio Showcase
 **Story Points:** 3
-**Status:** 🔴 Not Started
-**Assignee:** Full-stack Developer
+**Status:** ⏭️ Deferred to Post-MVP
+**Deferred:** Dec 27, 2024
+**Assignee:** TBD (Post-MVP)
 **Dependencies:** E2-T2 (Project Form exists)
-**Priority:** Medium (Nice-to-have, can defer)
+**Priority:** Medium (Nice-to-have, deferred)
 
 ---
 
@@ -172,6 +173,74 @@ function mapTopicsToSkills(topics: string[]) {
 
 ---
 
-**Estimated Time:** 1-2 days
-**Complexity:** Medium (external API integration)
-**Priority:** Medium (Nice-to-have)
+## Deferral Decision Summary
+
+**Date:** December 27, 2024
+**Decision:** Defer to post-MVP
+**Reason:** Technical limitation with Privy authentication
+
+### Analysis Findings
+
+**Privy Limitation Discovered:**
+- Privy provides only basic GitHub profile data (email, username, avatar)
+- **Privy does NOT expose OAuth access tokens** for third-party services
+- Cannot access user's GitHub repositories via Privy authentication alone
+
+### Implementation Options Analyzed
+
+**Option 1: Server-Side Token (Evaluated)**
+- Use platform's GitHub Personal Access Token
+- Access public repositories only
+- No user-specific permissions
+- **Limitation:** Cannot access user's private repos, uses shared rate limit
+
+**Option 2: Separate GitHub OAuth (Recommended for Post-MVP)**
+- Implement GitHub App or OAuth App
+- Store user's GitHub access token (encrypted)
+- Full user-specific repository access
+- Private repo access with user consent
+- Per-user rate limits
+- **Complexity:** Requires additional OAuth flow, token management, security considerations
+
+**Option 3: Hybrid Approach (Future Enhancement)**
+- Server token for public repos (no auth)
+- Optional GitHub OAuth connection for private repos
+- Progressive enhancement based on user needs
+
+### MVP Justification for Deferral
+
+**Current Manual Flow is Sufficient:**
+1. User pastes GitHub URL in repository field
+2. User copies description from README manually
+3. User selects skills from dropdown (based on tech used)
+4. Full user control over project presentation
+
+**Benefits of Manual Entry:**
+- Complete control over project description
+- No dependency on external APIs
+- No rate limit concerns
+- Simpler, more reliable UX
+
+**Post-MVP Enhancement Value:**
+- Auto-fill saves user time (convenience, not critical)
+- Skill suggestions from topics (nice-to-have)
+- Better UX for users adding many projects
+- Requires user demand to justify complexity
+
+### Future Implementation Recommendation
+
+When implementing post-MVP:
+1. Create GitHub OAuth App in organization settings
+2. Implement `/api/auth/github/connect` OAuth flow
+3. Store encrypted access tokens in database (`github_tokens` table)
+4. Create `/api/github/fetch-repo` endpoint with user token
+5. Add "Connect GitHub" option in settings
+6. Show "Import from GitHub" in project form when connected
+
+**Estimated Effort (Post-MVP):** 3-4 days (OAuth + token management + security)
+
+---
+
+**Estimated Time:** 1-2 days (original), 3-4 days (with GitHub OAuth)
+**Complexity:** Medium → High (requires separate OAuth implementation)
+**Priority:** Medium (Nice-to-have, deferred to post-MVP)

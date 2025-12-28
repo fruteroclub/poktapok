@@ -2,7 +2,7 @@
 
 **Epic:** Epic 2 - Portfolio Showcase
 **Story Points:** 3
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress
 **Assignee:** Frontend Developer
 **Dependencies:** E2-T2 (Projects exist), E2-T4 (Skills exist)
 
@@ -17,43 +17,43 @@ Display portfolio projects and skills on user profile pages with filtering and m
 ## Acceptance Criteria
 
 ### Portfolio Section
-- [ ] Portfolio section below bio on profile page
-- [ ] Project count displayed: "5 Projects"
-- [ ] Grid layout: 3 columns desktop, 2 tablet, 1 mobile
-- [ ] Show first 6 projects, "Load More" if >6
-- [ ] Featured project pinned at top (if user selected one)
-- [ ] Manual reordering (owner only, drag-and-drop)
+- [x] Portfolio section below bio on profile page
+- [x] Project count displayed: "5 Projects"
+- [x] Grid layout: 3 columns desktop, 2 tablet, 1 mobile
+- [x] Show first 6 projects, "Load More" if >6
+- [x] Featured project pinned at top (if user selected one)
+- [ ] Manual reordering (owner only, drag-and-drop) - *Deferred for future iteration*
 
 ### Project Cards
-- [ ] Logo/thumbnail image
-- [ ] Project title
-- [ ] Description snippet (first 100 chars)
-- [ ] Tech stack badges (max 3 skills shown, "+2 more")
-- [ ] Project type badge (hackathon, personal, etc.)
-- [ ] Project status indicator (WIP, Completed)
-- [ ] Action links: GitHub, Live Demo, Video
-- [ ] Hover effects and transitions
+- [x] Logo/thumbnail image
+- [x] Project title
+- [x] Description snippet (first 100 chars)
+- [x] Tech stack badges (max 3 skills shown, "+2 more")
+- [x] Project type badge (hackathon, personal, etc.)
+- [x] Project status indicator (WIP, Completed)
+- [x] Action links: GitHub, Live Demo, Video
+- [x] Hover effects and transitions
 
 ### Filtering & Sorting
-- [ ] Filter by tech stack (multi-select)
-- [ ] Filter by project type
-- [ ] Filter by status (WIP, Completed)
-- [ ] Sort: Newest First (default) OR Manual Order (owner-set)
-- [ ] Clear filters button
+- [x] Filter by tech stack (multi-select)
+- [x] Filter by project type
+- [x] Filter by status (WIP, Completed)
+- [x] Sort: Newest First (default) OR Manual Order (owner-set)
+- [x] Clear filters button
 
 ### Skills Section
-- [ ] Skills section below portfolio
-- [ ] Top 5 skills displayed as badges
-- [ ] Skills sorted by project count (descending)
-- [ ] Category color-coding: language (blue), framework (green), tool (yellow), blockchain (purple)
-- [ ] Project count per skill: "React (5 projects)"
-- [ ] "View All Skills" modal if >5 skills
+- [x] Skills section below portfolio
+- [x] Top 5 skills displayed as badges
+- [x] Skills sorted by project count (descending)
+- [x] Category color-coding: language (blue), framework (green), tool (yellow), blockchain (purple)
+- [x] Project count per skill: "React (5 projects)"
+- [x] "View All Skills" modal if >5 skills
 
 ### Owner Actions (Profile Owner Only)
-- [ ] "Reorder Projects" toggle (enables drag-drop)
-- [ ] "Feature This Project" button on cards
-- [ ] Save reordering changes to `displayOrder` field
-- [ ] Visual feedback during reordering
+- [ ] "Reorder Projects" toggle (enables drag-drop) - *Deferred for future iteration*
+- [ ] "Feature This Project" button on cards - *Deferred for future iteration*
+- [ ] Save reordering changes to `displayOrder` field - *Deferred for future iteration*
+- [ ] Visual feedback during reordering - *Deferred for future iteration*
 
 ---
 

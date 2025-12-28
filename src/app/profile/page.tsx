@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { EditableUserCard } from "@/components/profile/editable-user-card";
 import { EditableProfileCard } from "@/components/profile/editable-profile-card";
 import { ProfileSkillsSection } from "@/components/profile/profile-skills-section";
+import { PortfolioProjectsSection } from "@/components/profile/portfolio-projects-section";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import PageWrapper from "@/components/layout/page-wrapper";
@@ -91,6 +92,14 @@ export default function ProfilePage() {
             {/* Profile Card - Profile table data */}
             <EditableProfileCard
               className="w-full md:w-4/5 lg:w-2/3" profile={profile} userId={user.id} />
+
+            {/* Portfolio Projects Section */}
+            <div className="w-full">
+              <PortfolioProjectsSection
+                userId={user.id}
+                isOwner={true}
+              />
+            </div>
 
             {/* Skills Section - Earned from projects */}
             <div className="w-full md:w-4/5 lg:w-2/3">

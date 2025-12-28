@@ -9,6 +9,8 @@ import {
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileInfo } from "@/components/profile/profile-info";
 import { SocialLinks } from "@/components/profile/social-links";
+import { PortfolioProjectsSection } from "@/components/profile/portfolio-projects-section";
+import { ProfileSkillsSection } from "@/components/profile/profile-skills-section";
 import PageWrapper from "@/components/layout/page-wrapper";
 import { Section } from "@/components/layout/section";
 
@@ -154,6 +156,22 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </div>
             )}
         </div>
+      </Section>
+
+      {/* Portfolio Projects Section - Full width */}
+      <Section className="mt-8">
+        <PortfolioProjectsSection
+          userId={user.id}
+          isOwner={isOwner}
+        />
+      </Section>
+
+      {/* Skills Section - Full width */}
+      <Section className="mt-8">
+        <ProfileSkillsSection
+          userId={user.id}
+          isOwner={isOwner}
+        />
       </Section>
     </div>
     </PageWrapper>

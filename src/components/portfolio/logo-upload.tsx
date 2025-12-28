@@ -17,6 +17,7 @@ interface LogoUploadProps {
   projectId: string | null; // null for new projects (upload after creation)
   currentLogoUrl?: string | null;
   onUploadComplete?: (logoUrl: string) => void;
+  onFileSelected?: (file: File) => void; // For new projects (file selection before upload)
   onDelete?: () => void;
   disabled?: boolean;
 }
@@ -25,6 +26,7 @@ export function LogoUpload({
   projectId,
   currentLogoUrl,
   onUploadComplete,
+  onFileSelected,
   onDelete,
   disabled = false,
 }: LogoUploadProps) {
@@ -82,9 +84,9 @@ export function LogoUpload({
 
           onUploadComplete?.(logoUrl);
         } else {
-          // For new projects, just show preview (will upload on form submit)
-          toast.success('Logo ready to upload');
-          onUploadComplete?.(preview);
+          // For new projects, store the file object (will upload after project creation)
+          toast.success('Logo ready');
+          onFileSelected?.(compressedFile);
         }
       } catch (error) {
         console.error('Logo upload error:', error);
@@ -94,7 +96,7 @@ export function LogoUpload({
         setIsUploading(false);
       }
     },
-    [projectId, currentLogoUrl, previewUrl, onUploadComplete]
+    [projectId, currentLogoUrl, previewUrl, onUploadComplete, onFileSelected]
   );
 
   const handleDelete = async () => {

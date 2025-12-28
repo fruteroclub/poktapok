@@ -24,6 +24,8 @@ import type { Skill } from '@/types/api-v1';
 export function CreateProjectForm() {
   const router = useRouter();
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
+  const [pendingLogoFile, setPendingLogoFile] = useState<File | null>(null);
+  const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([]);
 
   // Initialize form with default values
   const form = useForm<CreateProjectInput>({
@@ -55,7 +57,60 @@ export function CreateProjectForm() {
   // Form submission handler
   const onSubmit = async (data: CreateProjectInput) => {
     try {
-      const response = await createProjectMutation.mutateAsync(data);
+      // Step 1: Create project without logo/images first
+      toast.info('Creating project...');
+      const projectData = {
+        ...data,
+        logoUrl: null, // Don't send blob URLs
+        imageUrls: [], // Don't send blob URLs
+      };
+
+      const response = await createProjectMutation.mutateAsync(projectData);
+      const projectId = response.project.id;
+
+      // Step 2: Upload logo if selected
+      if (pendingLogoFile) {
+        try {
+          toast.info('Uploading logo...');
+          const formData = new FormData();
+          formData.append('logo', pendingLogoFile);
+
+          const uploadResponse = await fetch(`/api/projects/${projectId}/logo`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            toast.warning('Logo upload failed, but project was created');
+          }
+        } catch (uploadError) {
+          console.error('Logo upload error:', uploadError);
+          toast.warning('Logo upload failed, but project was created');
+        }
+      }
+
+      // Step 3: Upload images if selected
+      if (pendingImageFiles.length > 0) {
+        try {
+          toast.info(`Uploading ${pendingImageFiles.length} image(s)...`);
+          const formData = new FormData();
+          pendingImageFiles.forEach((file) => {
+            formData.append('images', file);
+          });
+
+          const uploadResponse = await fetch(`/api/projects/${projectId}/images`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            toast.warning('Some images failed to upload, but project was created');
+          }
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          toast.warning('Some images failed to upload, but project was created');
+        }
+      }
 
       toast.success('Project created successfully!');
 
@@ -94,11 +149,11 @@ export function CreateProjectForm() {
               projectId={null} // New projects don't have an ID yet
               currentLogoUrl={null}
               currentImageUrls={[]}
-              onLogoUploadComplete={(logoUrl) => {
-                form.setValue('logoUrl', logoUrl);
+              onLogoFileSelected={(file) => {
+                setPendingLogoFile(file);
               }}
-              onImagesUploadComplete={(imageUrls) => {
-                form.setValue('imageUrls', imageUrls);
+              onImageFilesSelected={(files) => {
+                setPendingImageFiles(files);
               }}
               disabled={isSubmitting}
             />

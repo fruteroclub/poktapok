@@ -12,12 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/lib/utils/directory";
+import { SkillsFilter } from "@/components/directory/skills-filter";
 import type { DirectoryFilters } from "@/types/api-v1";
 
 interface FiltersProps {
   filters: DirectoryFilters;
   countries: Array<{ country: string; countryCode: string; count: number }>;
-  onFilterChange: (key: keyof DirectoryFilters, value: string | null) => void;
+  onFilterChange: (key: keyof DirectoryFilters, value: string | string[] | null) => void;
   onClearAll: () => void;
 }
 
@@ -28,7 +29,10 @@ export function Filters({
   onClearAll,
 }: FiltersProps) {
   const hasActiveFilters =
-    filters.learningTrack || filters.availabilityStatus || filters.country;
+    filters.learningTrack ||
+    filters.availabilityStatus ||
+    filters.country ||
+    (filters.skills && filters.skills.length > 0);
 
   return (
     <Card>
@@ -143,6 +147,17 @@ export function Filters({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Skills Filter */}
+        <div className="space-y-3">
+          <Label className="text-sm font-semibold">Skills</Label>
+          <SkillsFilter
+            selectedSkillIds={filters.skills || []}
+            onSelectionChange={(skillIds) =>
+              onFilterChange("skills", skillIds.length > 0 ? skillIds : null)
+            }
+          />
         </div>
       </CardContent>
     </Card>

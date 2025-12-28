@@ -28,12 +28,17 @@ export default function DirectoryPage() {
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // Parse skills from URL (comma-separated)
+  const skillsParam = searchParams.get("skills");
+  const skillsFromUrl = skillsParam ? skillsParam.split(",").filter(Boolean) : undefined;
+
   const [currentFilters, setCurrentFilters] = useState<DirectoryFilters>({
     search: searchParams.get("search") || undefined,
     learningTrack: (searchParams.get("learningTrack") as "ai" | "crypto" | "privacy" | undefined) || undefined,
     availabilityStatus:
       (searchParams.get("availabilityStatus") as "available" | "open_to_offers" | "unavailable" | undefined) || undefined,
     country: searchParams.get("country") || undefined,
+    skills: skillsFromUrl,
     page: parseInt(searchParams.get("page") || "1"),
     limit: 24,
   });
@@ -41,11 +46,16 @@ export default function DirectoryPage() {
   const { data, isLoading, isError } = useDirectoryProfiles(currentFilters);
   const { data: countriesData } = useDirectoryCountries();
 
-  const updateFilter = (key: keyof DirectoryFilters, value: string | null) => {
+  const updateFilter = (key: keyof DirectoryFilters, value: string | string[] | null) => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (value) {
-      params.set(key, value);
+      // Handle array values (skills)
+      if (Array.isArray(value)) {
+        params.set(key, value.join(","));
+      } else {
+        params.set(key, value);
+      }
     } else {
       params.delete(key);
     }
@@ -80,7 +90,8 @@ export default function DirectoryPage() {
     currentFilters.search ||
     currentFilters.learningTrack ||
     currentFilters.availabilityStatus ||
-    currentFilters.country;
+    currentFilters.country ||
+    (currentFilters.skills && currentFilters.skills.length > 0);
 
   const profiles = data?.profiles || [];
   const pagination = data?.pagination;

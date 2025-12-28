@@ -1,4 +1,4 @@
-# E2-T6: GitHub Repository Integration
+# E2-T7: GitHub Repository Integration
 
 **Epic:** Epic 2 - Portfolio Showcase
 **Story Points:** 3

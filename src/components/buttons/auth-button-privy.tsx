@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 type AuthButtonProps = {
   children?: React.ReactNode;
   className?: string;
-  size?: "default" | "sm" | "lg" | "xl" | "icon" | null | undefined;
+  size?: "default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-lg" | null | undefined;
   setIsMenuOpen?: Dispatch<SetStateAction<boolean>>;
 };
 

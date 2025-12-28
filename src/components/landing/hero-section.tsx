@@ -31,7 +31,7 @@ export default function HeroSection() {
         {/* CTA Button */}
         <div className="flex justify-center">
           <AuthButtonPrivy
-            size="xl"
+            size="lg"
             className="text-2xl font-medium transition duration-300 ease-in-out hover:scale-105 lg:px-14 lg:py-6"
           >
             Quiero unirme{' '}

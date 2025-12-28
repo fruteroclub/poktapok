@@ -133,6 +133,9 @@ export interface DirectoryCountriesData {
 
 import type { Project, Skill, UserSkill, ProjectSkill } from '@/lib/db/schema';
 
+// Re-export schema types for convenience
+export type { Project, Skill, UserSkill, ProjectSkill };
+
 /**
  * Project with related data (skills, user info, etc.)
  */

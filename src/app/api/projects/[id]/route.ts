@@ -9,7 +9,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { projects, projectSkills, skills, userSkills, users } from '@/lib/db/schema';
-import { apiSuccess, apiError, apiErrors } from '@/lib/api/response';
+import { apiSuccess, apiError, apiErrors, apiValidationError } from '@/lib/api/response';
 import { updateProjectSchema } from '@/lib/validators/project';
 import { requireAuth, getAuthUser } from '@/lib/privy/middleware';
 import { eq, and, inArray, isNull, sql } from 'drizzle-orm';
@@ -21,10 +21,10 @@ import type { GetProjectResponse, UpdateProjectResponse, DeleteProjectResponse }
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id;
+    const { id: projectId } = await params;
 
     // Get current user (for draft visibility)
     const authUser = await getAuthUser(request);
@@ -88,13 +88,17 @@ export async function GET(
  * PUT /api/projects/:id
  * Update project (owner only)
  */
-export const PUT = requireAuth(async (
+export async function PUT(
   request: NextRequest,
-  authUser,
-  { params }: { params: { id: string } }
-) => {
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authUser = await getAuthUser(request);
+  if (!authUser) {
+    return apiErrors.unauthorized();
+  }
+
   try {
-    const projectId = params.id;
+    const { id: projectId } = await params;
 
     // Get user from database
     const [dbUser] = await db
@@ -129,11 +133,7 @@ export const PUT = requireAuth(async (
     const validation = updateProjectSchema.safeParse(body);
 
     if (!validation.success) {
-      return apiError('Validation failed', {
-        status: 400,
-        code: 'VALIDATION_ERROR',
-        details: validation.error.errors,
-      });
+      return apiValidationError(validation.error);
     }
 
     const { skillIds, ...projectData } = validation.data;
@@ -252,19 +252,23 @@ export const PUT = requireAuth(async (
     console.error('Error updating project:', error);
     return apiErrors.internal();
   }
-});
+}
 
 /**
  * DELETE /api/projects/:id
  * Soft delete project (owner only)
  */
-export const DELETE = requireAuth(async (
+export async function DELETE(
   request: NextRequest,
-  authUser,
-  { params }: { params: { id: string } }
-) => {
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authUser = await getAuthUser(request);
+  if (!authUser) {
+    return apiErrors.unauthorized();
+  }
+
   try {
-    const projectId = params.id;
+    const { id: projectId } = await params;
 
     // Get user from database
     const [dbUser] = await db
@@ -333,4 +337,4 @@ export const DELETE = requireAuth(async (
     console.error('Error deleting project:', error);
     return apiErrors.internal();
   }
-});
+}

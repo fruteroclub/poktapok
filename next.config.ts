@@ -24,6 +24,18 @@ const nextConfig: NextConfig = {
     'pino-pretty',
     '@reown/appkit',
   ],
+
+  // Image optimization configuration
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

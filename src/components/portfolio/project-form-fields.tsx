@@ -28,8 +28,10 @@ interface ProjectFormFieldsProps {
   currentLogoUrl?: string | null; // For edit mode (existing logo)
   currentImageUrls?: string[]; // For edit mode (existing images)
   onLogoUploadComplete?: (logoUrl: string) => void;
+  onLogoFileSelected?: (file: File) => void; // For new projects (file selection)
   onLogoDelete?: () => void;
   onImagesUploadComplete?: (imageUrls: string[]) => void;
+  onImageFilesSelected?: (files: File[]) => void; // For new projects (file selection)
   onImageDelete?: (imageUrl: string) => void;
   onImagesReorder?: (imageUrls: string[]) => void;
   disabled?: boolean;
@@ -44,8 +46,10 @@ export function ProjectFormFields({
   currentLogoUrl,
   currentImageUrls = [],
   onLogoUploadComplete,
+  onLogoFileSelected,
   onLogoDelete,
   onImagesUploadComplete,
+  onImageFilesSelected,
   onImageDelete,
   onImagesReorder,
   disabled = false,
@@ -233,6 +237,9 @@ export function ProjectFormFields({
                 field.onChange(logoUrl);
                 onLogoUploadComplete?.(logoUrl);
               }}
+              onFileSelected={(file) => {
+                onLogoFileSelected?.(file);
+              }}
               onDelete={() => {
                 field.onChange(null);
                 onLogoDelete?.();
@@ -256,6 +263,9 @@ export function ProjectFormFields({
               onUploadComplete={(imageUrls) => {
                 field.onChange(imageUrls);
                 onImagesUploadComplete?.(imageUrls);
+              }}
+              onFilesSelected={(files) => {
+                onImageFilesSelected?.(files);
               }}
               onDelete={(imageUrl) => {
                 const updated = (field.value || []).filter((url) => url !== imageUrl);

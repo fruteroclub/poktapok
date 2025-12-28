@@ -17,6 +17,7 @@ interface ImagesUploadProps {
   projectId: string | null; // null for new projects (upload after creation)
   currentImageUrls?: string[];
   onUploadComplete?: (imageUrls: string[]) => void;
+  onFilesSelected?: (files: File[]) => void; // For new projects (file selection before upload)
   onDelete?: (imageUrl: string) => void;
   onReorder?: (imageUrls: string[]) => void;
   disabled?: boolean;
@@ -32,6 +33,7 @@ export function ImagesUpload({
   projectId,
   currentImageUrls = [],
   onUploadComplete,
+  onFilesSelected,
   onDelete,
   onReorder,
   disabled = false,
@@ -41,6 +43,7 @@ export function ImagesUpload({
   );
   const [isDragging, setIsDragging] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]); // Store files for new projects
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFilesSelect = useCallback(
@@ -117,9 +120,11 @@ export function ImagesUpload({
           toast.success(`${files.length} image(s) uploaded successfully`);
           onUploadComplete?.(uploadedUrls);
         } else {
-          // For new projects, just show preview (will upload on form submit)
-          toast.success('Images ready to upload');
-          onUploadComplete?.(previews);
+          // For new projects, store the file objects (will upload after project creation)
+          const allFiles = [...pendingFiles, ...compressedFiles];
+          setPendingFiles(allFiles);
+          toast.success('Images ready');
+          onFilesSelected?.(allFiles);
         }
       } catch (error) {
         console.error('Images upload error:', error);
@@ -128,16 +133,19 @@ export function ImagesUpload({
         setImages((prev) => prev.filter((img) => !img.isUploading));
       }
     },
-    [projectId, images.length, onUploadComplete]
+    [projectId, images.length, pendingFiles, onUploadComplete, onFilesSelected]
   );
 
   const handleDelete = async (imageUrl: string, index: number) => {
     if (!projectId) {
-      // For new projects, just remove from preview
+      // For new projects, just remove from preview and pending files
       setImages((prev) => prev.filter((_, i) => i !== index));
+      setPendingFiles((prev) => prev.filter((_, i) => i !== index));
       if (imageUrl.startsWith('blob:')) {
         revokePreviewUrl(imageUrl);
       }
+      // Update parent with new file list
+      onFilesSelected?.(pendingFiles.filter((_, i) => i !== index));
       onDelete?.(imageUrl);
       return;
     }

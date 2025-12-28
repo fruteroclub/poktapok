@@ -26,20 +26,20 @@ import { Section } from '@/components/layout/section';
 
 export default function PortfolioPage() {
   const router = useRouter();
-  const { data: authData, isLoading: isLoadingAuth } = useAuth();
+  const { data: authData, isLoading: isLoadingAuth, isFetching: isFetchingAuth } = useAuth();
   const user = authData?.user;
 
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
 
   // Fetch user's projects
-  const { data: projectsData, isLoading: isLoadingProjects } = useUserProjects(user?.id, {
+  const { data: projectsData, isLoading: isLoadingProjects, isFetching: isFetchingProjects } = useUserProjects(user?.id, {
     status: statusFilter && statusFilter !== 'all' ? statusFilter as 'draft' | 'wip' | 'completed' | 'archived' : undefined,
     type: typeFilter && typeFilter !== 'all' ? typeFilter as 'personal' | 'bootcamp' | 'hackathon' | 'work-related' | 'freelance' | 'bounty' : undefined,
   });
 
   const projects = projectsData?.projects || [];
-  const isLoading = isLoadingAuth || isLoadingProjects;
+  const isLoading = isLoadingAuth || isFetchingAuth || isLoadingProjects || isFetchingProjects;
 
   // Handle edit navigation
   const handleEdit = (projectId: string) => {

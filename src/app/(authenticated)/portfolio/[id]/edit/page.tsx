@@ -12,7 +12,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import PageWrapper from '@/components/layout/page-wrapper';
 import { EditProjectForm } from '@/components/portfolio/edit-project-form';
 import { useProject } from '@/hooks/use-projects';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 

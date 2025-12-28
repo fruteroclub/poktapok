@@ -2,7 +2,7 @@
 
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { EditableUserCard } from "@/components/profile/editable-user-card";
 import { EditableProfileCard } from "@/components/profile/editable-profile-card";
 import { ProfileSkillsSection } from "@/components/profile/profile-skills-section";
@@ -68,13 +68,13 @@ export default function ProfilePage() {
     <ProtectedRoute>
       <PageWrapper>
         <div className="page">
-            {/* Page Header */}
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                View and edit your profile information
-              </p>
-            </div>
+          {/* Page Header */}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              View and edit your profile information
+            </p>
+          </div>
           <Section className="space-y-4">
             {/* User Card - User table data */}
             <EditableUserCard

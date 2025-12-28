@@ -7,6 +7,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ExternalLink, Github, Video, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, showActions = false, onEdit, onDelete }: ProjectCardProps) {
+  const router = useRouter();
   const { id, title, description, logoUrl, projectType, projectStatus, skills, viewCount } = project;
   const { liveUrl, repositoryUrl, videoUrl, featured } = project;
 
@@ -37,9 +39,20 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
     archived: 'bg-gray-400',
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only navigate if clicking the card itself, not links/buttons
+    if ((e.target as HTMLElement).closest('a, button')) {
+      return;
+    }
+    router.push(`/portfolio/${id}`);
+  };
+
   return (
-    <Link href={`/portfolio/${id}`} className="block group">
-      <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg group-hover:border-primary">
+    <div className="block group h-full">
+      <Card
+        className="flex flex-col overflow-hidden transition-all hover:shadow-lg group-hover:border-primary cursor-pointer h-full"
+        onClick={handleCardClick}
+      >
         {/* Header with logo and title */}
         <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-3">
@@ -103,7 +116,6 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <Github className="w-4 h-4" />
@@ -115,7 +127,6 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <ExternalLink className="w-4 h-4" />
@@ -127,7 +138,6 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
               href={videoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
             >
               <Video className="w-4 h-4" />
@@ -176,6 +186,6 @@ export function ProjectCard({ project, showActions = false, onEdit, onDelete }: 
         )}
       </CardFooter>
       </Card>
-    </Link>
+    </div>
   );
 }

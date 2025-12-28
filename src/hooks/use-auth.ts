@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/auth-store";
 import type { Profile } from "@/types/api-v1";
 
 export type AuthUser = {
+  isAuthenticated: boolean;
+  profile: Profile | null;
   user: {
     id: string;
     privyDid: string;
@@ -19,7 +21,6 @@ export type AuthUser = {
     role: string;
     createdAt: string;
   };
-  profile: Profile | null;
 };
 
 /**
@@ -38,7 +39,7 @@ export type AuthUser = {
  */
 export function useAuth() {
   const { authenticated, ready } = usePrivy();
-  const { setAuthData, setLoading, clearAuth } = useAuthStore();
+  const { clearAuth, isAuthenticated, setAuthData, setLoading } = useAuthStore();
 
   const query = useQuery<AuthUser | null>({
     queryKey: ["auth", "me"],
@@ -55,11 +56,17 @@ export function useAuth() {
 
       // Handle new API response pattern: { success: true, data: { user, profile } }
       if (responseData.success && responseData.data) {
-        return responseData.data;
+        return {
+          ...responseData.data,
+          isAuthenticated: !!responseData.data.user,
+        };
       }
 
       // Fallback for old format (backward compatibility)
-      return responseData;
+      return {
+        isAuthenticated: isAuthenticated,
+        ...responseData,
+      };
     },
     enabled: ready && authenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -75,8 +82,8 @@ export function useAuth() {
 
       if (query.data) {
         setAuthData({
-          user: query.data.user,
           profile: query.data.profile,
+          user: query.data.user,
         });
       } else if (!authenticated) {
         clearAuth();

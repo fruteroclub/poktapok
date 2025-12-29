@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildSocialUrl } from "@/lib/utils/social-urls";
 
 interface SocialLinksProps {
+  className?: string;
   githubUrl: string | null;
   twitterUrl: string | null;
   linkedinUrl: string | null;
@@ -23,6 +24,7 @@ const socialPlatforms = [
 ] as const;
 
 export function SocialLinks({
+  className,
   githubUrl,
   twitterUrl,
   linkedinUrl,
@@ -47,7 +49,7 @@ export function SocialLinks({
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle className="text-lg">Social Links</CardTitle>
       </CardHeader>
@@ -63,7 +65,7 @@ export function SocialLinks({
             url = buildSocialUrl("telegram", value || "");
           } else {
             // GitHub, Twitter, LinkedIn use full URLs
-            url = value || "";
+            url = buildSocialUrl(platform.key, value || "");
           }
 
           // Extract display text (handle or username)

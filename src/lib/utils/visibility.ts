@@ -6,9 +6,9 @@ export type VisibilityLevel = "public" | "members" | "private";
  * Check if a field can be viewed based on profile visibility and current user
  *
  * Visibility Rules:
- * - Public fields: Always visible to everyone
- * - Members-only fields: Visible to authenticated users
- * - Private profiles: Basic data visible to all, rest only to owner
+ * - Public profiles: All fields visible to everyone (authenticated or not)
+ * - Private profiles: Only basic fields visible to non-owners, all fields to owner
+ * - Owner: Always sees all fields regardless of profile visibility setting
  *
  * @param field - The field name to check
  * @param profile - The profile being viewed
@@ -58,14 +58,9 @@ export function canViewField(
     return publicFields.includes(field);
   }
 
-  // Public fields always visible
-  if (publicFields.includes(field)) {
-    return true;
-  }
-
-  // Members-only fields require authentication
-  if (membersOnlyFields.includes(field)) {
-    return currentUser !== null;
+  // Public profile logic - all fields are visible to everyone
+  if (profile.profileVisibility === "public") {
+    return publicFields.includes(field) || membersOnlyFields.includes(field);
   }
 
   // Default: not visible

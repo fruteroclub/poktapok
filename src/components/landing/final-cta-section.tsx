@@ -23,7 +23,7 @@ export default function FooterSection() {
           </div>
 
           <div className="flex justify-center">
-            <Button size="lg" className="w-full md:w-1/2 bg-white text-foreground hover:bg-accent hover:text-foreground px-8 py-4 text-lg font-bold rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex gap-x-2 items-center">
+            <Button size="lg" className="w-full md:w-1/2 bg-white text-foreground hover:bg-muted hover:text-background px-8 py-4 text-lg font-bold rounded-full flex gap-x-2 items-center">
               <SparkleIcon className="text-primary fill-primary w-5 h-5" />
               ¡Únete ya!
             </Button>

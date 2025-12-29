@@ -6,8 +6,10 @@ import { Edit, MapPin, Calendar } from "lucide-react";
 import { ShareButton } from "./share-button";
 import { formatLocation } from "@/lib/utils/country-flags";
 import { format, isAfter, subDays } from "date-fns";
+import { Card, CardContent } from "../ui/card";
 
 interface ProfileHeaderProps {
+  className?: string;
   username: string;
   displayName: string | null;
   bio: string | null;
@@ -61,6 +63,7 @@ function isNewMember(createdAt: Date): boolean {
 }
 
 export function ProfileHeader({
+  className,
   username,
   displayName,
   bio,
@@ -88,8 +91,9 @@ export function ProfileHeader({
   const showNewBadge = isNewMember(new Date(createdAt));
 
   return (
-    <div className="bg-card rounded-lg p-6 shadow-sm border">
-      <div className="flex flex-col md:flex-row gap-6">
+    <Card className={className}>
+      <CardContent className="flex flex-col md:flex-row gap-6">
+
         {/* Avatar */}
         <Avatar className="h-32 w-32 shrink-0">
           {avatarUrl ? (
@@ -178,7 +182,8 @@ export function ProfileHeader({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+      </CardContent>
+    </Card>
   );
 }

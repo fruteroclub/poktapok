@@ -95,27 +95,29 @@ export default async function ProjectPage({
 
   return (
     <PageWrapper>
-      <div className="page-content max-w-5xl mx-auto py-8 px-4 space-y-8">
-        {/* View count tracker (client-side) */}
-        <ViewCountTracker projectId={id} />
+      <div className="page">
+        <div className="page-content max-w-5xl mx-auto py-8 px-4 space-y-8">
+          {/* View count tracker (client-side) */}
+          <ViewCountTracker projectId={id} />
 
-        {/* Project header */}
-        <ProjectHeader project={project} isOwner={isOwner} />
+          {/* Project header */}
+          <ProjectHeader project={project} isOwner={isOwner} />
 
-        {/* Project links */}
-        <ProjectLinks
-          repositoryUrl={project.repositoryUrl}
-          liveUrl={project.liveUrl}
-          videoUrl={project.videoUrl}
-        />
+          {/* Project links */}
+          <ProjectLinks
+            repositoryUrl={project.repositoryUrl}
+            liveUrl={project.liveUrl}
+            videoUrl={project.videoUrl}
+          />
 
-        {/* Skills */}
-        <ProjectSkills skills={project.skills} />
+          {/* Skills */}
+          <ProjectSkills skills={project.skills} />
 
-        {/* Images */}
-        {project.imageUrls && project.imageUrls.length > 0 && (
-          <ProjectImages images={project.imageUrls} />
-        )}
+          {/* Images */}
+          {project.imageUrls && project.imageUrls.length > 0 && (
+            <ProjectImages images={project.imageUrls} />
+          )}
+        </div>
       </div>
     </PageWrapper>
   );

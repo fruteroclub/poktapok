@@ -140,15 +140,6 @@ export function ProfileInfo({
           </CardContent>
         </Card>
       )}
-
-      {/* Portfolio Placeholder (Epic 2) */}
-      <Card className="border-dashed">
-        <CardContent className="pt-6">
-          <p className="text-muted-foreground text-center text-sm">
-            Portfolio coming soon in Epic 2
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

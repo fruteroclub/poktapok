@@ -33,10 +33,11 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface EditProjectFormProps {
+  className?: string;
   project: ProjectWithSkills;
 }
 
-export function EditProjectForm({ project }: EditProjectFormProps) {
+export function EditProjectForm({ className, project }: EditProjectFormProps) {
   const router = useRouter();
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>(project.skills || []);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -103,13 +104,7 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
   const isDeleting = deleteProjectMutation.isPending;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit Project</CardTitle>
-        <CardDescription>
-          Update your project details. Changes will be reflected immediately.
-        </CardDescription>
-      </CardHeader>
+    <Card className={className}>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

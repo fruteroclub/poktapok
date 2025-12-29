@@ -32,7 +32,7 @@ export default function HeroSection() {
         <div className="flex justify-center">
           <AuthButtonPrivy
             size="lg"
-            className="text-2xl font-medium transition duration-300 ease-in-out hover:scale-105 lg:px-14 lg:py-6"
+            className="text-2xl font-medium lg:px-14 lg:py-6"
           >
             Quiero unirme{' '}
             <SparklesIcon className="ml-2 h-5 w-5 fill-background" />

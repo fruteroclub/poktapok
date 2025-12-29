@@ -15,13 +15,13 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ProjectFormFields } from './project-form-fields';
 import { useCreateProject } from '@/hooks/use-projects';
 import { createProjectSchema, type CreateProjectInput } from '@/lib/validators/project';
 import type { Skill } from '@/types/api-v1';
 
-export function CreateProjectForm() {
+export function CreateProjectForm({ className }: { className?: string }) {
   const router = useRouter();
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
   const [pendingLogoFile, setPendingLogoFile] = useState<File | null>(null);
@@ -130,14 +130,7 @@ export function CreateProjectForm() {
   const isSubmitting = form.formState.isSubmitting || createProjectMutation.isPending;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create New Project</CardTitle>
-        <CardDescription>
-          Add a project to your portfolio. This could be a personal project, bootcamp assignment,
-          hackathon submission, or professional work.
-        </CardDescription>
-      </CardHeader>
+    <Card className={className}>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

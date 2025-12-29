@@ -93,7 +93,6 @@ export default function Navbar() {
           ) : (
             <AuthButton
               size="lg"
-              className="animate-in fade-in-50 duration-200 transition hover:scale-105"
             >
               <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" /> Únete
             </AuthButton>

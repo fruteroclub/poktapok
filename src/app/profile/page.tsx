@@ -68,47 +68,49 @@ export default function ProfilePage() {
     <ProtectedRoute>
       <PageWrapper>
         <div className="page">
-          {/* Page Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              View and edit your profile information
-            </p>
+          <div className="page-content">
+            {/* Page Header */}
+            <div className="header-section">
+              <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                View and edit your profile information
+              </p>
+            </div>
+            <Section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* User Card - User table data */}
+              <EditableUserCard
+                className="h-full"
+                user={{
+                  id: user.id,
+                  username: user.username,
+                  displayName: user.displayName,
+                  email: user.email,
+                  bio: user.bio,
+                  avatarUrl: user.avatarUrl,
+                }}
+              />
+
+              {/* Profile Card - Profile table data */}
+              <EditableProfileCard
+                className="h-full" profile={profile} userId={user.id} />
+
+              {/* Portfolio Projects Section */}
+              <div className="col-span-2">
+                <PortfolioProjectsSection
+                  userId={user.id}
+                  isOwner={true}
+                />
+              </div>
+
+              {/* Skills Section - Earned from projects */}
+              <div className="w-full md:w-4/5 lg:w-2/3">
+                <ProfileSkillsSection
+                  userId={user.id}
+                  isOwner={true}
+                />
+              </div>
+            </Section>
           </div>
-          <Section className="space-y-4">
-            {/* User Card - User table data */}
-            <EditableUserCard
-              className="w-full md:w-4/5 lg:w-2/3"
-              user={{
-                id: user.id,
-                username: user.username,
-                displayName: user.displayName,
-                email: user.email,
-                bio: user.bio,
-                avatarUrl: user.avatarUrl,
-              }}
-            />
-
-            {/* Profile Card - Profile table data */}
-            <EditableProfileCard
-              className="w-full md:w-4/5 lg:w-2/3" profile={profile} userId={user.id} />
-
-            {/* Portfolio Projects Section */}
-            <div className="w-full">
-              <PortfolioProjectsSection
-                userId={user.id}
-                isOwner={true}
-              />
-            </div>
-
-            {/* Skills Section - Earned from projects */}
-            <div className="w-full md:w-4/5 lg:w-2/3">
-              <ProfileSkillsSection
-                userId={user.id}
-                isOwner={true}
-              />
-            </div>
-          </Section>
         </div>
       </PageWrapper>
     </ProtectedRoute>

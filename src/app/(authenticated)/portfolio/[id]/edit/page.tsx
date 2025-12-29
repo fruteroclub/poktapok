@@ -15,6 +15,7 @@ import { useProject } from '@/hooks/use-projects';
 import { useAuth } from '@/hooks/use-auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Section } from '@/components/layout/section';
 
 interface EditProjectPageProps {
   params: Promise<{ id: string }>;
@@ -52,17 +53,19 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   if (isError || !project) {
     return (
       <PageWrapper>
-        <div className="page-content max-w-4xl mx-auto py-8 px-4">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Project Not Found</AlertTitle>
-            <AlertDescription>
-              The project you&apos;re looking for doesn&apos;t exist or has been deleted.
-            </AlertDescription>
-          </Alert>
-          <Button onClick={() => router.push('/portfolio')} className="mt-4">
-            Back to Portfolio
-          </Button>
+        <div className="page">
+          <div className="page-content max-w-4xl mx-auto py-8 px-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Project Not Found</AlertTitle>
+              <AlertDescription>
+                The project you&apos;re looking for doesn&apos;t exist or has been deleted.
+              </AlertDescription>
+            </Alert>
+            <Button onClick={() => router.push('/portfolio')} className="mt-4">
+              Back to Portfolio
+            </Button>
+          </div>
         </div>
       </PageWrapper>
     );
@@ -72,17 +75,19 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   if (!isOwner) {
     return (
       <PageWrapper>
-        <div className="page-content max-w-4xl mx-auto py-8 px-4">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Access Denied</AlertTitle>
-            <AlertDescription>
-              You don&apos;t have permission to edit this project.
-            </AlertDescription>
-          </Alert>
-          <Button onClick={() => router.push('/portfolio')} className="mt-4">
-            Back to Portfolio
-          </Button>
+        <div className="page">
+          <div className="page-content max-w-4xl mx-auto py-8 px-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Access Denied</AlertTitle>
+              <AlertDescription>
+                You don&apos;t have permission to edit this project.
+              </AlertDescription>
+            </Alert>
+            <Button onClick={() => router.push('/portfolio')} className="mt-4">
+              Back to Portfolio
+            </Button>
+          </div>
         </div>
       </PageWrapper>
     );
@@ -90,8 +95,18 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
 
   return (
     <PageWrapper>
-      <div className="page-content max-w-4xl mx-auto py-8 px-4">
-        <EditProjectForm project={project} />
+      <div className="page">
+        <div className="page-content gap-y-4">
+          <div className="header-section">
+            <h1 className="text-3xl font-bold">Edit Project</h1>
+            <p className="text-muted-foreground mt-1">
+              Edit your project to showcase your work
+            </p>
+          </div>
+          <Section className="gap-y-4 pt-0!">
+            <EditProjectForm project={project} />
+          </Section>
+        </div>
       </div>
     </PageWrapper>
   );

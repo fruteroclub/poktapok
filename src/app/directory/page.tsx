@@ -101,14 +101,14 @@ export default function DirectoryPage() {
     <PageWrapper>
       <div className="page">
         <div className="page-content">
-          <div className="mb-8">
+          <div className="header-section">
             <h1 className="text-4xl font-bold mb-2">Talent Directory</h1>
             <p className="text-gray-600 dark:text-gray-400">
               Discover talented builders from Latin America
             </p>
           </div>
 
-          <Section className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+          <Section className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
             {/* Desktop Sidebar - Hidden on mobile */}
             <aside className="hidden lg:block lg:col-span-1">
               <div className="lg:sticky lg:top-8">
@@ -121,53 +121,51 @@ export default function DirectoryPage() {
               </div>
             </aside>
 
-            <div className="lg:col-span-3 min-h-[600px]">
-              <div className="mb-6 space-y-4">
-                <div className="flex items-center gap-2">
-                  {/* Mobile Filter Button */}
-                  <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" className="lg:hidden">
-                        <SlidersHorizontal className="h-4 w-4 mr-2" />
-                        Filters
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-[300px] sm:w-[400px] px-4">
-                      <SheetHeader>
-                        <SheetTitle>Filters</SheetTitle>
-                      </SheetHeader>
-                      <div className="mt-6">
-                        <Filters
-                          filters={currentFilters}
-                          countries={countries}
-                          onFilterChange={(key, value) => {
-                            updateFilter(key, value);
-                            setMobileFiltersOpen(false);
-                          }}
-                          onClearAll={() => {
-                            handleClearAll();
-                            setMobileFiltersOpen(false);
-                          }}
-                        />
-                      </div>
-                    </SheetContent>
-                  </Sheet>
+            <div className="lg:col-span-3 min-h-[600px] space-y-4">
+              <div className="flex items-center gap-2">
+                {/* Mobile Filter Button */}
+                <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden">
+                      <SlidersHorizontal className="h-4 w-4 mr-2" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[300px] sm:w-[400px] px-4">
+                    <SheetHeader>
+                      <SheetTitle>Filters</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <Filters
+                        filters={currentFilters}
+                        countries={countries}
+                        onFilterChange={(key, value) => {
+                          updateFilter(key, value);
+                          setMobileFiltersOpen(false);
+                        }}
+                        onClearAll={() => {
+                          handleClearAll();
+                          setMobileFiltersOpen(false);
+                        }}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
 
-                  {/* Search Bar */}
-                  <div className="flex-1">
-                    <SearchBar
-                      value={currentFilters.search || ""}
-                      onChange={(value) => updateFilter("search", value || null)}
-                      placeholder="Search by name or bio..."
-                    />
-                  </div>
+                {/* Search Bar */}
+                <div className="flex-1">
+                  <SearchBar
+                    value={currentFilters.search || ""}
+                    onChange={(value) => updateFilter("search", value || null)}
+                    placeholder="Search by name or bio..."
+                  />
                 </div>
               </div>
 
-              {pagination && !isLoading && (
-                <div className="mb-4">
+              {!isLoading && profiles.length > 0 && (
+                <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatProfileCount(pagination.total)}
+                    {formatProfileCount(pagination?.total || profiles.length)}
                   </p>
                 </div>
               )}
@@ -215,7 +213,8 @@ export default function DirectoryPage() {
               )}
             </div>
           </Section>
-        </div></div>
+        </div>
+      </div>
     </PageWrapper>
   );
 }

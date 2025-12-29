@@ -71,7 +71,7 @@ export default function DifferentiatorSection() {
                   No pierdas más tiempo
                 </h3>
               </div>
-              <Card className="w-full max-w-md  py-8 text-background shadow-2xl">
+              <Card className="w-full max-w-md py-8 text-background bg-muted">
                 <CardHeader className="text-center">
                   <CardTitle className="font-funnel text-2xl font-normal md:text-3xl">
                     Atrévete a dar el
@@ -106,7 +106,7 @@ export default function DifferentiatorSection() {
                   </h4>
                   <AuthButtonPrivy
                     size="lg"
-                    className="text-2xl font-medium transition duration-300 ease-in-out hover:scale-105 lg:px-14 lg:py-6"
+                    className="text-2xl font-medium lg:px-12 lg:py-4 lg:text-xl"
                   >
                     Únete ahora
                   </AuthButtonPrivy>

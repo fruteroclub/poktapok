@@ -48,10 +48,10 @@ export default function PortfolioPage() {
 
   return (
     <PageWrapper>
-      <div className="page space-y-8">
-        <div className="space-y-4">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="page">
+        <div className="page-content space-y-6">
+          {/* Page Header */}
+          <div className="header-section flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold">My Portfolio</h1>
               <p className="text-muted-foreground mt-1">
@@ -94,48 +94,49 @@ export default function PortfolioPage() {
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        <Section className="space-y-4 py-0">
-          {/* Loading state */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-12 flex-col gap-2">
-              <Loader2 className="text-primary h-16 w-16 animate-spin" />
-              <p className="text-lg font-light text-muted-foreground">Loading...</p>
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!isLoading && projects.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg">
-              <div className="text-center space-y-3">
-                <h3 className="text-lg font-semibold">No projects yet</h3>
-                <p className="text-muted-foreground max-w-md">
-                  Start building your portfolio by creating your first project.
-                  Showcase your work to potential employers and clients.
-                </p>
-                <Button onClick={() => router.push('/portfolio/new')} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Project
-                </Button>
+          <Section className="space-y-4 pt-0!">
+            {/* Loading state */}
+            {isLoading && (
+              <div className="flex items-center justify-center py-12 flex-col gap-2">
+                <Loader2 className="text-primary h-16 w-16 animate-spin" />
+                <p className="text-lg font-light text-muted-foreground">Loading...</p>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Projects grid */}
-          {!isLoading && projects.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  showActions
-                  onEdit={handleEdit}
-                />
-              ))}
-            </div>
-          )}
-        </Section>
+            {/* Empty state */}
+            {!isLoading && projects.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg">
+                <div className="text-center space-y-3">
+                  <h3 className="text-lg font-semibold">No projects yet</h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Start building your portfolio by creating your first project.
+                    Showcase your work to potential employers and clients.
+                  </p>
+                  <Button onClick={() => router.push('/portfolio/new')} className="mt-4">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Project
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Projects grid */}
+            {!isLoading && projects.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {projects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    showActions
+                    onEdit={handleEdit}
+                  />
+                ))}
+              </div>
+            )}
+          </Section>
+
+        </div>
       </div>
     </PageWrapper>
   );

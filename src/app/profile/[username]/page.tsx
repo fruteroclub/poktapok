@@ -103,77 +103,80 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   return (
     <PageWrapper>
       <div className="page">
-      {/* Profile Header */}
-      <ProfileHeader
-        username={user.username!}
-        displayName={user.displayName}
-        bio={user.bio}
-        avatarUrl={user.avatarUrl}
-        city={profile.city}
-        country={profile.country}
-        countryCode={profile.countryCode}
-        learningTracks={profile.learningTracks}
-        availabilityStatus={profile.availabilityStatus}
-        profileVisibility={profile.profileVisibility}
-        createdAt={user.createdAt}
-        isOwner={isOwner}
-        canViewLocation={canViewLocation}
-        canViewLearningTracks={canViewLearningTracks}
-      />
-
-      {/* Content Grid */}
-      <Section  className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {/* Main Content (2/3 width on desktop) */}
-        <div className="md:col-span-2">
-          <ProfileInfo
+        {/* Profile Header */}
+        <div className="page-content gap-y-4">
+          <ProfileHeader
+            username={user.username!}
+            displayName={user.displayName}
+            bio={user.bio}
+            avatarUrl={user.avatarUrl}
+            city={profile.city}
+            country={profile.country}
+            countryCode={profile.countryCode}
             learningTracks={profile.learningTracks}
             availabilityStatus={profile.availabilityStatus}
-            completedBounties={profile.completedBounties}
-            totalEarningsUsd={profile.totalEarningsUsd}
-            canViewData={canViewLearningTracks}
+            profileVisibility={profile.profileVisibility}
+            createdAt={user.createdAt}
+            isOwner={isOwner}
+            canViewLocation={canViewLocation}
+            canViewLearningTracks={canViewLearningTracks}
           />
-        </div>
 
-        {/* Sidebar (1/3 width on desktop) */}
-        <div>
-          {canViewSocials && (
-            <SocialLinks
-              githubUrl={profile.githubUrl}
-              twitterUrl={profile.twitterUrl}
-              linkedinUrl={profile.linkedinUrl}
-              telegramHandle={profile.telegramHandle}
+          {/* Content Grid */}
+          <Section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Main Content (2/3 width on desktop) */}
+            <div className="md:col-span-2">
+              <ProfileInfo
+                learningTracks={profile.learningTracks}
+                availabilityStatus={profile.availabilityStatus}
+                completedBounties={profile.completedBounties}
+                totalEarningsUsd={profile.totalEarningsUsd}
+                canViewData={canViewLearningTracks}
+              />
+            </div>
+
+            {/* Sidebar (1/3 width on desktop) */}
+            <div className="h-full">
+              {canViewSocials && (
+                <SocialLinks
+                  className="h-full"
+                  githubUrl={profile.githubUrl}
+                  twitterUrl={profile.twitterUrl}
+                  linkedinUrl={profile.linkedinUrl}
+                  telegramHandle={profile.telegramHandle}
+                />
+              )}
+
+              {/* Private Profile Message for Non-Authenticated Viewers */}
+              {profile.profileVisibility === "private" &&
+                !isOwner &&
+                !currentUser && (
+                  <div className="mt-6 p-4 bg-muted rounded-lg text-center">
+                    <p className="text-sm text-muted-foreground">
+                      This is a private profile. Sign in to view more details.
+                    </p>
+                  </div>
+                )}
+            </div>
+          </Section>
+
+          {/* Portfolio Projects Section - Full width */}
+          <Section>
+            <PortfolioProjectsSection
+              userId={user.id}
+              isOwner={isOwner}
             />
-          )}
+          </Section>
 
-          {/* Private Profile Message for Non-Authenticated Viewers */}
-          {profile.profileVisibility === "private" &&
-            !isOwner &&
-            !currentUser && (
-              <div className="mt-6 p-4 bg-muted rounded-lg text-center">
-                <p className="text-sm text-muted-foreground">
-                  This is a private profile. Sign in to view more details.
-                </p>
-              </div>
-            )}
+          {/* Skills Section - Full width */}
+          <Section>
+            <ProfileSkillsSection
+              userId={user.id}
+              isOwner={isOwner}
+            />
+          </Section>
         </div>
-      </Section>
-
-      {/* Portfolio Projects Section - Full width */}
-      <Section className="mt-8">
-        <PortfolioProjectsSection
-          userId={user.id}
-          isOwner={isOwner}
-        />
-      </Section>
-
-      {/* Skills Section - Full width */}
-      <Section className="mt-8">
-        <ProfileSkillsSection
-          userId={user.id}
-          isOwner={isOwner}
-        />
-      </Section>
-    </div>
+      </div>
     </PageWrapper>
   );
 }

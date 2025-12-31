@@ -29,9 +29,11 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
 
     // Get optional Privy metadata from request body
     const body = await request.json().catch(() => ({}));
-    const { email, appWallet, extWallet, primaryAuthMethod } = body;
+    const { email, appWallet, extWallet, primaryAuthMethod, loginMethod } = body;
 
     console.log("Login request for privyDid:", privyDid);
+    console.log("Login method:", loginMethod);
+    console.log("Email provided:", email || "none");
 
     // Check if user exists
     const existingUsers = await db
@@ -74,13 +76,17 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     console.log("Creating new user for privyDid:", privyDid);
 
     // Generate temporary email if not provided by Privy
-    const tempEmail = email || `${privyDid.replace('did:privy:', '')}@incomplete.user`;
+    // Use login method to make it more specific (e.g., github, google, wallet)
+    const emailSuffix = loginMethod ? `${loginMethod}.incomplete.user` : 'incomplete.user';
+    const tempEmail = email || `${privyDid.replace('did:privy:', '')}@${emailSuffix}`;
 
     // Generate temporary username from privyDid (last 12 chars)
     const tempUsername = `user_${privyDid.slice(-12)}`;
 
-    // Use temporary display name
-    const tempDisplayName = "New User";
+    // Use temporary display name based on login method
+    const tempDisplayName = loginMethod
+      ? `${loginMethod.charAt(0).toUpperCase() + loginMethod.slice(1)} User`
+      : "New User";
 
     const newUserResults = await db
       .insert(users)

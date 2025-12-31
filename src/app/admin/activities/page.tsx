@@ -92,18 +92,19 @@ export default function AdminActivitiesPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Activities Management</h1>
-          <p className="text-muted-foreground mt-2">
-            Create and manage educational activities for $PULPA token distribution
-          </p>
+    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Activities Management</h1>
+            <p className="text-muted-foreground mt-2">
+              Create and manage educational activities for $PULPA token distribution
+            </p>
+          </div>
+          <Button onClick={() => router.push('/admin/activities/new')}>
+            Create New Activity
+          </Button>
         </div>
-        <Button onClick={() => router.push('/admin/activities/new')}>
-          Create New Activity
-        </Button>
-      </div>
 
       {/* Filters */}
       <Card className="mb-6">
@@ -224,6 +225,7 @@ export default function AdminActivitiesPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </main>
   )
 }

@@ -85,16 +85,17 @@ export default function ActivitiesPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold">Educational Activities</h1>
-        <p className="text-muted-foreground mt-2 text-lg">
-          Complete activities and earn $PULPA tokens while learning and building
-        </p>
-      </div>
+    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold">Educational Activities</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Complete activities and earn $PULPA tokens while learning and building
+          </p>
+        </div>
 
-      {/* Filters */}
-      <Card className="mb-8">
+        {/* Filters */}
+        <Card className="mb-8">
         <CardHeader>
           <CardTitle>Find Activities</CardTitle>
         </CardHeader>
@@ -152,17 +153,17 @@ export default function ActivitiesPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
-      {/* Activities Grid */}
-      {loading ? (
-        <div className="text-center py-12">Loading activities...</div>
-      ) : activities.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          No activities found. Check back soon for new opportunities!
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Activities Grid */}
+        {loading ? (
+          <div className="text-center py-12">Loading activities...</div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            No activities found. Check back soon for new opportunities!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activities.map((activity) => (
             <Card
               key={activity.id}
@@ -210,8 +211,9 @@ export default function ActivitiesPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+      </div>
+    </main>
   )
 }

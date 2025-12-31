@@ -90,15 +90,16 @@ export default function NewActivityPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Create New Activity</h1>
-        <p className="text-muted-foreground mt-2">
-          Create a new educational activity for users to earn $PULPA tokens
-        </p>
-      </div>
+    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <div className="page-content mx-auto w-full space-y-8 px-4 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Create New Activity</h1>
+          <p className="text-muted-foreground mt-2">
+            Create a new educational activity for users to earn $PULPA tokens
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Basic Information</h2>
@@ -354,7 +355,8 @@ export default function NewActivityPage() {
             Cancel
           </Button>
         </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </main>
   )
 }

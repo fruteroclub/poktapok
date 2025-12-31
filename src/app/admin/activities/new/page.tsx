@@ -63,8 +63,8 @@ function NewActivityPageContent() {
         total_available_slots: formData.total_available_slots && formData.total_available_slots.trim()
           ? parseInt(formData.total_available_slots)
           : undefined,
-        starts_at: formData.starts_at || undefined,
-        expires_at: formData.expires_at || undefined,
+        starts_at: formData.starts_at ? new Date(formData.starts_at).toISOString() : undefined,
+        expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : undefined,
         status: formData.status,
       }
 

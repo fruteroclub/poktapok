@@ -87,6 +87,8 @@ export default function ProfilePage() {
                   email: user.email,
                   bio: user.bio,
                   avatarUrl: user.avatarUrl,
+                  role: user.role,
+                  accountStatus: user.accountStatus,
                 }}
               />
 

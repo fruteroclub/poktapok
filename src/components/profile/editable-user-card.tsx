@@ -23,6 +23,8 @@ interface EditableUserCardProps {
     email: string | null;
     bio: string | null;
     avatarUrl: string | null;
+    role: string;
+    accountStatus: string;
   };
 }
 
@@ -112,7 +114,8 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
                     email: user.email,
                     bio: user.bio,
                     avatarUrl,
-                    accountStatus: "active",
+                    accountStatus: user.accountStatus,
+                    role: user.role,
                   });
                   // Invalidate React Query cache to trigger parent re-render
                   queryClient.invalidateQueries({ queryKey: ["auth", "me"] });

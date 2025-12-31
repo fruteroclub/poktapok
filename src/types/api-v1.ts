@@ -15,6 +15,7 @@ export interface User {
   bio: string | null;
   avatarUrl: string | null;
   accountStatus: string;
+  role: string;
 }
 
 // ============================================================================

@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '@/hooks'
+import { PlusCircle, ClipboardList } from 'lucide-react'
 
 interface Activity {
   id: string
@@ -28,6 +30,9 @@ interface Activity {
 
 export default function ActivitiesPage() {
   const router = useRouter()
+  const { data: authData } = useAuth()
+  const user = authData?.user
+  const isAdmin = user?.role === 'admin'
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -93,6 +98,38 @@ export default function ActivitiesPage() {
             Complete activities and earn $PULPA tokens while learning and building
           </p>
         </div>
+
+        {/* Admin Panel */}
+        {isAdmin && (
+          <Card className="mb-8 border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-purple-900 dark:text-purple-100">
+                <ClipboardList className="h-5 w-5" />
+                Panel de Administrador
+              </CardTitle>
+              <CardDescription>Gestiona actividades y revisa submissions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4 flex-wrap">
+                <Button
+                  onClick={() => router.push('/admin/activities/new')}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Crear Nueva Actividad
+                </Button>
+                <Button
+                  onClick={() => router.push('/admin/submissions')}
+                  variant="outline"
+                  className="border-purple-600 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950"
+                >
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  Revisar Submissions
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filters */}
         <Card className="mb-8">

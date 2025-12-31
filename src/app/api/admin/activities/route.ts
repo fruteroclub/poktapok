@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       expiresAt: validated.expires_at ? new Date(validated.expires_at) : null,
       status: validated.status,
       createdByUserId: admin.id,
-      metadata: JSON.stringify({}),
+      metadata: {}, // JSONB field expects object, not string
     })
 
     return successResponse(activity, 201)

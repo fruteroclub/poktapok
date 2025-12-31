@@ -147,27 +147,32 @@ export default function ActivityDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-8 max-w-4xl">
-        <div className="text-center py-12">Loading activity...</div>
-      </div>
+      <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+        <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+          <div className="text-center py-12">Loading activity...</div>
+        </div>
+      </main>
     )
   }
 
   if (!activity) {
     return (
-      <div className="container mx-auto py-8 max-w-4xl">
-        <div className="text-center py-12">Activity not found</div>
-      </div>
+      <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+        <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+          <div className="text-center py-12">Activity not found</div>
+        </div>
+      </main>
     )
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-6">
-        ← Back to Activities
-      </Button>
+    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+        <Button variant="ghost" onClick={() => router.back()} className="mb-6">
+          ← Back to Activities
+        </Button>
 
-      <Card className="mb-8">
+        <Card className="mb-8">
         <CardHeader>
           <div className="flex items-start justify-between gap-4 mb-4">
             <CardTitle className="text-3xl">{activity.title}</CardTitle>
@@ -257,11 +262,11 @@ export default function ActivityDetailPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
-      {/* Submission Form */}
-      {canSubmit(activity) ? (
-        <Card>
+        {/* Submission Form */}
+        {canSubmit(activity) ? (
+          <Card>
           <CardHeader>
             <CardTitle>Submit Your Work</CardTitle>
             <CardDescription>
@@ -334,15 +339,16 @@ export default function ActivityDetailPage() {
             </form>
           </CardContent>
         </Card>
-      ) : (
-        <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            {isFull(activity) && <p>This activity has reached its maximum submissions.</p>}
-            {isExpired(activity) && <p>This activity has expired.</p>}
-            {activity.status !== 'active' && <p>This activity is not currently accepting submissions.</p>}
-          </CardContent>
-        </Card>
-      )}
-    </div>
+        ) : (
+          <Card>
+            <CardContent className="py-8 text-center text-muted-foreground">
+              {isFull(activity) && <p>This activity has reached its maximum submissions.</p>}
+              {isExpired(activity) && <p>This activity has expired.</p>}
+              {activity.status !== 'active' && <p>This activity is not currently accepting submissions.</p>}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </main>
   )
 }

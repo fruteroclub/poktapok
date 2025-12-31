@@ -166,37 +166,38 @@ export default function AdminSubmissionsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Submission Review</h1>
-        <p className="text-muted-foreground mt-2">
-          Review and approve user submissions for $PULPA token rewards
-        </p>
-      </div>
+    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Submission Review</h1>
+          <p className="text-muted-foreground mt-2">
+            Review and approve user submissions for $PULPA token rewards
+          </p>
+        </div>
 
-      {/* Filter */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Filter by Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending Review</SelectItem>
-              <SelectItem value="under_review">Under Review</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-              <SelectItem value="distributed">Distributed</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
+        {/* Filter */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Filter by Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-64">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending Review</SelectItem>
+                <SelectItem value="under_review">Under Review</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="distributed">Distributed</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
 
-      {/* Submissions Table */}
-      <Card>
+        {/* Submissions Table */}
+        <Card>
         <CardContent className="pt-6">
           {loading ? (
             <div className="text-center py-8">Loading submissions...</div>
@@ -271,11 +272,11 @@ export default function AdminSubmissionsPage() {
             </Table>
           )}
         </CardContent>
-      </Card>
+        </Card>
 
-      {/* Review Dialog */}
-      {selectedSubmission && (
-        <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
+        {/* Review Dialog */}
+        {selectedSubmission && (
+          <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Review Submission</DialogTitle>
@@ -366,8 +367,9 @@ export default function AdminSubmissionsPage() {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
-      )}
-    </div>
+          </Dialog>
+        )}
+      </div>
+    </main>
   )
 }

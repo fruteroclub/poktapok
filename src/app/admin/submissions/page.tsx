@@ -28,6 +28,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 
 interface Submission {
   submission: {
@@ -54,7 +55,7 @@ interface Submission {
   }
 }
 
-export default function AdminSubmissionsPage() {
+function AdminSubmissionsPageContent() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('pending')
@@ -371,5 +372,13 @@ export default function AdminSubmissionsPage() {
         )}
       </div>
     </main>
+  )
+}
+
+export default function AdminSubmissionsPage() {
+  return (
+    <AdminRoute>
+      <AdminSubmissionsPageContent />
+    </AdminRoute>
   )
 }

@@ -21,6 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 
 interface Activity {
   id: string
@@ -34,7 +35,7 @@ interface Activity {
   created_at: string
 }
 
-export default function AdminActivitiesPage() {
+function AdminActivitiesPageContent() {
   const router = useRouter()
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
@@ -227,5 +228,13 @@ export default function AdminActivitiesPage() {
       </Card>
       </div>
     </main>
+  )
+}
+
+export default function AdminActivitiesPage() {
+  return (
+    <AdminRoute>
+      <AdminActivitiesPageContent />
+    </AdminRoute>
   )
 }

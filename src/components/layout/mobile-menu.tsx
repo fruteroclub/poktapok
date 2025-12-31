@@ -41,7 +41,11 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
           Navigation items
         </SheetDescription>
         <div className="grid gap-2 py-6">
-          {menuItems?.map((menuItem, index) => (
+          {menuItems?.filter((menuItem) => {
+            // Filter out auth-required items if not signed in
+            if (menuItem.requiresAuth && !isSignedIn) return false
+            return true
+          }).map((menuItem, index) => (
             <Link
               key={`${menuItem.displayText}-menuItem-${index}`}
               className={cn(
@@ -54,18 +58,6 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
               {menuItem.displayText}
             </Link>
           ))}
-          {isSignedIn && (
-            <Link
-              className={cn(
-                'inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none',
-                pathname === '/activities' &&
-                  'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:!text-secondary-foreground',
-              )}
-              href="/activities"
-            >
-              actividades
-            </Link>
-          )}
           <div className="flex justify-center py-2">
             <AuthButton size="lg" setIsMenuOpen={setIsMenuOpen}>
               <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" />{' '}

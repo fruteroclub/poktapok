@@ -14,8 +14,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 
-export default function NewActivityPage() {
+function NewActivityPageContent() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -46,7 +47,6 @@ export default function NewActivityPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': 'ADMIN_USER_ID', // TODO: Replace with actual Privy auth
         },
         body: JSON.stringify({
           title: formData.title,
@@ -358,5 +358,13 @@ export default function NewActivityPage() {
         </form>
       </div>
     </main>
+  )
+}
+
+export default function NewActivityPage() {
+  return (
+    <AdminRoute>
+      <NewActivityPageContent />
+    </AdminRoute>
   )
 }

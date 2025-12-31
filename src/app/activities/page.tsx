@@ -92,13 +92,14 @@ export default function ActivitiesPage() {
 
   return (
     <PageWrapper>
-      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold">Educational Activities</h1>
-          <p className="text-muted-foreground mt-2 text-lg">
-            Complete activities and earn $PULPA tokens while learning and building
-          </p>
-        </div>
+      <div className="page">
+        <div className="page-content">
+          <div className="header-section">
+            <h1 className="text-3xl font-bold tracking-tight">Educational Activities</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Complete activities and earn $PULPA tokens while learning and building
+            </p>
+          </div>
 
         {/* Admin Panel */}
         {isAdmin && (
@@ -251,6 +252,7 @@ export default function ActivitiesPage() {
           ))}
           </div>
         )}
+        </div>
       </div>
     </PageWrapper>
   )

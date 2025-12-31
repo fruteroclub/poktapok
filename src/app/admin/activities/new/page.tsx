@@ -98,15 +98,16 @@ function NewActivityPageContent() {
 
   return (
     <PageWrapper>
-      <div className="page-content mx-auto w-full space-y-8 px-4 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Create New Activity</h1>
-          <p className="text-muted-foreground mt-2">
-            Create a new educational activity for users to earn $PULPA tokens
-          </p>
-        </div>
+      <div className="page">
+        <div className="page-content">
+          <div className="header-section">
+            <h1 className="text-3xl font-bold tracking-tight">Create New Activity</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Create a new educational activity for users to earn $PULPA tokens
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Basic Information</h2>
@@ -362,7 +363,8 @@ function NewActivityPageContent() {
             Cancel
           </Button>
         </div>
-        </form>
+          </form>
+        </div>
       </div>
     </PageWrapper>
   )

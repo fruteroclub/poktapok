@@ -163,16 +163,17 @@ function AdminSubmissionsPageContent() {
 
   return (
     <PageWrapper>
-      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Submission Review</h1>
-          <p className="text-muted-foreground mt-2">
-            Review and approve user submissions for $PULPA token rewards
-          </p>
-        </div>
+      <div className="page">
+        <div className="page-content">
+          <div className="header-section">
+            <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Review and approve user submissions for $PULPA token rewards
+            </p>
+          </div>
 
-        {/* Filter */}
-        <Card className="mb-6">
+          {/* Filter */}
+          <Card className="mb-6">
           <CardHeader>
             <CardTitle>Filter by Status</CardTitle>
           </CardHeader>
@@ -190,10 +191,10 @@ function AdminSubmissionsPageContent() {
               </SelectContent>
             </Select>
           </CardContent>
-        </Card>
+          </Card>
 
-        {/* Submissions Table */}
-        <Card>
+          {/* Submissions Table */}
+          <Card>
         <CardContent className="pt-6">
           {loading ? (
             <div className="text-center py-8">Loading submissions...</div>
@@ -267,11 +268,11 @@ function AdminSubmissionsPageContent() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-        </Card>
+          </CardContent>
+          </Card>
 
-        {/* Review Dialog */}
-        {selectedSubmission && (
+          {/* Review Dialog */}
+          {selectedSubmission && (
           <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
@@ -364,7 +365,8 @@ function AdminSubmissionsPageContent() {
             </DialogFooter>
           </DialogContent>
           </Dialog>
-        )}
+          )}
+        </div>
       </div>
     </PageWrapper>
   )

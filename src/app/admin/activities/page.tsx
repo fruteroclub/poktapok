@@ -95,18 +95,19 @@ function AdminActivitiesPageContent() {
 
   return (
     <PageWrapper>
-      <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Activities Management</h1>
-            <p className="text-muted-foreground mt-2">
-              Create and manage educational activities for $PULPA token distribution
-            </p>
+      <div className="page">
+        <div className="page-content">
+          <div className="header-section flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Activities Management</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                Create and manage educational activities for $PULPA token distribution
+              </p>
+            </div>
+            <Button onClick={() => router.push('/admin/activities/new')}>
+              Create New Activity
+            </Button>
           </div>
-          <Button onClick={() => router.push('/admin/activities/new')}>
-            Create New Activity
-          </Button>
-        </div>
 
       {/* Filters */}
       <Card className="mb-6">
@@ -227,6 +228,7 @@ function AdminActivitiesPageContent() {
           )}
         </CardContent>
       </Card>
+        </div>
       </div>
     </PageWrapper>
   )

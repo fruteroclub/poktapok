@@ -119,6 +119,7 @@ export default function AuthButton({
           appWallet: appWallet || null,
           extWallet: extWallet || null,
           primaryAuthMethod: authMethod,
+          loginMethod: loginMethod, // Pass original login method (github, google, etc.)
         };
 
         // Create or fetch user from database

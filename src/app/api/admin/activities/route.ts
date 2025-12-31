@@ -14,13 +14,13 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
 
     const params = listActivitiesQuerySchema.parse({
-      type: searchParams.get('type'),
-      category: searchParams.get('category'),
-      difficulty: searchParams.get('difficulty'),
-      status: searchParams.get('status'), // Admin can see all statuses
-      search: searchParams.get('search'),
-      page: searchParams.get('page') || '1',
-      limit: searchParams.get('limit') || '24',
+      type: searchParams.get('type') || undefined,
+      category: searchParams.get('category') || undefined,
+      difficulty: searchParams.get('difficulty') || undefined,
+      status: searchParams.get('status') || undefined, // Admin can see all statuses
+      search: searchParams.get('search') || undefined,
+      page: searchParams.get('page') || 1,
+      limit: searchParams.get('limit') || 24,
     })
 
     const result = await getActivities({

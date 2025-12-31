@@ -10,6 +10,13 @@ The **$PULPA Educational Activities & Community Engagement System** has been suc
 **Total Lines of Code**: ~3,500
 
 ---
+Ready to Test
+You can now:
+Start dev server: bun dev
+Create an activity: Go to http://localhost:3000/admin/activities/new
+User submits proof: Go to http://localhost:3000/activities
+Admin reviews: Go to http://localhost:3000/admin/submissions
+Full testing instructions are in docs/testing-pulpa-system.md
 
 ## What's Implemented
 

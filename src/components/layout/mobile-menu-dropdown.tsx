@@ -5,6 +5,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import AuthButton from '@/components/buttons/auth-button-privy'
@@ -102,6 +104,28 @@ export default function MobileMenuDropdown({ ready, user }: MobileMenuDropdownPr
         <DropdownMenuItem>
           <Link className="w-full text-foreground" href="/portfolio">Portfolio</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link className="w-full text-foreground" href="/activities">Actividades</Link>
+        </DropdownMenuItem>
+        {user.role === "admin" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+              Admin
+            </DropdownMenuLabel>
+            <DropdownMenuItem>
+              <Link className="w-full text-foreground" href="/admin/activities/new">
+                Crear Actividad
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link className="w-full text-foreground" href="/admin/submissions">
+                Revisar Submissions
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem className="justify-center focus:bg-transparent">
           <AuthButton size="sm" />
         </DropdownMenuItem>

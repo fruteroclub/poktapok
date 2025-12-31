@@ -26,13 +26,13 @@ import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 interface Activity {
   id: string
   title: string
-  activity_type: string
+  activityType: string
   difficulty: string
-  reward_pulpa_amount: string
+  rewardPulpaAmount: string
   status: string
-  current_submissions_count: number
-  total_available_slots: number | null
-  created_at: string
+  currentSubmissionsCount: number
+  totalAvailableSlots: number | null
+  createdAt: string
 }
 
 function AdminActivitiesPageContent() {
@@ -57,17 +57,17 @@ function AdminActivitiesPageContent() {
       if (filters.type !== 'all') params.append('type', filters.type)
       if (filters.search) params.append('search', filters.search)
 
-      const response = await fetch(`/api/activities?${params.toString()}`, {
-        headers: {
-          'x-user-id': 'ADMIN_USER_ID', // TODO: Replace with Privy auth
-        },
-      })
+      const response = await fetch(`/api/admin/activities?${params.toString()}`)
 
-      if (!response.ok) throw new Error('Failed to fetch activities')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error?.message || 'Failed to fetch activities')
+      }
 
       const result = await response.json()
-      setActivities(result.data.activities)
+      setActivities(result.data.activities || [])
     } catch (error) {
+      console.error('Error fetching activities:', error)
       alert(error instanceof Error ? error.message : 'Failed to fetch activities')
     } finally {
       setLoading(false)
@@ -199,16 +199,16 @@ function AdminActivitiesPageContent() {
                     <TableCell className="font-medium max-w-xs truncate">
                       {activity.title}
                     </TableCell>
-                    <TableCell>{formatActivityType(activity.activity_type)}</TableCell>
+                    <TableCell>{formatActivityType(activity.activityType)}</TableCell>
                     <TableCell className="capitalize">{activity.difficulty}</TableCell>
-                    <TableCell>{activity.reward_pulpa_amount} $PULPA</TableCell>
+                    <TableCell>{activity.rewardPulpaAmount} $PULPA</TableCell>
                     <TableCell>
-                      {activity.current_submissions_count}
-                      {activity.total_available_slots && ` / ${activity.total_available_slots}`}
+                      {activity.currentSubmissionsCount}
+                      {activity.totalAvailableSlots && ` / ${activity.totalAvailableSlots}`}
                     </TableCell>
                     <TableCell>{getStatusBadge(activity.status)}</TableCell>
                     <TableCell>
-                      {new Date(activity.created_at).toLocaleDateString()}
+                      {new Date(activity.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
                       <Button

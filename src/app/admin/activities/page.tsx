@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 
 interface Activity {
   id: string
@@ -93,7 +94,7 @@ function AdminActivitiesPageContent() {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+    <PageWrapper>
       <div className="page-content mx-auto w-full space-y-8 px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -227,7 +228,7 @@ function AdminActivitiesPageContent() {
         </CardContent>
       </Card>
       </div>
-    </main>
+    </PageWrapper>
   )
 }
 

@@ -165,7 +165,7 @@ function AdminSubmissionsPageContent() {
     <PageWrapper>
       <div className="page">
         <div className="page-content">
-          <div className="header-section">
+          <div className="w-full mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Review and approve user submissions for $PULPA token rewards
@@ -173,7 +173,7 @@ function AdminSubmissionsPageContent() {
           </div>
 
           {/* Filter */}
-          <Card className="mb-6">
+          <Card className="mb-6 w-full">
           <CardHeader>
             <CardTitle>Filter by Status</CardTitle>
           </CardHeader>
@@ -194,7 +194,7 @@ function AdminSubmissionsPageContent() {
           </Card>
 
           {/* Submissions Table */}
-          <Card>
+          <Card className="w-full">
         <CardContent className="pt-6">
           {loading ? (
             <div className="text-center py-8">Loading submissions...</div>

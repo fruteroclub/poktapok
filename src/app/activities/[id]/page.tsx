@@ -15,20 +15,20 @@ interface Activity {
   title: string
   description: string
   instructions: string | null
-  activity_type: string
+  activityType: string
   category: string | null
   difficulty: string
-  reward_pulpa_amount: string
-  evidence_requirements: {
+  rewardPulpaAmount: string
+  evidenceRequirements: {
     url_required: boolean
     screenshot_required: boolean
     text_required: boolean
   }
-  max_submissions_per_user: number | null
-  total_available_slots: number | null
-  current_submissions_count: number
-  starts_at: string | null
-  expires_at: string | null
+  maxSubmissionsPerUser: number | null
+  totalAvailableSlots: number | null
+  currentSubmissionsCount: number
+  startsAt: string | null
+  expiresAt: string | null
   status: string
 }
 
@@ -71,12 +71,12 @@ export default function ActivityDetailPage() {
     if (!activity) return
 
     // Validate required fields
-    if (activity.evidence_requirements.url_required && !formData.submission_url) {
+    if (activity.evidenceRequirements.url_required && !formData.submission_url) {
       alert('URL is required for this activity')
       return
     }
 
-    if (activity.evidence_requirements.text_required && !formData.submission_text) {
+    if (activity.evidenceRequirements.text_required && !formData.submission_text) {
       alert('Description is required for this activity')
       return
     }
@@ -128,13 +128,13 @@ export default function ActivityDetailPage() {
 
   const isFull = (activity: Activity) => {
     return (
-      activity.total_available_slots !== null &&
-      activity.current_submissions_count >= activity.total_available_slots
+      activity.totalAvailableSlots !== null &&
+      activity.currentSubmissionsCount >= activity.totalAvailableSlots
     )
   }
 
   const isExpired = (activity: Activity) => {
-    return activity.expires_at && new Date(activity.expires_at) < new Date()
+    return activity.expiresAt && new Date(activity.expiresAt) < new Date()
   }
 
   const canSubmit = (activity: Activity) => {
@@ -177,11 +177,11 @@ export default function ActivityDetailPage() {
           <div className="flex items-start justify-between gap-4 mb-4">
             <CardTitle className="text-3xl">{activity.title}</CardTitle>
             <Badge className="shrink-0 bg-purple-600 text-white text-lg px-4 py-1">
-              {activity.reward_pulpa_amount} $PULPA
+              {activity.rewardPulpaAmount} $PULPA
             </Badge>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Badge variant="outline">{formatActivityType(activity.activity_type)}</Badge>
+            <Badge variant="outline">{formatActivityType(activity.activityType)}</Badge>
             <Badge className={getDifficultyColor(activity.difficulty)}>
               {activity.difficulty}
             </Badge>
@@ -207,23 +207,23 @@ export default function ActivityDetailPage() {
             <div>
               <h4 className="font-medium mb-1">Submissions</h4>
               <p className="text-sm text-muted-foreground">
-                {activity.current_submissions_count}
-                {activity.total_available_slots && ` / ${activity.total_available_slots}`}
+                {activity.currentSubmissionsCount}
+                {activity.totalAvailableSlots && ` / ${activity.totalAvailableSlots}`}
               </p>
             </div>
-            {activity.max_submissions_per_user && (
+            {activity.maxSubmissionsPerUser && (
               <div>
                 <h4 className="font-medium mb-1">Max Per User</h4>
                 <p className="text-sm text-muted-foreground">
-                  {activity.max_submissions_per_user}
+                  {activity.maxSubmissionsPerUser}
                 </p>
               </div>
             )}
-            {activity.expires_at && (
+            {activity.expiresAt && (
               <div>
                 <h4 className="font-medium mb-1">Expires</h4>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(activity.expires_at).toLocaleDateString()}
+                  {new Date(activity.expiresAt).toLocaleDateString()}
                 </p>
               </div>
             )}
@@ -234,29 +234,29 @@ export default function ActivityDetailPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Checkbox
-                  checked={activity.evidence_requirements.url_required}
+                  checked={activity.evidenceRequirements.url_required}
                   disabled
                 />
                 <span className="text-sm">
-                  URL Link {activity.evidence_requirements.url_required && '(Required)'}
+                  URL Link {activity.evidenceRequirements.url_required && '(Required)'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
-                  checked={activity.evidence_requirements.screenshot_required}
+                  checked={activity.evidenceRequirements.screenshot_required}
                   disabled
                 />
                 <span className="text-sm">
-                  Screenshot {activity.evidence_requirements.screenshot_required && '(Required)'}
+                  Screenshot {activity.evidenceRequirements.screenshot_required && '(Required)'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
-                  checked={activity.evidence_requirements.text_required}
+                  checked={activity.evidenceRequirements.text_required}
                   disabled
                 />
                 <span className="text-sm">
-                  Text Description {activity.evidence_requirements.text_required && '(Required)'}
+                  Text Description {activity.evidenceRequirements.text_required && '(Required)'}
                 </span>
               </div>
             </div>
@@ -270,12 +270,12 @@ export default function ActivityDetailPage() {
           <CardHeader>
             <CardTitle>Submit Your Work</CardTitle>
             <CardDescription>
-              Provide evidence of your completion to earn {activity.reward_pulpa_amount} $PULPA
+              Provide evidence of your completion to earn {activity.rewardPulpaAmount} $PULPA
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {activity.evidence_requirements.url_required && (
+              {activity.evidenceRequirements.url_required && (
                 <div className="space-y-2">
                   <Label htmlFor="submission_url">
                     Submission URL *
@@ -286,7 +286,7 @@ export default function ActivityDetailPage() {
                     value={formData.submission_url}
                     onChange={(e) => setFormData({ ...formData, submission_url: e.target.value })}
                     placeholder="https://github.com/yourname/yourrepo/commit/abc123"
-                    required={activity.evidence_requirements.url_required}
+                    required={activity.evidenceRequirements.url_required}
                   />
                   <p className="text-sm text-muted-foreground">
                     Provide a link to your work (GitHub commit, X post, etc.)
@@ -294,7 +294,7 @@ export default function ActivityDetailPage() {
                 </div>
               )}
 
-              {activity.evidence_requirements.text_required && (
+              {activity.evidenceRequirements.text_required && (
                 <div className="space-y-2">
                   <Label htmlFor="submission_text">
                     Description *
@@ -305,7 +305,7 @@ export default function ActivityDetailPage() {
                     onChange={(e) => setFormData({ ...formData, submission_text: e.target.value })}
                     placeholder="Describe what you did and what you learned..."
                     rows={6}
-                    required={activity.evidence_requirements.text_required}
+                    required={activity.evidenceRequirements.text_required}
                     maxLength={1000}
                   />
                   <p className="text-sm text-muted-foreground">
@@ -314,7 +314,7 @@ export default function ActivityDetailPage() {
                 </div>
               )}
 
-              {activity.evidence_requirements.screenshot_required && (
+              {activity.evidenceRequirements.screenshot_required && (
                 <div className="space-y-2">
                   <Label>Screenshot Upload</Label>
                   <p className="text-sm text-amber-600">

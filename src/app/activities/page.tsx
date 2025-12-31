@@ -20,11 +20,11 @@ interface Activity {
   id: string
   title: string
   description: string
-  activity_type: string
+  activityType: string
   difficulty: string
-  reward_pulpa_amount: string
-  current_submissions_count: number
-  total_available_slots: number | null
+  rewardPulpaAmount: string
+  currentSubmissionsCount: number
+  totalAvailableSlots: number | null
   category: string | null
 }
 
@@ -84,8 +84,8 @@ export default function ActivitiesPage() {
 
   const isFull = (activity: Activity) => {
     return (
-      activity.total_available_slots !== null &&
-      activity.current_submissions_count >= activity.total_available_slots
+      activity.totalAvailableSlots !== null &&
+      activity.currentSubmissionsCount >= activity.totalAvailableSlots
     )
   }
 
@@ -211,11 +211,11 @@ export default function ActivitiesPage() {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <CardTitle className="text-xl line-clamp-2">{activity.title}</CardTitle>
                   <Badge className="shrink-0 bg-purple-600 text-white">
-                    {activity.reward_pulpa_amount} $PULPA
+                    {activity.rewardPulpaAmount} $PULPA
                   </Badge>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline">{formatActivityType(activity.activity_type)}</Badge>
+                  <Badge variant="outline">{formatActivityType(activity.activityType)}</Badge>
                   <Badge className={getDifficultyColor(activity.difficulty)}>
                     {activity.difficulty}
                   </Badge>
@@ -232,9 +232,9 @@ export default function ActivitiesPage() {
                 <div className="mt-4 pt-4 border-t">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {activity.current_submissions_count} submissions
-                      {activity.total_available_slots &&
-                        ` / ${activity.total_available_slots} slots`}
+                      {activity.currentSubmissionsCount} submissions
+                      {activity.totalAvailableSlots &&
+                        ` / ${activity.totalAvailableSlots} slots`}
                     </span>
                     {isFull(activity) && (
                       <Badge variant="destructive">Full</Badge>

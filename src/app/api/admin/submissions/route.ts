@@ -18,12 +18,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
 
     const params = listSubmissionsQuerySchema.parse({
-      status: searchParams.get('status'),
-      activity_id: searchParams.get('activity_id'),
-      user_id: searchParams.get('user_id'),
+      status: searchParams.get('status') || undefined,
+      activity_id: searchParams.get('activity_id') || undefined,
+      user_id: searchParams.get('user_id') || undefined,
       sort: searchParams.get('sort') || 'submitted_at_desc',
-      page: searchParams.get('page') || '1',
-      limit: searchParams.get('limit') || '24',
+      page: searchParams.get('page') || 1,
+      limit: searchParams.get('limit') || 24,
     })
 
     const result = await getSubmissions({

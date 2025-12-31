@@ -48,7 +48,8 @@ export function useAuth() {
 
       const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        if (res.status === 401) return null;
+        // Return null for auth errors - user may not exist in DB yet
+        if (res.status === 401 || res.status === 404) return null;
         throw new Error("Failed to fetch user");
       }
 

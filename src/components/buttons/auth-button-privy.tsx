@@ -146,6 +146,9 @@ export default function AuthButton({
           throw new Error("Failed to get user data from server");
         }
 
+        // Invalidate auth query to trigger refetch with fresh user data
+        queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+
         // Redirect based on account status
         if (!wasAlreadyAuthenticated) {
           if (user.accountStatus === "incomplete") {

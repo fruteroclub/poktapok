@@ -78,6 +78,16 @@ export default function Navbar() {
                 </Link>
               ),
             )}
+            {isSignedIn && (
+              <Link
+                className={`inline-flex items-center justify-center px-4 py-2 font-funnel text-xl font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${pathname === '/activities' &&
+                  'pointer-events-none underline decoration-primary decoration-2 underline-offset-[6px] hover:!text-foreground'
+                  }`}
+                href="/activities"
+              >
+                actividades
+              </Link>
+            )}
           </nav>
         </div>
 

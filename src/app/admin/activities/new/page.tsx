@@ -62,14 +62,14 @@ function NewActivityPageContent() {
             text_required: formData.text_required,
           },
           verification_type: formData.verification_type,
-          max_submissions_per_user: formData.max_submissions_per_user
+          max_submissions_per_user: formData.max_submissions_per_user && formData.max_submissions_per_user.trim()
             ? parseInt(formData.max_submissions_per_user)
-            : null,
-          total_available_slots: formData.total_available_slots
+            : undefined,
+          total_available_slots: formData.total_available_slots && formData.total_available_slots.trim()
             ? parseInt(formData.total_available_slots)
-            : null,
-          starts_at: formData.starts_at || null,
-          expires_at: formData.expires_at || null,
+            : undefined,
+          starts_at: formData.starts_at || undefined,
+          expires_at: formData.expires_at || undefined,
           status: formData.status,
         }),
       })

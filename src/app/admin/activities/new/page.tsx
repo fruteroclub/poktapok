@@ -43,35 +43,39 @@ function NewActivityPageContent() {
     setLoading(true)
 
     try {
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        instructions: formData.instructions || undefined,
+        activity_type: formData.activity_type,
+        category: formData.category || undefined,
+        difficulty: formData.difficulty,
+        reward_pulpa_amount: formData.reward_pulpa_amount,
+        evidence_requirements: {
+          url_required: formData.url_required,
+          screenshot_required: formData.screenshot_required,
+          text_required: formData.text_required,
+        },
+        verification_type: formData.verification_type,
+        max_submissions_per_user: formData.max_submissions_per_user && formData.max_submissions_per_user.trim()
+          ? parseInt(formData.max_submissions_per_user)
+          : undefined,
+        total_available_slots: formData.total_available_slots && formData.total_available_slots.trim()
+          ? parseInt(formData.total_available_slots)
+          : undefined,
+        starts_at: formData.starts_at || undefined,
+        expires_at: formData.expires_at || undefined,
+        status: formData.status,
+      }
+
+      console.log('📤 Payload being sent:', JSON.stringify(payload, null, 2))
+
       const response = await fetch('/api/admin/activities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          instructions: formData.instructions || undefined,
-          activity_type: formData.activity_type,
-          category: formData.category || undefined,
-          difficulty: formData.difficulty,
-          reward_pulpa_amount: formData.reward_pulpa_amount,
-          evidence_requirements: {
-            url_required: formData.url_required,
-            screenshot_required: formData.screenshot_required,
-            text_required: formData.text_required,
-          },
-          verification_type: formData.verification_type,
-          max_submissions_per_user: formData.max_submissions_per_user && formData.max_submissions_per_user.trim()
-            ? parseInt(formData.max_submissions_per_user)
-            : undefined,
-          total_available_slots: formData.total_available_slots && formData.total_available_slots.trim()
-            ? parseInt(formData.total_available_slots)
-            : undefined,
-          starts_at: formData.starts_at || undefined,
-          expires_at: formData.expires_at || undefined,
-          status: formData.status,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {

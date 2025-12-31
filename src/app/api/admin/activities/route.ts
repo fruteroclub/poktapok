@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
     const admin = await requireAdmin(req)
 
     const body = await req.json()
+    console.log('📥 Received body:', JSON.stringify(body, null, 2))
+
     const validated = createActivitySchema.parse(body)
+    console.log('✅ Validation passed:', JSON.stringify(validated, null, 2))
 
     const activity = await createActivity({
       title: validated.title,

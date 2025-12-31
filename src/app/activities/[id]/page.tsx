@@ -174,11 +174,11 @@ export default function ActivityDetailPage() {
     <PageWrapper>
       <div className="page">
         <div className="page-content">
-        <Button variant="ghost" onClick={() => router.back()} className="mb-6">
+        <Button variant="ghost" onClick={() => router.back()} className="mb-6 w-full justify-start">
           ← Back to Activities
         </Button>
 
-        <Card className="mb-8">
+        <Card className="mb-8 w-full">
         <CardHeader>
           <div className="flex items-start justify-between gap-4 mb-4">
             <CardTitle className="text-3xl">{activity.title}</CardTitle>
@@ -272,7 +272,7 @@ export default function ActivityDetailPage() {
 
         {/* Submission Form */}
         {canSubmit(activity) ? (
-          <Card>
+          <Card className="w-full">
           <CardHeader>
             <CardTitle>Submit Your Work</CardTitle>
             <CardDescription>
@@ -346,7 +346,7 @@ export default function ActivityDetailPage() {
           </CardContent>
         </Card>
         ) : (
-          <Card>
+          <Card className="w-full">
             <CardContent className="py-8 text-center text-muted-foreground">
               {isFull(activity) && <p>This activity has reached its maximum submissions.</p>}
               {isExpired(activity) && <p>This activity has expired.</p>}

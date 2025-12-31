@@ -94,7 +94,7 @@ export default function ActivitiesPage() {
     <PageWrapper>
       <div className="page">
         <div className="page-content">
-          <div className="header-section">
+          <div className="w-full mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Educational Activities</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Complete activities and earn $PULPA tokens while learning and building
@@ -103,7 +103,7 @@ export default function ActivitiesPage() {
 
         {/* Admin Panel */}
         {isAdmin && (
-          <Card className="mb-8 border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30">
+          <Card className="mb-8 w-full border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-purple-900 dark:text-purple-100">
                 <ClipboardList className="h-5 w-5" />
@@ -134,7 +134,7 @@ export default function ActivitiesPage() {
         )}
 
         {/* Filters */}
-        <Card className="mb-8">
+        <Card className="mb-8 w-full">
         <CardHeader>
           <CardTitle>Find Activities</CardTitle>
         </CardHeader>
@@ -202,7 +202,7 @@ export default function ActivitiesPage() {
             No activities found. Check back soon for new opportunities!
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activities.map((activity) => (
             <Card
               key={activity.id}

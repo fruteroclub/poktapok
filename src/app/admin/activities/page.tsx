@@ -97,7 +97,7 @@ function AdminActivitiesPageContent() {
     <PageWrapper>
       <div className="page">
         <div className="page-content">
-          <div className="header-section flex items-center justify-between">
+          <div className="w-full flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Activities Management</h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -110,7 +110,7 @@ function AdminActivitiesPageContent() {
           </div>
 
       {/* Filters */}
-      <Card className="mb-6">
+      <Card className="mb-6 w-full">
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
@@ -173,7 +173,7 @@ function AdminActivitiesPageContent() {
       </Card>
 
       {/* Activities Table */}
-      <Card>
+      <Card className="w-full">
         <CardContent className="pt-6">
           {loading ? (
             <div className="text-center py-8">Loading activities...</div>

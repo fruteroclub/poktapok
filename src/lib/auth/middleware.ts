@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { PrivyClient } from '@privy-io/server-auth'
+
+const privyClient = new PrivyClient(
+  process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
+  process.env.PRIVY_APP_SECRET!
+)
 
 /**
  * Error classes for authentication/authorization
@@ -22,25 +28,32 @@ export class ForbiddenError extends Error {
 
 /**
  * Get user from Privy authentication
- * This is a placeholder - you'll need to integrate with Privy's server-side SDK
  */
 export async function getUserFromRequest(req: NextRequest) {
-  // TODO: Integrate with Privy server-side authentication
-  // For now, this is a placeholder that checks for a user ID in headers (development only)
+  try {
+    // Get auth token from cookie
+    const authToken = req.cookies.get('privy-token')?.value
 
-  const userId = req.headers.get('x-user-id')
+    if (!authToken) {
+      return null
+    }
 
-  if (!userId) {
+    // Verify token with Privy
+    const claims = await privyClient.verifyAuthToken(authToken)
+    const privyDid = claims.userId
+
+    // Get user from database
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.privyDid, privyDid))
+      .limit(1)
+
+    return result[0] || null
+  } catch (error) {
+    console.error('Auth error:', error)
     return null
   }
-
-  const result = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-
-  return result[0] || null
 }
 
 /**

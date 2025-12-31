@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import PageWrapper from '@/components/layout/page-wrapper'
 
 interface Activity {
   id: string
@@ -147,26 +148,26 @@ export default function ActivityDetailPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <PageWrapper>
         <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
           <div className="text-center py-12">Loading activity...</div>
         </div>
-      </main>
+      </PageWrapper>
     )
   }
 
   if (!activity) {
     return (
-      <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+      <PageWrapper>
         <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
           <div className="text-center py-12">Activity not found</div>
         </div>
-      </main>
+      </PageWrapper>
     )
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+    <PageWrapper>
       <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
         <Button variant="ghost" onClick={() => router.back()} className="mb-6">
           ← Back to Activities
@@ -349,6 +350,6 @@ export default function ActivityDetailPage() {
           </Card>
         )}
       </div>
-    </main>
+    </PageWrapper>
   )
 }

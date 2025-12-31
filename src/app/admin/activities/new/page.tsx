@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 
 function NewActivityPageContent() {
   const router = useRouter()
@@ -96,7 +97,7 @@ function NewActivityPageContent() {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-96px)] w-full flex-col items-center overflow-x-hidden">
+    <PageWrapper>
       <div className="page-content mx-auto w-full space-y-8 px-4 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Create New Activity</h1>
@@ -363,7 +364,7 @@ function NewActivityPageContent() {
         </div>
         </form>
       </div>
-    </main>
+    </PageWrapper>
   )
 }
 

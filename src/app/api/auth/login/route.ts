@@ -70,16 +70,25 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     }
 
     // User doesn't exist - create new minimal record
-    // Email, username, displayName will be collected during onboarding
+    // Generate temporary values for required fields (will be updated during onboarding)
     console.log("Creating new user for privyDid:", privyDid);
+
+    // Generate temporary email if not provided by Privy
+    const tempEmail = email || `${privyDid.replace('did:privy:', '')}@incomplete.user`;
+
+    // Generate temporary username from privyDid (last 12 chars)
+    const tempUsername = `user_${privyDid.slice(-12)}`;
+
+    // Use temporary display name
+    const tempDisplayName = "New User";
 
     const newUserResults = await db
       .insert(users)
       .values({
         privyDid,
-        email: email || null,
-        username: null,
-        displayName: null,
+        email: tempEmail,
+        username: tempUsername,
+        displayName: tempDisplayName,
         bio: null,
         avatarUrl: null,
         appWallet: appWallet || null,

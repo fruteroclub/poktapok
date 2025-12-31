@@ -149,8 +149,10 @@ export default function ActivityDetailPage() {
   if (loading) {
     return (
       <PageWrapper>
-        <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-          <div className="text-center py-12">Loading activity...</div>
+        <div className="page">
+          <div className="page-content">
+            <div className="text-center py-12">Loading activity...</div>
+          </div>
         </div>
       </PageWrapper>
     )
@@ -159,8 +161,10 @@ export default function ActivityDetailPage() {
   if (!activity) {
     return (
       <PageWrapper>
-        <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-          <div className="text-center py-12">Activity not found</div>
+        <div className="page">
+          <div className="page-content">
+            <div className="text-center py-12">Activity not found</div>
+          </div>
         </div>
       </PageWrapper>
     )
@@ -168,7 +172,8 @@ export default function ActivityDetailPage() {
 
   return (
     <PageWrapper>
-      <div className="page-content mx-auto w-full px-4 py-8 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+      <div className="page">
+        <div className="page-content">
         <Button variant="ghost" onClick={() => router.back()} className="mb-6">
           ← Back to Activities
         </Button>
@@ -349,6 +354,7 @@ export default function ActivityDetailPage() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
     </PageWrapper>
   )

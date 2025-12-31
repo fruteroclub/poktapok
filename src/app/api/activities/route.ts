@@ -13,13 +13,13 @@ export async function GET(req: NextRequest) {
 
     // Parse and validate query params
     const params = listActivitiesQuerySchema.parse({
-      type: searchParams.get('type'),
-      category: searchParams.get('category'),
-      difficulty: searchParams.get('difficulty'),
+      type: searchParams.get('type') || undefined,
+      category: searchParams.get('category') || undefined,
+      difficulty: searchParams.get('difficulty') || undefined,
       status: searchParams.get('status') || 'active', // Default to active only for public
-      search: searchParams.get('search'),
-      page: searchParams.get('page') || '1',
-      limit: searchParams.get('limit') || '24',
+      search: searchParams.get('search') || undefined,
+      page: searchParams.get('page') || 1,
+      limit: searchParams.get('limit') || 24,
     })
 
     const result = await getActivities({

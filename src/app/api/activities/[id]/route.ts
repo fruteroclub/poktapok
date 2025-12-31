@@ -34,7 +34,7 @@ export async function GET(
 
     return successResponse({
       ...activity,
-      user_has_submitted: userHasSubmitted,
+      userHasSubmitted,
     })
   } catch (error) {
     return handleApiError(error)

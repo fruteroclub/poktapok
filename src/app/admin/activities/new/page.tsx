@@ -80,11 +80,13 @@ function NewActivityPageContent() {
 
       if (!response.ok) {
         const error = await response.json()
+        console.error('❌ Error creating activity:', error)
         throw new Error(error.error?.message || 'Failed to create activity')
       }
 
-      const result = await response.json()
-      alert('Activity created successfully!')
+      await response.json() // Consume response
+      console.log('✅ Activity created successfully')
+      alert('¡Actividad creada exitosamente!')
       router.push('/admin/activities')
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Failed to create activity')

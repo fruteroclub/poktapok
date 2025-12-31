@@ -33,25 +33,25 @@ import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 interface Submission {
   submission: {
     id: string
-    activity_id: string
-    user_id: string
-    submission_url: string | null
-    submission_text: string | null
+    activityId: string
+    userId: string
+    submissionUrl: string | null
+    submissionText: string | null
     status: string
-    submitted_at: string
-    reward_pulpa_amount: string
+    submittedAt: string
+    rewardPulpaAmount: string
   }
   activity: {
     id: string
     title: string
-    activity_type: string
-    reward_pulpa_amount: string
+    activityType: string
+    rewardPulpaAmount: string
   }
   user: {
     id: string
     username: string | null
     email: string
-    app_wallet: string | null
+    appWallet: string | null
   }
 }
 
@@ -71,11 +71,7 @@ function AdminSubmissionsPageContent() {
     setLoading(true)
     try {
       const params = new URLSearchParams({ status: filter })
-      const response = await fetch(`/api/admin/submissions?${params.toString()}`, {
-        headers: {
-          'x-user-id': 'ADMIN_USER_ID', // TODO: Replace with Privy auth
-        },
-      })
+      const response = await fetch(`/api/admin/submissions?${params.toString()}`)
 
       if (!response.ok) throw new Error('Failed to fetch submissions')
 
@@ -97,7 +93,6 @@ function AdminSubmissionsPageContent() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': 'ADMIN_USER_ID', // TODO: Replace with Privy auth
         },
         body: JSON.stringify({
           review_notes: reviewNotes || undefined,
@@ -132,7 +127,6 @@ function AdminSubmissionsPageContent() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': 'ADMIN_USER_ID', // TODO: Replace with Privy auth
         },
         body: JSON.stringify({
           review_notes: reviewNotes,
@@ -236,9 +230,9 @@ function AdminSubmissionsPageContent() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {item.submission.submission_url && (
+                      {item.submission.submissionUrl && (
                         <a
-                          href={item.submission.submission_url}
+                          href={item.submission.submissionUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
@@ -246,16 +240,16 @@ function AdminSubmissionsPageContent() {
                           View Link
                         </a>
                       )}
-                      {item.submission.submission_text && (
+                      {item.submission.submissionText && (
                         <p className="text-sm max-w-xs truncate">
-                          {item.submission.submission_text}
+                          {item.submission.submissionText}
                         </p>
                       )}
                     </TableCell>
-                    <TableCell>{item.submission.reward_pulpa_amount} $PULPA</TableCell>
+                    <TableCell>{item.submission.rewardPulpaAmount} $PULPA</TableCell>
                     <TableCell>{getStatusBadge(item.submission.status)}</TableCell>
                     <TableCell>
-                      {new Date(item.submission.submitted_at).toLocaleDateString()}
+                      {new Date(item.submission.submittedAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -295,39 +289,39 @@ function AdminSubmissionsPageContent() {
               <div>
                 <h3 className="font-semibold mb-2">User</h3>
                 <p>{selectedSubmission.user.username || selectedSubmission.user.email}</p>
-                {selectedSubmission.user.app_wallet && (
+                {selectedSubmission.user.appWallet && (
                   <p className="text-sm text-muted-foreground truncate">
-                    Wallet: {selectedSubmission.user.app_wallet}
+                    Wallet: {selectedSubmission.user.appWallet}
                   </p>
                 )}
               </div>
 
               <div>
                 <h3 className="font-semibold mb-2">Submission Details</h3>
-                {selectedSubmission.submission.submission_url && (
+                {selectedSubmission.submission.submissionUrl && (
                   <div className="mb-2">
                     <span className="text-sm font-medium">URL: </span>
                     <a
-                      href={selectedSubmission.submission.submission_url}
+                      href={selectedSubmission.submission.submissionUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline break-all"
                     >
-                      {selectedSubmission.submission.submission_url}
+                      {selectedSubmission.submission.submissionUrl}
                     </a>
                   </div>
                 )}
-                {selectedSubmission.submission.submission_text && (
+                {selectedSubmission.submission.submissionText && (
                   <div>
                     <span className="text-sm font-medium">Description: </span>
-                    <p className="mt-1 text-sm">{selectedSubmission.submission.submission_text}</p>
+                    <p className="mt-1 text-sm">{selectedSubmission.submission.submissionText}</p>
                   </div>
                 )}
               </div>
 
               <div>
                 <h3 className="font-semibold mb-2">Reward Amount</h3>
-                <p>{selectedSubmission.submission.reward_pulpa_amount} $PULPA</p>
+                <p>{selectedSubmission.submission.rewardPulpaAmount} $PULPA</p>
               </div>
 
               <div>

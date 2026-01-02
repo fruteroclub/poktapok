@@ -19,13 +19,16 @@ import Link from 'next/link'
 import { User } from '@/types/api-v1'
 
 interface MobileMenuDropdownProps {
-  isLoading?: boolean;
-  isSignedIn?: boolean;
-  ready: boolean;
-  user: User;
+  isLoading?: boolean
+  isSignedIn?: boolean
+  ready: boolean
+  user: User
 }
 
-export default function MobileMenuDropdown({ ready, user }: MobileMenuDropdownProps) {
+export default function MobileMenuDropdown({
+  ready,
+  user,
+}: MobileMenuDropdownProps) {
   const account = useConnection()
   const [checkSumAddress, setCheckSumAddress] = useState<
     `0x${string}` | undefined
@@ -56,41 +59,32 @@ export default function MobileMenuDropdown({ ready, user }: MobileMenuDropdownPr
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-
         {/* Avatar image or blockie avatar */}
-        <div className="flex items-center gap-2 px-4 py-2 hover:cursor-pointer hover:rounded-md hover:outline hover:outline-2 hover:outline-primary animate-in fade-in-50 duration-200">
+        <div className="flex animate-in items-center gap-2 px-4 py-2 duration-200 fade-in-50 hover:cursor-pointer hover:rounded-md hover:outline hover:outline-2 hover:outline-primary">
           {user?.avatarUrl ? (
             <>
               <Avatar>
                 <AvatarImage src={user?.avatarUrl ?? ''} />
               </Avatar>
-              <span>
-                {user?.displayName ?? ens ?? 'nrc'}
-              </span>
+              <span>{user?.displayName ?? ens ?? 'nrc'}</span>
+            </>
+          ) : checkSumAddress && isAddress(checkSumAddress) ? (
+            <>
+              <BlockieAvatar
+                address={checkSumAddress}
+                ensImage={ensAvatar}
+                size={32}
+              />
+              <span>{user?.displayName ?? ens ?? 'nrc'}</span>
             </>
           ) : (
-            checkSumAddress && isAddress(checkSumAddress) ? (
-              <>
-                <BlockieAvatar
-                  address={checkSumAddress}
-                  ensImage={ensAvatar}
-                  size={32}
-                />
-                <span>
-                  {user?.displayName ?? ens ?? 'nrc'}
-                </span></>
-            ) : (
-              <Avatar>
-                <AvatarFallback>
-                  {user?.username?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            )
-          )
-          }
+            <Avatar>
+              <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          )}
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className="w-56 p-4">
+      <DropdownMenuContent align="end" className="w-56 p-4">
         <DropdownMenuItem>
           <Link className="w-full text-foreground" href="/dashboard">
             Dashboard
@@ -102,24 +96,34 @@ export default function MobileMenuDropdown({ ready, user }: MobileMenuDropdownPr
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/portfolio">Portfolio</Link>
+          <Link className="w-full text-foreground" href="/portfolio">
+            Portfolio
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/activities">Actividades</Link>
+          <Link className="w-full text-foreground" href="/activities">
+            Actividades
+          </Link>
         </DropdownMenuItem>
-        {user.role === "admin" && (
+        {user.role === 'admin' && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
               Admin
             </DropdownMenuLabel>
             <DropdownMenuItem>
-              <Link className="w-full text-foreground" href="/admin/activities/new">
+              <Link
+                className="w-full text-foreground"
+                href="/admin/activities/new"
+              >
                 Crear Actividad
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link className="w-full text-foreground" href="/admin/submissions">
+              <Link
+                className="w-full text-foreground"
+                href="/admin/submissions"
+              >
                 Revisar Submissions
               </Link>
             </DropdownMenuItem>

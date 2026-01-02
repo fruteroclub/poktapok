@@ -4,13 +4,13 @@
  * GET /api/skills - List all skills with filters
  */
 
-import { NextRequest } from 'next/server';
-import { db } from '@/lib/db';
-import { skills } from '@/lib/db/schema';
-import { apiSuccess, apiValidationError, apiErrors } from '@/lib/api/response';
-import { listSkillsQuerySchema } from '@/lib/validators/skill';
-import { eq, like, desc, and } from 'drizzle-orm';
-import type { ListSkillsResponse } from '@/types/api-v1';
+import { NextRequest } from 'next/server'
+import { db } from '@/lib/db'
+import { skills } from '@/lib/db/schema'
+import { apiSuccess, apiValidationError, apiErrors } from '@/lib/api/response'
+import { listSkillsQuerySchema } from '@/lib/validators/skill'
+import { eq, like, desc, and } from 'drizzle-orm'
+import type { ListSkillsResponse } from '@/types/api-v1'
 
 /**
  * GET /api/skills
@@ -18,22 +18,24 @@ import type { ListSkillsResponse } from '@/types/api-v1';
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const validation = listSkillsQuerySchema.safeParse(Object.fromEntries(searchParams));
+    const { searchParams } = new URL(request.url)
+    const validation = listSkillsQuerySchema.safeParse(
+      Object.fromEntries(searchParams),
+    )
 
     if (!validation.success) {
-      return apiValidationError(validation.error);
+      return apiValidationError(validation.error)
     }
 
-    const { category, search, limit, offset } = validation.data;
+    const { category, search, limit, offset } = validation.data
 
     // Build conditions array
-    const conditions = [];
+    const conditions = []
     if (category) {
-      conditions.push(eq(skills.category, category));
+      conditions.push(eq(skills.category, category))
     }
     if (search) {
-      conditions.push(like(skills.name, `%${search}%`));
+      conditions.push(like(skills.name, `%${search}%`))
     }
 
     // Build and execute query
@@ -43,13 +45,13 @@ export async function GET(request: NextRequest) {
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(skills.usageCount), skills.name)
       .limit(limit)
-      .offset(offset);
+      .offset(offset)
 
     // Get total count (without pagination) - using the same conditions
     const [{ count: total }] = await db
       .select({ count: db.$count(skills) })
       .from(skills)
-      .where(conditions.length > 0 ? and(...conditions) : undefined);
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
 
     return apiSuccess<ListSkillsResponse>(
       { skills: skillsList, total },
@@ -61,10 +63,10 @@ export async function GET(request: NextRequest) {
             hasMore: offset + limit < total,
           },
         },
-      }
-    );
+      },
+    )
   } catch (error) {
-    console.error('Error listing skills:', error);
-    return apiErrors.internal();
+    console.error('Error listing skills:', error)
+    return apiErrors.internal()
   }
 }

@@ -1,45 +1,45 @@
-import { db } from "@/lib/db";
-import { profiles, users, userSkills } from "@/lib/db/schema";
-import { and, or, like, eq, desc, isNull, sql, inArray } from "drizzle-orm";
+import { db } from '@/lib/db'
+import { profiles, users, userSkills } from '@/lib/db/schema'
+import { and, or, like, eq, desc, isNull, sql, inArray } from 'drizzle-orm'
 
 /**
  * Directory Filters Type
  * Used for filtering profiles in the public directory
  */
 export type DirectoryFilters = {
-  search?: string;
-  learningTrack?: "ai" | "crypto" | "privacy";
-  availabilityStatus?: "available" | "open_to_offers" | "unavailable";
-  country?: string;
-  skills?: string[]; // Filter by skill IDs
-  page?: number;
-  limit?: number;
-};
+  search?: string
+  learningTrack?: 'ai' | 'crypto' | 'privacy'
+  availabilityStatus?: 'available' | 'open_to_offers' | 'unavailable'
+  country?: string
+  skills?: string[] // Filter by skill IDs
+  page?: number
+  limit?: number
+}
 
 /**
  * Directory Profile Result Type
  * Merged user + profile data for directory display
  */
 export type DirectoryProfile = {
-  id: string;
-  userId: string;
-  username: string;
-  displayName: string | null;
-  bio: string | null;
-  avatarUrl: string | null;
-  city: string | null;
-  country: string | null;
-  countryCode: string | null;
-  learningTracks: ("ai" | "crypto" | "privacy")[] | null;
-  availabilityStatus: "available" | "open_to_offers" | "unavailable";
-  completedBounties: number;
-  totalEarningsUsd: number;
-  githubUrl: string | null;
-  twitterUrl: string | null;
-  linkedinUrl: string | null;
-  telegramHandle: string | null;
-  createdAt: Date;
-};
+  id: string
+  userId: string
+  username: string
+  displayName: string | null
+  bio: string | null
+  avatarUrl: string | null
+  city: string | null
+  country: string | null
+  countryCode: string | null
+  learningTracks: ('ai' | 'crypto' | 'privacy')[] | null
+  availabilityStatus: 'available' | 'open_to_offers' | 'unavailable'
+  completedBounties: number
+  totalEarningsUsd: number
+  githubUrl: string | null
+  twitterUrl: string | null
+  linkedinUrl: string | null
+  telegramHandle: string | null
+  createdAt: Date
+}
 
 /**
  * Get directory profiles with filters and pagination
@@ -55,7 +55,7 @@ export type DirectoryProfile = {
  * @returns Array of directory profiles
  */
 export async function getDirectoryProfiles(
-  filters: DirectoryFilters
+  filters: DirectoryFilters,
 ): Promise<DirectoryProfile[]> {
   const {
     search,
@@ -65,51 +65,51 @@ export async function getDirectoryProfiles(
     skills,
     page = 1,
     limit = 24,
-  } = filters;
+  } = filters
 
-  const conditions = [];
+  const conditions = []
 
   // Only show public profiles
-  conditions.push(eq(profiles.profileVisibility, "public"));
+  conditions.push(eq(profiles.profileVisibility, 'public'))
 
   // Only show non-deleted profiles
-  conditions.push(isNull(profiles.deletedAt));
+  conditions.push(isNull(profiles.deletedAt))
 
   // Only show profiles with active users (account_status = 'active')
-  conditions.push(eq(users.accountStatus, "active"));
+  conditions.push(eq(users.accountStatus, 'active'))
 
   // Only show non-deleted users
-  conditions.push(isNull(users.deletedAt));
+  conditions.push(isNull(users.deletedAt))
 
   // Search: username, displayName, bio (case-insensitive)
   if (search && search.length >= 2) {
-    const searchPattern = `%${search.toLowerCase()}%`;
+    const searchPattern = `%${search.toLowerCase()}%`
     conditions.push(
       or(
         sql`LOWER(${users.username}) LIKE ${searchPattern}`,
         sql`LOWER(${users.displayName}) LIKE ${searchPattern}`,
-        sql`LOWER(${users.bio}) LIKE ${searchPattern}`
-      )
-    );
+        sql`LOWER(${users.bio}) LIKE ${searchPattern}`,
+      ),
+    )
   }
 
   // Filter by learning track
   if (learningTrack) {
     // Check if learningTracks array contains the specified track
-    conditions.push(sql`${learningTrack} = ANY(${profiles.learningTracks})`);
+    conditions.push(sql`${learningTrack} = ANY(${profiles.learningTracks})`)
   }
 
   // Filter by availability status
   if (availabilityStatus) {
-    conditions.push(eq(profiles.availabilityStatus, availabilityStatus));
+    conditions.push(eq(profiles.availabilityStatus, availabilityStatus))
   }
 
   // Filter by country
   if (country) {
-    conditions.push(eq(profiles.country, country));
+    conditions.push(eq(profiles.country, country))
   }
 
-  const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit
 
   // Build query - add skills join if filtering by skills
   if (skills && skills.length > 0) {
@@ -118,7 +118,7 @@ export async function getDirectoryProfiles(
     const usersWithSkills = db
       .selectDistinct({ userId: userSkills.userId })
       .from(userSkills)
-      .where(inArray(userSkills.skillId, skills));
+      .where(inArray(userSkills.skillId, skills))
 
     // Main query joins with the subquery results
     const results = await db
@@ -149,7 +149,7 @@ export async function getDirectoryProfiles(
       .where(and(...conditions, inArray(profiles.userId, usersWithSkills)))
       .orderBy(desc(profiles.createdAt))
       .limit(limit)
-      .offset(offset);
+      .offset(offset)
 
     // Map to DirectoryProfile type
     return results.map((r) => ({
@@ -171,7 +171,7 @@ export async function getDirectoryProfiles(
       linkedinUrl: r.linkedinUrl,
       telegramHandle: r.telegramHandle,
       createdAt: r.profileCreatedAt,
-    }));
+    }))
   }
 
   // Query without skills filter
@@ -203,7 +203,7 @@ export async function getDirectoryProfiles(
     .where(and(...conditions))
     .orderBy(desc(profiles.createdAt))
     .limit(limit)
-    .offset(offset);
+    .offset(offset)
 
   // Map to DirectoryProfile type
   return results.map((r) => ({
@@ -225,7 +225,7 @@ export async function getDirectoryProfiles(
     linkedinUrl: r.linkedinUrl,
     telegramHandle: r.telegramHandle,
     createdAt: r.profileCreatedAt,
-  }));
+  }))
 }
 
 /**
@@ -235,49 +235,49 @@ export async function getDirectoryProfiles(
  * @returns Total count of matching profiles
  */
 export async function getDirectoryProfilesCount(
-  filters: Omit<DirectoryFilters, "page" | "limit">
+  filters: Omit<DirectoryFilters, 'page' | 'limit'>,
 ): Promise<number> {
-  const { search, learningTrack, availabilityStatus, country, skills } = filters;
+  const { search, learningTrack, availabilityStatus, country, skills } = filters
 
-  const conditions = [];
+  const conditions = []
 
   // Only show public profiles
-  conditions.push(eq(profiles.profileVisibility, "public"));
+  conditions.push(eq(profiles.profileVisibility, 'public'))
 
   // Only show non-deleted profiles
-  conditions.push(isNull(profiles.deletedAt));
+  conditions.push(isNull(profiles.deletedAt))
 
   // Only show profiles with active users
-  conditions.push(eq(users.accountStatus, "active"));
+  conditions.push(eq(users.accountStatus, 'active'))
 
   // Only show non-deleted users
-  conditions.push(isNull(users.deletedAt));
+  conditions.push(isNull(users.deletedAt))
 
   // Search
   if (search && search.length >= 2) {
-    const searchPattern = `%${search.toLowerCase()}%`;
+    const searchPattern = `%${search.toLowerCase()}%`
     conditions.push(
       or(
         sql`LOWER(${users.username}) LIKE ${searchPattern}`,
         sql`LOWER(${users.displayName}) LIKE ${searchPattern}`,
-        sql`LOWER(${users.bio}) LIKE ${searchPattern}`
-      )
-    );
+        sql`LOWER(${users.bio}) LIKE ${searchPattern}`,
+      ),
+    )
   }
 
   // Filter by learning track
   if (learningTrack) {
-    conditions.push(sql`${learningTrack} = ANY(${profiles.learningTracks})`);
+    conditions.push(sql`${learningTrack} = ANY(${profiles.learningTracks})`)
   }
 
   // Filter by availability status
   if (availabilityStatus) {
-    conditions.push(eq(profiles.availabilityStatus, availabilityStatus));
+    conditions.push(eq(profiles.availabilityStatus, availabilityStatus))
   }
 
   // Filter by country
   if (country) {
-    conditions.push(eq(profiles.country, country));
+    conditions.push(eq(profiles.country, country))
   }
 
   // Build query - add skills join if filtering by skills
@@ -286,24 +286,24 @@ export async function getDirectoryProfilesCount(
     const usersWithSkills = db
       .selectDistinct({ userId: userSkills.userId })
       .from(userSkills)
-      .where(inArray(userSkills.skillId, skills));
+      .where(inArray(userSkills.skillId, skills))
 
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(profiles)
       .innerJoin(users, eq(profiles.userId, users.id))
-      .where(and(...conditions, inArray(profiles.userId, usersWithSkills)));
+      .where(and(...conditions, inArray(profiles.userId, usersWithSkills)))
 
-    return Number(result[0]?.count ?? 0);
+    return Number(result[0]?.count ?? 0)
   }
 
   const result = await db
     .select({ count: sql<number>`count(*)` })
     .from(profiles)
     .innerJoin(users, eq(profiles.userId, users.id))
-    .where(and(...conditions));
+    .where(and(...conditions))
 
-  return Number(result[0]?.count ?? 0);
+  return Number(result[0]?.count ?? 0)
 }
 
 /**
@@ -325,22 +325,22 @@ export async function getDirectoryCountries(): Promise<
     .innerJoin(users, eq(profiles.userId, users.id))
     .where(
       and(
-        eq(profiles.profileVisibility, "public"),
+        eq(profiles.profileVisibility, 'public'),
         isNull(profiles.deletedAt),
-        eq(users.accountStatus, "active"),
+        eq(users.accountStatus, 'active'),
         isNull(users.deletedAt),
         sql`${profiles.country} IS NOT NULL`,
-        sql`${profiles.countryCode} IS NOT NULL`
-      )
+        sql`${profiles.countryCode} IS NOT NULL`,
+      ),
     )
     .groupBy(profiles.country, profiles.countryCode)
-    .orderBy(profiles.country);
+    .orderBy(profiles.country)
 
   return results.map((r) => ({
     country: r.country!,
     countryCode: r.countryCode!,
     count: Number(r.count),
-  }));
+  }))
 }
 
 /**
@@ -348,9 +348,9 @@ export async function getDirectoryCountries(): Promise<
  * Combined profile + user data for individual profile pages
  */
 export type ProfileWithUser = {
-  profile: typeof profiles.$inferSelect;
-  user: typeof users.$inferSelect;
-};
+  profile: typeof profiles.$inferSelect
+  user: typeof users.$inferSelect
+}
 
 /**
  * Get profile by username with user data
@@ -360,7 +360,7 @@ export type ProfileWithUser = {
  * @returns Profile with user data, or null if not found
  */
 export async function getProfileByUsername(
-  username: string
+  username: string,
 ): Promise<ProfileWithUser | null> {
   const result = await db
     .select({
@@ -374,17 +374,17 @@ export async function getProfileByUsername(
         sql`LOWER(${users.username}) = LOWER(${username})`,
         isNull(profiles.deletedAt),
         isNull(users.deletedAt),
-        eq(users.accountStatus, "active")
-      )
+        eq(users.accountStatus, 'active'),
+      ),
     )
-    .limit(1);
+    .limit(1)
 
   if (result.length === 0) {
-    return null;
+    return null
   }
 
   return {
     profile: result[0].profile,
     user: result[0].user,
-  };
+  }
 }

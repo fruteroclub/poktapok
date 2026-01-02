@@ -5,9 +5,9 @@
  * Core principle: Skills are earned through projects, not self-reported
  */
 
-import { db } from '@/lib/db';
-import { userSkills, projectSkills, projects } from '@/lib/db/schema';
-import { eq, and, isNull, sql } from 'drizzle-orm';
+import { db } from '@/lib/db'
+import { userSkills, projectSkills, projects } from '@/lib/db/schema'
+import { eq, and, isNull, sql } from 'drizzle-orm'
 
 /**
  * Synchronize user skills from their projects
@@ -35,19 +35,19 @@ export async function syncUserSkills(userId: string): Promise<void> {
       .where(
         and(
           eq(projects.userId, userId),
-          isNull(projects.deletedAt) // Exclude soft-deleted projects
-        )
+          isNull(projects.deletedAt), // Exclude soft-deleted projects
+        ),
       )
-      .groupBy(projectSkills.skillId);
+      .groupBy(projectSkills.skillId)
 
     // Step 2: Get existing user skills for comparison
     const existingUserSkills = await db
       .select()
       .from(userSkills)
-      .where(eq(userSkills.userId, userId));
+      .where(eq(userSkills.userId, userId))
 
-    const existingSkillIds = new Set(existingUserSkills.map((us) => us.skillId));
-    const currentSkillIds = new Set(skillCounts.map((sc) => sc.skillId));
+    const existingSkillIds = new Set(existingUserSkills.map((us) => us.skillId))
+    const currentSkillIds = new Set(skillCounts.map((sc) => sc.skillId))
 
     // Step 3: Upsert skills that have projects
     for (const { skillId, projectCount } of skillCounts) {
@@ -64,13 +64,13 @@ export async function syncUserSkills(userId: string): Promise<void> {
           set: {
             projectCount,
           },
-        });
+        })
     }
 
     // Step 4: Remove skills that are no longer in any projects
     const skillsToRemove = [...existingSkillIds].filter(
-      (skillId) => !currentSkillIds.has(skillId)
-    );
+      (skillId) => !currentSkillIds.has(skillId),
+    )
 
     if (skillsToRemove.length > 0) {
       await db
@@ -78,15 +78,17 @@ export async function syncUserSkills(userId: string): Promise<void> {
         .where(
           and(
             eq(userSkills.userId, userId),
-            sql`${userSkills.skillId} = ANY(${skillsToRemove})`
-          )
-        );
+            sql`${userSkills.skillId} = ANY(${skillsToRemove})`,
+          ),
+        )
     }
 
-    console.log(`✅ Synced skills for user ${userId}: ${skillCounts.length} skills`);
+    console.log(
+      `✅ Synced skills for user ${userId}: ${skillCounts.length} skills`,
+    )
   } catch (error) {
-    console.error('Error syncing user skills:', error);
-    throw error; // Re-throw to handle in API routes
+    console.error('Error syncing user skills:', error)
+    throw error // Re-throw to handle in API routes
   }
 }
 
@@ -107,7 +109,7 @@ export async function getUserTopSkills(userId: string, limit: number = 5) {
     .from(userSkills)
     .where(eq(userSkills.userId, userId))
     .orderBy(sql`${userSkills.projectCount} DESC`)
-    .limit(limit);
+    .limit(limit)
 
-  return topSkills;
+  return topSkills
 }

@@ -1,4 +1,12 @@
-import { pgTable, uuid, text, timestamp, pgEnum, foreignKey, index } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  pgEnum,
+  foreignKey,
+  index,
+} from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, metadata } from './utils'
 import { users } from './users'
@@ -11,9 +19,9 @@ import { users } from './users'
  * Application review status
  */
 export const applicationStatusEnum = pgEnum('application_status', [
-  'pending',   // Awaiting admin review
-  'approved',  // Approved by admin (user becomes active)
-  'rejected',  // Rejected by admin
+  'pending', // Awaiting admin review
+  'approved', // Approved by admin (user becomes active)
+  'rejected', // Rejected by admin
 ])
 
 // ============================================================
@@ -38,29 +46,24 @@ export const applications = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // User (applicant)
-    userId: uuid('user_id')
-      .unique()
-      .notNull(),
+    userId: uuid('user_id').unique().notNull(),
 
     // Application Content
-    motivationText: text('motivation_text')
-      .notNull(),  // Why they want to join
+    motivationText: text('motivation_text').notNull(), // Why they want to join
 
     // Review Status
-    status: applicationStatusEnum('status')
-      .default('pending')
-      .notNull(),
+    status: applicationStatusEnum('status').default('pending').notNull(),
 
     // Review Tracking
     reviewedByUserId: uuid('reviewed_by_user_id'),
     reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
-    reviewNotes: text('review_notes'),  // Admin notes on decision
+    reviewNotes: text('review_notes'), // Admin notes on decision
 
     // Timestamps & Audit
     ...timestamps,
 
     // Metadata
-    ...metadata,  // Source tracking, referral context, etc.
+    ...metadata, // Source tracking, referral context, etc.
   },
   (table) => ({
     // Foreign Keys
@@ -79,13 +82,17 @@ export const applications = pgTable(
     // Indexes
     userIdIdx: index('idx_applications_user_id').on(table.userId),
     statusIdx: index('idx_applications_status').on(table.status),
-    reviewedByIdx: index('idx_applications_reviewed_by').on(table.reviewedByUserId),
+    reviewedByIdx: index('idx_applications_reviewed_by').on(
+      table.reviewedByUserId,
+    ),
     createdAtIdx: index('idx_applications_created_at').on(table.createdAt),
 
     // Composite index for admin dashboard (filter pending + sort by date)
-    statusCreatedIdx: index('idx_applications_status_created')
-      .on(table.status, table.createdAt),
-  })
+    statusCreatedIdx: index('idx_applications_status_created').on(
+      table.status,
+      table.createdAt,
+    ),
+  }),
 )
 
 // ============================================================

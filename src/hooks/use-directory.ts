@@ -1,9 +1,9 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import {
   fetchDirectoryProfiles,
   fetchDirectoryCountries,
-} from "@/services/directory";
-import type { DirectoryFilters } from "@/types/api-v1";
+} from '@/services/directory'
+import type { DirectoryFilters } from '@/types/api-v1'
 
 /**
  * Hook for fetching directory profiles with filters and pagination
@@ -18,11 +18,11 @@ import type { DirectoryFilters } from "@/types/api-v1";
  */
 export function useDirectoryProfiles(filters: DirectoryFilters) {
   return useQuery({
-    queryKey: ["directory", "profiles", filters],
+    queryKey: ['directory', 'profiles', filters],
     queryFn: () => fetchDirectoryProfiles(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  });
+  })
 }
 
 /**
@@ -35,21 +35,21 @@ export function useDirectoryProfiles(filters: DirectoryFilters) {
  * @returns TanStack Infinite Query result
  */
 export function useDirectoryProfilesInfinite(
-  filters: Omit<DirectoryFilters, "page">
+  filters: Omit<DirectoryFilters, 'page'>,
 ) {
   return useInfiniteQuery({
-    queryKey: ["directory", "profiles", "infinite", filters],
+    queryKey: ['directory', 'profiles', 'infinite', filters],
     queryFn: ({ pageParam = 1 }) =>
       fetchDirectoryProfiles({ ...filters, page: pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       return lastPage.pagination.hasMore
         ? lastPage.pagination.page + 1
-        : undefined;
+        : undefined
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  });
+  })
 }
 
 /**
@@ -62,9 +62,9 @@ export function useDirectoryProfilesInfinite(
  */
 export function useDirectoryCountries() {
   return useQuery({
-    queryKey: ["directory", "countries"],
+    queryKey: ['directory', 'countries'],
     queryFn: fetchDirectoryCountries,
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
-  });
+  })
 }

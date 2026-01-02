@@ -26,12 +26,14 @@ Users cannot self-report skills. Skills are automatically added to their profile
 ## Acceptance Criteria
 
 ### Skills Library
+
 - [ ] Preset skills seeded in database (from E2-T1)
 - [ ] Skills categorized: language, framework, tool, blockchain, other
 - [ ] GET `/api/skills` returns all available skills with categories
 - [ ] Skills searchable/filterable by category
 
 ### Project-Skill Linking
+
 - [ ] Add skills to projects during creation/edit (E2-T2 form)
 - [ ] Multi-select autocomplete for skills
 - [ ] POST `/api/projects/:id/skills` - Link skill to project
@@ -39,12 +41,14 @@ Users cannot self-report skills. Skills are automatically added to their profile
 - [ ] **Validation:** Skill must be used in ≥1 project before added to user profile
 
 ### User Skills (Auto-computed)
+
 - [ ] `user_skills` table auto-populated from project skills
 - [ ] `projectCount` tracks how many projects use each skill
 - [ ] Remove skill from user when removed from all projects
 - [ ] GET `/api/users/:userId/skills` - User's validated skills
 
 ### Profile Display
+
 - [ ] Skills section on profile page
 - [ ] Show top 5 skills by project count
 - [ ] Skill badges with category indicators
@@ -52,6 +56,7 @@ Users cannot self-report skills. Skills are automatically added to their profile
 - [ ] **Visual indicator:** Skills are earned, not self-reported
 
 ### Directory Filtering
+
 - [ ] Enhance `/directory` page (E1-T3) to filter by skills
 - [ ] Multi-select skills filter
 - [ ] Show user count per skill
@@ -75,7 +80,7 @@ async function syncUserSkills(userId: string) {
   const skillCounts = await db
     .select({
       skillId: projectSkills.skillId,
-      count: count(projectSkills.projectId)
+      count: count(projectSkills.projectId),
     })
     .from(projectSkills)
     .innerJoin(projects, eq(projectSkills.projectId, projects.id))
@@ -89,19 +94,14 @@ async function syncUserSkills(userId: string) {
       .values({ userId, skillId, projectCount: count })
       .onConflictDoUpdate({
         target: [userSkills.userId, userSkills.skillId],
-        set: { projectCount: count }
+        set: { projectCount: count },
       })
   }
 
   // 4. Remove skills with 0 projects
   await db
     .delete(userSkills)
-    .where(
-      and(
-        eq(userSkills.userId, userId),
-        eq(userSkills.projectCount, 0)
-      )
-    )
+    .where(and(eq(userSkills.userId, userId), eq(userSkills.projectCount, 0)))
 }
 ```
 
@@ -110,6 +110,7 @@ async function syncUserSkills(userId: string) {
 ## UI Components
 
 ### Skills Selector (Project Form)
+
 ```typescript
 <SkillsSelector
   value={selectedSkills}
@@ -120,6 +121,7 @@ async function syncUserSkills(userId: string) {
 ```
 
 ### Profile Skills Display
+
 ```typescript
 <SkillsBadges
   skills={topSkills} // Top 5 by project count
@@ -138,12 +140,14 @@ async function syncUserSkills(userId: string) {
 ## Testing Checklist
 
 ### Skill Validation
+
 - [ ] Add skill to project → auto-added to user profile
 - [ ] Remove skill from all projects → auto-removed from user
 - [ ] projectCount updates when skills linked/unlinked
 - [ ] Cannot manually add skill without project
 
 ### User Experience
+
 - [ ] Skills autocomplete works in project form
 - [ ] Category indicators display correctly
 - [ ] Top 5 skills shown on profile
@@ -169,11 +173,13 @@ async function syncUserSkills(userId: string) {
 ### Files Implemented
 
 #### Core Logic
+
 - `src/lib/skills/sync-user-skills.ts` - Auto-sync functionality
   - `syncUserSkills()` - Syncs user skills from project skills
   - `getUserTopSkills()` - Retrieves top N skills by project count
 
 #### API Routes
+
 - `src/app/api/users/[userId]/skills/route.ts` - GET user skills with details
 - `src/app/api/projects/[id]/skills/route.ts` - POST skill to project (triggers sync)
 - `src/app/api/projects/[id]/skills/[skillId]/route.ts` - DELETE skill from project (triggers sync)
@@ -181,6 +187,7 @@ async function syncUserSkills(userId: string) {
 - `src/app/api/projects/route.ts` - POST project (triggers sync)
 
 #### UI Components
+
 - `src/components/portfolio/skill-selector.tsx` - Multi-select skill picker
 - `src/components/portfolio/skill-badge.tsx` - Skill display with category colors
 - `src/components/profile/profile-skills-section.tsx` - Profile skills display
@@ -189,6 +196,7 @@ async function syncUserSkills(userId: string) {
 ### Key Features Verified
 
 ✅ **Auto-Sync on All Operations:**
+
 - Creating project with skills → `syncUserSkills()` called
 - Adding skill to existing project → `syncUserSkills()` called
 - Removing skill from project → `syncUserSkills()` called
@@ -196,21 +204,25 @@ async function syncUserSkills(userId: string) {
 - Updating project skills → `syncUserSkills()` called
 
 ✅ **Project Count Tracking:**
+
 - Accurately counts projects per skill
 - Updates on every sync operation
 - Used for sorting (top skills first)
 
 ✅ **Skills Removal:**
+
 - Skills removed when unlinked from all projects
 - No orphaned skills in user_skills table
 
 ✅ **Profile Display:**
+
 - Top 5 skills shown by project count
 - Category color-coding applied
 - "View All" modal for >5 skills
 - Project count displayed per skill
 
 ✅ **No Self-Reporting:**
+
 - No manual skill addition UI exists
 - Skills only added via project linking
 - Enforced at database and API level
@@ -226,16 +238,19 @@ async function syncUserSkills(userId: string) {
 ### Architecture Notes
 
 **Database Tables:**
+
 - `skills` - Preset library of skills
 - `project_skills` - Many-to-many (projects ↔ skills)
 - `user_skills` - Auto-computed from project_skills
 
 **Sync Trigger Points:**
+
 - Project creation/update/deletion
 - Project skill link/unlink
 - Always maintains consistency
 
 **Business Rule Enforcement:**
+
 - Skills MUST be linked to ≥1 project
 - No manual skill addition possible
 - Skills auto-removed when project count = 0

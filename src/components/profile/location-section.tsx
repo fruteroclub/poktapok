@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import { useFormContext } from "react-hook-form";
-import { useMemo } from "react";
-import { ProfileFormData } from "@/lib/validators/profile";
+import { useFormContext } from 'react-hook-form'
+import { useMemo } from 'react'
+import { ProfileFormData } from '@/lib/validators/profile'
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { COUNTRIES } from "@/data/countries";
-import { getCitiesByCountry } from "@/data/cities";
+} from '@/components/ui/select'
+import { COUNTRIES } from '@/data/countries'
+import { getCitiesByCountry } from '@/data/cities'
 
 /**
  * LocationSection - Country and City selection form section
@@ -27,17 +27,17 @@ import { getCitiesByCountry } from "@/data/cities";
  * - Auto-resets city when country changes
  */
 export function LocationSection() {
-  const form = useFormContext<ProfileFormData>();
-  const selectedCountry = form.watch("countryCode");
+  const form = useFormContext<ProfileFormData>()
+  const selectedCountry = form.watch('countryCode')
   const cities = useMemo(
     () => getCitiesByCountry(selectedCountry),
-    [selectedCountry]
-  );
+    [selectedCountry],
+  )
 
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold mb-1">Ubicación</h3>
+        <h3 className="mb-1 text-lg font-semibold">Ubicación</h3>
         <p className="text-sm text-muted-foreground">
           ¿Desde dónde trabajas o estudias?
         </p>
@@ -54,13 +54,13 @@ export function LocationSection() {
             </FormLabel>
             <Select
               onValueChange={(value) => {
-                field.onChange(value);
+                field.onChange(value)
                 // Reset city when country changes
-                form.setValue("city", "");
+                form.setValue('city', '')
                 // Set country name
-                const country = COUNTRIES.find((c) => c.code === value);
+                const country = COUNTRIES.find((c) => c.code === value)
                 if (country) {
-                  form.setValue("country", country.name);
+                  form.setValue('country', country.name)
                 }
               }}
               value={field.value}
@@ -115,5 +115,5 @@ export function LocationSection() {
         )}
       />
     </div>
-  );
+  )
 }

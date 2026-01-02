@@ -157,11 +157,11 @@
   }
 
   .page-content {
-    @apply flex w-full max-w-3xl flex-col gap-y-4 items-center px-4 sm:px-6 lg:max-w-7xl lg:px-8;
+    @apply flex w-full max-w-3xl flex-col items-center gap-y-4 px-4 sm:px-6 lg:max-w-7xl lg:px-8;
   }
 
   .header-section {
-    @apply w-full md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl space-y-2;
+    @apply w-full space-y-2 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl;
   }
 
   .section {

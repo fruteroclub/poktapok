@@ -57,12 +57,13 @@ export default function TestimonialsSection() {
 
                 <div className="mb-4 flex items-center space-x-4">
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${testimonial.color === 'green'
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      testimonial.color === 'green'
                         ? 'bg-accent'
                         : testimonial.color === 'blue'
                           ? 'bg-blue-500'
                           : 'bg-secondary'
-                      }`}
+                    }`}
                   >
                     <span className="text-sm font-bold text-white">
                       {testimonial.name

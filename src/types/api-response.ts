@@ -30,7 +30,7 @@
  * }
  * ```
  */
-export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse
 
 /**
  * Success Response Structure
@@ -41,16 +41,16 @@ export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
  */
 export interface ApiSuccessResponse<T> {
   /** Always true for success responses (discriminator) */
-  success: true;
+  success: true
 
   /** The response data */
-  data: T;
+  data: T
 
   /** Optional success message for user display */
-  message?: string;
+  message?: string
 
   /** Optional metadata (e.g., pagination, timestamps) */
-  meta?: Record<string, unknown>;
+  meta?: Record<string, unknown>
 }
 
 /**
@@ -68,32 +68,32 @@ export interface ApiSuccessResponse<T> {
  */
 export interface ApiErrorResponse {
   /** Always false for error responses (discriminator) */
-  success: false;
+  success: false
 
   /** Error details */
   error: {
     /** Human-readable error message */
-    message: string;
+    message: string
 
     /** Machine-readable error code (optional) */
-    code?: string;
+    code?: string
 
     /** Additional error details (e.g., validation errors) */
-    details?: unknown;
-  };
+    details?: unknown
+  }
 }
 
 /**
  * Standard error codes used across the API
  */
 export const API_ERROR_CODES = {
-  VALIDATION_ERROR: "VALIDATION_ERROR",
-  UNAUTHORIZED: "UNAUTHORIZED",
-  FORBIDDEN: "FORBIDDEN",
-  NOT_FOUND: "NOT_FOUND",
-  CONFLICT: "CONFLICT",
-  INTERNAL_ERROR: "INTERNAL_ERROR",
-} as const;
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+} as const
 
 export type ApiErrorCode =
-  (typeof API_ERROR_CODES)[keyof typeof API_ERROR_CODES];
+  (typeof API_ERROR_CODES)[keyof typeof API_ERROR_CODES]

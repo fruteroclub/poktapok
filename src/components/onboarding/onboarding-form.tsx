@@ -1,72 +1,74 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { usePrivy } from "@privy-io/react-auth";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react'
+import { usePrivy } from '@privy-io/react-auth'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 export default function OnboardingForm() {
-  const { user } = usePrivy();
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = usePrivy()
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
-    email: "",
-    username: "",
-    displayName: "",
-    bio: "",
-    avatarUrl: "",
-  });
+    email: '',
+    username: '',
+    displayName: '',
+    bio: '',
+    avatarUrl: '',
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+    e.preventDefault()
+    setIsSubmitting(true)
 
     try {
       if (!user?.id) {
-        throw new Error("User not authenticated");
+        throw new Error('User not authenticated')
       }
 
       // Update user profile (privyDid extracted from token by middleware)
-      const response = await fetch("/api/users/update", {
-        method: "PATCH",
+      const response = await fetch('/api/users/update', {
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      });
+      })
 
-      const responseData = await response.json();
+      const responseData = await response.json()
 
       if (!response.ok) {
         // Handle new error format: { success: false, error: { message, code?, details? } }
         const errorMessage =
-          responseData.error?.message || responseData.error || "Failed to update profile";
-        throw new Error(errorMessage);
+          responseData.error?.message ||
+          responseData.error ||
+          'Failed to update profile'
+        throw new Error(errorMessage)
       }
 
       // Invalidate auth query to refetch user with updated status
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
 
-      toast.success("¡Perfil completado exitosamente!");
-      router.push("/profile");
+      toast.success('¡Perfil completado exitosamente!')
+      router.push('/profile')
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error('Error updating profile:', error)
       toast.error(
         error instanceof Error
           ? error.message
-          : "Error al actualizar perfil. Intenta de nuevo"
-      );
+          : 'Error al actualizar perfil. Intenta de nuevo',
+      )
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -80,9 +82,7 @@ export default function OnboardingForm() {
           required
           placeholder="tu@email.com"
           value={formData.email}
-          onChange={(e) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
       </div>
 
@@ -154,8 +154,8 @@ export default function OnboardingForm() {
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Guardando..." : "Completar perfil"}
+        {isSubmitting ? 'Guardando...' : 'Completar perfil'}
       </Button>
     </form>
-  );
+  )
 }

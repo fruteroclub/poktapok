@@ -59,7 +59,6 @@ async function checkSubmissions() {
         console.log(`   ${row.status}: ${row.count}`)
       })
     }
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

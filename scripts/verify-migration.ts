@@ -100,7 +100,8 @@ async function verifyMigration() {
     `)
 
     console.log('\n🔒 Constraints:')
-    const constraintsByTable: Record<string, { name: string; type: string }[]> = {}
+    const constraintsByTable: Record<string, { name: string; type: string }[]> =
+      {}
     constraints.rows.forEach((con) => {
       if (!constraintsByTable[con.table_name]) {
         constraintsByTable[con.table_name] = []
@@ -122,7 +123,10 @@ async function verifyMigration() {
     })
 
     // 5. Check column counts
-    const columns = await db.execute<{ table_name: string; column_count: number }>(sql`
+    const columns = await db.execute<{
+      table_name: string
+      column_count: number
+    }>(sql`
       SELECT table_name, COUNT(*)::int as column_count
       FROM information_schema.columns
       WHERE table_schema = 'public'

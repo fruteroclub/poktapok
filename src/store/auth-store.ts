@@ -1,16 +1,16 @@
-import { create } from "zustand";
-import type { User, Profile } from "@/types/api-v1";
+import { create } from 'zustand'
+import type { User, Profile } from '@/types/api-v1'
 
 interface AuthState {
-  user: User | null;
-  profile: Profile | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
-  setProfile: (profile: Profile | null) => void;
-  setLoading: (loading: boolean) => void;
-  setAuthData: (data: { user: User | null; profile: Profile | null }) => void;
-  clearAuth: () => void;
+  user: User | null
+  profile: Profile | null
+  isLoading: boolean
+  isAuthenticated: boolean
+  setUser: (user: User | null) => void
+  setProfile: (profile: Profile | null) => void
+  setLoading: (loading: boolean) => void
+  setAuthData: (data: { user: User | null; profile: Profile | null }) => void
+  clearAuth: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -49,4 +49,4 @@ export const useAuthStore = create<AuthState>((set) => ({
       isAuthenticated: false,
       isLoading: false,
     }),
-}));
+}))

@@ -1,50 +1,50 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Code2, Coins, Shield } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Code2, Coins, Shield } from 'lucide-react'
 
 interface ProfileInfoProps {
-  learningTracks: ("ai" | "crypto" | "privacy")[] | null;
-  availabilityStatus: "available" | "open_to_offers" | "unavailable" | null;
-  completedBounties: number;
-  totalEarningsUsd: number;
-  canViewData: boolean;
+  learningTracks: ('ai' | 'crypto' | 'privacy')[] | null
+  availabilityStatus: 'available' | 'open_to_offers' | 'unavailable' | null
+  completedBounties: number
+  totalEarningsUsd: number
+  canViewData: boolean
 }
 
 const learningTrackConfig = {
   ai: {
-    label: "Code: AI",
+    label: 'Code: AI',
     icon: Code2,
-    color: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+    color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
   },
   crypto: {
-    label: "Crypto/DeFi",
+    label: 'Crypto/DeFi',
     icon: Coins,
-    color: "bg-purple-500/10 text-purple-700 dark:text-purple-400",
+    color: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
   },
   privacy: {
-    label: "Privacy",
+    label: 'Privacy',
     icon: Shield,
-    color: "bg-green-500/10 text-green-700 dark:text-green-400",
+    color: 'bg-green-500/10 text-green-700 dark:text-green-400',
   },
-};
+}
 
 const availabilityConfig = {
   available: {
-    label: "Available",
-    color: "bg-green-500/10 text-green-700 dark:text-green-400",
-    dot: "🟢",
+    label: 'Available',
+    color: 'bg-green-500/10 text-green-700 dark:text-green-400',
+    dot: '🟢',
   },
   open_to_offers: {
-    label: "Open to Offers",
-    color: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-    dot: "🔵",
+    label: 'Open to Offers',
+    color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    dot: '🔵',
   },
   unavailable: {
-    label: "Unavailable",
-    color: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
-    dot: "⚫",
+    label: 'Unavailable',
+    color: 'bg-gray-500/10 text-gray-700 dark:text-gray-400',
+    dot: '⚫',
   },
-};
+}
 
 export function ProfileInfo({
   learningTracks,
@@ -58,12 +58,12 @@ export function ProfileInfo({
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground text-center">
+          <p className="text-center text-muted-foreground">
             This profile is private. Sign in to view more details.
           </p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -77,8 +77,8 @@ export function ProfileInfo({
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {learningTracks.map((track) => {
-                const config = learningTrackConfig[track];
-                const Icon = config.icon;
+                const config = learningTrackConfig[track]
+                const Icon = config.icon
 
                 return (
                   <Badge
@@ -86,10 +86,10 @@ export function ProfileInfo({
                     variant="secondary"
                     className={config.color}
                   >
-                    <Icon className="h-3 w-3 mr-1" />
+                    <Icon className="mr-1 h-3 w-3" />
                     {config.label}
                   </Badge>
-                );
+                )
               })}
             </div>
           </CardContent>
@@ -123,13 +123,13 @@ export function ProfileInfo({
             <CardTitle className="text-lg">Stats</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
                 Completed Bounties
               </span>
               <span className="font-semibold">{completedBounties}</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
                 Total Earnings
               </span>
@@ -141,5 +141,5 @@ export function ProfileInfo({
         </Card>
       )}
     </div>
-  );
+  )
 }

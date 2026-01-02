@@ -1,4 +1,5 @@
 # Poktapok Implementation Plan
+
 ## PRD Ticket Breakdown
 
 **Project:** Frutero Talent Platform MVP
@@ -10,7 +11,9 @@
 ## Implementation Philosophy
 
 ### Ticket Structure
+
 Each ticket follows this format:
+
 - **ID:** `EPIC#-TICKET#` (e.g., `E1-T0`, `E1-T1`)
 - **Title:** Clear, action-oriented description
 - **Story Points:** Complexity estimate (1=simple, 3=medium, 5=complex, 8=very complex)
@@ -20,6 +23,7 @@ Each ticket follows this format:
 - **Testing:** How to verify the implementation works
 
 ### Development Workflow
+
 ```
 Setup (E0) → Epic 1 (E1) → Epic 2 (E2) → Epic 3 (E3) → Epic 4 (E4)
 ```
@@ -31,6 +35,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 ## Epic 0: Project Setup & Infrastructure
 
 ### Ticket E0-T0: PostgreSQL Database Setup
+
 **Story Points:** 2
 **Dependencies:** None
 **Assignee:** Backend Developer
@@ -40,6 +45,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 **Implementation Details:** See [0-setup.md](./0-setup.md)
 
 **Success Criteria:**
+
 - ✅ Hosted PostgreSQL database provisioned (Vercel Postgres or Railway)
 - ✅ Drizzle ORM configured with connection pooling
 - ✅ All developers can pull env variables via `vercel env pull .env.local`
@@ -54,12 +60,14 @@ Each epic is broken into sequential tickets that can be worked on by different d
 **Goal:** Launch a simple, non-intimidating talent directory where builders can create profiles and be discovered.
 
 **Success Metrics:**
+
 - 100 approved profiles within 2 weeks
 - < 3-minute average profile creation time
 - < 5% spam/low-quality applications
 - 30% of signups via referrals
 
 ### Ticket E1-T1: Authentication Integration (Privy Setup)
+
 **Story Points:** 5
 **Dependencies:** E0-T0
 **Assignee:** Full-stack Developer
@@ -67,6 +75,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 **Objective:** Integrate Privy for wallet + email authentication with user creation flow.
 
 **Tasks:**
+
 1. Install Privy SDK dependencies (already done)
 2. Create authentication middleware for API routes
 3. Build user registration flow:
@@ -77,6 +86,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 5. Add session management with React Query
 
 **Files to Create/Modify:**
+
 - `src/lib/auth/privy-helpers.ts` - Auth utilities
 - `src/lib/auth/middleware.ts` - API route protection
 - `src/components/auth/login-button.tsx` - Login UI component
@@ -84,6 +94,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 - `src/app/api/auth/register/route.ts` - User registration endpoint
 
 **Acceptance Criteria:**
+
 - ✅ Users can log in with wallet OR email via Privy
 - ✅ User session persists across page refreshes
 - ✅ Protected routes redirect unauthenticated users to login
@@ -91,6 +102,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 - ✅ New user creation automatically generates profile record
 
 **Testing:**
+
 ```bash
 # Manual testing
 1. Click "Connect Wallet" → should open Privy modal
@@ -102,6 +114,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 ---
 
 ### Ticket E1-T2: Profile Creation Flow
+
 **Story Points:** 5
 **Dependencies:** E1-T1
 **Assignee:** Frontend Developer
@@ -109,6 +122,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 **Objective:** Build user-friendly profile setup form with real-time validation.
 
 **Tasks:**
+
 1. Create profile form with React Hook Form + Zod validation
 2. Implement username availability check (debounced)
 3. Add character counter for bio (max 280)
@@ -116,6 +130,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 5. Create API endpoint for profile creation/update
 
 **Form Fields:**
+
 - Username (unique, 3-20 chars, alphanumeric + underscore)
 - Display name (2-50 chars)
 - Bio (max 280 chars, no URLs initially)
@@ -125,6 +140,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 - Social links (optional: GitHub, Twitter, LinkedIn, Telegram)
 
 **Files to Create/Modify:**
+
 - `src/components/profile/profile-form.tsx` - Main form component
 - `src/components/profile/preview-card.tsx` - Profile preview
 - `src/lib/validators/profile.ts` - Zod schemas
@@ -133,6 +149,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 - `src/app/api/profiles/check-username/route.ts` - Username availability
 
 **Acceptance Criteria:**
+
 - ✅ Form completes in < 3 minutes (tested with 5 users)
 - ✅ Real-time validation shows errors before submit
 - ✅ Username check shows "available" or "taken" within 500ms
@@ -141,6 +158,7 @@ Each epic is broken into sequential tickets that can be worked on by different d
 - ✅ Mobile-responsive (tested on 375px viewport)
 
 **Testing:**
+
 ```bash
 # API testing
 curl -X POST http://localhost:3000/api/profiles \
@@ -153,6 +171,7 @@ curl -X POST http://localhost:3000/api/profiles \
 ---
 
 ### Ticket E1-T3: Public Directory Page
+
 **Story Points:** 5
 **Dependencies:** E1-T2
 **Assignee:** Frontend Developer
@@ -160,6 +179,7 @@ curl -X POST http://localhost:3000/api/profiles \
 **Objective:** Build browsable directory with search, filters, and pagination.
 
 **Tasks:**
+
 1. Create directory page with card grid layout
 2. Implement search bar (username, display name, bio)
 3. Add filters (learning track, availability, location)
@@ -167,10 +187,12 @@ curl -X POST http://localhost:3000/api/profiles \
 5. Optimize query performance (indexed searches)
 
 **Layout:**
+
 - Desktop: 3-column card grid
 - Mobile: 1-column stacked cards
 
 **Card Content:**
+
 - Avatar (generated from username or uploaded)
 - Username + display name
 - Bio (truncated to 100 chars)
@@ -179,6 +201,7 @@ curl -X POST http://localhost:3000/api/profiles \
 - Availability indicator (colored dot)
 
 **Files to Create/Modify:**
+
 - `src/app/directory/page.tsx` - Directory page
 - `src/components/directory/profile-card.tsx` - Profile card
 - `src/components/directory/filters.tsx` - Filter sidebar
@@ -187,6 +210,7 @@ curl -X POST http://localhost:3000/api/profiles \
 - `src/lib/db/queries/profiles.ts` - Add `getDirectoryProfiles()` query
 
 **Acceptance Criteria:**
+
 - ✅ Search returns results in < 500ms (tested with 1000 profiles)
 - ✅ Filters update results without full page reload
 - ✅ Cards render in < 2s on 3G connection
@@ -194,6 +218,7 @@ curl -X POST http://localhost:3000/api/profiles \
 - ✅ Default sort: Recently joined (newest first)
 
 **Testing:**
+
 ```bash
 # Test API endpoint
 curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
@@ -204,6 +229,7 @@ curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
 ---
 
 ### Ticket E1-T4: Individual Profile Page
+
 **Story Points:** 3
 **Dependencies:** E1-T2
 **Assignee:** Frontend Developer
@@ -211,6 +237,7 @@ curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
 **Objective:** Create detailed profile view with tiered visibility controls.
 
 **Tasks:**
+
 1. Build profile page at `/profile/[username]`
 2. Implement visibility tiers (public, members-only, private)
 3. Add "Edit Profile" button (only for profile owner)
@@ -220,20 +247,24 @@ curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
 **Visibility Tiers:**
 
 **Public (anyone):**
+
 - Username, display name, avatar
 - Bio, location, learning tracks
 - Join date, availability status
 
 **Members-only (authenticated users):**
+
 - All public data +
 - Social links (GitHub, Twitter, LinkedIn, Telegram)
 - "Send message" button (future epic)
 
 **Private:**
+
 - Only visible to profile owner
 - Hidden from directory listings
 
 **Files to Create/Modify:**
+
 - `src/app/profile/[username]/page.tsx` - Profile page
 - `src/components/profile/profile-header.tsx` - Avatar + bio section
 - `src/components/profile/social-links.tsx` - Social media links
@@ -241,6 +272,7 @@ curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
 - `src/lib/utils/visibility.ts` - Visibility permission helpers
 
 **Acceptance Criteria:**
+
 - ✅ Profile loads in < 1s
 - ✅ Visibility rules enforced correctly (tested with authenticated + guest users)
 - ✅ Share button copies URL to clipboard with success toast
@@ -248,6 +280,7 @@ curl "http://localhost:3000/api/directory?search=carlos&track=crypto&page=1"
 - ✅ Social links construct correct URLs (https://github.com/{username})
 
 **Testing:**
+
 ```bash
 # Test as guest
 curl http://localhost:3000/api/profiles/carlos_dev
@@ -262,6 +295,7 @@ curl http://localhost:3000/api/profiles/carlos_dev \
 ---
 
 ### Ticket E1-T5: Application System
+
 **Story Points:** 5
 **Dependencies:** E0-T0
 **Assignee:** Full-stack Developer
@@ -269,6 +303,7 @@ curl http://localhost:3000/api/profiles/carlos_dev \
 **Objective:** Build application submission form and admin review dashboard.
 
 **Tasks:**
+
 1. Create public application form (no auth required)
 2. Build admin dashboard at `/admin/applications`
 3. Implement approval flow (approve → send email → user can register)
@@ -276,17 +311,20 @@ curl http://localhost:3000/api/profiles/carlos_dev \
 5. Create email templates (approval/rejection)
 
 **Application Form Fields:**
+
 - Email (required, verified)
 - Reason for joining (textarea, 50-500 chars)
 - Referral code (optional, validates against invitations table)
 
 **Admin Dashboard:**
+
 - Table view of pending applications
 - Columns: Email, reason snippet, submitted date, actions
 - Bulk actions: Approve selected, Delete spam
 - Filter: Pending, Approved, Rejected, All
 
 **Files to Create/Modify:**
+
 - `src/app/apply/page.tsx` - Public application form
 - `src/app/admin/applications/page.tsx` - Admin dashboard
 - `src/components/admin/application-table.tsx` - Applications table
@@ -296,6 +334,7 @@ curl http://localhost:3000/api/profiles/carlos_dev \
 - `src/lib/email/templates.tsx` - Email templates (React Email)
 
 **Acceptance Criteria:**
+
 - ✅ Application form validates email format
 - ✅ Spam protection: Simple CAPTCHA (e.g., hCaptcha)
 - ✅ Admin can approve in 1 click (<2s roundtrip)
@@ -304,6 +343,7 @@ curl http://localhost:3000/api/profiles/carlos_dev \
 - ✅ Admins can add review notes (visible internally only)
 
 **Testing:**
+
 ```bash
 # Submit application
 curl -X POST http://localhost:3000/api/applications \
@@ -318,6 +358,7 @@ curl -X POST http://localhost:3000/api/admin/applications/{id}/approve \
 ---
 
 ### Ticket E1-T6: Invitation System
+
 **Story Points:** 3
 **Dependencies:** E1-T1, E1-T5
 **Assignee:** Backend Developer
@@ -325,6 +366,7 @@ curl -X POST http://localhost:3000/api/admin/applications/{id}/approve \
 **Objective:** Allow users to invite friends directly, bypassing the application process.
 
 **Tasks:**
+
 1. Create "Invite Friends" UI in user dashboard
 2. Generate unique 8-char alphanumeric codes
 3. Send invitation emails with link
@@ -332,11 +374,13 @@ curl -X POST http://localhost:3000/api/admin/applications/{id}/approve \
 5. Track invitation usage and expiry (7 days)
 
 **Invitation Limits:**
+
 - Standard users: 2 invites
 - Power users (3+ completed bounties): 5 invites
 - Admins: Unlimited
 
 **Files to Create/Modify:**
+
 - `src/app/dashboard/page.tsx` - Add invitation section
 - `src/components/invitations/invite-form.tsx` - Invite input form
 - `src/components/invitations/invite-list.tsx` - List of sent invites
@@ -346,6 +390,7 @@ curl -X POST http://localhost:3000/api/admin/applications/{id}/approve \
 - `src/lib/email/invitation-template.tsx` - Invitation email
 
 **Acceptance Criteria:**
+
 - ✅ Users cannot exceed invitation quota
 - ✅ Invitation codes are unique and URL-safe
 - ✅ Expired invitations show "Link expired" message
@@ -354,6 +399,7 @@ curl -X POST http://localhost:3000/api/admin/applications/{id}/approve \
 - ✅ Inviters can see invitation status (sent, used, expired)
 
 **Testing:**
+
 ```bash
 # Create invitation
 curl -X POST http://localhost:3000/api/invitations \
@@ -375,12 +421,14 @@ curl http://localhost:3000/api/invite/{code}
 **Team Size:** 3 developers
 
 **Parallel Work Streams:**
+
 - Week 1 Days 1-2: E0-T0 (Database Setup)
 - Week 1 Days 3-4: E1-T1 (Auth) + E1-T5 (Applications) in parallel
 - Week 1 Days 5-6: E1-T2 (Profile Form) + E1-T3 (Directory)
 - Week 1 Day 7: E1-T4 (Profile Page) + E1-T6 (Invitations) + Testing
 
 **Definition of Done:**
+
 - ✅ All acceptance criteria met
 - ✅ Code reviewed by peer
 - ✅ Manual testing completed
@@ -394,6 +442,7 @@ curl http://localhost:3000/api/invite/{code}
 **Coming Soon** - Portfolio builder, project uploads, skills endorsements
 
 **Tickets:**
+
 - E2-T1: Portfolio Builder UI
 - E2-T2: Image Upload (Cloudflare R2)
 - E2-T3: GitHub Repository Integration
@@ -407,6 +456,7 @@ curl http://localhost:3000/api/invite/{code}
 **Coming Soon** - Bounty listings, claim flow, submission review, earnings dashboard
 
 **Tickets:**
+
 - E3-T1: Bounty Listings Page
 - E3-T2: Bounty Detail & Claim Flow
 - E3-T3: Submission System
@@ -421,6 +471,7 @@ curl http://localhost:3000/api/invite/{code}
 **Coming Soon** - Smart contract escrow, multi-chain support, crypto payments
 
 **Tickets:**
+
 - E4-T1: Smart Contract Development
 - E4-T2: Testnet Deployment (Sepolia)
 - E4-T3: Payment UI Integration
@@ -433,6 +484,7 @@ curl http://localhost:3000/api/invite/{code}
 ## Development Guidelines
 
 ### Code Quality Standards
+
 - All TypeScript (strict mode)
 - ESLint + Prettier configured
 - 80%+ test coverage for business logic
@@ -440,6 +492,7 @@ curl http://localhost:3000/api/invite/{code}
 - Use absolute imports (`@/` prefix)
 
 ### Git Workflow
+
 ```bash
 # Feature branch from dev
 git checkout -b E1-T1-auth-integration
@@ -452,6 +505,7 @@ git push origin E1-T1-auth-integration
 ```
 
 ### PR Requirements
+
 - Title format: `[E#-T#] Brief description`
 - Link to ticket in description
 - Screenshots for UI changes
@@ -459,6 +513,7 @@ git push origin E1-T1-auth-integration
 - CI/CD checks pass (linting, type checking)
 
 ### Testing Strategy
+
 - Unit tests: Core business logic (query functions, validators)
 - Integration tests: API endpoints
 - E2E tests: Critical user flows (signup, profile creation)
@@ -469,16 +524,19 @@ git push origin E1-T1-auth-integration
 ## Deployment Strategy
 
 ### Environments
+
 1. **Local:** `localhost:3000` (individual developer machines)
 2. **Staging:** `staging.poktapok.club` (pre-production testing)
 3. **Production:** `poktapok.club` (live users)
 
 ### Continuous Deployment
+
 - **main branch** → Auto-deploy to production (Vercel)
 - **dev branch** → Auto-deploy to staging
 - **feature branches** → Preview deployments (Vercel)
 
 ### Database Migrations
+
 - Local: `bun run db:push` (rapid iteration)
 - Staging/Prod: `bun run db:migrate` (tracked migrations)
 - Migration files committed to git
@@ -489,11 +547,13 @@ git push origin E1-T1-auth-integration
 ## Monitoring & Analytics
 
 ### Application Monitoring
+
 - Error tracking: Sentry (client + server errors)
 - Performance: Vercel Analytics (Web Vitals)
 - Logs: Vercel logs + Railway PostgreSQL logs
 
 ### Product Analytics
+
 - User events: PostHog (self-hosted or cloud)
 - Key events to track:
   - Profile created
@@ -507,17 +567,20 @@ git push origin E1-T1-auth-integration
 ## Support & Resources
 
 ### Documentation
+
 - [PRD.md](./PRD.md) - Full product requirements
 - [0-setup.md](./0-setup.md) - Database setup guide
 - [CLAUDE.md](../CLAUDE.md) - Claude Code guide
 
 ### External Docs
+
 - [Privy Docs](https://docs.privy.io)
 - [Drizzle ORM](https://orm.drizzle.team)
 - [Next.js 16](https://nextjs.org/docs)
 - [Wagmi](https://wagmi.sh)
 
 ### Team Communication
+
 - **Standup:** Daily, 15 min (async in Slack)
 - **PR Reviews:** Within 24 hours
 - **Deployments:** Announced in #eng channel

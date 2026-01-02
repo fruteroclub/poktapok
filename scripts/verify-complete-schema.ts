@@ -66,7 +66,9 @@ async function verifyCompleteSchema() {
 
     console.log(`Found ${constraints.rows.length} foreign key constraints:`)
     constraints.rows.forEach((row: any) => {
-      console.log(`   ${row.table_name}.${row.column_name} → ${row.foreign_table_name}.${row.foreign_column_name}`)
+      console.log(
+        `   ${row.table_name}.${row.column_name} → ${row.foreign_table_name}.${row.foreign_column_name}`,
+      )
     })
 
     // Check indexes
@@ -124,7 +126,10 @@ async function verifyCompleteSchema() {
           throw new Error('Rollback test transaction')
         })
       } catch (error) {
-        if (error instanceof Error && error.message === 'Rollback test transaction') {
+        if (
+          error instanceof Error &&
+          error.message === 'Rollback test transaction'
+        ) {
           console.log('✅ Transaction rollback successful')
         } else {
           console.log('❌ Insert test failed:', error)
@@ -133,7 +138,6 @@ async function verifyCompleteSchema() {
     }
 
     console.log('\n🎉 Schema verification complete!')
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

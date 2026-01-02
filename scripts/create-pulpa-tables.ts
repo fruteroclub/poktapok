@@ -153,16 +153,27 @@ async function createPulpaTables() {
 
     // Create indexes
     console.log('Creating indexes...')
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_activities_type ON activities(activity_type)`)
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_activities_status ON activities(status)`)
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at DESC)`)
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_submissions_status ON activity_submissions(status)`)
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_submissions_user ON activity_submissions(user_id)`)
-    await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_distributions_status ON pulpa_distributions(status)`)
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_activities_type ON activities(activity_type)`,
+    )
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_activities_status ON activities(status)`,
+    )
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at DESC)`,
+    )
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_submissions_status ON activity_submissions(status)`,
+    )
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_submissions_user ON activity_submissions(user_id)`,
+    )
+    await db.execute(
+      sql`CREATE INDEX IF NOT EXISTS idx_distributions_status ON pulpa_distributions(status)`,
+    )
     console.log('✅ Indexes created\n')
 
     console.log('🎉 All PULPA tables created successfully!')
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

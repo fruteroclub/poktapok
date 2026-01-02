@@ -48,10 +48,14 @@ const MENU_ITEMS: MenuItemType[] = [
 export default function Navbar() {
   const pathname = usePathname()
   const { ready, authenticated } = usePrivy()
-  const { data: authData, isLoading: isLoadingAuth, isFetching: isFetchingAuth } = useAuth();
-  const user = authData?.user;
-  const isSignedIn = authData?.isAuthenticated && authenticated;
-  const isLoading = isLoadingAuth || isFetchingAuth;
+  const {
+    data: authData,
+    isLoading: isLoadingAuth,
+    isFetching: isFetchingAuth,
+  } = useAuth()
+  const user = authData?.user
+  const isSignedIn = authData?.isAuthenticated && authenticated
+  const isLoading = isLoadingAuth || isFetchingAuth
 
   return (
     <header className="sticky top-0 z-40 h-24 w-full bg-background">
@@ -80,9 +84,10 @@ export default function Navbar() {
             }).map((menuItem, index) => (
               <Link
                 key={`${menuItem.displayText}-menuItem-${index}`}
-                className={`inline-flex items-center justify-center px-4 py-2 font-funnel text-xl font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${pathname === menuItem.href &&
+                className={`inline-flex items-center justify-center px-4 py-2 font-funnel text-xl font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${
+                  pathname === menuItem.href &&
                   'pointer-events-none underline decoration-primary decoration-2 underline-offset-[6px] hover:!text-foreground'
-                  }`}
+                }`}
                 href={menuItem.href}
                 target={menuItem.isExternal ? '_blank' : ''}
               >
@@ -93,19 +98,15 @@ export default function Navbar() {
         </div>
 
         <div className="hidden lg:col-span-1 lg:flex lg:justify-end">
-          {(!ready || isLoading) ? (
+          {!ready || isLoading ? (
             // Placeholder maintains layout space during initialization
-            <div className="w-32 h-10" />
+            <div className="h-10 w-32" />
           ) : isSignedIn && user ? (
-            <MobileMenuDropdown
-              ready={ready}
-              user={user}
-            />
+            <MobileMenuDropdown ready={ready} user={user} />
           ) : (
-            <AuthButton
-              size="lg"
-            >
-              <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" /> Únete
+            <AuthButton size="lg">
+              <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" />{' '}
+              Únete
             </AuthButton>
           )}
         </div>

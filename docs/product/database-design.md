@@ -1,4 +1,5 @@
 # Poktapok Database Design
+
 ## Comprehensive Schema Architecture
 
 **Version:** 2.0
@@ -25,27 +26,32 @@ This document provides a thorough database design for the Poktapok platform, add
 ## Design Principles
 
 ### 1. Single Source of Truth
+
 - Privy is the authentication authority (authId is the foreign key)
 - Database stores application state and business logic only
 - No duplication of auth data (emails, wallet addresses)
 
 ### 2. Audit Everything
+
 - All mutations tracked (who, when, what)
 - Soft deletes where appropriate
 - Immutable history tables for critical operations
 
 ### 3. Performance First
+
 - Indexes on all foreign keys and common query patterns
 - Denormalization only where justified (e.g., `completedBounties` count)
 - JSONB for flexible but queryable metadata
 
 ### 4. Data Integrity
+
 - NOT NULL constraints on required fields
 - CHECK constraints for business rules
 - Foreign keys with appropriate CASCADE/RESTRICT
 - Unique constraints where applicable
 
 ### 5. Future-Proof
+
 - Schema designed for all 4 epics upfront
 - Extension points for future features
 - Migration-friendly structure
@@ -55,6 +61,7 @@ This document provides a thorough database design for the Poktapok platform, add
 ## Schema Overview
 
 ### Core Tables (Epic 1)
+
 ```
 users (identity) ─┬─ profiles (public data)
                   ├─ applications (onboarding)
@@ -62,6 +69,7 @@ users (identity) ─┬─ profiles (public data)
 ```
 
 ### Future Tables (Epics 2-4)
+
 ```
 users ─┬─ projects (Epic 2)
        ├─ skills (Epic 2)
@@ -82,6 +90,7 @@ bounties ─┬─ bounty_claims
 **Purpose:** Core identity table linked to Privy authentication. One record per authenticated user.
 
 **Privy Authentication & Wallet Model:**
+
 - **Email (Required)**: Always required for account creation. Collected during:
   - Direct email signup/login (magic link)
   - Social authentication (Google, GitHub, etc.)
@@ -91,6 +100,7 @@ bounties ─┬─ bounty_claims
 - Users can authenticate with email, social, OR wallet, but email is always collected
 
 **Schema:**
+
 ```sql
 CREATE TABLE users (
   -- Primary Key
@@ -224,6 +234,7 @@ CREATE INDEX idx_users_primary_auth ON users(primary_auth_method);
 ```
 
 **Sample Data:**
+
 ```sql
 -- User who signed up with email (embedded wallet created later)
 INSERT INTO users (privy_did, email, app_wallet, primary_auth_method, role, account_status) VALUES
@@ -271,6 +282,7 @@ CREATE TABLE onchain_accounts (
 ```
 
 This allows users to:
+
 - Link multiple wallets to their account (beyond app_wallet and ext_wallet)
 - Receive payments on different chains
 - Prove ownership via signature verification (prevents spam linking)
@@ -283,6 +295,7 @@ This allows users to:
 **Purpose:** User-facing profile information. One-to-one with users. This is what appears in the directory and profile pages.
 
 **Schema:**
+
 ```sql
 CREATE TABLE profiles (
   -- Primary Key
@@ -386,6 +399,7 @@ CREATE TRIGGER update_profiles_updated_at
 6. **Full-text search**: GIN index on concatenated text fields for fast directory search.
 
 **Sample Data:**
+
 ```sql
 INSERT INTO profiles (user_id, username, display_name, bio, country, country_code, learning_tracks) VALUES
   (
@@ -406,6 +420,7 @@ INSERT INTO profiles (user_id, username, display_name, bio, country, country_cod
 **Purpose:** Tracks application submissions for gated access. Admins review and approve/reject.
 
 **Schema:**
+
 ```sql
 CREATE TABLE applications (
   -- Primary Key
@@ -470,6 +485,7 @@ CREATE INDEX idx_applications_ip_address ON applications(ip_address);  -- Rate l
 5. **approved_user_id**: Links application to created user for tracking conversion.
 
 **Sample Data:**
+
 ```sql
 INSERT INTO applications (email, reason, status) VALUES
   ('newbie@example.com', 'I want to transition from traditional finance to DeFi. Excited to learn!', 'pending'),
@@ -483,6 +499,7 @@ INSERT INTO applications (email, reason, status) VALUES
 **Purpose:** User-generated invitations that bypass application review. Tracks viral growth.
 
 **Schema:**
+
 ```sql
 CREATE TABLE invitations (
   -- Primary Key
@@ -537,6 +554,7 @@ CREATE INDEX idx_invitations_expires_at ON invitations(expires_at);
 5. **7-day expiry**: Set at application level (`expires_at = NOW() + INTERVAL '7 days'`).
 
 **Sample Data:**
+
 ```sql
 INSERT INTO invitations (inviter_user_id, invitee_email, code, expires_at) VALUES
   (
@@ -556,6 +574,7 @@ INSERT INTO invitations (inviter_user_id, invitee_email, code, expires_at) VALUE
 **Purpose:** User portfolio items (completed bounties, personal projects, contributions).
 
 **Schema (High-Level):**
+
 ```sql
 CREATE TABLE projects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -594,6 +613,7 @@ CREATE TYPE project_type_enum AS ENUM ('bounty', 'personal', 'contribution', 'ha
 **Purpose:** Paid tasks with requirements and rewards.
 
 **Schema (High-Level):**
+
 ```sql
 CREATE TABLE bounties (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -635,6 +655,7 @@ CREATE TYPE bounty_status_enum AS ENUM ('draft', 'open', 'claimed', 'submitted',
 **Purpose:** Blockchain payment records.
 
 **Schema (High-Level):**
+
 ```sql
 CREATE TABLE transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -669,15 +690,18 @@ CREATE TYPE transaction_status_enum AS ENUM ('pending', 'confirmed', 'failed');
 ### Current Normalization Form: **3NF (Third Normal Form)**
 
 #### 1NF (First Normal Form) ✅
+
 - All columns contain atomic values
 - No repeating groups
 - Each row is unique (primary keys)
 
 #### 2NF (Second Normal Form) ✅
+
 - All non-key attributes fully depend on primary key
 - No partial dependencies (all tables have single-column PKs)
 
 #### 3NF (Third Normal Form) ✅
+
 - No transitive dependencies
 - `invited_by_user_id` in users depends on `id`, not other non-key attributes
 - Denormalized fields (`completed_bounties`, `total_earnings_cents`) are **justified** for performance
@@ -685,11 +709,13 @@ CREATE TYPE transaction_status_enum AS ENUM ('pending', 'confirmed', 'failed');
 ### Denormalization Exceptions
 
 **Approved denormalizations:**
+
 1. **profiles.completed_bounties**: Avoids COUNT query on every profile view
 2. **profiles.total_earnings_cents**: Avoids SUM query on every profile view
 3. **profiles.profile_views**: Increment-only counter (eventual consistency acceptable)
 
 **Maintenance strategy:**
+
 - Update via triggers on `bounty_submissions` APPROVED status
 - Update via triggers on `transactions` CONFIRMED status
 - Background job for periodic reconciliation
@@ -701,6 +727,7 @@ CREATE TYPE transaction_status_enum AS ENUM ('pending', 'confirmed', 'failed');
 ### Query Patterns & Indexes
 
 #### Directory Page (Most Common Query)
+
 ```sql
 -- Query
 SELECT * FROM profiles
@@ -718,6 +745,7 @@ LIMIT 24 OFFSET 0;
 ```
 
 #### Search Query
+
 ```sql
 -- Query
 SELECT * FROM profiles
@@ -729,6 +757,7 @@ WHERE to_tsvector('english', username || ' ' || display_name || ' ' || bio)
 ```
 
 #### Profile Lookup
+
 ```sql
 -- Query
 SELECT p.*, u.email, u.role
@@ -747,31 +776,32 @@ WHERE p.username = 'carlos_dev';
 
 ### Foreign Key Cascade Behaviors
 
-| Parent → Child | ON DELETE | Rationale |
-|----------------|-----------|-----------|
-| users → profiles | CASCADE | Profile meaningless without user |
-| users → applications (approved_by) | SET NULL | Preserve application history even if admin leaves |
-| users → invitations (inviter) | CASCADE | Inviter owns invitations |
-| users → invitations (redeemed_by) | SET NULL | Track redemptions even if user deleted |
-| users → bounties (created_by) | RESTRICT | Cannot delete admin with active bounties |
+| Parent → Child                     | ON DELETE | Rationale                                         |
+| ---------------------------------- | --------- | ------------------------------------------------- |
+| users → profiles                   | CASCADE   | Profile meaningless without user                  |
+| users → applications (approved_by) | SET NULL  | Preserve application history even if admin leaves |
+| users → invitations (inviter)      | CASCADE   | Inviter owns invitations                          |
+| users → invitations (redeemed_by)  | SET NULL  | Track redemptions even if user deleted            |
+| users → bounties (created_by)      | RESTRICT  | Cannot delete admin with active bounties          |
 
 ### Constraints Summary
 
-| Table | Constraint | Purpose |
-|-------|------------|---------|
-| users | email_format | Prevent invalid emails |
-| users | wallet_format | Ensure valid Ethereum addresses |
-| profiles | username_format | Enforce URL-safe usernames |
-| profiles | bio_length | Prevent wall-of-text bios |
-| applications | reason_length | Ensure thoughtful applications |
+| Table        | Constraint             | Purpose                           |
+| ------------ | ---------------------- | --------------------------------- |
+| users        | email_format           | Prevent invalid emails            |
+| users        | wallet_format          | Ensure valid Ethereum addresses   |
+| profiles     | username_format        | Enforce URL-safe usernames        |
+| profiles     | bio_length             | Prevent wall-of-text bios         |
+| applications | reason_length          | Ensure thoughtful applications    |
 | applications | reviewed_data_complete | Enforce review workflow integrity |
-| invitations | code_format | Ensure consistent code generation |
+| invitations  | code_format            | Ensure consistent code generation |
 
 ---
 
 ## Migration Strategy
 
 ### Phase 1: Epic 1 (Week 1)
+
 ```sql
 -- Migration 0000_initial.sql
 CREATE TYPE user_role_enum AS ENUM (...);
@@ -780,6 +810,7 @@ CREATE TYPE account_status_enum AS ENUM (...);
 ```
 
 ### Phase 2: Epic 2 (Week 2-3)
+
 ```sql
 -- Migration 0001_add_projects.sql
 CREATE TABLE projects (...);
@@ -788,6 +819,7 @@ CREATE TABLE project_skills (...);  -- Many-to-many
 ```
 
 ### Phase 3: Epic 3 (Week 4-6)
+
 ```sql
 -- Migration 0002_add_bounties.sql
 CREATE TABLE bounties (...);
@@ -796,6 +828,7 @@ CREATE TABLE bounty_submissions (...);
 ```
 
 ### Phase 4: Epic 4 (Week 7-8)
+
 ```sql
 -- Migration 0003_add_transactions.sql
 CREATE TABLE transactions (...);
@@ -807,6 +840,7 @@ CREATE TABLE withdrawals (...);
 ## Performance Considerations
 
 ### Expected Load (6 Months Post-Launch)
+
 - Users: 10,000
 - Profiles: 10,000 (1:1)
 - Applications: 25,000 (2.5:1 application to user ratio)
@@ -816,14 +850,16 @@ CREATE TABLE withdrawals (...);
 - Transactions: 5,000
 
 ### Query Performance Targets
-| Query | Target | Index Used |
-|-------|--------|------------|
-| Directory listing (24 profiles) | < 50ms | Composite index |
-| Profile page load | < 20ms | Username unique index |
-| Search (autocomplete) | < 100ms | GIN full-text |
-| Application list (admin) | < 50ms | Status index |
+
+| Query                           | Target  | Index Used            |
+| ------------------------------- | ------- | --------------------- |
+| Directory listing (24 profiles) | < 50ms  | Composite index       |
+| Profile page load               | < 20ms  | Username unique index |
+| Search (autocomplete)           | < 100ms | GIN full-text         |
+| Application list (admin)        | < 50ms  | Status index          |
 
 ### Optimization Techniques
+
 1. **Partial indexes**: `WHERE deleted_at IS NULL` reduces index size
 2. **GIN indexes**: Fast array and full-text queries
 3. **Covering indexes**: Include commonly selected columns
@@ -835,17 +871,20 @@ CREATE TABLE withdrawals (...);
 ## Security Considerations
 
 ### SQL Injection Prevention
+
 - ✅ Drizzle ORM parameterized queries
 - ✅ Input validation with Zod schemas
 - ✅ No string concatenation in queries
 
 ### Data Privacy
+
 - ✅ Email addresses only in `users` table (not public)
 - ✅ Profile visibility controls (public/members-only/private)
 - ✅ Soft deletes preserve audit trail without exposing data
 - ✅ IP addresses hashed for GDPR compliance
 
 ### Access Control
+
 - ✅ Row-level security (future: PostgreSQL RLS)
 - ✅ API middleware validates user role
 - ✅ Admin actions require `role = 'admin'`
@@ -855,11 +894,13 @@ CREATE TABLE withdrawals (...);
 ## Backup & Recovery
 
 ### Backup Strategy (Railway/Vercel Postgres)
+
 - **Frequency**: Automated daily backups
 - **Retention**: 7 days (free tier), 30 days (paid)
 - **Point-in-Time Recovery**: Available on paid plans
 
 ### Manual Backups
+
 ```bash
 # Backup entire database
 pg_dump $POSTGRES_URL_NON_POOLING > backup_$(date +%Y%m%d).sql
@@ -873,39 +914,43 @@ psql $POSTGRES_URL_NON_POOLING < backup_20251220.sql
 ## Testing Strategy
 
 ### Unit Tests (Drizzle Queries)
+
 ```typescript
 // Example: Test profile creation
 test('creates profile with valid data', async () => {
-  const user = await createTestUser();
-  const profile = await db.insert(profiles).values({
-    userId: user.id,
-    username: 'test_user',
-    displayName: 'Test User',
-    // ...
-  }).returning();
+  const user = await createTestUser()
+  const profile = await db
+    .insert(profiles)
+    .values({
+      userId: user.id,
+      username: 'test_user',
+      displayName: 'Test User',
+      // ...
+    })
+    .returning()
 
-  expect(profile.username).toBe('test_user');
-});
+  expect(profile.username).toBe('test_user')
+})
 ```
 
 ### Integration Tests (API Endpoints)
+
 ```typescript
 // Example: Test directory search
 test('GET /api/directory returns filtered profiles', async () => {
-  const res = await fetch('/api/directory?track=crypto');
-  const data = await res.json();
+  const res = await fetch('/api/directory?track=crypto')
+  const data = await res.json()
 
-  expect(data.profiles.every(p =>
-    p.learningTracks.includes('crypto')
-  )).toBe(true);
-});
+  expect(data.profiles.every((p) => p.learningTracks.includes('crypto'))).toBe(true)
+})
 ```
 
 ### Load Tests (K6)
+
 ```javascript
 // Example: Simulate 100 concurrent directory searches
-export default function() {
-  http.get('https://poktapok.club/api/directory');
+export default function () {
+  http.get('https://poktapok.club/api/directory')
 }
 ```
 
@@ -914,12 +959,14 @@ export default function() {
 ## Monitoring & Alerting
 
 ### Metrics to Track
+
 - **Query Performance**: Slow queries (> 1s)
 - **Connection Pool**: Exhaustion warnings
 - **Disk Usage**: Database size growth
 - **Error Rate**: Failed transactions, constraint violations
 
 ### Tools
+
 - **Vercel Postgres**: Built-in metrics dashboard
 - **Railway**: Logs + metrics
 - **Sentry**: Error tracking with SQL query context
@@ -931,6 +978,7 @@ export default function() {
 ### A. Useful Helper Functions
 
 #### Update Timestamp Trigger
+
 ```sql
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -948,6 +996,7 @@ CREATE TRIGGER update_profiles_updated_at
 ```
 
 #### Generate Invitation Code
+
 ```sql
 CREATE OR REPLACE FUNCTION generate_invite_code()
 RETURNS VARCHAR(8) AS $$
@@ -969,6 +1018,7 @@ $$ LANGUAGE plpgsql;
 ### B. Common Queries
 
 #### Get Directory with Filters
+
 ```sql
 SELECT
   p.id,
@@ -995,6 +1045,7 @@ LIMIT 24 OFFSET $3;
 ```
 
 #### Check Username Availability
+
 ```sql
 SELECT EXISTS(
   SELECT 1 FROM profiles WHERE username = $1
@@ -1002,6 +1053,7 @@ SELECT EXISTS(
 ```
 
 #### Get User Profile with Stats
+
 ```sql
 SELECT
   u.id,
@@ -1086,6 +1138,7 @@ erDiagram
 
 **Document Status:** ✅ Ready for Implementation Review
 **Next Steps:**
+
 1. Team review and feedback (30 min meeting)
 2. Update E0-T0 ticket with refined schema
 3. Generate initial migration
@@ -1094,6 +1147,7 @@ erDiagram
 ---
 
 **Contributors:**
+
 - Database Architect: Claude Sonnet 4.5
 - Reviewed by: [Pending]
 - Approved by: [Pending]

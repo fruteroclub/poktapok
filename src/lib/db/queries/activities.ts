@@ -9,7 +9,20 @@ import {
   type NewActivitySubmission,
   type NewPulpaDistribution,
 } from '@/lib/db/schema'
-import { eq, and, desc, asc, sql, count, sum, isNull, or, gte, lte, ilike } from 'drizzle-orm'
+import {
+  eq,
+  and,
+  desc,
+  asc,
+  sql,
+  count,
+  sum,
+  isNull,
+  or,
+  gte,
+  lte,
+  ilike,
+} from 'drizzle-orm'
 
 // ============================================================
 // ACTIVITY QUERIES
@@ -42,14 +55,16 @@ export async function getActivities(filters: {
   let query = db
     .select()
     .from(activities)
-    .where(and(
-      isNull(activities.deletedAt),
-      type ? eq(activities.activityType, type as any) : undefined,
-      category ? eq(activities.category, category) : undefined,
-      difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
-      status ? eq(activities.status, status as any) : undefined,
-      search ? ilike(activities.title, `%${search}%`) : undefined,
-    ))
+    .where(
+      and(
+        isNull(activities.deletedAt),
+        type ? eq(activities.activityType, type as any) : undefined,
+        category ? eq(activities.category, category) : undefined,
+        difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
+        status ? eq(activities.status, status as any) : undefined,
+        search ? ilike(activities.title, `%${search}%`) : undefined,
+      ),
+    )
     .limit(limit)
     .offset(offset)
     .orderBy(desc(activities.createdAt))
@@ -60,14 +75,16 @@ export async function getActivities(filters: {
   const totalQuery = await db
     .select({ count: count() })
     .from(activities)
-    .where(and(
-      isNull(activities.deletedAt),
-      type ? eq(activities.activityType, type as any) : undefined,
-      category ? eq(activities.category, category) : undefined,
-      difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
-      status ? eq(activities.status, status as any) : undefined,
-      search ? ilike(activities.title, `%${search}%`) : undefined,
-    ))
+    .where(
+      and(
+        isNull(activities.deletedAt),
+        type ? eq(activities.activityType, type as any) : undefined,
+        category ? eq(activities.category, category) : undefined,
+        difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
+        status ? eq(activities.status, status as any) : undefined,
+        search ? ilike(activities.title, `%${search}%`) : undefined,
+      ),
+    )
 
   const total = totalQuery[0]?.count || 0
 
@@ -87,10 +104,7 @@ export async function getActivityById(id: string) {
   const result = await db
     .select()
     .from(activities)
-    .where(and(
-      eq(activities.id, id),
-      isNull(activities.deletedAt)
-    ))
+    .where(and(eq(activities.id, id), isNull(activities.deletedAt)))
     .limit(1)
 
   return result[0] || null
@@ -100,10 +114,7 @@ export async function getActivityById(id: string) {
  * Create new activity
  */
 export async function createActivity(data: NewActivity) {
-  const result = await db
-    .insert(activities)
-    .values(data)
-    .returning()
+  const result = await db.insert(activities).values(data).returning()
 
   return result[0]
 }
@@ -176,11 +187,12 @@ export async function getSubmissions(filters: {
   const offset = (page - 1) * limit
 
   // Determine sort order
-  const orderBy = sort === 'submitted_at_asc'
-    ? asc(activitySubmissions.submittedAt)
-    : sort === 'reward_amount_desc'
-      ? desc(activitySubmissions.rewardPulpaAmount)
-      : desc(activitySubmissions.submittedAt)
+  const orderBy =
+    sort === 'submitted_at_asc'
+      ? asc(activitySubmissions.submittedAt)
+      : sort === 'reward_amount_desc'
+        ? desc(activitySubmissions.rewardPulpaAmount)
+        : desc(activitySubmissions.submittedAt)
 
   const results = await db
     .select({
@@ -202,11 +214,13 @@ export async function getSubmissions(filters: {
     .innerJoin(activities, eq(activitySubmissions.activityId, activities.id))
     .innerJoin(users, eq(activitySubmissions.userId, users.id))
     .leftJoin(profiles, eq(users.id, profiles.userId))
-    .where(and(
-      status ? eq(activitySubmissions.status, status as any) : undefined,
-      activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
-      userId ? eq(activitySubmissions.userId, userId) : undefined,
-    ))
+    .where(
+      and(
+        status ? eq(activitySubmissions.status, status as any) : undefined,
+        activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
+        userId ? eq(activitySubmissions.userId, userId) : undefined,
+      ),
+    )
     .limit(limit)
     .offset(offset)
     .orderBy(orderBy)
@@ -215,11 +229,13 @@ export async function getSubmissions(filters: {
   const totalQuery = await db
     .select({ count: count() })
     .from(activitySubmissions)
-    .where(and(
-      status ? eq(activitySubmissions.status, status as any) : undefined,
-      activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
-      userId ? eq(activitySubmissions.userId, userId) : undefined,
-    ))
+    .where(
+      and(
+        status ? eq(activitySubmissions.status, status as any) : undefined,
+        activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
+        userId ? eq(activitySubmissions.userId, userId) : undefined,
+      ),
+    )
 
   const total = totalQuery[0]?.count || 0
 
@@ -268,16 +284,18 @@ export async function hasUserSubmitted(activityId: string, userId: string) {
   const result = await db
     .select({ id: activitySubmissions.id })
     .from(activitySubmissions)
-    .where(and(
-      eq(activitySubmissions.activityId, activityId),
-      eq(activitySubmissions.userId, userId),
-      or(
-        eq(activitySubmissions.status, 'pending'),
-        eq(activitySubmissions.status, 'under_review'),
-        eq(activitySubmissions.status, 'approved'),
-        eq(activitySubmissions.status, 'distributed'),
-      )
-    ))
+    .where(
+      and(
+        eq(activitySubmissions.activityId, activityId),
+        eq(activitySubmissions.userId, userId),
+        or(
+          eq(activitySubmissions.status, 'pending'),
+          eq(activitySubmissions.status, 'under_review'),
+          eq(activitySubmissions.status, 'approved'),
+          eq(activitySubmissions.status, 'distributed'),
+        ),
+      ),
+    )
     .limit(1)
 
   return result.length > 0
@@ -287,10 +305,7 @@ export async function hasUserSubmitted(activityId: string, userId: string) {
  * Create submission
  */
 export async function createSubmission(data: NewActivitySubmission) {
-  const result = await db
-    .insert(activitySubmissions)
-    .values(data)
-    .returning()
+  const result = await db.insert(activitySubmissions).values(data).returning()
 
   return result[0]
 }
@@ -298,7 +313,10 @@ export async function createSubmission(data: NewActivitySubmission) {
 /**
  * Update submission
  */
-export async function updateSubmission(id: string, data: Partial<NewActivitySubmission>) {
+export async function updateSubmission(
+  id: string,
+  data: Partial<NewActivitySubmission>,
+) {
   const result = await db
     .update(activitySubmissions)
     .set({
@@ -326,10 +344,13 @@ export async function getUserSubmissionStats(userId: string) {
     .groupBy(activitySubmissions.status)
 
   const totalSubmissions = stats.reduce((acc, s) => acc + Number(s.count), 0)
-  const approved = stats.find(s => s.status === 'approved')?.count || 0
-  const pending = stats.find(s => s.status === 'pending')?.count || 0
-  const rejected = stats.find(s => s.status === 'rejected')?.count || 0
-  const totalPulpaEarned = stats.reduce((acc, s) => acc + Number(s.totalReward || 0), 0)
+  const approved = stats.find((s) => s.status === 'approved')?.count || 0
+  const pending = stats.find((s) => s.status === 'pending')?.count || 0
+  const rejected = stats.find((s) => s.status === 'rejected')?.count || 0
+  const totalPulpaEarned = stats.reduce(
+    (acc, s) => acc + Number(s.totalReward || 0),
+    0,
+  )
 
   return {
     total_submissions: totalSubmissions,
@@ -355,14 +376,7 @@ export async function getDistributions(filters: {
   page?: number
   limit?: number
 }) {
-  const {
-    status,
-    method,
-    startDate,
-    endDate,
-    page = 1,
-    limit = 24,
-  } = filters
+  const { status, method, startDate, endDate, page = 1, limit = 24 } = filters
 
   const offset = (page - 1) * limit
 
@@ -382,12 +396,20 @@ export async function getDistributions(filters: {
     .innerJoin(users, eq(pulpaDistributions.userId, users.id))
     .leftJoin(profiles, eq(users.id, profiles.userId))
     .innerJoin(activities, eq(pulpaDistributions.activityId, activities.id))
-    .where(and(
-      status ? eq(pulpaDistributions.status, status as any) : undefined,
-      method ? eq(pulpaDistributions.distributionMethod, method as any) : undefined,
-      startDate ? gte(pulpaDistributions.distributedAt, new Date(startDate)) : undefined,
-      endDate ? lte(pulpaDistributions.distributedAt, new Date(endDate)) : undefined,
-    ))
+    .where(
+      and(
+        status ? eq(pulpaDistributions.status, status as any) : undefined,
+        method
+          ? eq(pulpaDistributions.distributionMethod, method as any)
+          : undefined,
+        startDate
+          ? gte(pulpaDistributions.distributedAt, new Date(startDate))
+          : undefined,
+        endDate
+          ? lte(pulpaDistributions.distributedAt, new Date(endDate))
+          : undefined,
+      ),
+    )
     .limit(limit)
     .offset(offset)
     .orderBy(desc(pulpaDistributions.distributedAt))
@@ -400,30 +422,54 @@ export async function getDistributions(filters: {
       totalDistributed: sum(pulpaDistributions.pulpaAmount),
     })
     .from(pulpaDistributions)
-    .where(and(
-      status ? eq(pulpaDistributions.status, status as any) : undefined,
-      method ? eq(pulpaDistributions.distributionMethod, method as any) : undefined,
-      startDate ? gte(pulpaDistributions.distributedAt, new Date(startDate)) : undefined,
-      endDate ? lte(pulpaDistributions.distributedAt, new Date(endDate)) : undefined,
-    ))
+    .where(
+      and(
+        status ? eq(pulpaDistributions.status, status as any) : undefined,
+        method
+          ? eq(pulpaDistributions.distributionMethod, method as any)
+          : undefined,
+        startDate
+          ? gte(pulpaDistributions.distributedAt, new Date(startDate))
+          : undefined,
+        endDate
+          ? lte(pulpaDistributions.distributedAt, new Date(endDate))
+          : undefined,
+      ),
+    )
     .groupBy(pulpaDistributions.status)
 
   const stats = {
-    total_distributed: statsQuery.reduce((acc, s) => acc + Number(s.totalDistributed || 0), 0).toString(),
-    pending_count: Number(statsQuery.find(s => s.status === 'pending')?.count || 0),
-    completed_count: Number(statsQuery.find(s => s.status === 'completed')?.count || 0),
-    failed_count: Number(statsQuery.find(s => s.status === 'failed')?.count || 0),
+    total_distributed: statsQuery
+      .reduce((acc, s) => acc + Number(s.totalDistributed || 0), 0)
+      .toString(),
+    pending_count: Number(
+      statsQuery.find((s) => s.status === 'pending')?.count || 0,
+    ),
+    completed_count: Number(
+      statsQuery.find((s) => s.status === 'completed')?.count || 0,
+    ),
+    failed_count: Number(
+      statsQuery.find((s) => s.status === 'failed')?.count || 0,
+    ),
   }
 
   const totalQuery = await db
     .select({ count: count() })
     .from(pulpaDistributions)
-    .where(and(
-      status ? eq(pulpaDistributions.status, status as any) : undefined,
-      method ? eq(pulpaDistributions.distributionMethod, method as any) : undefined,
-      startDate ? gte(pulpaDistributions.distributedAt, new Date(startDate)) : undefined,
-      endDate ? lte(pulpaDistributions.distributedAt, new Date(endDate)) : undefined,
-    ))
+    .where(
+      and(
+        status ? eq(pulpaDistributions.status, status as any) : undefined,
+        method
+          ? eq(pulpaDistributions.distributionMethod, method as any)
+          : undefined,
+        startDate
+          ? gte(pulpaDistributions.distributedAt, new Date(startDate))
+          : undefined,
+        endDate
+          ? lte(pulpaDistributions.distributedAt, new Date(endDate))
+          : undefined,
+      ),
+    )
 
   const total = totalQuery[0]?.count || 0
 
@@ -441,10 +487,7 @@ export async function getDistributions(filters: {
  * Create distribution
  */
 export async function createDistribution(data: NewPulpaDistribution) {
-  const result = await db
-    .insert(pulpaDistributions)
-    .values(data)
-    .returning()
+  const result = await db.insert(pulpaDistributions).values(data).returning()
 
   return result[0]
 }
@@ -452,7 +495,10 @@ export async function createDistribution(data: NewPulpaDistribution) {
 /**
  * Update distribution
  */
-export async function updateDistribution(id: string, data: Partial<NewPulpaDistribution>) {
+export async function updateDistribution(
+  id: string,
+  data: Partial<NewPulpaDistribution>,
+) {
   const result = await db
     .update(pulpaDistributions)
     .set(data)
@@ -484,13 +530,15 @@ export async function getPendingDistributions() {
     .innerJoin(users, eq(activitySubmissions.userId, users.id))
     .leftJoin(profiles, eq(users.id, profiles.userId))
     .innerJoin(activities, eq(activitySubmissions.activityId, activities.id))
-    .where(and(
-      eq(activitySubmissions.status, 'approved'),
-      sql`NOT EXISTS (
+    .where(
+      and(
+        eq(activitySubmissions.status, 'approved'),
+        sql`NOT EXISTS (
         SELECT 1 FROM ${pulpaDistributions}
         WHERE ${pulpaDistributions.submissionId} = ${activitySubmissions.id}
-      )`
-    ))
+      )`,
+      ),
+    )
     .orderBy(asc(activitySubmissions.reviewedAt))
 
   return results
@@ -499,7 +547,10 @@ export async function getPendingDistributions() {
 /**
  * Update user profile PULPA stats (called after distribution completes)
  */
-export async function updateUserPulpaStats(userId: string, pulpaAmount: string) {
+export async function updateUserPulpaStats(
+  userId: string,
+  pulpaAmount: string,
+) {
   await db
     .update(profiles)
     .set({

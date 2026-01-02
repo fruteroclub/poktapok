@@ -14,7 +14,9 @@
 This system is **separate from the USDC freelance bounty marketplace** (Epic 3). It focuses on **growth hacking, community building, and educational milestones** through token-incentivized activities.
 
 ### Purpose
+
 Distribute $PULPA tokens to users who complete **workshop deliverables, learning milestones, and #buildinpublic activities** such as:
+
 - "Make your first GitHub commit"
 - "Share your project on X (Twitter)"
 - "Post workshop completion photos"
@@ -22,16 +24,16 @@ Distribute $PULPA tokens to users who complete **workshop deliverables, learning
 
 ### Key Distinctions from USDC Bounty System
 
-| Aspect | $PULPA Activities | USDC Bounties (Future) |
-|--------|------------------|------------------------|
-| **Purpose** | Education, growth, engagement | Freelance work, revenue |
-| **Task Type** | Simple social/learning actions | Complex code contributions |
-| **Verification** | Manual admin review | Automated + manual |
-| **Reward Size** | Small ($1-$50 in PULPA) | Large ($50-$5000 in USDC) |
-| **Frequency** | High volume, repeatable | Low volume, one-time |
-| **Token** | $PULPA (community token) | USDC (stablecoin) |
-| **Chain** | Optimism Mainnet | Multi-chain (Epic 4) |
-| **Distribution** | Manual initially, claim later | Smart contract escrow |
+| Aspect           | $PULPA Activities              | USDC Bounties (Future)     |
+| ---------------- | ------------------------------ | -------------------------- |
+| **Purpose**      | Education, growth, engagement  | Freelance work, revenue    |
+| **Task Type**    | Simple social/learning actions | Complex code contributions |
+| **Verification** | Manual admin review            | Automated + manual         |
+| **Reward Size**  | Small ($1-$50 in PULPA)        | Large ($50-$5000 in USDC)  |
+| **Frequency**    | High volume, repeatable        | Low volume, one-time       |
+| **Token**        | $PULPA (community token)       | USDC (stablecoin)          |
+| **Chain**        | Optimism Mainnet               | Multi-chain (Epic 4)       |
+| **Distribution** | Manual initially, claim later  | Smart contract escrow      |
 
 ---
 
@@ -312,6 +314,7 @@ CREATE INDEX idx_profiles_activities_completed ON profiles(activities_completed 
 ```
 
 **Denormalized Stats Rationale:**
+
 - Avoid expensive SUM queries on every profile view
 - Enable leaderboards (top earners, most active)
 - Update via triggers on `pulpa_distributions` status change
@@ -323,9 +326,11 @@ CREATE INDEX idx_profiles_activities_completed ON profiles(activities_completed 
 ### Public Endpoints (No Auth Required)
 
 #### `GET /api/activities`
+
 **Description:** List active activities (public view)
 
 **Query Parameters:**
+
 - `type` (optional): Filter by activity_type
 - `category` (optional): Filter by category
 - `difficulty` (optional): beginner | intermediate | advanced
@@ -334,6 +339,7 @@ CREATE INDEX idx_profiles_activities_completed ON profiles(activities_completed 
 - `limit` (default: 24): Items per page
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -364,9 +370,11 @@ interface Activity {
 ---
 
 #### `GET /api/activities/[id]`
+
 **Description:** Get activity details
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -402,11 +410,13 @@ interface Activity {
 ### Authenticated User Endpoints
 
 #### `POST /api/activities/[id]/submit`
+
 **Description:** Submit activity completion proof
 
 **Auth:** Required (Privy JWT)
 
 **Request Body:**
+
 ```typescript
 {
   submission_url?: string        // Required if evidence_requirements.url_required
@@ -416,6 +426,7 @@ interface Activity {
 ```
 
 **Validation:**
+
 - Check user hasn't already submitted (if max_submissions_per_user === 1)
 - Verify activity is active and not expired
 - Check total slots not exceeded
@@ -423,6 +434,7 @@ interface Activity {
 - File size limits (5MB per file, max 3 files)
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -432,22 +444,25 @@ interface Activity {
     status: 'pending'
     submitted_at: string
   }
-  message: "Submission received! An admin will review it soon."
+  message: 'Submission received! An admin will review it soon.'
 }
 ```
 
 ---
 
 #### `GET /api/user/submissions`
+
 **Description:** Get current user's submission history
 
 **Auth:** Required
 
 **Query Parameters:**
+
 - `status` (optional): pending | approved | rejected | distributed
 - `page`, `limit`
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -465,7 +480,8 @@ interface Activity {
       reviewed_at: string | null
       review_notes: string | null
       reward_pulpa_amount: string | null
-    }[]
+    }
+    ;[]
     stats: {
       total_submissions: number
       approved: number
@@ -480,11 +496,13 @@ interface Activity {
 ---
 
 #### `GET /api/user/earnings`
+
 **Description:** Get user's $PULPA earnings summary
 
 **Auth:** Required
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -500,8 +518,9 @@ interface Activity {
       pulpa_amount: string
       distributed_at: string
       transaction_hash: string | null
-    }[]
-    wallet_address: string          // User's wallet for distributions
+    }
+    ;[]
+    wallet_address: string // User's wallet for distributions
   }
 }
 ```
@@ -511,11 +530,13 @@ interface Activity {
 ### Admin Endpoints
 
 #### `POST /api/admin/activities`
+
 **Description:** Create new activity
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
   title: string
@@ -540,32 +561,37 @@ interface Activity {
 ```
 
 **Validation:**
+
 - title: 5-200 chars
 - description: 20-2000 chars
 - reward_pulpa_amount > 0
 - Valid enum values
 
 **Response:**
+
 ```typescript
 {
   success: boolean
   data: Activity
-  message: "Activity created successfully"
+  message: 'Activity created successfully'
 }
 ```
 
 ---
 
 #### `GET /api/admin/activities`
+
 **Description:** List all activities (including drafts)
 
 **Auth:** Required, role === 'admin'
 
 **Query Parameters:**
+
 - `status`: draft | active | paused | completed | cancelled
 - `type`, `category`, `search`, `page`, `limit`
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -584,6 +610,7 @@ interface Activity {
 ---
 
 #### `PATCH /api/admin/activities/[id]`
+
 **Description:** Update activity
 
 **Auth:** Required, role === 'admin'
@@ -591,22 +618,25 @@ interface Activity {
 **Request Body:** Partial Activity fields
 
 **Response:**
+
 ```typescript
 {
   success: boolean
   data: Activity
-  message: "Activity updated successfully"
+  message: 'Activity updated successfully'
 }
 ```
 
 ---
 
 #### `PATCH /api/admin/activities/[id]/status`
+
 **Description:** Change activity status (activate, pause, complete, cancel)
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
   status: 'active' | 'paused' | 'completed' | 'cancelled'
@@ -615,6 +645,7 @@ interface Activity {
 ```
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -626,11 +657,13 @@ interface Activity {
 ---
 
 #### `GET /api/admin/submissions`
+
 **Description:** Admin submission review queue
 
 **Auth:** Required, role === 'admin'
 
 **Query Parameters:**
+
 - `status`: pending | under_review | approved | rejected | distributed
 - `activity_id` (optional): Filter by activity
 - `user_id` (optional): Filter by user
@@ -638,6 +671,7 @@ interface Activity {
 - `page`, `limit`
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -673,11 +707,13 @@ interface Activity {
 ---
 
 #### `GET /api/admin/submissions/[id]`
+
 **Description:** Get submission details for review
 
 **Auth:** Required, role === 'admin'
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -708,11 +744,13 @@ interface Activity {
 ---
 
 #### `PATCH /api/admin/submissions/[id]/approve`
+
 **Description:** Approve submission
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
   reward_pulpa_amount?: string  // Optional: Override default reward (partial credit)
@@ -721,12 +759,14 @@ interface Activity {
 ```
 
 **Side Effects:**
+
 - Update submission status to 'approved'
 - Set reviewed_by_user_id and reviewed_at
 - Increment activity.current_submissions_count
 - Increment user profile.activities_completed
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -735,25 +775,28 @@ interface Activity {
     status: 'approved'
     reward_pulpa_amount: string
   }
-  message: "Submission approved! Ready for token distribution."
+  message: 'Submission approved! Ready for token distribution.'
 }
 ```
 
 ---
 
 #### `PATCH /api/admin/submissions/[id]/reject`
+
 **Description:** Reject submission
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
-  review_notes: string  // Required: Reason for rejection
+  review_notes: string // Required: Reason for rejection
 }
 ```
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -761,25 +804,28 @@ interface Activity {
     id: string
     status: 'rejected'
   }
-  message: "Submission rejected"
+  message: 'Submission rejected'
 }
 ```
 
 ---
 
 #### `PATCH /api/admin/submissions/[id]/request-revision`
+
 **Description:** Request changes to submission
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
-  review_notes: string  // Required: What needs to change
+  review_notes: string // Required: What needs to change
 }
 ```
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -787,18 +833,20 @@ interface Activity {
     id: string
     status: 'revision_requested'
   }
-  message: "Revision requested. User will be notified."
+  message: 'Revision requested. User will be notified.'
 }
 ```
 
 ---
 
 #### `POST /api/admin/distributions`
+
 **Description:** Distribute $PULPA tokens (manual or batch)
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
   submission_ids: string[]     // Array of approved submission IDs
@@ -810,6 +858,7 @@ interface Activity {
 ```
 
 **Workflow:**
+
 1. Validate all submissions are 'approved' status
 2. Get user wallet addresses
 3. Create distribution records
@@ -818,6 +867,7 @@ interface Activity {
 6. Update user profile.total_pulpa_earned
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -830,26 +880,30 @@ interface Activity {
       wallet_address: string
       pulpa_amount: string
       status: string
-    }[]
+    }
+    ;[]
   }
-  message: "3 distributions created. Total: 150 PULPA"
+  message: '3 distributions created. Total: 150 PULPA'
 }
 ```
 
 ---
 
 #### `GET /api/admin/distributions`
+
 **Description:** Distribution history
 
 **Auth:** Required, role === 'admin'
 
 **Query Parameters:**
+
 - `status`: pending | processing | completed | failed
 - `method`: manual | smart_contract | claim_portal
 - `start_date`, `end_date`
 - `page`, `limit`
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -877,11 +931,13 @@ interface Activity {
 ---
 
 #### `PATCH /api/admin/distributions/[id]`
+
 **Description:** Update distribution (add tx hash, mark as completed/failed)
 
 **Auth:** Required, role === 'admin'
 
 **Request Body:**
+
 ```typescript
 {
   status?: 'processing' | 'completed' | 'failed'
@@ -891,6 +947,7 @@ interface Activity {
 ```
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -899,13 +956,14 @@ interface Activity {
     status: string
     transaction_hash: string | null
   }
-  message: "Distribution updated successfully"
+  message: 'Distribution updated successfully'
 }
 ```
 
 ---
 
 #### `POST /api/admin/distributions/bulk-distribute`
+
 **Description:** Batch distribute approved submissions (convenience endpoint)
 
 **Auth:** Required, role === 'admin'
@@ -913,6 +971,7 @@ interface Activity {
 **Query:** Auto-select all 'approved' submissions without distributions
 
 **Response:**
+
 ```typescript
 {
   success: boolean
@@ -923,12 +982,13 @@ interface Activity {
       wallet_address: string
       submission_count: number
       total_pulpa_amount: string
-    }[]
+    }
+    ;[]
     total_recipients: number
     total_pulpa_amount: string
-    summary: string  // "Send 150 PULPA to 3 users"
+    summary: string // "Send 150 PULPA to 3 users"
   }
-  message: "Review wallet addresses and distribute manually, then mark as completed"
+  message: 'Review wallet addresses and distribute manually, then mark as completed'
 }
 ```
 
@@ -941,12 +1001,14 @@ interface Activity {
 #### 1. Activities Dashboard (`/activities`)
 
 **Layout:**
+
 - Header: "Earn $PULPA by Learning & Building"
 - Filters: Type, Category, Difficulty
 - Search bar
 - Activity cards (grid layout)
 
 **Activity Card:**
+
 ```
 ┌─────────────────────────────────────┐
 │ 🎯 Make Your First GitHub Commit    │
@@ -962,6 +1024,7 @@ interface Activity {
 ```
 
 **Features:**
+
 - Real-time slot availability
 - Badge for "Already Submitted"
 - Difficulty indicators (🟢 Beginner, 🟡 Intermediate, 🔴 Advanced)
@@ -971,6 +1034,7 @@ interface Activity {
 #### 2. Activity Detail Page (`/activities/[id]`)
 
 **Sections:**
+
 1. **Header:** Title, reward amount, difficulty, expiry
 2. **Description:** What the activity is about
 3. **Instructions:** Step-by-step guide
@@ -979,6 +1043,7 @@ interface Activity {
 6. **Recent Completions** (leaderboard style, "3 users completed this today")
 
 **Submission Form:**
+
 ```typescript
 interface SubmissionFormProps {
   activityId: string
@@ -991,12 +1056,14 @@ interface SubmissionFormProps {
 ```
 
 **Form Fields:**
+
 - URL input (with validation for X, GitHub, YouTube based on activity type)
 - File upload (drag & drop, image preview)
 - Text area (notes, description)
 - Submit button
 
 **States:**
+
 - Not authenticated → Show "Login to submit"
 - Already submitted → Show submission status
 - Slots full → Show "Activity completed"
@@ -1007,6 +1074,7 @@ interface SubmissionFormProps {
 #### 3. User Submissions Page (`/dashboard/submissions`)
 
 **Tabs:**
+
 - All (default)
 - Pending
 - Approved
@@ -1014,6 +1082,7 @@ interface SubmissionFormProps {
 - Rejected
 
 **Submission Card:**
+
 ```
 ┌─────────────────────────────────────────────────┐
 │ Make Your First GitHub Commit                   │
@@ -1028,6 +1097,7 @@ interface SubmissionFormProps {
 ```
 
 **Approved State:**
+
 ```
 ┌─────────────────────────────────────────────────┐
 │ Share Your Project on X                         │
@@ -1046,6 +1116,7 @@ interface SubmissionFormProps {
 #### 4. Earnings Dashboard (`/dashboard/earnings`)
 
 **Stats Cards:**
+
 ```
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
 │ Total PULPA      │ │ Activities       │ │ Pending          │
@@ -1060,6 +1131,7 @@ interface SubmissionFormProps {
 | X Post | 15 PULPA | Dec 22 | ⏳ Pending | - |
 
 **Wallet Info:**
+
 - Connected wallet: `0x1234...5678`
 - Chain: Optimism Mainnet
 - [View on Optimistic Etherscan →]
@@ -1071,6 +1143,7 @@ interface SubmissionFormProps {
 #### 1. Admin Activities Management (`/admin/activities`)
 
 **Tabs:**
+
 - Active (default)
 - Drafts
 - Completed
@@ -1083,6 +1156,7 @@ interface SubmissionFormProps {
 | Share on X | x_post | 15 PULPA | 8 | - | 🟢 Active | Edit / Pause / View |
 
 **Actions:**
+
 - [+ Create Activity] button (top right)
 - Bulk actions: Pause selected, Export to CSV
 - Filters: Type, Category, Status
@@ -1094,6 +1168,7 @@ interface SubmissionFormProps {
 **Multi-step form:**
 
 **Step 1: Basic Info**
+
 - Title
 - Description
 - Instructions (markdown editor)
@@ -1101,21 +1176,25 @@ interface SubmissionFormProps {
 - Difficulty (radio)
 
 **Step 2: Requirements**
+
 - Activity Type (dropdown with icons)
 - Evidence Requirements (checkboxes: URL, Screenshot, Text)
 - Verification Type (radio: Manual, Automatic, Hybrid)
 
 **Step 3: Rewards & Limits**
+
 - PULPA Reward Amount (number input with token icon)
 - Max submissions per user (optional)
 - Total available slots (optional)
 
 **Step 4: Schedule**
+
 - Start date (optional)
 - Expiry date (optional)
 - Status (Draft or Active)
 
 **Preview Mode:**
+
 - Shows how activity will appear to users
 - Test submission form
 
@@ -1124,11 +1203,13 @@ interface SubmissionFormProps {
 #### 3. Submission Review Queue (`/admin/submissions`)
 
 **Filters:**
+
 - Status (Pending, Under Review, All)
 - Activity (dropdown)
 - Date range
 
 **Queue View (Card Layout):**
+
 ```
 ┌───────────────────────────────────────────────────┐
 │ carlos_dev submitted: Make Your First GitHub Commit │
@@ -1144,11 +1225,13 @@ interface SubmissionFormProps {
 ```
 
 **Approve Modal:**
+
 - Confirm reward amount (editable for partial credit)
 - Optional review notes (visible to user)
 - [Cancel] [Approve Submission]
 
 **Reject Modal:**
+
 - Required: Rejection reason (textarea)
 - [Cancel] [Reject Submission]
 
@@ -1157,11 +1240,13 @@ interface SubmissionFormProps {
 #### 4. Distribution Dashboard (`/admin/distributions`)
 
 **Tabs:**
+
 - Pending (submissions approved but not distributed)
 - Completed
 - Failed
 
 **Pending Distributions (Batch View):**
+
 ```
 ┌─────────────────────────────────────────────────┐
 │ Ready for Distribution: 5 submissions           │
@@ -1179,8 +1264,10 @@ interface SubmissionFormProps {
 ```
 
 **Manual Distribution Flow:**
+
 1. Admin clicks "Distribute"
 2. Modal shows summary + instructions:
+
    ```
    Send $PULPA tokens to these addresses:
 
@@ -1196,6 +1283,7 @@ interface SubmissionFormProps {
 
    [Cancel] [Mark as Distributed]
    ```
+
 3. System updates distribution records with tx hashes
 4. Updates submission status to 'distributed'
 
@@ -1204,6 +1292,7 @@ interface SubmissionFormProps {
 #### 5. Analytics Dashboard (`/admin/analytics`)
 
 **Key Metrics:**
+
 - Total PULPA distributed (all-time, this month)
 - Active users completing activities
 - Most popular activity types
@@ -1211,6 +1300,7 @@ interface SubmissionFormProps {
 - Distribution success rate
 
 **Charts:**
+
 - PULPA distribution over time (line chart)
 - Activity type breakdown (pie chart)
 - User engagement funnel (submissions → approvals → distributions)
@@ -1222,41 +1312,43 @@ interface SubmissionFormProps {
 ### Vercel Blob Storage Integration
 
 **Configuration:**
+
 ```typescript
 // src/lib/upload/blob-config.ts
-import { put } from '@vercel/blob';
+import { put } from '@vercel/blob'
 
 export const uploadConfig = {
   maxFileSize: 5 * 1024 * 1024, // 5MB
   allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'],
-  maxFiles: 3
-};
+  maxFiles: 3,
+}
 
 export async function uploadEvidenceFile(file: File, submissionId: string) {
   // Validate file
   if (file.size > uploadConfig.maxFileSize) {
-    throw new Error('File too large (max 5MB)');
+    throw new Error('File too large (max 5MB)')
   }
 
   if (!uploadConfig.allowedTypes.includes(file.type)) {
-    throw new Error('Invalid file type');
+    throw new Error('Invalid file type')
   }
 
   // Upload to Vercel Blob
   const blob = await put(`submissions/${submissionId}/${file.name}`, file, {
     access: 'public',
-  });
+  })
 
   return {
     url: blob.url,
     filename: file.name,
     size: file.size,
-    type: file.type
-  };
+    type: file.type,
+  }
 }
 ```
 
 **Upload Flow:**
+
 1. User selects file in submission form
 2. Frontend validates file (size, type, count)
 3. POST to `/api/submissions/upload-evidence`
@@ -1272,6 +1364,7 @@ export async function uploadEvidenceFile(file: File, submissionId: string) {
 ### Current Phase (Manual Distribution)
 
 **Process:**
+
 1. Admin approves submissions in dashboard
 2. Admin clicks "Distribute" → gets list of wallet addresses + amounts
 3. Admin uses MetaMask to send $PULPA tokens manually
@@ -1279,11 +1372,13 @@ export async function uploadEvidenceFile(file: File, submissionId: string) {
 5. System records tx hashes and marks as distributed
 
 **Pros:**
+
 - No smart contract development needed
 - Immediate launch possible
 - Full control over distributions
 
 **Cons:**
+
 - Manual process, doesn't scale
 - Gas fees paid by admin
 - No automated verification
@@ -1333,6 +1428,7 @@ contract PulpaDistributor {
 ```
 
 **Workflow:**
+
 1. Admin deposits $PULPA into contract
 2. Admin approves submissions in dashboard
 3. System calls `distributeRewards()` with batch data
@@ -1344,6 +1440,7 @@ contract PulpaDistributor {
 ### Phase 3: User-Claimable Rewards
 
 **Benefits:**
+
 - Users pay their own gas fees
 - Admin doesn't need to batch send
 - On-demand distribution
@@ -1386,6 +1483,7 @@ contract PulpaClaimPortal {
 ### Phase 1: MVP (2-3 weeks)
 
 **Week 1: Database & API**
+
 - ✅ Create database schema (activities, submissions, distributions)
 - ✅ Run migrations
 - ✅ Build API endpoints (activities CRUD, submissions, admin review)
@@ -1393,6 +1491,7 @@ contract PulpaClaimPortal {
 - ✅ Add Vercel Blob upload integration
 
 **Week 2: Admin Dashboard**
+
 - ✅ Activity creation form
 - ✅ Activity management table
 - ✅ Submission review queue
@@ -1400,6 +1499,7 @@ contract PulpaClaimPortal {
 - ✅ Manual distribution dashboard
 
 **Week 3: User Interface**
+
 - ✅ Activities browse page
 - ✅ Activity detail + submission form
 - ✅ User submissions history
@@ -1407,6 +1507,7 @@ contract PulpaClaimPortal {
 - ✅ Testing & bug fixes
 
 **Definition of Done (Phase 1):**
+
 - Admin can create activities
 - Users can submit proofs
 - Admin can review and approve
@@ -1419,6 +1520,7 @@ contract PulpaClaimPortal {
 ### Phase 2: Automation (4-6 weeks)
 
 **Features:**
+
 - Smart contract deployment (Optimism Mainnet)
 - Automated batch distributions
 - X API integration (auto-verify tweets)
@@ -1427,6 +1529,7 @@ contract PulpaClaimPortal {
 - Advanced analytics dashboard
 
 **Definition of Done (Phase 2):**
+
 - Smart contract deployed and audited
 - One-click batch distributions
 - Automatic verification for 50%+ of submissions
@@ -1438,6 +1541,7 @@ contract PulpaClaimPortal {
 ### Phase 3: Scale & Gamification (6-8 weeks)
 
 **Features:**
+
 - User-claimable rewards (claim portal)
 - Leaderboards (top earners, most active)
 - Achievement badges ("First Committer", "Social Sharer")
@@ -1452,6 +1556,7 @@ contract PulpaClaimPortal {
 ### Unit Tests
 
 **Database Queries:**
+
 ```typescript
 describe('Activity Queries', () => {
   test('creates activity with valid data', async () => {
@@ -1460,20 +1565,19 @@ describe('Activity Queries', () => {
       activity_type: 'github_commit',
       reward_pulpa_amount: '10.0',
       // ...
-    });
+    })
 
-    expect(activity.title).toBe('Test Activity');
-  });
+    expect(activity.title).toBe('Test Activity')
+  })
 
   test('prevents duplicate submissions', async () => {
-    await expect(
-      submitActivity(activityId, userId)
-    ).rejects.toThrow('Already submitted');
-  });
-});
+    await expect(submitActivity(activityId, userId)).rejects.toThrow('Already submitted')
+  })
+})
 ```
 
 **API Endpoints:**
+
 ```typescript
 describe('POST /api/activities/:id/submit', () => {
   test('creates submission with valid proof', async () => {
@@ -1482,15 +1586,15 @@ describe('POST /api/activities/:id/submit', () => {
       headers: { Authorization: `Bearer ${userToken}` },
       body: JSON.stringify({
         submission_url: 'https://github.com/user/repo',
-        submission_text: 'My first repo!'
-      })
-    });
+        submission_text: 'My first repo!',
+      }),
+    })
 
-    expect(res.status).toBe(201);
-    const data = await res.json();
-    expect(data.data.status).toBe('pending');
-  });
-});
+    expect(res.status).toBe(201)
+    const data = await res.json()
+    expect(data.data.status).toBe('pending')
+  })
+})
 ```
 
 ---
@@ -1498,30 +1602,31 @@ describe('POST /api/activities/:id/submit', () => {
 ### Integration Tests
 
 **End-to-End Workflows:**
+
 ```typescript
 describe('Activity Completion Flow', () => {
   test('user submits, admin approves, tokens distributed', async () => {
     // 1. Create activity (admin)
-    const activity = await adminCreateActivity();
+    const activity = await adminCreateActivity()
 
     // 2. Submit proof (user)
-    const submission = await userSubmitActivity(activity.id);
-    expect(submission.status).toBe('pending');
+    const submission = await userSubmitActivity(activity.id)
+    expect(submission.status).toBe('pending')
 
     // 3. Approve submission (admin)
-    const approved = await adminApproveSubmission(submission.id);
-    expect(approved.status).toBe('approved');
+    const approved = await adminApproveSubmission(submission.id)
+    expect(approved.status).toBe('approved')
 
     // 4. Distribute tokens (admin)
-    const distribution = await adminDistributeTokens([submission.id]);
-    expect(distribution.status).toBe('completed');
+    const distribution = await adminDistributeTokens([submission.id])
+    expect(distribution.status).toBe('completed')
 
     // 5. Verify user profile updated
-    const profile = await getUserProfile(userId);
-    expect(profile.total_pulpa_earned).toBe('10.0');
-    expect(profile.activities_completed).toBe(1);
-  });
-});
+    const profile = await getUserProfile(userId)
+    expect(profile.total_pulpa_earned).toBe('10.0')
+    expect(profile.activities_completed).toBe(1)
+  })
+})
 ```
 
 ---
@@ -1529,6 +1634,7 @@ describe('Activity Completion Flow', () => {
 ### Manual Testing Checklist
 
 **Admin Workflows:**
+
 - [ ] Create draft activity → Save → Activate
 - [ ] Edit active activity → Save
 - [ ] Pause activity → Verify no new submissions accepted
@@ -1540,6 +1646,7 @@ describe('Activity Completion Flow', () => {
 - [ ] View analytics → Charts display correctly
 
 **User Workflows:**
+
 - [ ] Browse activities → Filter by type
 - [ ] View activity detail → See requirements
 - [ ] Submit proof (URL only) → Success
@@ -1556,25 +1663,27 @@ describe('Activity Completion Flow', () => {
 ### Authentication & Authorization
 
 **API Security:**
+
 - All admin endpoints verify `user.role === 'admin'`
 - Privy JWT tokens validated server-side
 - No client-side role checks (can be spoofed)
 
 **Middleware:**
+
 ```typescript
 // src/lib/auth/middleware.ts
 export async function requireAdmin(req: Request) {
-  const user = await verifyPrivyToken(req);
+  const user = await verifyPrivyToken(req)
 
   if (!user) {
-    throw new UnauthorizedError('Authentication required');
+    throw new UnauthorizedError('Authentication required')
   }
 
   if (user.role !== 'admin') {
-    throw new ForbiddenError('Admin access required');
+    throw new ForbiddenError('Admin access required')
   }
 
-  return user;
+  return user
 }
 ```
 
@@ -1583,26 +1692,46 @@ export async function requireAdmin(req: Request) {
 ### Input Validation
 
 **Zod Schemas:**
+
 ```typescript
 // src/lib/validators/activity.ts
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const createActivitySchema = z.object({
   title: z.string().min(5).max(200),
   description: z.string().min(20).max(2000),
-  activity_type: z.enum(['github_commit', 'x_post', 'photo', 'video', 'blog_post', 'workshop_completion', 'build_in_public', 'code_review', 'custom']),
-  reward_pulpa_amount: z.string().regex(/^\d+(\.\d{1,8})?$/).refine((val) => parseFloat(val) > 0),
+  activity_type: z.enum([
+    'github_commit',
+    'x_post',
+    'photo',
+    'video',
+    'blog_post',
+    'workshop_completion',
+    'build_in_public',
+    'code_review',
+    'custom',
+  ]),
+  reward_pulpa_amount: z
+    .string()
+    .regex(/^\d+(\.\d{1,8})?$/)
+    .refine((val) => parseFloat(val) > 0),
   // ...
-});
+})
 
-export const submitActivitySchema = z.object({
-  submission_url: z.string().url().optional(),
-  submission_text: z.string().max(1000).optional(),
-  evidence_files: z.array(z.any()).max(3).optional()
-}).refine((data) => {
-  // At least one field must be provided
-  return data.submission_url || data.submission_text || (data.evidence_files && data.evidence_files.length > 0);
-});
+export const submitActivitySchema = z
+  .object({
+    submission_url: z.string().url().optional(),
+    submission_text: z.string().max(1000).optional(),
+    evidence_files: z.array(z.any()).max(3).optional(),
+  })
+  .refine((data) => {
+    // At least one field must be provided
+    return (
+      data.submission_url ||
+      data.submission_text ||
+      (data.evidence_files && data.evidence_files.length > 0)
+    )
+  })
 ```
 
 ---
@@ -1610,21 +1739,22 @@ export const submitActivitySchema = z.object({
 ### Rate Limiting
 
 **Prevent Spam Submissions:**
+
 ```typescript
 // src/lib/rate-limit.ts
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 submissions per hour
-});
+})
 
 export async function checkSubmissionRateLimit(userId: string) {
-  const { success, remaining } = await ratelimit.limit(`submissions:${userId}`);
+  const { success, remaining } = await ratelimit.limit(`submissions:${userId}`)
 
   if (!success) {
-    throw new Error(`Rate limit exceeded. Try again in 1 hour. (${remaining} remaining)`);
+    throw new Error(`Rate limit exceeded. Try again in 1 hour. (${remaining} remaining)`)
   }
 }
 ```
@@ -1634,12 +1764,14 @@ export async function checkSubmissionRateLimit(userId: string) {
 ### File Upload Security
 
 **Validation:**
+
 - File type whitelist (images, videos only)
 - File size limit (5MB per file)
 - Scan for malware (ClamAV integration, future)
 - Generate random filenames (prevent path traversal)
 
 **Vercel Blob Security:**
+
 - Files stored with `public` access (for evidence viewing)
 - CDN-delivered (fast, secure)
 - Automatic HTTPS
@@ -1649,14 +1781,13 @@ export async function checkSubmissionRateLimit(userId: string) {
 ### SQL Injection Prevention
 
 **Drizzle ORM Parameterization:**
+
 ```typescript
 // ❌ NEVER do this
-const results = await db.execute(sql`SELECT * FROM activities WHERE title = '${userInput}'`);
+const results = await db.execute(sql`SELECT * FROM activities WHERE title = '${userInput}'`)
 
 // ✅ Always use parameterized queries
-const results = await db.select()
-  .from(activities)
-  .where(eq(activities.title, userInput));
+const results = await db.select().from(activities).where(eq(activities.title, userInput))
 ```
 
 ---
@@ -1666,15 +1797,16 @@ const results = await db.select()
 ### Application Monitoring
 
 **Error Tracking (Sentry):**
+
 ```typescript
 // src/lib/monitoring/sentry.ts
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from '@sentry/nextjs'
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV,
   tracesSampleRate: 1.0,
-});
+})
 
 export function captureDistributionError(error: Error, distribution: Distribution) {
   Sentry.captureException(error, {
@@ -1685,8 +1817,8 @@ export function captureDistributionError(error: Error, distribution: Distributio
     extra: {
       pulpa_amount: distribution.pulpa_amount,
       user_id: distribution.user_id,
-    }
-  });
+    },
+  })
 }
 ```
 
@@ -1695,6 +1827,7 @@ export function captureDistributionError(error: Error, distribution: Distributio
 ### Key Metrics
 
 **Track:**
+
 - Total activities created
 - Total submissions received
 - Approval rate (approved / total submissions)
@@ -1705,6 +1838,7 @@ export function captureDistributionError(error: Error, distribution: Distributio
 - Failed distributions (retry count)
 
 **Alerts:**
+
 - Failed distribution (tx failed)
 - High rejection rate (> 50%)
 - Slow approval time (> 24 hours for pending)
@@ -1765,6 +1899,7 @@ ALTER TABLE profiles ADD COLUMN activities_completed INTEGER DEFAULT 0 NOT NULL;
 ```
 
 **Run Migration:**
+
 ```bash
 bun run db:generate  # Generate migration from schema
 bun run db:migrate   # Apply to database
@@ -1775,12 +1910,14 @@ bun run db:migrate   # Apply to database
 ### Vercel Deployment
 
 **Configuration:**
+
 - Auto-deploy from `main` branch
 - Environment variables synced from Vercel dashboard
 - Build command: `bun run build`
 - Output directory: `.next`
 
 **Preview Deployments:**
+
 - Every PR gets preview URL
 - Test new features before merging
 
@@ -1790,28 +1927,31 @@ bun run db:migrate   # Apply to database
 
 ### Infrastructure Costs (Monthly)
 
-| Service | Usage | Cost |
-|---------|-------|------|
-| **Vercel Hosting** | Pro plan | $20/month |
-| **Neon DB (PostgreSQL)** | Scale tier | $19/month |
-| **Vercel Blob Storage** | 100GB, 1M requests | $15/month |
-| **Sentry (Error Tracking)** | Team plan | $26/month |
-| **Upstash Redis** (Rate Limiting) | Pay-as-you-go | ~$5/month |
-| **Total** | | **~$85/month** |
+| Service                           | Usage              | Cost           |
+| --------------------------------- | ------------------ | -------------- |
+| **Vercel Hosting**                | Pro plan           | $20/month      |
+| **Neon DB (PostgreSQL)**          | Scale tier         | $19/month      |
+| **Vercel Blob Storage**           | 100GB, 1M requests | $15/month      |
+| **Sentry (Error Tracking)**       | Team plan          | $26/month      |
+| **Upstash Redis** (Rate Limiting) | Pay-as-you-go      | ~$5/month      |
+| **Total**                         |                    | **~$85/month** |
 
 ---
 
 ### Token Distribution Costs
 
 **Gas Fees (Optimism):**
+
 - ERC-20 transfer: ~0.0001 ETH (~$0.30 at $3000 ETH)
 - Batch transfer (10 recipients): ~0.0005 ETH (~$1.50)
 
 **Scenarios:**
+
 - 100 distributions/month (manual): ~$30/month in gas
 - 1000 distributions/month (smart contract batching): ~$150/month
 
 **Cost Optimization:**
+
 - Batch distributions weekly (reduce tx count)
 - Use smart contract for batches > 10 recipients
 - Consider user-claimable rewards (users pay gas)
@@ -1825,6 +1965,7 @@ bun run db:migrate   # Apply to database
 **Question:** Should all activities be auto-published, or require admin review?
 
 **Options:**
+
 - **A)** Admin creates → immediately active (current design)
 - **B)** Admin creates → draft → admin or senior admin approves → active
 
@@ -1837,6 +1978,7 @@ bun run db:migrate   # Apply to database
 **Question:** Can users edit rejected submissions, or must they create new submissions?
 
 **Options:**
+
 - **A)** Users can edit and resubmit (status: `revision_requested`)
 - **B)** Users must submit new entry (old submission stays rejected)
 
@@ -1849,6 +1991,7 @@ bun run db:migrate   # Apply to database
 **Question:** When should tokens be distributed after approval?
 
 **Options:**
+
 - **A)** Immediately after approval (real-time)
 - **B)** Daily batch (admin distributes once per day)
 - **C)** Weekly batch (admin distributes Fridays)
@@ -1862,6 +2005,7 @@ bun run db:migrate   # Apply to database
 **Question:** Should activity submissions be public (visible to other users)?
 
 **Options:**
+
 - **A)** Public (shows "12 users completed this")
 - **B)** Private (only user and admin see submissions)
 - **C)** Configurable per activity
@@ -1875,6 +2019,7 @@ bun run db:migrate   # Apply to database
 **Question:** Should activities support multiple languages (Spanish, English)?
 
 **Options:**
+
 - **A)** English only (MVP)
 - **B)** Admin can set language per activity
 - **C)** Full i18n with translations
@@ -1886,26 +2031,32 @@ bun run db:migrate   # Apply to database
 ## Success Metrics (3 Months Post-Launch)
 
 ### User Engagement
+
 - **Target:** 60% of registered users complete at least 1 activity
 - **Measure:** `COUNT(DISTINCT user_id) FROM activity_submissions / total_users`
 
 ### Activity Completion Rate
+
 - **Target:** 70% of active activities have > 10 submissions
 - **Measure:** `COUNT(activities WHERE submissions > 10) / total_active_activities`
 
 ### Approval Rate
+
 - **Target:** 80% approval rate (indicates clear instructions)
 - **Measure:** `approved_submissions / total_submissions`
 
 ### Distribution Efficiency
+
 - **Target:** < 48 hours from approval to distribution
 - **Measure:** `AVG(distributed_at - reviewed_at)`
 
 ### Token Distribution
+
 - **Target:** 10,000 $PULPA distributed in 3 months
 - **Measure:** `SUM(pulpa_amount) FROM pulpa_distributions WHERE status = 'completed'`
 
 ### User Retention
+
 - **Target:** 40% of users who complete 1 activity complete 3+ activities
 - **Measure:** Cohort analysis of activity completion
 
@@ -1916,8 +2067,9 @@ bun run db:migrate   # Apply to database
 ### A. Activity Type Templates
 
 #### GitHub Commit
+
 ```yaml
-title: "Make Your First GitHub Commit"
+title: 'Make Your First GitHub Commit'
 activity_type: github_commit
 evidence_requirements:
   url_required: true
@@ -1933,8 +2085,9 @@ reward: 10 PULPA
 ```
 
 #### X Post
+
 ```yaml
-title: "Share Your #BuildInPublic Progress"
+title: 'Share Your #BuildInPublic Progress'
 activity_type: x_post
 evidence_requirements:
   url_required: true
@@ -1949,8 +2102,9 @@ reward: 15 PULPA
 ```
 
 #### Workshop Completion
+
 ```yaml
-title: "Complete the Web3 Basics Workshop"
+title: 'Complete the Web3 Basics Workshop'
 activity_type: workshop_completion
 evidence_requirements:
   url_required: false
@@ -1969,6 +2123,7 @@ reward: 50 PULPA
 ### B. Sample API Responses
 
 #### GET /api/activities?type=github_commit
+
 ```json
 {
   "success": true,
@@ -2001,6 +2156,7 @@ reward: 50 PULPA
 ### C. Database Triggers
 
 #### Update Profile Stats on Distribution
+
 ```sql
 CREATE OR REPLACE FUNCTION update_profile_pulpa_stats()
 RETURNS TRIGGER AS $$
@@ -2028,6 +2184,7 @@ CREATE TRIGGER trigger_update_profile_pulpa_stats
 ### D. Admin Dashboard Queries
 
 #### Pending Submissions Queue
+
 ```sql
 SELECT
   s.id,
@@ -2049,6 +2206,7 @@ LIMIT 50;
 ```
 
 #### Distribution Summary
+
 ```sql
 SELECT
   COUNT(*) AS pending_distributions,
@@ -2068,6 +2226,7 @@ WHERE s.status = 'approved'
 ### Implementation Priority
 
 **Must Have (MVP):**
+
 - Activity CRUD (admin)
 - Submission system (user)
 - Manual review (admin)
@@ -2075,12 +2234,14 @@ WHERE s.status = 'approved'
 - Basic dashboards
 
 **Should Have (Phase 2):**
+
 - Smart contract automation
 - Automatic verification (X API, GitHub API)
 - Email notifications
 - Advanced analytics
 
 **Nice to Have (Phase 3):**
+
 - User-claimable rewards
 - Multi-language support
 - Leaderboards & badges
@@ -2091,18 +2252,21 @@ WHERE s.status = 'approved'
 ### Development Team Allocation
 
 **Backend Developer (40% time):**
+
 - Database schema & migrations
 - API endpoint implementation
 - Vercel Blob integration
 - Admin endpoints
 
 **Frontend Developer (50% time):**
+
 - User activity pages
 - Submission forms
 - Admin dashboards
 - Distribution interfaces
 
 **Full-Stack Developer (10% time):**
+
 - Authentication middleware
 - Testing & QA
 - Deployment & DevOps
@@ -2113,6 +2277,7 @@ WHERE s.status = 'approved'
 
 **Document Status:** ✅ Ready for Development
 **Next Steps:**
+
 1. Review with product team (30-min meeting)
 2. Create implementation tickets (following PRD format)
 3. Set up development environment (database, env vars)

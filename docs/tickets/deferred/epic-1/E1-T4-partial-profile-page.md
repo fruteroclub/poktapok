@@ -10,6 +10,7 @@
 ## Completed Features (MVP)
 
 ✅ **Core Functionality:**
+
 - Profile page at `/profile/[username]`
 - Three-tier visibility system (public, members-only, private)
 - Field-level permission controls
@@ -17,6 +18,7 @@
 - SEO metadata (Open Graph + Twitter Cards)
 
 ✅ **Technical Implementation:**
+
 - Server Components with SSR
 - Zustand + React Query state management
 - Privy server-side authentication
@@ -24,6 +26,7 @@
 - Type-safe visibility rules
 
 ✅ **UI Components:**
+
 - Profile header with avatar
 - Profile info display
 - Social links section
@@ -39,17 +42,20 @@
 **Original Task:** "Add report button (spam/abuse reporting modal)"
 
 **Why Deferred:**
+
 - Community moderation feature not critical for MVP launch
 - No moderation workload until profiles exist
 - Report system requires admin dashboard integration
 - Better to establish community norms before building safety tools
 
 **Reactivation Criteria:**
+
 - First abuse/spam report received via external channel (email, Discord)
 - Community size exceeds 100 active profiles
 - Manual moderation workload requires tooling support
 
 **Implementation Scope (when reactivated):**
+
 ```typescript
 // Components needed:
 - ReportModal component (form + category selection)
@@ -73,6 +79,7 @@
 ```
 
 **Estimated Effort:** 8 hours (1 day)
+
 - 3 hours: ReportModal component + API
 - 2 hours: Admin dashboard integration
 - 2 hours: Email notifications
@@ -85,21 +92,25 @@
 **Original Task:** "Implement 404 page for non-existent profiles"
 
 **Why Deferred:**
+
 - Next.js default 404 page is functional for MVP
 - Custom 404 adds minimal user value
 - Polish feature better suited for post-launch refinement
 - Profile discovery happens through directory, not direct URLs
 
 **Current Behavior:**
+
 - Non-existent username → Next.js default 404 page
 - Works but lacks brand consistency
 
 **Reactivation Criteria:**
+
 - User feedback mentions 404 experience
 - Traffic analytics show significant 404 hits
 - Branding refinement phase
 
 **Implementation Scope (when reactivated):**
+
 ```typescript
 // Files needed:
 - src/app/profile/[username]/not-found.tsx
@@ -116,6 +127,7 @@
 ```
 
 **Estimated Effort:** 4 hours (half day)
+
 - 2 hours: NotFound component + styling
 - 1 hour: Similar username suggestions
 - 1 hour: Testing edge cases
@@ -127,6 +139,7 @@
 ### When Reactivating Report Feature:
 
 1. **Database Migration:**
+
    ```sql
    CREATE TABLE reports (
      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -161,6 +174,7 @@
 ### When Reactivating Custom 404:
 
 1. **Create Component:**
+
    ```tsx
    // src/app/profile/[username]/not-found.tsx
    export default function ProfileNotFound() {
@@ -175,6 +189,7 @@
    ```
 
 2. **Update Profile Page:**
+
    ```tsx
    // src/app/profile/[username]/page.tsx
    import { notFound } from 'next/navigation'
@@ -194,6 +209,7 @@
 ## Testing Checklist (When Reactivated)
 
 ### Report Feature:
+
 - [ ] Report modal opens and submits successfully
 - [ ] Anonymous reporting blocked (auth required)
 - [ ] Can't report own profile
@@ -204,6 +220,7 @@
 - [ ] Rate limiting prevents report spam
 
 ### Custom 404:
+
 - [ ] Non-existent username shows custom 404
 - [ ] 404 page is mobile-responsive
 - [ ] Search bar works from 404 page

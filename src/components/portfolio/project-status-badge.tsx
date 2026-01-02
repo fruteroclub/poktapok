@@ -5,14 +5,14 @@
  * Shows status with appropriate styling
  */
 
-import { FileText, Wrench, CheckCircle, Archive } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { FileText, Wrench, CheckCircle, Archive } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 interface ProjectStatusBadgeProps {
-  status: 'draft' | 'wip' | 'completed' | 'archived';
-  size?: 'sm' | 'md' | 'lg';
-  showIcon?: boolean;
-  className?: string;
+  status: 'draft' | 'wip' | 'completed' | 'archived'
+  size?: 'sm' | 'md' | 'lg'
+  showIcon?: boolean
+  className?: string
 }
 
 // Status configuration
@@ -37,20 +37,20 @@ const statusConfig = {
     color: 'bg-gray-400/10 text-gray-600 hover:bg-gray-400/20',
     icon: Archive,
   },
-};
+}
 
 // Size variants
 const sizeClasses = {
   sm: 'text-xs px-2 py-0.5',
   md: 'text-sm px-2.5 py-1',
   lg: 'text-base px-3 py-1.5',
-};
+}
 
 const iconSizes = {
   sm: 'h-3 w-3',
   md: 'h-4 w-4',
   lg: 'h-5 w-5',
-};
+}
 
 export function ProjectStatusBadge({
   status,
@@ -58,18 +58,18 @@ export function ProjectStatusBadge({
   showIcon = true,
   className = '',
 }: ProjectStatusBadgeProps) {
-  const config = statusConfig[status];
-  const Icon = config.icon;
-  const sizeClass = sizeClasses[size];
-  const iconSize = iconSizes[size];
+  const config = statusConfig[status]
+  const Icon = config.icon
+  const sizeClass = sizeClasses[size]
+  const iconSize = iconSizes[size]
 
   return (
     <Badge
       variant="secondary"
-      className={`${config.color} ${sizeClass} ${className} font-medium border-0 inline-flex items-center gap-1.5`}
+      className={`${config.color} ${sizeClass} ${className} inline-flex items-center gap-1.5 border-0 font-medium`}
     >
       {showIcon && <Icon className={iconSize} />}
       <span>{config.label}</span>
     </Badge>
-  );
+  )
 }

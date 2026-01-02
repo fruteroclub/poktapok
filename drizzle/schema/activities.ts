@@ -1,4 +1,17 @@
-import { pgTable, uuid, varchar, text, timestamp, pgEnum, jsonb, foreignKey, check, index, integer, decimal } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  timestamp,
+  pgEnum,
+  jsonb,
+  foreignKey,
+  check,
+  index,
+  integer,
+  decimal,
+} from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, softDelete, metadata } from './utils'
 import { users } from './users'
@@ -19,7 +32,7 @@ export const activityTypeEnum = pgEnum('activity_type', [
   'workshop_completion',
   'build_in_public',
   'code_review',
-  'custom'
+  'custom',
 ])
 
 /**
@@ -28,59 +41,59 @@ export const activityTypeEnum = pgEnum('activity_type', [
 export const difficultyEnum = pgEnum('difficulty', [
   'beginner',
   'intermediate',
-  'advanced'
+  'advanced',
 ])
 
 /**
  * Verification method for submissions
  */
 export const verificationEnum = pgEnum('verification_type', [
-  'manual',      // Admin reviews manually
-  'automatic',   // API verification (future)
-  'hybrid'       // Auto-check + manual review
+  'manual', // Admin reviews manually
+  'automatic', // API verification (future)
+  'hybrid', // Auto-check + manual review
 ])
 
 /**
  * Activity status lifecycle
  */
 export const activityStatusEnum = pgEnum('activity_status', [
-  'draft',      // Not published
-  'active',     // Live and accepting submissions
-  'paused',     // Temporarily disabled
-  'completed',  // All slots filled or expired
-  'cancelled'   // Cancelled by admin
+  'draft', // Not published
+  'active', // Live and accepting submissions
+  'paused', // Temporarily disabled
+  'completed', // All slots filled or expired
+  'cancelled', // Cancelled by admin
 ])
 
 /**
  * Submission status lifecycle
  */
 export const submissionStatusEnum = pgEnum('submission_status', [
-  'pending',            // Awaiting review
-  'under_review',       // Admin is reviewing
-  'approved',           // Approved, ready for distribution
-  'rejected',           // Rejected
+  'pending', // Awaiting review
+  'under_review', // Admin is reviewing
+  'approved', // Approved, ready for distribution
+  'rejected', // Rejected
   'revision_requested', // Needs changes
-  'distributed'         // Tokens distributed
+  'distributed', // Tokens distributed
 ])
 
 /**
  * Distribution method types
  */
 export const distributionMethodEnum = pgEnum('distribution_method', [
-  'manual',          // Admin sends via MetaMask/external wallet
-  'smart_contract',  // Automated via smart contract (future)
-  'claim_portal'     // User-initiated claiming (future)
+  'manual', // Admin sends via MetaMask/external wallet
+  'smart_contract', // Automated via smart contract (future)
+  'claim_portal', // User-initiated claiming (future)
 ])
 
 /**
  * Distribution status tracking
  */
 export const distributionStatusEnum = pgEnum('distribution_status', [
-  'pending',     // Queued for distribution
-  'processing',  // Transaction in progress
-  'completed',   // Successfully distributed
-  'failed',      // Distribution failed
-  'cancelled'    // Admin cancelled
+  'pending', // Queued for distribution
+  'processing', // Transaction in progress
+  'completed', // Successfully distributed
+  'failed', // Distribution failed
+  'cancelled', // Admin cancelled
 ])
 
 // ============================================================
@@ -106,49 +119,46 @@ export const activities = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Content
-    title: varchar('title', { length: 200 })
-      .notNull(),
-    description: text('description')
-      .notNull(),
+    title: varchar('title', { length: 200 }).notNull(),
+    description: text('description').notNull(),
     instructions: text('instructions'),
 
     // Categorization
-    activityType: activityTypeEnum('activity_type')
-      .notNull(),
+    activityType: activityTypeEnum('activity_type').notNull(),
     category: varchar('category', { length: 100 }),
-    difficulty: difficultyEnum('difficulty')
-      .notNull(),
+    difficulty: difficultyEnum('difficulty').notNull(),
 
     // Rewards
-    rewardPulpaAmount: decimal('reward_pulpa_amount', { precision: 18, scale: 8 })
-      .notNull(),
+    rewardPulpaAmount: decimal('reward_pulpa_amount', {
+      precision: 18,
+      scale: 8,
+    }).notNull(),
 
     // Submission Requirements
     evidenceRequirements: jsonb('evidence_requirements')
       .notNull()
-      .default(sql`'{"url_required": false, "screenshot_required": false, "text_required": false}'::jsonb`),
+      .default(
+        sql`'{"url_required": false, "screenshot_required": false, "text_required": false}'::jsonb`,
+      ),
     verificationType: verificationEnum('verification_type')
       .notNull()
       .default('manual'),
 
     // Limits & Availability
-    maxSubmissionsPerUser: integer('max_submissions_per_user'),      // null = unlimited
-    totalAvailableSlots: integer('total_available_slots'),            // null = unlimited
+    maxSubmissionsPerUser: integer('max_submissions_per_user'), // null = unlimited
+    totalAvailableSlots: integer('total_available_slots'), // null = unlimited
     currentSubmissionsCount: integer('current_submissions_count')
       .notNull()
       .default(0),
 
-    status: activityStatusEnum('status')
-      .notNull()
-      .default('draft'),
+    status: activityStatusEnum('status').notNull().default('draft'),
 
     // Timing
     startsAt: timestamp('starts_at', { withTimezone: true }),
     expiresAt: timestamp('expires_at', { withTimezone: true }),
 
     // Management
-    createdByUserId: uuid('created_by_user_id')
-      .notNull(),
+    createdByUserId: uuid('created_by_user_id').notNull(),
 
     // Timestamps & Audit
     ...timestamps,
@@ -168,32 +178,32 @@ export const activities = pgTable(
     // Constraints
     titleLengthCheck: check(
       'title_length',
-      sql`char_length(${table.title}) >= 5`
+      sql`char_length(${table.title}) >= 5`,
     ),
 
     descriptionLengthCheck: check(
       'description_length',
-      sql`char_length(${table.description}) >= 20`
+      sql`char_length(${table.description}) >= 20`,
     ),
 
     rewardPositiveCheck: check(
       'reward_positive',
-      sql`${table.rewardPulpaAmount} > 0`
+      sql`${table.rewardPulpaAmount} > 0`,
     ),
 
     slotsPositiveCheck: check(
       'slots_positive',
-      sql`${table.totalAvailableSlots} IS NULL OR ${table.totalAvailableSlots} > 0`
+      sql`${table.totalAvailableSlots} IS NULL OR ${table.totalAvailableSlots} > 0`,
     ),
 
     maxSubmissionsPositiveCheck: check(
       'max_submissions_positive',
-      sql`${table.maxSubmissionsPerUser} IS NULL OR ${table.maxSubmissionsPerUser} > 0`
+      sql`${table.maxSubmissionsPerUser} IS NULL OR ${table.maxSubmissionsPerUser} > 0`,
     ),
 
     currentCountPositiveCheck: check(
       'current_count_positive',
-      sql`${table.currentSubmissionsCount} >= 0`
+      sql`${table.currentSubmissionsCount} >= 0`,
     ),
 
     // Indexes
@@ -209,9 +219,11 @@ export const activities = pgTable(
       .where(sql`${table.deletedAt} IS NULL`),
 
     // Full-text search index
-    searchIdx: index('idx_activities_search')
-      .using('gin', sql`to_tsvector('english', ${table.title} || ' ' || ${table.description})`),
-  })
+    searchIdx: index('idx_activities_search').using(
+      'gin',
+      sql`to_tsvector('english', ${table.title} || ' ' || ${table.description})`,
+    ),
+  }),
 )
 
 // ============================================================
@@ -237,10 +249,8 @@ export const activitySubmissions = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Relationships
-    activityId: uuid('activity_id')
-      .notNull(),
-    userId: uuid('user_id')
-      .notNull(),
+    activityId: uuid('activity_id').notNull(),
+    userId: uuid('user_id').notNull(),
 
     // Submission Content
     submissionUrl: varchar('submission_url', { length: 500 }),
@@ -250,9 +260,7 @@ export const activitySubmissions = pgTable(
     submissionText: text('submission_text'),
 
     // Review Status
-    status: submissionStatusEnum('status')
-      .notNull()
-      .default('pending'),
+    status: submissionStatusEnum('status').notNull().default('pending'),
 
     // Admin Review
     reviewedByUserId: uuid('reviewed_by_user_id'),
@@ -260,7 +268,10 @@ export const activitySubmissions = pgTable(
     reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
 
     // Reward
-    rewardPulpaAmount: decimal('reward_pulpa_amount', { precision: 18, scale: 8 }),
+    rewardPulpaAmount: decimal('reward_pulpa_amount', {
+      precision: 18,
+      scale: 8,
+    }),
 
     // Timestamps
     submittedAt: timestamp('submitted_at', { withTimezone: true })
@@ -299,12 +310,12 @@ export const activitySubmissions = pgTable(
     // Constraints
     submissionTextLengthCheck: check(
       'submission_text_length',
-      sql`${table.submissionText} IS NULL OR char_length(${table.submissionText}) <= 1000`
+      sql`${table.submissionText} IS NULL OR char_length(${table.submissionText}) <= 1000`,
     ),
 
     rewardPositiveCheck: check(
       'submission_reward_positive',
-      sql`${table.rewardPulpaAmount} IS NULL OR ${table.rewardPulpaAmount} > 0`
+      sql`${table.rewardPulpaAmount} IS NULL OR ${table.rewardPulpaAmount} > 0`,
     ),
 
     // Unique constraint: One submission per user per activity
@@ -316,14 +327,16 @@ export const activitySubmissions = pgTable(
     activityIdx: index('idx_submissions_activity').on(table.activityId),
     userIdx: index('idx_submissions_user').on(table.userId),
     statusIdx: index('idx_submissions_status').on(table.status),
-    reviewedByIdx: index('idx_submissions_reviewed_by').on(table.reviewedByUserId),
+    reviewedByIdx: index('idx_submissions_reviewed_by').on(
+      table.reviewedByUserId,
+    ),
     submittedAtIdx: index('idx_submissions_submitted_at').on(table.submittedAt),
 
     // Composite index for admin queue
     queueIdx: index('idx_submissions_queue')
       .on(table.status, table.submittedAt)
       .where(sql`${table.status} IN ('pending', 'under_review')`),
-  })
+  }),
 )
 
 // ============================================================
@@ -349,43 +362,30 @@ export const pulpaDistributions = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Relationships
-    submissionId: uuid('submission_id')
-      .notNull(),
-    userId: uuid('user_id')
-      .notNull(),
-    activityId: uuid('activity_id')
-      .notNull(),
+    submissionId: uuid('submission_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    activityId: uuid('activity_id').notNull(),
 
     // Distribution Details
-    pulpaAmount: decimal('pulpa_amount', { precision: 18, scale: 8 })
-      .notNull(),
-    recipientWallet: varchar('recipient_wallet', { length: 42 })
-      .notNull(),
+    pulpaAmount: decimal('pulpa_amount', { precision: 18, scale: 8 }).notNull(),
+    recipientWallet: varchar('recipient_wallet', { length: 42 }).notNull(),
 
     // Blockchain Info
-    chainId: integer('chain_id')
-      .notNull()
-      .default(10), // Optimism Mainnet
+    chainId: integer('chain_id').notNull().default(10), // Optimism Mainnet
     transactionHash: varchar('transaction_hash', { length: 66 }),
 
     // Distribution Method
-    distributionMethod: distributionMethodEnum('distribution_method')
-      .notNull(),
+    distributionMethod: distributionMethodEnum('distribution_method').notNull(),
 
     // Status
-    status: distributionStatusEnum('status')
-      .notNull()
-      .default('pending'),
+    status: distributionStatusEnum('status').notNull().default('pending'),
 
     // Management
-    distributedByUserId: uuid('distributed_by_user_id')
-      .notNull(),
+    distributedByUserId: uuid('distributed_by_user_id').notNull(),
 
     // Error Handling
     errorMessage: text('error_message'),
-    retryCount: integer('retry_count')
-      .notNull()
-      .default(0),
+    retryCount: integer('retry_count').notNull().default(0),
 
     // Timestamps
     initiatedAt: timestamp('initiated_at', { withTimezone: true })
@@ -426,36 +426,41 @@ export const pulpaDistributions = pgTable(
     // Constraints
     pulpaAmountPositiveCheck: check(
       'distribution_pulpa_positive',
-      sql`${table.pulpaAmount} > 0`
+      sql`${table.pulpaAmount} > 0`,
     ),
 
     walletFormatCheck: check(
       'wallet_format',
-      sql`${table.recipientWallet} ~* '^0x[a-fA-F0-9]{40}$'`
+      sql`${table.recipientWallet} ~* '^0x[a-fA-F0-9]{40}$'`,
     ),
 
     txHashFormatCheck: check(
       'tx_hash_format',
-      sql`${table.transactionHash} IS NULL OR ${table.transactionHash} ~* '^0x[a-fA-F0-9]{64}$'`
+      sql`${table.transactionHash} IS NULL OR ${table.transactionHash} ~* '^0x[a-fA-F0-9]{64}$'`,
     ),
 
     retryCountPositiveCheck: check(
       'retry_count_positive',
-      sql`${table.retryCount} >= 0`
+      sql`${table.retryCount} >= 0`,
     ),
 
     // Unique constraint: One distribution per submission
-    submissionUniqueIdx: index('idx_distributions_submission_unique')
-      .on(table.submissionId),
+    submissionUniqueIdx: index('idx_distributions_submission_unique').on(
+      table.submissionId,
+    ),
 
     // Indexes
     userIdx: index('idx_distributions_user').on(table.userId),
     activityIdx: index('idx_distributions_activity').on(table.activityId),
     statusIdx: index('idx_distributions_status').on(table.status),
     txHashIdx: index('idx_distributions_tx_hash').on(table.transactionHash),
-    distributedByIdx: index('idx_distributions_distributed_by').on(table.distributedByUserId),
-    distributedAtIdx: index('idx_distributions_distributed_at').on(table.distributedAt),
-  })
+    distributedByIdx: index('idx_distributions_distributed_by').on(
+      table.distributedByUserId,
+    ),
+    distributedAtIdx: index('idx_distributions_distributed_at').on(
+      table.distributedAt,
+    ),
+  }),
 )
 
 // ============================================================

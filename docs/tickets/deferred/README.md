@@ -9,12 +9,14 @@ This directory contains tickets that have been deferred to future epics for stra
 These tickets were originally part of Epic 1 but moved to future epics:
 
 ### [E1-T5: Application System](./epic-1/E1-T5-application-system.md)
+
 **Reason:** Quality control and admin review not essential for MVP validation
 **Moved to:** Epic 2 (Quality & Growth)
 **Dependencies:** Email service (Resend), CAPTCHA, admin middleware
 **Reactivate when:** Spam profiles >10% or companies request vetting
 
 ### [E1-T6: Invitation System](./epic-1/E1-T6-invitation-system.md)
+
 **Reason:** Viral growth mechanics premature before product-market fit
 **Moved to:** Epic 2 (Quality & Growth)
 **Dependencies:** E1-T5 (for approval flow integration)
@@ -27,8 +29,10 @@ These tickets were originally part of Epic 1 but moved to future epics:
 Tickets that were completed for MVP but have specific features deferred:
 
 ### [E1-T4-partial: Profile Page - Deferred Features](./epic-1/E1-T4-partial-profile-page.md)
+
 **Ticket Status:** ✅ MVP Complete (5/7 tasks)
 **Deferred Features:**
+
 - Report/abuse modal (community safety)
 - Custom 404 page for non-existent profiles
 
@@ -39,6 +43,7 @@ Tickets that were completed for MVP but have specific features deferred:
 ## Reactivation Criteria
 
 ### E1-T5 (Application System)
+
 - **Trigger 1:** Spam rate exceeds 10% of total profiles
 - **Trigger 2:** Manual review burden exceeds 1 hour/day
 - **Trigger 3:** Companies explicitly request developer vetting
@@ -46,6 +51,7 @@ Tickets that were completed for MVP but have specific features deferred:
 **Effort:** ~40 hours (5 days)
 
 ### E1-T6 (Invitation System)
+
 - **Trigger 1:** Organic growth stalls (<10 signups/week)
 - **Trigger 2:** Developers request "invite friends" feature
 - **Trigger 3:** Need for quality signaling (invited = vetted)
@@ -53,6 +59,7 @@ Tickets that were completed for MVP but have specific features deferred:
 **Effort:** ~24 hours (3 days)
 
 ### E1-T4 Report Feature
+
 - **Trigger 1:** First abuse/spam report received
 - **Trigger 2:** Community size >100 profiles
 - **Trigger 3:** Moderation workload requires tooling

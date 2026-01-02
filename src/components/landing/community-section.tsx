@@ -65,12 +65,13 @@ export default function CommunitySection() {
               className="rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
               <div
-                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${benefit.color === 'green'
-                  ? 'bg-accent/20'
-                  : benefit.color === 'orange'
-                    ? 'bg-primary/20'
-                    : 'bg-secondary/20'
-                  }`}
+                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${
+                  benefit.color === 'green'
+                    ? 'bg-accent/20'
+                    : benefit.color === 'orange'
+                      ? 'bg-primary/20'
+                      : 'bg-secondary/20'
+                }`}
               >
                 <span className="text-2xl">{benefit.icon}</span>
               </div>

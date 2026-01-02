@@ -1,6 +1,6 @@
-import { getDirectoryCountries } from "@/lib/db/queries/profiles";
-import { apiSuccess, apiError } from "@/lib/api/response";
-import { API_ERROR_CODES } from "@/types/api-response";
+import { getDirectoryCountries } from '@/lib/db/queries/profiles'
+import { apiSuccess, apiError } from '@/lib/api/response'
+import { API_ERROR_CODES } from '@/types/api-response'
 
 /**
  * GET /api/directory/countries
@@ -22,13 +22,13 @@ import { API_ERROR_CODES } from "@/types/api-response";
  */
 export async function GET() {
   try {
-    const countries = await getDirectoryCountries();
-    return apiSuccess({ countries });
+    const countries = await getDirectoryCountries()
+    return apiSuccess({ countries })
   } catch (error) {
-    console.error("Error fetching directory countries:", error);
-    return apiError("Failed to fetch countries", {
+    console.error('Error fetching directory countries:', error)
+    return apiError('Failed to fetch countries', {
       code: API_ERROR_CODES.INTERNAL_ERROR,
       status: 500,
-    });
+    })
   }
 }

@@ -10,6 +10,7 @@ The **$PULPA Educational Activities & Community Engagement System** has been suc
 **Total Lines of Code**: ~3,500
 
 ---
+
 Ready to Test
 You can now:
 Start dev server: bun dev
@@ -23,11 +24,13 @@ Full testing instructions are in docs/testing-pulpa-system.md
 ### ✅ Database Layer (Complete)
 
 **Schema Files:**
+
 - [drizzle/schema/activities.ts](../drizzle/schema/activities.ts) - 3 new tables (activities, activity_submissions, pulpa_distributions)
 - [drizzle/schema/profiles.ts](../drizzle/schema/profiles.ts) - Added PULPA earnings tracking fields
 - [drizzle/migrations/0001_dark_clea.sql](../drizzle/migrations/0001_dark_clea.sql) - Applied migration
 
 **Features:**
+
 - Activity creation with flexible evidence requirements (URL, screenshot, text)
 - Submission tracking with status workflow (pending → under_review → approved/rejected → distributed)
 - PULPA distribution tracking with transaction hashes
@@ -40,6 +43,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 **File:** [src/lib/validators/activity.ts](../src/lib/validators/activity.ts)
 
 **12 Zod Schemas:**
+
 1. `createActivitySchema` - Activity creation validation
 2. `updateActivitySchema` - Activity update validation
 3. `updateActivityStatusSchema` - Status change validation
@@ -60,6 +64,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 **18 Query Functions:**
 
 **Activities:**
+
 - `getActivities()` - Paginated list with filters (type, category, difficulty, status, search)
 - `getActivityById()` - Single activity by ID
 - `createActivity()` - Create new activity
@@ -68,6 +73,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 - `incrementActivitySubmissionCount()` - Track submissions
 
 **Submissions:**
+
 - `getSubmissions()` - Paginated list with filters
 - `getSubmissionById()` - Single submission with user & activity data
 - `hasUserSubmitted()` - Duplicate prevention check
@@ -76,6 +82,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 - `getUserSubmissionStats()` - User stats aggregation
 
 **Distributions:**
+
 - `getDistributions()` - Paginated list with stats
 - `createDistribution()` - Create distribution record
 - `updateDistribution()` - Update distribution status
@@ -87,6 +94,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 **File:** [src/lib/auth/middleware.ts](../src/lib/auth/middleware.ts)
 
 **Features:**
+
 - `getUserFromRequest()` - Get authenticated user (placeholder for Privy)
 - `requireAuth()` - Require authentication
 - `requireAdmin()` - Require admin role
@@ -96,13 +104,16 @@ Full testing instructions are in docs/testing-pulpa-system.md
 ### ✅ API Routes (Complete)
 
 **Public Endpoints:**
+
 - `GET /api/activities` - List active activities
 - `GET /api/activities/[id]` - Activity details
 
 **User Endpoints:**
+
 - `POST /api/activities/[id]/submit` - Submit proof
 
 **Admin Endpoints:**
+
 - `POST /api/admin/activities` - Create activity
 - `GET /api/admin/activities` - List all activities
 - `PATCH /api/admin/activities/[id]` - Update activity
@@ -158,6 +169,7 @@ Full testing instructions are in docs/testing-pulpa-system.md
 ### ✅ Documentation (Complete)
 
 **Files Created:**
+
 - [docs/pulpa-workshop-system-spec.md](pulpa-workshop-system-spec.md) - Full technical specification
 - [docs/testing-pulpa-system.md](testing-pulpa-system.md) - Comprehensive testing guide
 - [docs/pulpa-implementation-complete.md](pulpa-implementation-complete.md) - This file
@@ -178,6 +190,7 @@ Visit http://localhost:3000
 ### 2. Admin Workflow
 
 **Create an Activity:**
+
 1. Go to http://localhost:3000/admin/activities/new
 2. Fill out the form:
    - Title: "Make Your First GitHub Commit"
@@ -191,6 +204,7 @@ Visit http://localhost:3000
 4. Verify redirect to activities list
 
 **View All Activities:**
+
 1. Go to http://localhost:3000/admin/activities
 2. See your created activity in the table
 3. Test filters (status, type, search)
@@ -198,11 +212,13 @@ Visit http://localhost:3000
 ### 3. User Workflow
 
 **Browse Activities:**
+
 1. Go to http://localhost:3000/activities
 2. See available activities
 3. Test filters
 
 **Submit Proof:**
+
 1. Click on an activity card
 2. Review activity details
 3. Fill out submission form:
@@ -214,6 +230,7 @@ Visit http://localhost:3000
 ### 4. Admin Review
 
 **Review Submissions:**
+
 1. Go to http://localhost:3000/admin/submissions
 2. See pending submission
 3. Click "Review" button
@@ -250,6 +267,7 @@ curl -X PATCH http://localhost:3000/api/admin/submissions/[id]/approve \
 ## Technical Details
 
 ### Activity Types Supported
+
 1. `github_commit` - GitHub commits
 2. `x_post` - X (Twitter) posts
 3. `photo` - Photo uploads
@@ -261,11 +279,13 @@ curl -X PATCH http://localhost:3000/api/admin/submissions/[id]/approve \
 9. `custom` - Custom activities
 
 ### Difficulty Levels
+
 - `beginner` - Entry-level tasks (green badge)
 - `intermediate` - Moderate difficulty (yellow badge)
 - `advanced` - Challenging tasks (red badge)
 
 ### Submission Status Workflow
+
 ```
 pending → under_review → approved → distributed
                        ↓
@@ -273,7 +293,9 @@ pending → under_review → approved → distributed
 ```
 
 ### Evidence Requirements
+
 Each activity can require:
+
 - **URL** - Link to work (GitHub, X, blog, etc.)
 - **Screenshot** - Visual proof (planned: Vercel Blob upload)
 - **Text Description** - Explanation of work and learnings
@@ -281,6 +303,7 @@ Each activity can require:
 ### Database Schema Highlights
 
 **Activities Table:**
+
 - UUID primary key
 - Activity type enum (9 types)
 - Difficulty enum (3 levels)
@@ -291,6 +314,7 @@ Each activity can require:
 - Timestamps (created, updated, deleted)
 
 **Activity Submissions Table:**
+
 - UUID primary key
 - Foreign keys to activities and users
 - Status enum (6 states)
@@ -300,6 +324,7 @@ Each activity can require:
 - Timestamps
 
 **PULPA Distributions Table:**
+
 - UUID primary key
 - Foreign keys to submissions, activities, users
 - Decimal(18,8) for amounts
@@ -316,26 +341,31 @@ Each activity can require:
 These features are planned but not yet implemented:
 
 ### 🔶 Authentication
+
 - **Current**: Placeholder header-based auth (`x-user-id`)
 - **Needed**: Privy server-side SDK integration
 - **Impact**: No real user authentication yet
 
 ### 🔶 File Uploads
+
 - **Current**: Screenshot requirement checkbox (non-functional)
 - **Needed**: Vercel Blob integration
 - **Impact**: Users can't upload screenshot evidence
 
 ### 🔶 User Dashboard
+
 - **Current**: No user profile/dashboard pages
 - **Needed**: User submission history, PULPA earnings display
 - **Impact**: Users can't track their progress
 
 ### 🔶 Notifications
+
 - **Current**: No email or push notifications
 - **Needed**: Notify users of approval/rejection, notify admins of new submissions
 - **Impact**: Manual checking required
 
 ### 🔶 Token Distribution
+
 - **Current**: Manual only (admin marks as distributed)
 - **Needed**: Smart contract integration for automated on-chain distribution
 - **Impact**: Admin must distribute tokens manually off-platform
@@ -345,6 +375,7 @@ These features are planned but not yet implemented:
 ## Next Steps (Priority Order)
 
 ### Phase 1: Authentication (Required for Launch)
+
 1. Integrate Privy server-side SDK
 2. Replace `x-user-id` headers with real session tokens
 3. Implement `getUserFromRequest()` in middleware
@@ -352,21 +383,25 @@ These features are planned but not yet implemented:
 5. Test authentication flow
 
 **Files to Update:**
+
 - `src/lib/auth/middleware.ts` - Implement Privy integration
 - All API routes - Remove placeholder headers
 
 ### Phase 2: File Uploads
+
 1. Set up Vercel Blob storage
 2. Add screenshot upload to submission form
 3. Update submission API to handle file URLs
 4. Add file preview in admin review
 
 **Files to Update:**
+
 - `src/app/activities/[id]/page.tsx` - Add file upload component
 - `src/app/api/activities/[id]/submit/route.ts` - Handle file uploads
 - `src/app/admin/submissions/page.tsx` - Display uploaded files
 
 ### Phase 3: User Dashboard
+
 1. Create `/dashboard` or `/profile` page
 2. Show user's submission history with status
 3. Display total $PULPA earned
@@ -374,20 +409,24 @@ These features are planned but not yet implemented:
 5. Add submission filtering and search
 
 **Files to Create:**
+
 - `src/app/dashboard/page.tsx` - User dashboard
 - `src/lib/db/queries/users.ts` - User-specific queries
 
 ### Phase 4: Notifications
+
 1. Choose notification service (SendGrid, Resend, etc.)
 2. Send email on submission status change
 3. Send email to admins on new submissions
 4. Add in-app notification system (optional)
 
 **Files to Create:**
+
 - `src/lib/notifications/email.ts` - Email service
 - `src/lib/notifications/templates/` - Email templates
 
 ### Phase 5: Smart Contract Integration
+
 1. Review $PULPA token contract on Optimism
 2. Create distribution queue management
 3. Implement batch distribution workflow
@@ -395,6 +434,7 @@ These features are planned but not yet implemented:
 5. Update distribution status automatically
 
 **Files to Create:**
+
 - `src/lib/web3/distribution.ts` - Smart contract integration
 - `src/app/admin/distributions/page.tsx` - Distribution queue UI
 
@@ -460,6 +500,7 @@ poktapok/
 ## Success Metrics
 
 ### ✅ Implementation Complete
+
 - [x] Database schema designed and migrated
 - [x] All validation schemas created
 - [x] 18 database query functions implemented
@@ -471,6 +512,7 @@ poktapok/
 - [x] Documentation complete
 
 ### ✅ User Journey Complete
+
 - [x] Admin can create activities
 - [x] Admin can view all activities
 - [x] Users can browse active activities
@@ -479,6 +521,7 @@ poktapok/
 - [x] All data persists correctly in PostgreSQL
 
 ### ⏳ Pending (Future Phases)
+
 - [ ] Real authentication with Privy
 - [ ] File upload functionality
 - [ ] User dashboard
@@ -526,6 +569,7 @@ The **$PULPA Educational Activities System** is now fully implemented and ready 
 5. **Modern UI** - React 19, Next.js 16, shadcn/ui components
 
 **You can now:**
+
 - Upload tasks from the admin dashboard (`/admin/activities/new`)
 - Users can browse activities (`/activities`)
 - Users can submit links as proof (`/activities/[id]`)

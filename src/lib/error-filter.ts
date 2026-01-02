@@ -10,9 +10,12 @@ console.error = (...args: unknown[]) => {
   if (
     (errorString.includes('fill-rule') && errorString.includes('fillRule')) ||
     (errorString.includes('clip-rule') && errorString.includes('clipRule')) ||
-    (errorString.includes('stroke-width') && errorString.includes('strokeWidth')) ||
-    (errorString.includes('stroke-linecap') && errorString.includes('strokeLinecap')) ||
-    (errorString.includes('stroke-linejoin') && errorString.includes('strokeLinejoin'))
+    (errorString.includes('stroke-width') &&
+      errorString.includes('strokeWidth')) ||
+    (errorString.includes('stroke-linecap') &&
+      errorString.includes('strokeLinecap')) ||
+    (errorString.includes('stroke-linejoin') &&
+      errorString.includes('strokeLinejoin'))
   ) {
     return
   }

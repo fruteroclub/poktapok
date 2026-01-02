@@ -6,7 +6,7 @@ import { PrivyClient } from '@privy-io/server-auth'
 
 const privyClient = new PrivyClient(
   process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
-  process.env.PRIVY_APP_SECRET!
+  process.env.PRIVY_APP_SECRET!,
 )
 
 /**
@@ -95,21 +95,27 @@ export async function requireAdmin(req: NextRequest) {
 export function handleApiError(error: unknown) {
   if (error instanceof UnauthorizedError) {
     return NextResponse.json(
-      { success: false, error: { message: error.message, code: 'UNAUTHORIZED' } },
-      { status: 401 }
+      {
+        success: false,
+        error: { message: error.message, code: 'UNAUTHORIZED' },
+      },
+      { status: 401 },
     )
   }
 
   if (error instanceof ForbiddenError) {
     return NextResponse.json(
       { success: false, error: { message: error.message, code: 'FORBIDDEN' } },
-      { status: 403 }
+      { status: 403 },
     )
   }
 
   // Validation errors (from Zod)
   if (error && typeof error === 'object' && 'issues' in error) {
-    console.error('❌ Validation error:', JSON.stringify((error as any).issues, null, 2))
+    console.error(
+      '❌ Validation error:',
+      JSON.stringify((error as any).issues, null, 2),
+    )
     return NextResponse.json(
       {
         success: false,
@@ -119,7 +125,7 @@ export function handleApiError(error: unknown) {
           issues: (error as any).issues,
         },
       },
-      { status: 400 }
+      { status: 400 },
     )
   }
 
@@ -129,11 +135,12 @@ export function handleApiError(error: unknown) {
     {
       success: false,
       error: {
-        message: error instanceof Error ? error.message : 'Internal server error',
+        message:
+          error instanceof Error ? error.message : 'Internal server error',
         code: 'INTERNAL_ERROR',
       },
     },
-    { status: 500 }
+    { status: 500 },
   )
 }
 
@@ -146,6 +153,6 @@ export function successResponse<T>(data: T, status: number = 200) {
       success: true,
       data,
     },
-    { status }
+    { status },
   )
 }

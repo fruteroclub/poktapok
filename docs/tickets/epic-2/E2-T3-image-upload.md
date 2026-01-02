@@ -18,6 +18,7 @@ Enable logo and image uploads for portfolio projects using Vercel Blob Storage.
 ## Acceptance Criteria
 
 ### Logo Upload
+
 - [x] Logo upload component in project form
 - [x] Single logo per project (project identifier)
 - [x] Drag-and-drop OR file picker
@@ -28,6 +29,7 @@ Enable logo and image uploads for portfolio projects using Vercel Blob Storage.
 - [x] Optimistic UI during upload
 
 ### Additional Images (Screenshots/Diagrams)
+
 - [x] Support up to 4 additional images (logo + 4 = 5 total)
 - [x] Multiple file upload interface
 - [x] Reorder images via drag-and-drop
@@ -36,6 +38,7 @@ Enable logo and image uploads for portfolio projects using Vercel Blob Storage.
 - [x] Architecture diagrams, screenshots, etc.
 
 ### API Endpoints
+
 - [x] `POST /api/projects/[id]/logo` - Upload project logo
 - [x] `DELETE /api/projects/[id]/logo` - Delete logo
 - [x] `POST /api/projects/[id]/images` - Upload additional images
@@ -43,6 +46,7 @@ Enable logo and image uploads for portfolio projects using Vercel Blob Storage.
 - [x] Auto-cleanup: Delete old images when new ones uploaded
 
 ### Storage Strategy
+
 ```
 Storage Path:
 projects/{userId}/{projectId}/logo.{ext}
@@ -55,6 +59,7 @@ projects/{userId}/{projectId}/image-2.{ext}
 ## Technical Implementation
 
 ### Components
+
 ```
 src/components/projects/
 ├── logo-upload.tsx          # Logo upload (single)
@@ -64,6 +69,7 @@ src/components/projects/
 ```
 
 ### Image Validation
+
 ```typescript
 const IMAGE_CONFIG = {
   maxSize: 5 * 1024 * 1024, // 5MB
@@ -72,12 +78,13 @@ const IMAGE_CONFIG = {
   compression: {
     quality: 0.8,
     maxWidth: 1920,
-    maxHeight: 1080
-  }
+    maxHeight: 1080,
+  },
 }
 ```
 
 ### Compression (Client-side)
+
 ```typescript
 // Use browser-image-compression library
 import imageCompression from 'browser-image-compression'
@@ -86,7 +93,7 @@ async function compressImage(file: File) {
   const options = {
     maxSizeMB: 5,
     maxWidthOrHeight: 1920,
-    useWebWorker: true
+    useWebWorker: true,
   }
   return await imageCompression(file, options)
 }
@@ -97,6 +104,7 @@ async function compressImage(file: File) {
 ## API Specification
 
 ### POST /api/projects/:id/logo
+
 ```typescript
 // multipart/form-data
 Request:
@@ -112,6 +120,7 @@ Response:
 ```
 
 ### POST /api/projects/:id/images
+
 ```typescript
 // multipart/form-data
 Request:
@@ -164,21 +173,25 @@ Response:
 ### ✅ Completed Features
 
 **Backend APIs** (4 routes):
+
 - `POST /api/projects/[id]/logo` - Upload project logo with Vercel Blob Storage
 - `DELETE /api/projects/[id]/logo` - Delete logo with automatic cleanup
 - `POST /api/projects/[id]/images` - Upload multiple images (up to 4 additional)
 - `DELETE /api/projects/[id]/images/[imageId]` - Delete individual images by Base64-encoded URL
 
 **Utilities**:
+
 - `src/lib/upload/image-validation.ts` - Client/server validation (5MB max, JPEG/PNG/WebP/SVG)
 - `src/lib/upload/image-compression.ts` - Client-side compression with WebP conversion
 
 **Frontend Components**:
+
 - `src/components/portfolio/logo-upload.tsx` - Drag-and-drop logo upload with preview
 - `src/components/portfolio/images-upload.tsx` - Multiple images with drag-to-reorder
 - `src/components/portfolio/image-lightbox.tsx` - Full-screen preview modal with keyboard navigation
 
 **Form Integration**:
+
 - Integrated into `project-form-fields.tsx` for both create and edit modes
 - Wired up with React Hook Form for seamless state management
 - Proper authentication using `requireAuth()` helper

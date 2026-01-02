@@ -71,7 +71,7 @@ export default function DifferentiatorSection() {
                   No pierdas más tiempo
                 </h3>
               </div>
-              <Card className="w-full max-w-md py-8 text-background bg-muted">
+              <Card className="w-full max-w-md bg-muted py-8 text-background">
                 <CardHeader className="text-center">
                   <CardTitle className="font-funnel text-2xl font-normal md:text-3xl">
                     Atrévete a dar el

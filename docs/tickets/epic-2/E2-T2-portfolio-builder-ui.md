@@ -31,6 +31,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 ## Acceptance Criteria
 
 ### Project Form ✅ Complete
+
 - [x] Form at `/portfolio/new` (authenticated users only)
 - [x] Edit form at `/portfolio/[id]/edit` (owner only)
 - [x] All fields from E2-T1 schema except images (handled in E2-T3)
@@ -43,6 +44,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 - [x] "At least one URL" validation with clear messaging
 
 ### Project Dashboard ✅ Complete
+
 - [x] Page at `/portfolio` (owner view)
 - [x] List all user's projects (including drafts)
 - [x] Project cards showing: title, description, status, type, skills
@@ -54,6 +56,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 - [x] Filter by type (all/personal/bootcamp/hackathon/work-related/freelance/bounty)
 
 ### Actions ✅ Complete
+
 - [x] Save as draft functionality (status defaults to 'draft')
 - [x] Publish project (status: wip or completed)
 - [x] Delete confirmation modal with warning (AlertDialog)
@@ -61,6 +64,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 - [ ] Preview mode before publishing (deferred to E2-T6)
 
 ### Validation & UX ✅ Complete
+
 - [x] Client-side validation matches API schema (Zod)
 - [x] Clear error messages for each field
 - [x] Loading states during API calls (React Query)
@@ -120,12 +124,13 @@ Build user interface for creating, editing, and managing portfolio projects.
 
 ## Character Limits (Restrictive by Design)
 
-| Field | Min | Max | Rationale |
-|-------|-----|-----|-----------|
-| Title | 5 | 100 | Clear, concise project name |
-| Description | 20 | 280 | Tweet-length summary, forces clarity |
+| Field       | Min | Max | Rationale                            |
+| ----------- | --- | --- | ------------------------------------ |
+| Title       | 5   | 100 | Clear, concise project name          |
+| Description | 20  | 280 | Tweet-length summary, forces clarity |
 
 **Heavy Content Goes In:**
+
 - Repository README (detailed docs)
 - Video demo (visual explanation)
 - Live site (interactive experience)
@@ -135,6 +140,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 ## Field Requirements
 
 ### Always Required:
+
 - Title (5-100 chars)
 - Description (20-280 chars)
 - Project Type
@@ -143,6 +149,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 - At least one skill
 
 ### Optional (for WIP projects):
+
 - Logo URL (added in E2-T3)
 - Image URLs (added in E2-T3)
 - Live Demo URL (if not ready yet)
@@ -153,6 +160,7 @@ Build user interface for creating, editing, and managing portfolio projects.
 ## Technical Implementation
 
 ### File Structure
+
 ```
 src/
 ├── app/
@@ -228,7 +236,7 @@ export async function createProject(data: CreateProjectInput) {
   return apiFetch<CreateProjectResponse>('/api/projects', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   })
 }
 
@@ -236,13 +244,13 @@ export async function updateProject(id: string, data: UpdateProjectInput) {
   return apiFetch<UpdateProjectResponse>(`/api/projects/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   })
 }
 
 export async function deleteProject(id: string) {
   return apiFetch<DeleteProjectResponse>(`/api/projects/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   })
 }
 
@@ -272,7 +280,7 @@ export function useCreateProject() {
     },
     onError: (error: ApiError) => {
       toast.error(error.message)
-    }
+    },
   })
 }
 
@@ -280,7 +288,7 @@ export function useUserProjects(userId?: string) {
   return useQuery({
     queryKey: ['projects', userId],
     queryFn: () => projectService.fetchUserProjects(userId),
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 ```
@@ -293,20 +301,20 @@ export function useUserProjects(userId?: string) {
 // Clear, actionable error messages
 const validationMessages = {
   title: {
-    min: "Title must be at least 5 characters",
-    max: "Title cannot exceed 100 characters"
+    min: 'Title must be at least 5 characters',
+    max: 'Title cannot exceed 100 characters',
   },
   description: {
-    min: "Description must be at least 20 characters (be specific!)",
-    max: "Description cannot exceed 280 characters (keep it concise!)"
+    min: 'Description must be at least 20 characters (be specific!)',
+    max: 'Description cannot exceed 280 characters (keep it concise!)',
   },
   urls: {
-    none: "Please provide at least one URL: repository, video, or live demo",
-    invalid: "Please enter a valid URL starting with http:// or https://"
+    none: 'Please provide at least one URL: repository, video, or live demo',
+    invalid: 'Please enter a valid URL starting with http:// or https://',
   },
   skills: {
-    none: "Please add at least one skill you used or learned in this project"
-  }
+    none: 'Please add at least one skill you used or learned in this project',
+  },
 }
 ```
 
@@ -315,6 +323,7 @@ const validationMessages = {
 ## Testing Checklist
 
 ### Form Validation
+
 - [ ] Title: min 5 chars, max 100 chars
 - [ ] Description: min 20 chars, max 280 chars
 - [ ] At least one URL required (repository, video, or live demo)
@@ -324,6 +333,7 @@ const validationMessages = {
 - [ ] Status required
 
 ### User Flows
+
 - [ ] Create new project → saves as draft
 - [ ] Edit existing project → updates successfully
 - [ ] Delete project → confirmation modal → soft delete
@@ -331,6 +341,7 @@ const validationMessages = {
 - [ ] Navigate away with unsaved changes → warning modal
 
 ### UI/UX
+
 - [ ] Character counters update in real-time
 - [ ] Error messages clear and actionable
 - [ ] Loading states during API calls

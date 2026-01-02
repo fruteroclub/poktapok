@@ -32,7 +32,9 @@ async function checkActivities() {
         console.log(`   Type: ${row.activity_type}`)
         console.log(`   Status: ${row.status}`)
         console.log(`   Reward: ${row.reward_pulpa_amount} $PULPA`)
-        const slots = row.total_available_slots ? ` / ${row.total_available_slots}` : ''
+        const slots = row.total_available_slots
+          ? ` / ${row.total_available_slots}`
+          : ''
         console.log(`   Submissions: ${row.current_submissions_count}${slots}`)
         console.log(`   Created: ${row.created_at}`)
         console.log('')
@@ -50,7 +52,6 @@ async function checkActivities() {
     statusCounts.rows.forEach((row: any) => {
       console.log(`   ${row.status}: ${row.count}`)
     })
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

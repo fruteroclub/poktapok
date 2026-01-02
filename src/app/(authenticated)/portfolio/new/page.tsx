@@ -4,9 +4,9 @@
  * Project creation flow
  */
 
-import PageWrapper from '@/components/layout/page-wrapper';
-import { Section } from '@/components/layout/section';
-import { CreateProjectForm } from '@/components/portfolio/create-project-form';
+import PageWrapper from '@/components/layout/page-wrapper'
+import { Section } from '@/components/layout/section'
+import { CreateProjectForm } from '@/components/portfolio/create-project-form'
 
 export default function NewProjectPage() {
   return (
@@ -15,7 +15,7 @@ export default function NewProjectPage() {
         <div className="page-content">
           <div className="header-section">
             <h1 className="text-3xl font-bold">New Project</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="mt-1 text-muted-foreground">
               Create a new project to showcase your work
             </p>
           </div>
@@ -25,5 +25,5 @@ export default function NewProjectPage() {
         </div>
       </div>
     </PageWrapper>
-  );
+  )
 }

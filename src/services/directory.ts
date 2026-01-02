@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api/fetch";
+import { apiFetch } from '@/lib/api/fetch'
 import type {
   DirectoryResponse,
   DirectoryFilters,
@@ -6,12 +6,12 @@ import type {
   DirectoryData,
   DirectoryCountriesData,
   DirectoryPagination,
-} from "@/types/api-v1";
+} from '@/types/api-v1'
 
 interface DirectoryResponseWithMeta extends DirectoryData {
   meta?: {
-    pagination: DirectoryPagination;
-  };
+    pagination: DirectoryPagination
+  }
 }
 
 /**
@@ -25,24 +25,25 @@ interface DirectoryResponseWithMeta extends DirectoryData {
  * @throws ApiError if fetch fails
  */
 export async function fetchDirectoryProfiles(
-  filters: DirectoryFilters
+  filters: DirectoryFilters,
 ): Promise<DirectoryResponse> {
-  const params = new URLSearchParams();
+  const params = new URLSearchParams()
 
-  if (filters.search) params.set("search", filters.search);
-  if (filters.learningTrack) params.set("track", filters.learningTrack);
+  if (filters.search) params.set('search', filters.search)
+  if (filters.learningTrack) params.set('track', filters.learningTrack)
   if (filters.availabilityStatus)
-    params.set("status", filters.availabilityStatus);
-  if (filters.country) params.set("country", filters.country);
-  if (filters.skills && filters.skills.length > 0) params.set("skills", filters.skills.join(","));
-  if (filters.page) params.set("page", filters.page.toString());
-  if (filters.limit) params.set("limit", filters.limit.toString());
+    params.set('status', filters.availabilityStatus)
+  if (filters.country) params.set('country', filters.country)
+  if (filters.skills && filters.skills.length > 0)
+    params.set('skills', filters.skills.join(','))
+  if (filters.page) params.set('page', filters.page.toString())
+  if (filters.limit) params.set('limit', filters.limit.toString())
 
-  const url = `/api/directory?${params.toString()}`;
+  const url = `/api/directory?${params.toString()}`
 
   // apiFetch automatically unwraps the { success, data, meta } envelope
   // and throws ApiError on failure
-  const response = await apiFetch<DirectoryResponseWithMeta>(url);
+  const response = await apiFetch<DirectoryResponseWithMeta>(url)
 
   // Extract pagination from meta
   const pagination = response.meta?.pagination || {
@@ -51,12 +52,12 @@ export async function fetchDirectoryProfiles(
     total: 0,
     totalPages: 0,
     hasMore: false,
-  };
+  }
 
   return {
     profiles: response.profiles,
     pagination,
-  };
+  }
 }
 
 /**
@@ -68,6 +69,8 @@ export async function fetchDirectoryProfiles(
  */
 export async function fetchDirectoryCountries(): Promise<DirectoryCountry[]> {
   // apiFetch unwraps { success: true, data: { countries: [...] } }
-  const data = await apiFetch<DirectoryCountriesData>("/api/directory/countries");
-  return data.countries;
+  const data = await apiFetch<DirectoryCountriesData>(
+    '/api/directory/countries',
+  )
+  return data.countries
 }

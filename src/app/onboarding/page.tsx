@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { usePrivy } from "@privy-io/react-auth"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import OnboardingForm from "@/components/onboarding/onboarding-form"
-import PageWrapper from "@/components/layout/page-wrapper"
-import { ProtectedRoute } from "@/components/layout/protected-route-wrapper"
-import { Section } from "@/components/layout/section"
+import { usePrivy } from '@privy-io/react-auth'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import OnboardingForm from '@/components/onboarding/onboarding-form'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { ProtectedRoute } from '@/components/layout/protected-route-wrapper'
+import { Section } from '@/components/layout/section'
 
 export default function OnboardingPage() {
   const { authenticated, ready } = usePrivy()
@@ -15,7 +15,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     // Redirect to home if not authenticated
     if (ready && !authenticated) {
-      router.push("/")
+      router.push('/')
     }
   }, [authenticated, ready, router])
 

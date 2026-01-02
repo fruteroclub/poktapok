@@ -9,14 +9,14 @@
  * @returns Flag emoji or empty string if invalid
  */
 export function getCountryFlag(countryCode: string | null): string {
-  if (!countryCode || countryCode.length !== 2) return "";
+  if (!countryCode || countryCode.length !== 2) return ''
 
   const codePoints = countryCode
     .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt(0));
+    .split('')
+    .map((char) => 127397 + char.charCodeAt(0))
 
-  return String.fromCodePoint(...codePoints);
+  return String.fromCodePoint(...codePoints)
 }
 
 /**
@@ -26,9 +26,9 @@ export function getCountryFlag(countryCode: string | null): string {
  * @returns Truncated text with ellipsis if needed
  */
 export function truncateText(text: string | null, maxLength: number): string {
-  if (!text) return "";
-  if (text.length <= maxLength) return text;
-  return `${text.substring(0, maxLength)}...`;
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  return `${text.substring(0, maxLength)}...`
 }
 
 /**
@@ -37,14 +37,14 @@ export function truncateText(text: string | null, maxLength: number): string {
  * @returns Human-readable label
  */
 export function getLearningTrackLabel(
-  track: "ai" | "crypto" | "privacy"
+  track: 'ai' | 'crypto' | 'privacy',
 ): string {
   const labels = {
-    ai: "Code: AI",
-    crypto: "Crypto/DeFi",
-    privacy: "Privacy",
-  };
-  return labels[track];
+    ai: 'Code: AI',
+    crypto: 'Crypto/DeFi',
+    privacy: 'Privacy',
+  }
+  return labels[track]
 }
 
 /**
@@ -53,14 +53,14 @@ export function getLearningTrackLabel(
  * @returns Human-readable label
  */
 export function getAvailabilityLabel(
-  status: "available" | "open_to_offers" | "unavailable"
+  status: 'available' | 'open_to_offers' | 'unavailable',
 ): string {
   const labels = {
-    available: "Available",
-    open_to_offers: "Open to Offers",
-    unavailable: "Unavailable",
-  };
-  return labels[status];
+    available: 'Available',
+    open_to_offers: 'Open to Offers',
+    unavailable: 'Unavailable',
+  }
+  return labels[status]
 }
 
 /**
@@ -69,14 +69,14 @@ export function getAvailabilityLabel(
  * @returns Tailwind color class
  */
 export function getAvailabilityColor(
-  status: "available" | "open_to_offers" | "unavailable"
+  status: 'available' | 'open_to_offers' | 'unavailable',
 ): string {
   const colors = {
-    available: "bg-green-500",
-    open_to_offers: "bg-blue-500",
-    unavailable: "bg-gray-400",
-  };
-  return colors[status];
+    available: 'bg-green-500',
+    open_to_offers: 'bg-blue-500',
+    unavailable: 'bg-gray-400',
+  }
+  return colors[status]
 }
 
 /**
@@ -85,16 +85,16 @@ export function getAvailabilityColor(
  * @returns Badge styling classes
  */
 export function getLearningTrackStyles(
-  track: "ai" | "crypto" | "privacy"
+  track: 'ai' | 'crypto' | 'privacy',
 ): string {
   const styles = {
-    ai: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    ai: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     crypto:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
     privacy:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  };
-  return styles[track];
+      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  }
+  return styles[track]
 }
 
 /**
@@ -103,9 +103,9 @@ export function getLearningTrackStyles(
  * @returns Formatted string (e.g., "156 builders found")
  */
 export function formatProfileCount(count: number): string {
-  if (count === 0) return "No builders found";
-  if (count === 1) return "1 builder found";
-  return `${count} builders found`;
+  if (count === 0) return 'No builders found'
+  if (count === 1) return '1 builder found'
+  return `${count} builders found`
 }
 
 /**
@@ -114,12 +114,12 @@ export function formatProfileCount(count: number): string {
  * @returns Initials (max 2 characters)
  */
 export function getInitials(name: string | null): string {
-  if (!name) return "?";
+  if (!name) return '?'
 
-  const parts = name.trim().split(/\s+/);
+  const parts = name.trim().split(/\s+/)
   if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase();
+    return parts[0].charAt(0).toUpperCase()
   }
 
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
 }

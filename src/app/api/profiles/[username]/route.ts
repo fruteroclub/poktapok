@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { getProfileByUsername } from "@/lib/db/queries/profiles";
-import { getCurrentUser } from "@/lib/auth/helpers";
-import { apiSuccess, apiError, apiErrors } from "@/lib/api/response";
-import { canViewField, isProfileOwner } from "@/lib/utils/visibility";
+import { NextRequest } from 'next/server'
+import { getProfileByUsername } from '@/lib/db/queries/profiles'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { apiSuccess, apiError, apiErrors } from '@/lib/api/response'
+import { canViewField, isProfileOwner } from '@/lib/utils/visibility'
 
 /**
  * GET /api/profiles/[username]
@@ -10,46 +10,46 @@ import { canViewField, isProfileOwner } from "@/lib/utils/visibility";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ username: string }> }
+  { params }: { params: Promise<{ username: string }> },
 ) {
   try {
-    const { username } = await params;
+    const { username } = await params
 
     // Fetch profile with user data
-    const profileData = await getProfileByUsername(username);
+    const profileData = await getProfileByUsername(username)
 
     if (!profileData) {
-      return apiErrors.notFound("Profile");
+      return apiErrors.notFound('Profile')
     }
 
-    const { profile, user } = profileData;
+    const { profile, user } = profileData
 
     // Get current user for visibility checks
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUser()
 
     // Determine if viewer is owner
-    const isOwner = isProfileOwner(profile, currentUser?.user || null);
+    const isOwner = isProfileOwner(profile, currentUser?.user || null)
 
     // Check if viewer can see social links (members-only)
     const canViewSocials = canViewField(
-      "socialLinks",
+      'socialLinks',
       profile,
-      currentUser?.user || null
-    );
+      currentUser?.user || null,
+    )
 
     // Check if viewer can see location data
     const canViewLocation = canViewField(
-      "city",
+      'city',
       profile,
-      currentUser?.user || null
-    );
+      currentUser?.user || null,
+    )
 
     // Check if viewer can see learning tracks
     const canViewLearningTracks = canViewField(
-      "learningTracks",
+      'learningTracks',
       profile,
-      currentUser?.user || null
-    );
+      currentUser?.user || null,
+    )
 
     // Build response with visibility filtering
     const response = {
@@ -87,13 +87,13 @@ export async function GET(
         canViewSocials,
         canViewLocation,
         canViewLearningTracks,
-        isPrivate: profile.profileVisibility === "private",
+        isPrivate: profile.profileVisibility === 'private',
       },
-    };
+    }
 
-    return apiSuccess(response);
+    return apiSuccess(response)
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    return apiErrors.internal();
+    console.error('Error fetching profile:', error)
+    return apiErrors.internal()
   }
 }

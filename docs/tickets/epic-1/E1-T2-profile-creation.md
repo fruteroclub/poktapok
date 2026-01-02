@@ -30,6 +30,7 @@ Build user-friendly profile setup form with real-time validation.
 ## Form Fields
 
 ### Required Fields
+
 1. **Username** (unique, 3-20 chars, alphanumeric + underscore)
    - Real-time availability check
    - Format validation: `^[a-zA-Z0-9_]{3,20}$`
@@ -58,6 +59,7 @@ Build user-friendly profile setup form with real-time validation.
    - Color-coded indicators
 
 ### Optional Fields (Progressive Disclosure)
+
 7. **Social Links** (optional)
    - GitHub username
    - Twitter handle (without @)
@@ -74,6 +76,7 @@ Build user-friendly profile setup form with real-time validation.
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/app/profile/setup/page.tsx` - Profile setup page
 - `src/components/profile/profile-form.tsx` - Main form component
 - `src/components/profile/preview-card.tsx` - Profile preview
@@ -86,6 +89,7 @@ Build user-friendly profile setup form with real-time validation.
 - `src/app/api/profiles/check-username/route.ts` - Username availability
 
 ### Data Files
+
 - `src/data/countries.ts` - Country list with codes
 - `src/data/cities.ts` - Major cities by country
 
@@ -96,7 +100,7 @@ Build user-friendly profile setup form with real-time validation.
 ### 1. Zod Validation Schema (`src/lib/validators/profile.ts`)
 
 ```typescript
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const profileSchema = z.object({
   username: z
@@ -129,50 +133,52 @@ export const profileSchema = z.object({
   }),
 
   // Optional fields
-  socialLinks: z.object({
-    github: z.string().optional(),
-    twitter: z.string().optional(),
-    linkedin: z.string().optional(),
-    telegram: z.string().optional(),
-  }).optional(),
-});
+  socialLinks: z
+    .object({
+      github: z.string().optional(),
+      twitter: z.string().optional(),
+      linkedin: z.string().optional(),
+      telegram: z.string().optional(),
+    })
+    .optional(),
+})
 
-export type ProfileFormData = z.infer<typeof profileSchema>;
+export type ProfileFormData = z.infer<typeof profileSchema>
 ```
 
 ### 2. Username Availability Check (`src/lib/hooks/useUsernameCheck.ts`)
 
 ```typescript
-import { useState, useEffect } from 'react';
-import { useDebouncedValue } from '@/lib/hooks/useDebounce';
+import { useState, useEffect } from 'react'
+import { useDebouncedValue } from '@/lib/hooks/useDebounce'
 
 export function useUsernameCheck(username: string) {
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
-  const debouncedUsername = useDebouncedValue(username, 500);
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = useState(false)
+  const debouncedUsername = useDebouncedValue(username, 500)
 
   useEffect(() => {
     if (!debouncedUsername || debouncedUsername.length < 3) {
-      setIsAvailable(null);
-      return;
+      setIsAvailable(null)
+      return
     }
 
-    setIsChecking(true);
+    setIsChecking(true)
 
     fetch(`/api/profiles/check-username?username=${debouncedUsername}`)
       .then((res) => res.json())
       .then((data) => {
-        setIsAvailable(data.available);
+        setIsAvailable(data.available)
       })
       .catch(() => {
-        setIsAvailable(null);
+        setIsAvailable(null)
       })
       .finally(() => {
-        setIsChecking(false);
-      });
-  }, [debouncedUsername]);
+        setIsChecking(false)
+      })
+  }, [debouncedUsername])
 
-  return { isAvailable, isChecking };
+  return { isAvailable, isChecking }
 }
 ```
 
@@ -254,6 +260,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 **Purpose:** Create new profile for authenticated user
 
 **Request Body:**
+
 ```json
 {
   "username": "carlos_dev",
@@ -272,6 +279,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 ```
 
 **Response:**
+
 ```json
 {
   "profile": {
@@ -285,6 +293,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 ```
 
 **Error Cases:**
+
 - 400: Validation error
 - 401: Not authenticated
 - 409: Username already taken
@@ -294,6 +303,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 **Purpose:** Check if username is available
 
 **Response:**
+
 ```json
 {
   "available": true,
@@ -302,6 +312,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 ```
 
 **Response (taken):**
+
 ```json
 {
   "available": false,
@@ -321,6 +332,7 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
 ## UX/UI Requirements
 
 ### Form Layout
+
 - **Mobile-first design** (375px viewport)
 - Single-page form (no wizard steps)
 - Logical field grouping:
@@ -330,24 +342,28 @@ export function BioInput({ value, onChange }: { value: string; onChange: (val: s
   4. Social Links (collapsible section)
 
 ### Real-time Feedback
+
 - Username availability: Show checkmark ✓ or X ✗
 - Bio character count: Update on every keystroke
 - Form validation: Show errors on blur, not on change
 - Submit button: Disabled until form is valid
 
 ### Preview Mode
+
 - Modal or side panel
 - Shows exactly how profile will appear publicly
 - "Edit" button returns to form
 - "Submit" button creates profile
 
 ### Micro-copy (Encouraging Tone)
+
 - Username field: "Choose a unique handle (3-20 characters)"
 - Bio field: "Tell us about yourself in 280 characters"
 - Learning tracks: "What are you most excited to learn?"
 - Availability: "What's your current status?"
 
 ### Mobile Optimizations
+
 - Large touch targets (min 44px)
 - Native select dropdowns on mobile
 - Keyboard type hints (email, url, etc.)
@@ -449,20 +465,20 @@ describe('profileSchema', () => {
       username: 'carlos_dev',
       displayName: 'Carlos',
       // ... other fields
-    };
-    expect(() => profileSchema.parse(validData)).not.toThrow();
-  });
+    }
+    expect(() => profileSchema.parse(validData)).not.toThrow()
+  })
 
   it('rejects username with spaces', () => {
-    const invalidData = { username: 'carlos dev', /* ... */ };
-    expect(() => profileSchema.parse(invalidData)).toThrow();
-  });
+    const invalidData = { username: 'carlos dev' /* ... */ }
+    expect(() => profileSchema.parse(invalidData)).toThrow()
+  })
 
   it('rejects bio with URLs', () => {
-    const invalidData = { bio: 'Check out https://example.com', /* ... */ };
-    expect(() => profileSchema.parse(invalidData)).toThrow();
-  });
-});
+    const invalidData = { bio: 'Check out https://example.com' /* ... */ }
+    expect(() => profileSchema.parse(invalidData)).toThrow()
+  })
+})
 ```
 
 ---
@@ -470,11 +486,13 @@ describe('profileSchema', () => {
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E1-T1: Authentication Integration completed
 - [ ] User can authenticate and be redirected to profile setup
 - [ ] Database `profiles` table exists
 
 ### Blocks
+
 - E1-T3: Public Directory Page (needs profiles to display)
 - E1-T4: Individual Profile Page (needs profile structure)
 
@@ -483,16 +501,19 @@ describe('profileSchema', () => {
 ## Notes & Questions
 
 ### Design Decisions
+
 - **Why single-page form?** Research shows multi-step forms have higher abandonment rates for simple forms
 - **Why 280 char bio limit?** Twitter-style familiarity, forces concise descriptions
 - **Why no URLs in bio initially?** Prevent spam, add in Epic 2 with moderation
 
 ### Technical Notes
+
 - Use React Hook Form for performance (minimal re-renders)
 - Debounce username check to avoid excessive API calls
 - Store form state in localStorage for recovery if user refreshes
 
 ### Questions
+
 - [ ] Should username be editable after creation?
   - **Decision:** No, username is permanent (like Twitter). Add username change in future epic with verification.
 - [ ] What happens if user closes form halfway?
@@ -501,6 +522,7 @@ describe('profileSchema', () => {
   - **Decision:** Yes, pre-fill as suggestion but allow editing
 
 ### Future Enhancements (Not in Scope)
+
 - Avatar upload (Epic 2)
 - Custom bio formatting (bold, italic)
 - Skills tags (Epic 2)
@@ -511,5 +533,6 @@ describe('profileSchema', () => {
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-22
 **Status Changes:**
+
 - 2025-12-20: Created ticket
 - 2025-12-22: ✅ Completed - All features implemented and working

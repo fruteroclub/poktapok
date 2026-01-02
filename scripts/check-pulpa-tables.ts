@@ -23,7 +23,10 @@ async function checkPulpaTables() {
         AND table_name = 'activity_submissions'
       )
     `)
-    console.log('activity_submissions table exists:', submissionsCheck.rows[0].exists)
+    console.log(
+      'activity_submissions table exists:',
+      submissionsCheck.rows[0].exists,
+    )
 
     // Check for pulpa_distributions table
     const distributionsCheck = await db.execute(sql`
@@ -33,7 +36,10 @@ async function checkPulpaTables() {
         AND table_name = 'pulpa_distributions'
       )
     `)
-    console.log('pulpa_distributions table exists:', distributionsCheck.rows[0].exists)
+    console.log(
+      'pulpa_distributions table exists:',
+      distributionsCheck.rows[0].exists,
+    )
 
     // List all tables
     const allTables = await db.execute(sql`
@@ -68,7 +74,6 @@ async function checkPulpaTables() {
     } else {
       console.log('\n⚠️  No migration journal found')
     }
-
   } catch (error) {
     console.error('❌ Error:', error)
   } finally {

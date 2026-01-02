@@ -10,20 +10,20 @@
  */
 export function getCountryFlag(countryCode: string): string {
   if (!countryCode || countryCode.length !== 2) {
-    return "";
+    return ''
   }
 
   // Convert country code to uppercase
-  const code = countryCode.toUpperCase();
+  const code = countryCode.toUpperCase()
 
   // Convert to regional indicator symbols (Unicode)
   // Regional indicator symbols start at U+1F1E6 (🇦)
   // A = 0x41, so we subtract 0x41 and add 0x1F1E6
   const codePoints = code
-    .split("")
-    .map((char) => 0x1f1e6 + char.charCodeAt(0) - 0x41);
+    .split('')
+    .map((char) => 0x1f1e6 + char.charCodeAt(0) - 0x41)
 
-  return String.fromCodePoint(...codePoints);
+  return String.fromCodePoint(...codePoints)
 }
 
 /**
@@ -40,17 +40,17 @@ export function getCountryFlag(countryCode: string): string {
  */
 export function getCountryName(
   countryCode: string,
-  locale: string = "en"
+  locale: string = 'en',
 ): string {
   if (!countryCode || countryCode.length !== 2) {
-    return "";
+    return ''
   }
 
   try {
-    const displayNames = new Intl.DisplayNames([locale], { type: "region" });
-    return displayNames.of(countryCode.toUpperCase()) || countryCode;
+    const displayNames = new Intl.DisplayNames([locale], { type: 'region' })
+    return displayNames.of(countryCode.toUpperCase()) || countryCode
   } catch {
-    return countryCode;
+    return countryCode
   }
 }
 
@@ -70,20 +70,20 @@ export function getCountryName(
 export function formatLocation(
   city: string | null,
   country: string | null,
-  countryCode: string | null
+  countryCode: string | null,
 ): string {
-  const parts: string[] = [];
+  const parts: string[] = []
 
   if (city) {
-    parts.push(city);
+    parts.push(city)
   }
 
   if (country) {
-    parts.push(country);
+    parts.push(country)
   }
 
-  const location = parts.join(", ");
-  const flag = countryCode ? getCountryFlag(countryCode) : "";
+  const location = parts.join(', ')
+  const flag = countryCode ? getCountryFlag(countryCode) : ''
 
-  return [location, flag].filter(Boolean).join(" ");
+  return [location, flag].filter(Boolean).join(' ')
 }

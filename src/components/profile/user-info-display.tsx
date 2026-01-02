@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, User, AtSign } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
+import { Mail, User, AtSign } from 'lucide-react'
 
 interface UserInfoDisplayProps {
-  username: string;
-  displayName: string | null;
-  email: string | null;
-  bio: string | null;
-  avatarUrl: string | null;
+  username: string
+  displayName: string | null
+  email: string | null
+  bio: string | null
+  avatarUrl: string | null
 }
 
 /**
@@ -25,23 +25,23 @@ export function UserInfoDisplay({
   avatarUrl,
 }: UserInfoDisplayProps) {
   const initials = (displayName || username)
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
 
   return (
     <Card>
-      <CardContent className="space-y-4 flex flex-col">
-        <div className="flex flex-col md:flex-row gap-4 md:items-center lg:gap-6 xl:gap-8">
+      <CardContent className="flex flex-col space-y-4">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center lg:gap-6 xl:gap-8">
           {/* Avatar and Username */}
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarImage src={avatarUrl || undefined} alt={username} />
               <AvatarFallback className="text-lg">{initials}</AvatarFallback>
             </Avatar>
-            <div className="flex items-center gap-2 h-full">
+            <div className="flex h-full items-center gap-2">
               <div>
                 <p className="text-xs text-muted-foreground">Username</p>
                 <p className="font-medium">{username}</p>
@@ -52,7 +52,7 @@ export function UserInfoDisplay({
           {/* Display Name */}
           {displayName && (
             <div className="flex items-start gap-2">
-              <User className="h-4 w-4 text-muted-foreground mt-0.5" />
+              <User className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-xs text-muted-foreground">Nombre</p>
                 <p className="font-medium">{displayName}</p>
@@ -63,7 +63,7 @@ export function UserInfoDisplay({
           {/* Email */}
           {email && (
             <div className="flex items-start gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
+              <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-xs text-muted-foreground">Email</p>
                 <p className="font-medium">{email}</p>
@@ -73,12 +73,12 @@ export function UserInfoDisplay({
         </div>
         {/* Bio */}
         {bio && (
-          <div className="pt-2 border-t">
-            <p className="text-xs text-muted-foreground mb-1">Bio</p>
+          <div className="border-t pt-2">
+            <p className="mb-1 text-xs text-muted-foreground">Bio</p>
             <p className="text-sm">{bio}</p>
           </div>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

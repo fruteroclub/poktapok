@@ -19,6 +19,7 @@ vercel env pull .env.local
 ```
 
 This will download:
+
 - `DATABASE_URL` - Pooled connection for application queries
 - `DATABASE_URL_UNPOOLED` - Direct connection for migrations
 
@@ -37,6 +38,7 @@ bun run db:migrate
 ```
 
 **Expected output:**
+
 ```
 ✓ migrations applied successfully!
 ```
@@ -50,6 +52,7 @@ bun run scripts/test-db-connection.ts
 ```
 
 **Expected output:**
+
 ```
 ✅ Database connected
 ✅ User count: 0
@@ -71,15 +74,18 @@ Open: https://local.drizzle.studio
 ## Available Commands
 
 ### Migration Commands
+
 - `bun run db:generate` - Generate new migration from schema changes
 - `bun run db:migrate` - Apply pending migrations
 - `bun run db:push` - Push schema changes directly (dev only, bypasses migrations)
 - `bun run db:check` - Check for schema drift
 
 ### Database Tools
+
 - `bun run db:studio` - Open Drizzle Studio (visual DB browser)
 
 ### Test Scripts
+
 - `bun run scripts/test-db-connection.ts` - Test database connectivity
 - `bun run scripts/verify-migration.ts` - Verify all database objects
 - `bun run scripts/test-crud-operations.ts` - Test CRUD operations
@@ -91,9 +97,11 @@ Open: https://local.drizzle.studio
 ### Tables
 
 #### users (Identity & Authentication)
+
 Core identity table linked to Privy authentication.
 
 **Key Fields:**
+
 - `privy_did` - Privy DID (unique identifier)
 - `email` - User email (required)
 - `username` - Unique username
@@ -107,13 +115,16 @@ Core identity table linked to Privy authentication.
 - `accountStatus` - pending | active | suspended | banned
 
 **Relationships:**
+
 - Self-referencing: `invited_by_user_id`, `approved_by_user_id`
 - One-to-one with profiles (CASCADE DELETE)
 
 #### profiles (Extended User Data)
+
 Extended profile information separated from core identity.
 
 **Key Fields:**
+
 - `city`, `country`, `countryCode` - Location data
 - `githubUrl`, `twitterUrl`, `linkedinUrl`, `telegramHandle` - Social links
 - `learningTracks` - Array: ai, crypto, privacy
@@ -124,12 +135,15 @@ Extended profile information separated from core identity.
 - `profileViews` - Profile view count
 
 **Relationships:**
+
 - One-to-one with users (`user_id` CASCADE DELETE)
 
 #### applications (Onboarding Queue)
+
 Tracks user signup applications pending admin review.
 
 **Key Fields:**
+
 - `userId` - Applicant user ID
 - `motivationText` - Why they want to join
 - `status` - pending | approved | rejected
@@ -138,12 +152,15 @@ Tracks user signup applications pending admin review.
 - `reviewNotes` - Admin notes on decision
 
 **Relationships:**
+
 - Many-to-one with users (applicant and reviewer, SET NULL)
 
 #### invitations (Referral System)
+
 Tracks invitation codes with expiration and redemption.
 
 **Key Fields:**
+
 - `inviterUserId` - Who created the invite
 - `redeemerUserId` - Who used the invite
 - `inviteCode` - Unique invite code (16-32 chars)
@@ -152,6 +169,7 @@ Tracks invitation codes with expiration and redemption.
 - `expiresAt` - Expiration timestamp
 
 **Relationships:**
+
 - Many-to-one with users (inviter CASCADE DELETE, redeemer SET NULL)
 
 **Note on Status Field:** Originally designed as PostgreSQL generated column, but converted to regular field due to PostgreSQL immutability constraints with time-based expressions. Status should be computed at query time:
@@ -195,11 +213,13 @@ const status = invitation.redeemedAt
 CHECK constraints must have patterns inlined, not referenced from constants:
 
 **❌ Wrong:**
+
 ```typescript
 check('email_format', sql`${table.email} ~* ${PATTERNS.EMAIL}`)
 ```
 
 **✅ Correct:**
+
 ```typescript
 check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'`)
 ```
@@ -209,27 +229,33 @@ check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\
 ## Troubleshooting
 
 ### Can't connect to database
+
 **Problem:** Connection refused or timeout
 
 **Solution:**
+
 1. Ensure `.env.local` exists with `DATABASE_URL`
 2. Run `vercel env pull .env.local` to refresh
 3. Check Vercel project access
 
 ### Migration already applied
+
 **Problem:** `Migration already applied` error
 
 **Solution:** This is normal if migrations are up to date. Drizzle tracks applied migrations automatically.
 
 ### Permission denied
+
 **Problem:** Can't access Vercel project
 
 **Solution:** Ask team lead to add you to the Vercel project.
 
 ### Schema drift detected
+
 **Problem:** Local schema doesn't match database
 
 **Solution:**
+
 1. Pull latest code: `git pull`
 2. Run migrations: `bun run db:migrate`
 3. If issues persist, check for uncommitted schema changes
@@ -241,11 +267,13 @@ check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\
 The database uses **node-postgres** with connection pooling:
 
 **Configuration:**
+
 - Max connections: 10
 - Idle timeout: 20 seconds
 - Connection timeout: 10 seconds
 
 **Best Practices:**
+
 - Always close database connections in scripts
 - Use `closeDatabase()` helper in finally blocks
 - Application queries use pooled `DATABASE_URL`
@@ -314,18 +342,22 @@ bun run scripts/test-crud-operations.ts
 ## CASCADE DELETE Behavior
 
 ### profiles → users
+
 **Policy:** CASCADE DELETE
 **Behavior:** Deleting a user deletes their profile
 
 ### applications → users
+
 **Policy:** SET NULL (but user_id is NOT NULL)
 **Behavior:** Must delete application before deleting user
 
 ### invitations → users (inviter)
+
 **Policy:** CASCADE DELETE
 **Behavior:** Deleting a user deletes their invitations
 
 ### invitations → users (redeemer)
+
 **Policy:** SET NULL
 **Behavior:** Deleting redeemer preserves invitation history
 
@@ -340,7 +372,8 @@ import { db } from '@/lib/db'
 import { users, profiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
-const userWithProfile = await db.select()
+const userWithProfile = await db
+  .select()
   .from(users)
   .leftJoin(profiles, eq(users.id, profiles.userId))
   .where(eq(users.email, 'user@example.com'))
@@ -353,7 +386,8 @@ import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq, isNull } from 'drizzle-orm'
 
-const activeUsers = await db.select()
+const activeUsers = await db
+  .select()
   .from(users)
   .where(eq(users.accountStatus, 'active'))
   .where(isNull(users.deletedAt))
@@ -366,9 +400,7 @@ import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
-await db.update(users)
-  .set({ deletedAt: new Date() })
-  .where(eq(users.id, userId))
+await db.update(users).set({ deletedAt: new Date() }).where(eq(users.id, userId))
 ```
 
 ---
@@ -385,6 +417,7 @@ await db.update(users)
 ## Support
 
 For database-related questions:
+
 1. Check this guide first
 2. Review [database-design.md](./database-design.md)
 3. Ask in #eng-database Slack channel

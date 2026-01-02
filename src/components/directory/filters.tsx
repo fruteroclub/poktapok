@@ -1,25 +1,28 @@
-"use client";
+'use client'
 
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCountryFlag } from "@/lib/utils/directory";
-import { SkillsFilter } from "@/components/directory/skills-filter";
-import type { DirectoryFilters } from "@/types/api-v1";
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCountryFlag } from '@/lib/utils/directory'
+import { SkillsFilter } from '@/components/directory/skills-filter'
+import type { DirectoryFilters } from '@/types/api-v1'
 
 interface FiltersProps {
-  filters: DirectoryFilters;
-  countries: Array<{ country: string; countryCode: string; count: number }>;
-  onFilterChange: (key: keyof DirectoryFilters, value: string | string[] | null) => void;
-  onClearAll: () => void;
+  filters: DirectoryFilters
+  countries: Array<{ country: string; countryCode: string; count: number }>
+  onFilterChange: (
+    key: keyof DirectoryFilters,
+    value: string | string[] | null,
+  ) => void
+  onClearAll: () => void
 }
 
 export function Filters({
@@ -32,7 +35,7 @@ export function Filters({
     filters.learningTrack ||
     filters.availabilityStatus ||
     filters.country ||
-    (filters.skills && filters.skills.length > 0);
+    (filters.skills && filters.skills.length > 0)
 
   return (
     <Card>
@@ -51,32 +54,38 @@ export function Filters({
         <div className="space-y-3">
           <Label className="text-sm font-semibold">Learning Track</Label>
           <RadioGroup
-            value={filters.learningTrack || "all"}
+            value={filters.learningTrack || 'all'}
             onValueChange={(value) =>
-              onFilterChange("learningTrack", value === "all" ? null : value)
+              onFilterChange('learningTrack', value === 'all' ? null : value)
             }
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="all" id="track-all" />
-              <Label htmlFor="track-all" className="font-normal cursor-pointer">
+              <Label htmlFor="track-all" className="cursor-pointer font-normal">
                 All
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="ai" id="track-ai" />
-              <Label htmlFor="track-ai" className="font-normal cursor-pointer">
+              <Label htmlFor="track-ai" className="cursor-pointer font-normal">
                 Code: AI
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="crypto" id="track-crypto" />
-              <Label htmlFor="track-crypto" className="font-normal cursor-pointer">
+              <Label
+                htmlFor="track-crypto"
+                className="cursor-pointer font-normal"
+              >
                 Crypto/DeFi
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="privacy" id="track-privacy" />
-              <Label htmlFor="track-privacy" className="font-normal cursor-pointer">
+              <Label
+                htmlFor="track-privacy"
+                className="cursor-pointer font-normal"
+              >
                 Privacy
               </Label>
             </div>
@@ -87,14 +96,20 @@ export function Filters({
         <div className="space-y-3">
           <Label className="text-sm font-semibold">Availability</Label>
           <RadioGroup
-            value={filters.availabilityStatus || "all"}
+            value={filters.availabilityStatus || 'all'}
             onValueChange={(value) =>
-              onFilterChange("availabilityStatus", value === "all" ? null : value)
+              onFilterChange(
+                'availabilityStatus',
+                value === 'all' ? null : value,
+              )
             }
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="all" id="status-all" />
-              <Label htmlFor="status-all" className="font-normal cursor-pointer">
+              <Label
+                htmlFor="status-all"
+                className="cursor-pointer font-normal"
+              >
                 All
               </Label>
             </div>
@@ -102,14 +117,17 @@ export function Filters({
               <RadioGroupItem value="available" id="status-available" />
               <Label
                 htmlFor="status-available"
-                className="font-normal cursor-pointer"
+                className="cursor-pointer font-normal"
               >
                 Available
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="open_to_offers" id="status-open" />
-              <Label htmlFor="status-open" className="font-normal cursor-pointer">
+              <Label
+                htmlFor="status-open"
+                className="cursor-pointer font-normal"
+              >
                 Open to Offers
               </Label>
             </div>
@@ -117,7 +135,7 @@ export function Filters({
               <RadioGroupItem value="unavailable" id="status-unavailable" />
               <Label
                 htmlFor="status-unavailable"
-                className="font-normal cursor-pointer"
+                className="cursor-pointer font-normal"
               >
                 Unavailable
               </Label>
@@ -129,9 +147,9 @@ export function Filters({
         <div className="space-y-3">
           <Label className="text-sm font-semibold">Country</Label>
           <Select
-            value={filters.country || "all"}
+            value={filters.country || 'all'}
             onValueChange={(value) =>
-              onFilterChange("country", value === "all" ? null : value)
+              onFilterChange('country', value === 'all' ? null : value)
             }
           >
             <SelectTrigger>
@@ -155,11 +173,11 @@ export function Filters({
           <SkillsFilter
             selectedSkillIds={filters.skills || []}
             onSelectionChange={(skillIds) =>
-              onFilterChange("skills", skillIds.length > 0 ? skillIds : null)
+              onFilterChange('skills', skillIds.length > 0 ? skillIds : null)
             }
           />
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

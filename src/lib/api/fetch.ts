@@ -1,4 +1,4 @@
-import type { ApiResponse } from "@/types/api-response";
+import type { ApiResponse } from '@/types/api-response'
 
 /**
  * Custom error class for API errors
@@ -8,23 +8,23 @@ import type { ApiResponse } from "@/types/api-response";
  */
 export class ApiError extends Error {
   /** Machine-readable error code (e.g., "VALIDATION_ERROR") */
-  code?: string;
+  code?: string
 
   /** Additional error details (e.g., validation errors from Zod) */
-  details?: unknown;
+  details?: unknown
 
   /** HTTP status code */
-  status?: number;
+  status?: number
 
   constructor(
     message: string,
-    options?: { code?: string; details?: unknown; status?: number }
+    options?: { code?: string; details?: unknown; status?: number },
   ) {
-    super(message);
-    this.name = "ApiError";
-    this.code = options?.code;
-    this.details = options?.details;
-    this.status = options?.status;
+    super(message)
+    this.name = 'ApiError'
+    this.code = options?.code
+    this.details = options?.details
+    this.status = options?.status
   }
 }
 
@@ -81,60 +81,60 @@ export class ApiError extends Error {
  */
 export async function apiFetch<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   try {
     // Make the request
-    const response = await fetch(url, options);
+    const response = await fetch(url, options)
 
     // Parse JSON (throws if invalid)
-    let json: ApiResponse<T>;
+    let json: ApiResponse<T>
     try {
-      json = await response.json();
+      json = await response.json()
     } catch (parseError) {
       // JSON parsing failed - likely server returned HTML error page
-      throw new ApiError("Invalid JSON response from server", {
-        code: "INVALID_RESPONSE",
+      throw new ApiError('Invalid JSON response from server', {
+        code: 'INVALID_RESPONSE',
         status: response.status,
-      });
+      })
     }
 
     // Check discriminated union - success or error?
     if (json.success) {
       // Success response - return unwrapped data
-      return json.data;
+      return json.data
     } else {
       // Error response - throw ApiError
       throw new ApiError(json.error.message, {
         code: json.error.code,
         details: json.error.details,
         status: response.status,
-      });
+      })
     }
   } catch (error) {
     // Re-throw ApiError as-is (already structured)
     if (error instanceof ApiError) {
-      throw error;
+      throw error
     }
 
     // Network error or other fetch failure
     if (error instanceof TypeError) {
-      throw new ApiError("Network error - please check your connection", {
-        code: "NETWORK_ERROR",
-      });
+      throw new ApiError('Network error - please check your connection', {
+        code: 'NETWORK_ERROR',
+      })
     }
 
     // Unknown error
     if (error instanceof Error) {
       throw new ApiError(error.message, {
-        code: "UNKNOWN_ERROR",
-      });
+        code: 'UNKNOWN_ERROR',
+      })
     }
 
     // Fallback for non-Error objects
-    throw new ApiError("An unexpected error occurred", {
-      code: "UNKNOWN_ERROR",
-    });
+    throw new ApiError('An unexpected error occurred', {
+      code: 'UNKNOWN_ERROR',
+    })
   }
 }
 
@@ -153,5 +153,5 @@ export async function apiFetch<T>(
  * ```
  */
 export function isApiError(error: unknown): error is ApiError {
-  return error instanceof ApiError;
+  return error instanceof ApiError
 }

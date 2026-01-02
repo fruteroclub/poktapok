@@ -5,17 +5,24 @@
  * Visual card-based selection with icons
  */
 
-'use client';
+'use client'
 
-import { Briefcase, Code, Trophy, Building, DollarSign, Target } from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card } from '@/components/ui/card';
+import {
+  Briefcase,
+  Code,
+  Trophy,
+  Building,
+  DollarSign,
+  Target,
+} from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Card } from '@/components/ui/card'
 
 interface ProjectTypeSelectorProps {
-  value: string;
-  onChange: (value: string) => void;
-  error?: string;
+  value: string
+  onChange: (value: string) => void
+  error?: string
 }
 
 const projectTypes = [
@@ -55,15 +62,23 @@ const projectTypes = [
     description: 'Bounty submissions',
     icon: DollarSign,
   },
-];
+]
 
-export function ProjectTypeSelector({ value, onChange, error }: ProjectTypeSelectorProps) {
+export function ProjectTypeSelector({
+  value,
+  onChange,
+  error,
+}: ProjectTypeSelectorProps) {
   return (
     <div className="space-y-3">
-      <RadioGroup value={value} onValueChange={onChange} className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <RadioGroup
+        value={value}
+        onValueChange={onChange}
+        className="grid grid-cols-2 gap-3 md:grid-cols-3"
+      >
         {projectTypes.map((type) => {
-          const Icon = type.icon;
-          const isSelected = value === type.value;
+          const Icon = type.icon
+          const isSelected = value === type.value
 
           return (
             <Label
@@ -83,25 +98,29 @@ export function ProjectTypeSelector({ value, onChange, error }: ProjectTypeSelec
                   id={type.value}
                   className="sr-only"
                 />
-                <div className="flex flex-col items-center text-center gap-2">
-                  <Icon className={`h-6 w-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <Icon
+                    className={`h-6 w-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
+                  />
                   <div>
-                    <div className={`font-medium ${isSelected ? 'text-primary' : ''}`}>
+                    <div
+                      className={`font-medium ${isSelected ? 'text-primary' : ''}`}
+                    >
                       {type.label}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
+                    <div className="mt-0.5 text-xs text-muted-foreground">
                       {type.description}
                     </div>
                   </div>
                 </div>
               </Card>
             </Label>
-          );
+          )
         })}
       </RadioGroup>
 
       {/* Error message */}
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
-  );
+  )
 }

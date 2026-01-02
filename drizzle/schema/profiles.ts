@@ -1,4 +1,15 @@
-import { pgTable, uuid, varchar, real, integer, pgEnum, foreignKey, check, index, decimal } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  varchar,
+  real,
+  integer,
+  pgEnum,
+  foreignKey,
+  check,
+  index,
+  decimal,
+} from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, softDelete, metadata } from './utils'
 import { users } from './users'
@@ -11,27 +22,27 @@ import { users } from './users'
  * User visibility in member directory
  */
 export const profileVisibilityEnum = pgEnum('profile_visibility', [
-  'public',     // Visible to everyone
-  'members',    // Visible to authenticated members only
-  'private',    // Hidden from directory
+  'public', // Visible to everyone
+  'members', // Visible to authenticated members only
+  'private', // Hidden from directory
 ])
 
 /**
  * Availability status for bounties
  */
 export const availabilityStatusEnum = pgEnum('availability_status', [
-  'available',       // Actively looking for work
-  'open_to_offers',  // Not actively searching but open
-  'unavailable',     // Not interested in new work
+  'available', // Actively looking for work
+  'open_to_offers', // Not actively searching but open
+  'unavailable', // Not interested in new work
 ])
 
 /**
  * Learning track selection (3 core tracks)
  */
 export const learningTrackEnum = pgEnum('learning_track', [
-  'ai',       // Artificial Intelligence & Machine Learning
-  'crypto',   // Blockchain & Cryptocurrency
-  'privacy',  // Privacy & Security
+  'ai', // Artificial Intelligence & Machine Learning
+  'crypto', // Blockchain & Cryptocurrency
+  'privacy', // Privacy & Security
 ])
 
 // ============================================================
@@ -58,14 +69,12 @@ export const profiles = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Foreign Key to users (1:1)
-    userId: uuid('user_id')
-      .unique()
-      .notNull(),
+    userId: uuid('user_id').unique().notNull(),
 
     // Location
     city: varchar('city', { length: 100 }),
     country: varchar('country', { length: 100 }),
-    countryCode: varchar('country_code', { length: 2 }),  // ISO 3166-1 alpha-2
+    countryCode: varchar('country_code', { length: 2 }), // ISO 3166-1 alpha-2
 
     // Social Links
     githubUrl: varchar('github_url', { length: 500 }),
@@ -86,33 +95,25 @@ export const profiles = pgTable(
       .notNull(),
 
     // Statistics (Denormalized for Performance)
-    completedBounties: integer('completed_bounties')
-      .default(0)
-      .notNull(),
+    completedBounties: integer('completed_bounties').default(0).notNull(),
 
-    totalEarningsUsd: real('total_earnings_usd')
-      .default(0)
-      .notNull(),
+    totalEarningsUsd: real('total_earnings_usd').default(0).notNull(),
 
-    profileViews: integer('profile_views')
-      .default(0)
-      .notNull(),
+    profileViews: integer('profile_views').default(0).notNull(),
 
     // $PULPA Activities Stats (Denormalized for Performance)
     totalPulpaEarned: decimal('total_pulpa_earned', { precision: 18, scale: 8 })
       .default('0')
       .notNull(),
 
-    activitiesCompleted: integer('activities_completed')
-      .default(0)
-      .notNull(),
+    activitiesCompleted: integer('activities_completed').default(0).notNull(),
 
     // Timestamps & Audit
     ...timestamps,
     ...softDelete,
 
     // Metadata
-    ...metadata,  // Feature flags, extended preferences, etc.
+    ...metadata, // Feature flags, extended preferences, etc.
   },
   (table) => ({
     // Foreign Key
@@ -125,32 +126,32 @@ export const profiles = pgTable(
     // Constraints
     countryCodeFormatCheck: check(
       'country_code_format',
-      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* '^[A-Z]{2}$'`
+      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* '^[A-Z]{2}$'`,
     ),
 
     completedBountiesPositiveCheck: check(
       'completed_bounties_positive',
-      sql`${table.completedBounties} >= 0`
+      sql`${table.completedBounties} >= 0`,
     ),
 
     totalEarningsPositiveCheck: check(
       'total_earnings_positive',
-      sql`${table.totalEarningsUsd} >= 0`
+      sql`${table.totalEarningsUsd} >= 0`,
     ),
 
     profileViewsPositiveCheck: check(
       'profile_views_positive',
-      sql`${table.profileViews} >= 0`
+      sql`${table.profileViews} >= 0`,
     ),
 
     pulpaEarnedPositiveCheck: check(
       'pulpa_earned_positive',
-      sql`${table.totalPulpaEarned} >= 0`
+      sql`${table.totalPulpaEarned} >= 0`,
     ),
 
     activitiesCompletedPositiveCheck: check(
       'activities_completed_positive',
-      sql`${table.activitiesCompleted} >= 0`
+      sql`${table.activitiesCompleted} >= 0`,
     ),
 
     // Indexes
@@ -158,8 +159,10 @@ export const profiles = pgTable(
     countryCodeIdx: index('idx_profiles_country_code').on(table.countryCode),
 
     // Composite index for directory filtering
-    visibilityAvailabilityIdx: index('idx_profiles_visibility_availability')
-      .on(table.profileVisibility, table.availabilityStatus),
+    visibilityAvailabilityIdx: index('idx_profiles_visibility_availability').on(
+      table.profileVisibility,
+      table.availabilityStatus,
+    ),
 
     // Partial index for active profiles only
     deletedAtIdx: index('idx_profiles_deleted_at')
@@ -167,13 +170,21 @@ export const profiles = pgTable(
       .where(sql`${table.deletedAt} IS NULL`),
 
     // Stats indexes for sorting
-    completedBountiesIdx: index('idx_profiles_completed_bounties').on(table.completedBounties),
-    totalEarningsIdx: index('idx_profiles_total_earnings').on(table.totalEarningsUsd),
+    completedBountiesIdx: index('idx_profiles_completed_bounties').on(
+      table.completedBounties,
+    ),
+    totalEarningsIdx: index('idx_profiles_total_earnings').on(
+      table.totalEarningsUsd,
+    ),
 
     // $PULPA stats indexes
-    pulpaEarnedIdx: index('idx_profiles_pulpa_earned').on(table.totalPulpaEarned),
-    activitiesCompletedIdx: index('idx_profiles_activities_completed').on(table.activitiesCompleted),
-  })
+    pulpaEarnedIdx: index('idx_profiles_pulpa_earned').on(
+      table.totalPulpaEarned,
+    ),
+    activitiesCompletedIdx: index('idx_profiles_activities_completed').on(
+      table.activitiesCompleted,
+    ),
+  }),
 )
 
 // ============================================================

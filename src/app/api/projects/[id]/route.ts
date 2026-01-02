@@ -6,15 +6,30 @@
  * DELETE /api/projects/:id - Soft delete project
  */
 
-import { NextRequest } from 'next/server';
-import { db } from '@/lib/db';
-import { projects, projectSkills, skills, userSkills, users } from '@/lib/db/schema';
-import { apiSuccess, apiError, apiErrors, apiValidationError } from '@/lib/api/response';
-import { updateProjectSchema } from '@/lib/validators/project';
-import { requireAuth, getAuthUser } from '@/lib/privy/middleware';
-import { eq, and, inArray, isNull, sql } from 'drizzle-orm';
-import { syncUserSkills } from '@/lib/skills/sync-user-skills';
-import type { GetProjectResponse, UpdateProjectResponse, DeleteProjectResponse } from '@/types/api-v1';
+import { NextRequest } from 'next/server'
+import { db } from '@/lib/db'
+import {
+  projects,
+  projectSkills,
+  skills,
+  userSkills,
+  users,
+} from '@/lib/db/schema'
+import {
+  apiSuccess,
+  apiError,
+  apiErrors,
+  apiValidationError,
+} from '@/lib/api/response'
+import { updateProjectSchema } from '@/lib/validators/project'
+import { requireAuth, getAuthUser } from '@/lib/privy/middleware'
+import { eq, and, inArray, isNull, sql } from 'drizzle-orm'
+import { syncUserSkills } from '@/lib/skills/sync-user-skills'
+import type {
+  GetProjectResponse,
+  UpdateProjectResponse,
+  DeleteProjectResponse,
+} from '@/types/api-v1'
 
 /**
  * GET /api/projects/:id
@@ -22,22 +37,22 @@ import type { GetProjectResponse, UpdateProjectResponse, DeleteProjectResponse }
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id: projectId } = await params;
+    const { id: projectId } = await params
 
     // Get current user (for draft visibility)
-    const authUser = await getAuthUser(request);
-    let currentUserId: string | null = null;
+    const authUser = await getAuthUser(request)
+    let currentUserId: string | null = null
 
     if (authUser) {
       const [dbUser] = await db
         .select()
         .from(users)
         .where(eq(users.privyDid, authUser.privyDid))
-        .limit(1);
-      currentUserId = dbUser?.id || null;
+        .limit(1)
+      currentUserId = dbUser?.id || null
     }
 
     // Fetch project with skills
@@ -49,17 +64,17 @@ export async function GET(
       .from(projects)
       .leftJoin(projectSkills, eq(projects.id, projectSkills.projectId))
       .leftJoin(skills, eq(projectSkills.skillId, skills.id))
-      .where(and(eq(projects.id, projectId), isNull(projects.deletedAt)));
+      .where(and(eq(projects.id, projectId), isNull(projects.deletedAt)))
 
     if (projectWithSkills.length === 0) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
-    const project = projectWithSkills[0].project;
+    const project = projectWithSkills[0].project
 
     // Check draft visibility
     if (project.projectStatus === 'draft' && project.userId !== currentUserId) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
     // Increment view count (only for non-owners)
@@ -67,7 +82,7 @@ export async function GET(
       await db
         .update(projects)
         .set({ viewCount: project.viewCount + 1 })
-        .where(eq(projects.id, projectId));
+        .where(eq(projects.id, projectId))
     }
 
     // Transform to response format
@@ -76,12 +91,12 @@ export async function GET(
       skills: projectWithSkills
         .filter((row) => row.skill !== null)
         .map((row) => row.skill!),
-    };
+    }
 
-    return apiSuccess<GetProjectResponse>({ project: projectData });
+    return apiSuccess<GetProjectResponse>({ project: projectData })
   } catch (error) {
-    console.error('Error fetching project:', error);
-    return apiErrors.internal();
+    console.error('Error fetching project:', error)
+    return apiErrors.internal()
   }
 }
 
@@ -91,53 +106,53 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const authUser = await getAuthUser(request);
+  const authUser = await getAuthUser(request)
   if (!authUser) {
-    return apiErrors.unauthorized();
+    return apiErrors.unauthorized()
   }
 
   try {
-    const { id: projectId } = await params;
+    const { id: projectId } = await params
 
     // Get user from database
     const [dbUser] = await db
       .select()
       .from(users)
       .where(eq(users.privyDid, authUser.privyDid))
-      .limit(1);
+      .limit(1)
 
     if (!dbUser) {
-      return apiErrors.notFound('User');
+      return apiErrors.notFound('User')
     }
 
-    const userId = dbUser.id;
+    const userId = dbUser.id
 
     // Check project ownership
     const [existingProject] = await db
       .select()
       .from(projects)
       .where(and(eq(projects.id, projectId), isNull(projects.deletedAt)))
-      .limit(1);
+      .limit(1)
 
     if (!existingProject) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
     if (existingProject.userId !== userId) {
-      return apiErrors.unauthorized();
+      return apiErrors.unauthorized()
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const validation = updateProjectSchema.safeParse(body);
+    const body = await request.json()
+    const validation = updateProjectSchema.safeParse(body)
 
     if (!validation.success) {
-      return apiValidationError(validation.error);
+      return apiValidationError(validation.error)
     }
 
-    const { skillIds, ...projectData } = validation.data;
+    const { skillIds, ...projectData } = validation.data
 
     // Update project
     const [updatedProject] = await db
@@ -147,7 +162,7 @@ export async function PUT(
         updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))
-      .returning();
+      .returning()
 
     // Update skills if provided
     if (skillIds) {
@@ -155,14 +170,19 @@ export async function PUT(
       const existingSkills = await db
         .select()
         .from(skills)
-        .where(inArray(skills.id, skillIds));
+        .where(inArray(skills.id, skillIds))
 
       if (existingSkills.length !== skillIds.length) {
-        return apiError('Some skills do not exist', { status: 400, code: 'INVALID_SKILLS' });
+        return apiError('Some skills do not exist', {
+          status: 400,
+          code: 'INVALID_SKILLS',
+        })
       }
 
       // Remove old skill links
-      await db.delete(projectSkills).where(eq(projectSkills.projectId, projectId));
+      await db
+        .delete(projectSkills)
+        .where(eq(projectSkills.projectId, projectId))
 
       // Add new skill links
       if (skillIds.length > 0) {
@@ -170,12 +190,12 @@ export async function PUT(
           skillIds.map((skillId) => ({
             projectId,
             skillId,
-          }))
-        );
+          })),
+        )
       }
 
       // Auto-sync user skills using centralized utility
-      await syncUserSkills(userId);
+      await syncUserSkills(userId)
     }
 
     // Fetch updated project with skills
@@ -187,22 +207,22 @@ export async function PUT(
       .from(projects)
       .leftJoin(projectSkills, eq(projects.id, projectSkills.projectId))
       .leftJoin(skills, eq(projectSkills.skillId, skills.id))
-      .where(eq(projects.id, projectId));
+      .where(eq(projects.id, projectId))
 
     const project = {
       ...updatedProject,
       skills: projectWithSkills
         .filter((row) => row.skill !== null)
         .map((row) => row.skill!),
-    };
+    }
 
     return apiSuccess<UpdateProjectResponse>(
       { project },
-      { message: 'Project updated successfully' }
-    );
+      { message: 'Project updated successfully' },
+    )
   } catch (error) {
-    console.error('Error updating project:', error);
-    return apiErrors.internal();
+    console.error('Error updating project:', error)
+    return apiErrors.internal()
   }
 }
 
@@ -212,65 +232,65 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const authUser = await getAuthUser(request);
+  const authUser = await getAuthUser(request)
   if (!authUser) {
-    return apiErrors.unauthorized();
+    return apiErrors.unauthorized()
   }
 
   try {
-    const { id: projectId } = await params;
+    const { id: projectId } = await params
 
     // Get user from database
     const [dbUser] = await db
       .select()
       .from(users)
       .where(eq(users.privyDid, authUser.privyDid))
-      .limit(1);
+      .limit(1)
 
     if (!dbUser) {
-      return apiErrors.notFound('User');
+      return apiErrors.notFound('User')
     }
 
-    const userId = dbUser.id;
+    const userId = dbUser.id
 
     // Check project ownership
     const [existingProject] = await db
       .select()
       .from(projects)
       .where(and(eq(projects.id, projectId), isNull(projects.deletedAt)))
-      .limit(1);
+      .limit(1)
 
     if (!existingProject) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
     if (existingProject.userId !== userId) {
-      return apiErrors.unauthorized();
+      return apiErrors.unauthorized()
     }
 
     // Get project skills to decrement user skill counts
     const projectSkillsList = await db
       .select()
       .from(projectSkills)
-      .where(eq(projectSkills.projectId, projectId));
+      .where(eq(projectSkills.projectId, projectId))
 
     // Soft delete project
     await db
       .update(projects)
       .set({ deletedAt: new Date() })
-      .where(eq(projects.id, projectId));
+      .where(eq(projects.id, projectId))
 
     // Auto-sync user skills (will remove skills with 0 projects)
-    await syncUserSkills(userId);
+    await syncUserSkills(userId)
 
     return apiSuccess<DeleteProjectResponse>(
       { projectId },
-      { message: 'Project deleted successfully' }
-    );
+      { message: 'Project deleted successfully' },
+    )
   } catch (error) {
-    console.error('Error deleting project:', error);
-    return apiErrors.internal();
+    console.error('Error deleting project:', error)
+    return apiErrors.internal()
   }
 }

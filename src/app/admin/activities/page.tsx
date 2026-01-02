@@ -96,7 +96,7 @@ function AdminActivitiesPageContent() {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content">
+        <div className="page-content space-y-6">
           <div className="w-full flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Activities Management</h1>

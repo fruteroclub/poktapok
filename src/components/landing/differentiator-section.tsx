@@ -11,7 +11,7 @@ import AuthButtonPrivy from '../buttons/auth-button-privy'
 export default function DifferentiatorSection() {
   return (
     <section className="page bg-card/30 py-12 md:py-16 lg:py-20">
-      <div className="page-content">
+      <div className="page-content space-y-6">
         <div className="section">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-12 lg:gap-12">
             {/* Left Column - Why Frutero & Why Now */}

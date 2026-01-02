@@ -49,7 +49,7 @@ export default function PortfolioPage() {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content space-y-6">
+        <div className="page-content">
           {/* Page Header */}
           <div className="header-section flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>

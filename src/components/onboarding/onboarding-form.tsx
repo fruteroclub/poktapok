@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Label } from "@/components/ui/label";
 export default function OnboardingForm() {
   const { user } = usePrivy();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -48,6 +50,9 @@ export default function OnboardingForm() {
           responseData.error?.message || responseData.error || "Failed to update profile";
         throw new Error(errorMessage);
       }
+
+      // Invalidate auth query to refetch user with updated status
+      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
 
       toast.success("¡Perfil completado exitosamente!");
       router.push("/profile");

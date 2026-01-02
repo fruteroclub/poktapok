@@ -76,12 +76,12 @@ function AdminActivitiesPageContent() {
       </div>
 
       {/* Filters */}
-      <Card className="w-full gap-0!">
+      <Card className="w-full gap-0! py-4">
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
               <Select
@@ -150,7 +150,7 @@ function AdminActivitiesPageContent() {
 
       {/* Activities Table */}
       <Card className="w-full">
-        <CardContent className="pt-6">
+        <CardContent className="px-2 lg:px-6">
           {error ? (
             <div className="py-8 text-center text-destructive">
               Failed to load activities. Please try again.

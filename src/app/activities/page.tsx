@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Loader2 } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -22,59 +23,22 @@ import {
 import { useAuth } from '@/hooks'
 import { PlusCircle, ClipboardList } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
-
-interface Activity {
-  id: string
-  title: string
-  description: string
-  activityType: string
-  difficulty: string
-  rewardPulpaAmount: string
-  currentSubmissionsCount: number
-  totalAvailableSlots: number | null
-  category: string | null
-}
+import { usePublicActivities } from '@/hooks/use-activities'
+import type { Activity } from '@/services/activities'
 
 export default function ActivitiesPage() {
   const router = useRouter()
   const { data: authData } = useAuth()
   const user = authData?.user
   const isAdmin = user?.role === 'admin'
-  const [activities, setActivities] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
     type: 'all',
     difficulty: 'all',
     search: '',
   })
 
-  useEffect(() => {
-    fetchActivities()
-  }, [filters])
-
-  const fetchActivities = async () => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({ status: 'active' })
-      if (filters.type !== 'all') params.append('type', filters.type)
-      if (filters.difficulty !== 'all')
-        params.append('difficulty', filters.difficulty)
-      if (filters.search) params.append('search', filters.search)
-
-      const response = await fetch(`/api/activities?${params.toString()}`)
-
-      if (!response.ok) throw new Error('Failed to fetch activities')
-
-      const result = await response.json()
-      setActivities(result.data.activities)
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : 'Failed to fetch activities',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { data, isLoading, error } = usePublicActivities(filters)
+  const activities = data?.activities || []
 
   const getDifficultyColor = (difficulty: string) => {
     const colors: Record<string, string> = {
@@ -117,7 +81,7 @@ export default function ActivitiesPage() {
 
           {/* Admin Panel */}
           {isAdmin && (
-            <Card className="mb-8 w-full border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30">
+            <Card className="w-full border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-purple-900 dark:text-purple-100">
                   <ClipboardList className="h-5 w-5" />
@@ -150,12 +114,12 @@ export default function ActivitiesPage() {
           )}
 
           {/* Filters */}
-          <Card className="mb-8 w-full">
+          <Card className="w-full gap-2">
             <CardHeader>
               <CardTitle>Find Activities</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Activity Type</label>
                   <Select
@@ -223,14 +187,21 @@ export default function ActivitiesPage() {
           </Card>
 
           {/* Activities Grid */}
-          {loading ? (
-            <div className="py-12 text-center">Loading activities...</div>
+          {error ? (
+            <div className="py-12 text-center text-destructive">
+              Failed to load activities. Please try again.
+            </div>
+          ) : isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <span className="ml-2">Loading activities...</span>
+            </div>
           ) : activities.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               No activities found. Check back soon for new opportunities!
             </div>
           ) : (
-            <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid w-full grid-cols-1 gap-y-2 md:grid-cols-2 lg:grid-cols-3">
               {activities.map((activity) => (
                 <Card
                   key={activity.id}
@@ -238,12 +209,12 @@ export default function ActivitiesPage() {
                   onClick={() => router.push(`/activities/${activity.id}`)}
                 >
                   <CardHeader>
-                    <div className="mb-2 flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-2">
                       <CardTitle className="line-clamp-2 text-xl">
                         {activity.title}
                       </CardTitle>
                       <Badge className="shrink-0 bg-purple-600 text-white">
-                        {activity.rewardPulpaAmount} $PULPA
+                        {Number(activity.rewardPulpaAmount)} $PULPA
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-2">

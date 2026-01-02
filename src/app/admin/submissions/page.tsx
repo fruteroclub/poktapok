@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { ExternalLinkIcon, Link2Icon, Loader2 } from 'lucide-react'
+import { ExternalLinkIcon, Loader2 } from 'lucide-react'
 import {
   Select,
   SelectContent,

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,12 @@ import { normalize } from 'viem/ens'
 import Link from 'next/link'
 import { User } from '@/types/api-v1'
 
+interface MenuItem {
+  label: string
+  href: string
+  adminOnly?: boolean
+}
+
 interface MobileMenuDropdownProps {
   isLoading?: boolean
   isSignedIn?: boolean
@@ -25,14 +31,28 @@ interface MobileMenuDropdownProps {
   user: User
 }
 
+const MENU_ITEMS: MenuItem[] = [
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Profile', href: '/profile' },
+  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Actividades', href: '/activities' },
+]
+
+const ADMIN_MENU_ITEMS: MenuItem[] = [
+  { label: 'Admin Dashboard', href: '/admin', adminOnly: true },
+  { label: 'Crear Actividad', href: '/admin/activities/new', adminOnly: true },
+  { label: 'Revisar Submissions', href: '/admin/submissions', adminOnly: true },
+]
+
 export default function MobileMenuDropdown({
   ready,
   user,
 }: MobileMenuDropdownProps) {
   const account = useConnection()
-  const [checkSumAddress, setCheckSumAddress] = useState<
-    `0x${string}` | undefined
-  >(undefined)
+  const checkSumAddress = useMemo<`0x${string}` | undefined>(
+    () => account.address,
+    [account.address],
+  )
 
   const { data: ens } = useEnsName({
     address: checkSumAddress,
@@ -50,17 +70,11 @@ export default function MobileMenuDropdown({
     },
   })
 
-  useEffect(() => {
-    if (account.address) {
-      setCheckSumAddress(account.address)
-    }
-  }, [account.address, ready])
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {/* Avatar image or blockie avatar */}
-        <div className="flex animate-in items-center gap-2 px-4 py-2 duration-200 fade-in-50 hover:cursor-pointer hover:rounded-md hover:outline hover:outline-2 hover:outline-primary">
+        <div className="flex animate-in items-center gap-2 px-4 py-2 duration-200 fade-in-50 hover:cursor-pointer hover:rounded-md hover:outline-2 hover:outline-primary">
           {user?.avatarUrl ? (
             <>
               <Avatar>
@@ -85,50 +99,32 @@ export default function MobileMenuDropdown({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 p-4">
-        <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/dashboard">
-            Dashboard
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/profile">
-            Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/portfolio">
-            Portfolio
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link className="w-full text-foreground" href="/activities">
-            Actividades
-          </Link>
-        </DropdownMenuItem>
-        {user.role === 'admin' && (
+        {/* Regular menu items */}
+        {MENU_ITEMS.map((item) => (
+          <DropdownMenuItem key={item.href}>
+            <Link className="w-full text-foreground" href={item.href}>
+              {item.label}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+
+        {/* Admin menu items - only visible to admins */}
+        {user.role === 'admin' && ADMIN_MENU_ITEMS.length > 0 && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
               Admin
             </DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Link
-                className="w-full text-foreground"
-                href="/admin/activities/new"
-              >
-                Crear Actividad
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link
-                className="w-full text-foreground"
-                href="/admin/submissions"
-              >
-                Revisar Submissions
-              </Link>
-            </DropdownMenuItem>
+            {ADMIN_MENU_ITEMS.map((item) => (
+              <DropdownMenuItem key={item.href}>
+                <Link className="w-full text-foreground" href={item.href}>
+                  {item.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
           </>
         )}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem className="justify-center focus:bg-transparent">
           <AuthButton size="sm" />

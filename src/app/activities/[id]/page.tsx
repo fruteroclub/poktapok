@@ -162,7 +162,7 @@ export default function ActivityDetailPage() {
     return (
       <PageWrapper>
         <div className="page">
-          <div className="page-content space-y-6">
+          <div className="page-content">
             <div className="py-12 text-center">Loading activity...</div>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function ActivityDetailPage() {
     return (
       <PageWrapper>
         <div className="page">
-          <div className="page-content space-y-6">
+          <div className="page-content">
             <div className="py-12 text-center">Activity not found</div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function ActivityDetailPage() {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content space-y-6">
+        <div className="page-content">
           <Button
             variant="ghost"
             onClick={() => router.back()}

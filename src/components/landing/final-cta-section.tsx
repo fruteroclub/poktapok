@@ -7,7 +7,7 @@ import { SparkleIcon } from 'lucide-react'
 export default function FooterSection() {
   return (
     <div className="page">
-      <div className="page-content space-y-6">
+      <div className="page-content">
         <div className="w-full space-y-4 rounded-xl bg-primary px-8 py-12 text-center text-white md:max-w-screen-sm md:py-16">
           {/* Mascotas */}
           <div className="flex justify-center space-x-8">

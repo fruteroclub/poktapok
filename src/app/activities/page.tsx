@@ -104,8 +104,8 @@ export default function ActivitiesPage() {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content space-y-6">
-          <div className="mb-6 w-full">
+        <div className="page-content">
+          <div className="w-full">
             <h1 className="text-3xl font-bold tracking-tight">
               Educational Activities
             </h1>

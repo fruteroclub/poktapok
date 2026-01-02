@@ -15,11 +15,12 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-import PageWrapper from '@/components/layout/page-wrapper'
+import { useCreateActivity } from '@/hooks/use-activities'
+import { toast } from 'sonner'
 
 function NewActivityPageContent() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const createMutation = useCreateActivity()
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -41,85 +42,63 @@ function NewActivityPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
-    try {
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        instructions: formData.instructions || undefined,
-        activity_type: formData.activity_type,
-        category: formData.category || undefined,
-        difficulty: formData.difficulty,
-        reward_pulpa_amount: formData.reward_pulpa_amount,
-        evidence_requirements: {
-          url_required: formData.url_required,
-          screenshot_required: formData.screenshot_required,
-          text_required: formData.text_required,
-        },
-        verification_type: formData.verification_type,
-        max_submissions_per_user:
-          formData.max_submissions_per_user &&
-          formData.max_submissions_per_user.trim()
-            ? parseInt(formData.max_submissions_per_user)
-            : undefined,
-        total_available_slots:
-          formData.total_available_slots &&
-          formData.total_available_slots.trim()
-            ? parseInt(formData.total_available_slots)
-            : undefined,
-        starts_at: formData.starts_at
-          ? new Date(formData.starts_at).toISOString()
+    const payload = {
+      title: formData.title,
+      description: formData.description,
+      instructions: formData.instructions || undefined,
+      activity_type: formData.activity_type,
+      category: formData.category || undefined,
+      difficulty: formData.difficulty,
+      reward_pulpa_amount: formData.reward_pulpa_amount,
+      evidence_requirements: {
+        url_required: formData.url_required,
+        screenshot_required: formData.screenshot_required,
+        text_required: formData.text_required,
+      },
+      verification_type: formData.verification_type,
+      max_submissions_per_user:
+        formData.max_submissions_per_user &&
+        formData.max_submissions_per_user.trim()
+          ? parseInt(formData.max_submissions_per_user)
           : undefined,
-        expires_at: formData.expires_at
-          ? new Date(formData.expires_at).toISOString()
+      total_available_slots:
+        formData.total_available_slots &&
+        formData.total_available_slots.trim()
+          ? parseInt(formData.total_available_slots)
           : undefined,
-        status: formData.status,
-      }
-
-      console.log('📤 Payload being sent:', JSON.stringify(payload, null, 2))
-
-      const response = await fetch('/api/admin/activities', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        console.error('❌ Error creating activity:', error)
-        throw new Error(error.error?.message || 'Failed to create activity')
-      }
-
-      await response.json() // Consume response
-      console.log('✅ Activity created successfully')
-      alert('¡Actividad creada exitosamente!')
-      router.push('/admin/activities')
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : 'Failed to create activity',
-      )
-    } finally {
-      setLoading(false)
+      starts_at: formData.starts_at
+        ? new Date(formData.starts_at).toISOString()
+        : undefined,
+      expires_at: formData.expires_at
+        ? new Date(formData.expires_at).toISOString()
+        : undefined,
+      status: formData.status,
     }
+
+    createMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('Activity created successfully!')
+        router.push('/admin/activities')
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Failed to create activity')
+      },
+    })
   }
 
   return (
-    <PageWrapper>
-      <div className="page">
-        <div className="page-content">
-          <div className="header-section">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Create New Activity
-            </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Create a new educational activity for users to earn $PULPA tokens
-            </p>
-          </div>
+    <div className="page-content">
+      <div className="header-section">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Create New Activity
+        </h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          Create a new educational activity for users to earn $PULPA tokens
+        </p>
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">Basic Information</h2>
@@ -419,22 +398,20 @@ function NewActivityPageContent() {
 
             {/* Actions */}
             <div className="flex gap-4">
-              <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? 'Creating...' : 'Create Activity'}
+              <Button type="submit" disabled={createMutation.isPending} className="flex-1">
+                {createMutation.isPending ? 'Creating...' : 'Create Activity'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                disabled={loading}
+                disabled={createMutation.isPending}
               >
                 Cancel
               </Button>
             </div>
-          </form>
-        </div>
-      </div>
-    </PageWrapper>
+      </form>
+    </div>
   )
 }
 

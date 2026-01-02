@@ -5,11 +5,18 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 import { usePendingUsers } from '@/hooks/use-admin'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { useApproveUser, useRejectUser } from '@/hooks/use-admin'
 import { toast } from 'sonner'
+import { Section } from '@/components/layout/section'
 
 /**
  * Admin Pending Users Page
@@ -70,7 +77,10 @@ export default function PendingUsersPage() {
       await approveMutation.mutateAsync(userId)
       toast.success(`Approved ${displayName || 'user'}`)
     } catch (error) {
-      toast.error(`Failed to approve user`)
+      const message =
+        error instanceof Error ? error.message : 'Failed to approve user'
+      toast.error(message)
+      console.error('Failed to approve user:', error)
     }
   }
 
@@ -79,7 +89,10 @@ export default function PendingUsersPage() {
       await rejectMutation.mutateAsync(userId)
       toast.success(`Rejected ${displayName || 'user'}`)
     } catch (error) {
-      toast.error(`Failed to reject user`)
+      const message =
+        error instanceof Error ? error.message : 'Failed to reject user'
+      toast.error(message)
+      console.error('Failed to reject user:', error)
     }
   }
 
@@ -94,7 +107,7 @@ export default function PendingUsersPage() {
       </div>
 
       {/* Stats */}
-      <div className="mt-6">
+      <div>
         <p className="text-sm text-muted-foreground">
           {pendingUsers.length} {pendingUsers.length === 1 ? 'user' : 'users'}{' '}
           awaiting review
@@ -103,20 +116,20 @@ export default function PendingUsersPage() {
 
       {/* User Cards */}
       {pendingUsers.length === 0 ? (
-        <Card className="mt-6">
-          <CardContent className="flex items-center justify-center py-12">
+        <Card>
+          <CardContent className="flex w-full items-center justify-center py-12">
             <p className="text-muted-foreground">No pending users to review</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="mt-6 grid gap-4">
+        <Section className="grid gap-4 md:grid-cols-2">
           {pendingUsers.map(({ user, profile }) => {
             const isProcessing =
               approveMutation.isPending || rejectMutation.isPending
 
             return (
-              <Card key={user.id}>
-                <CardHeader>
+              <Card key={user.id} className="gap-y-2">
+                <CardHeader className="pb-0">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-12 w-12">
@@ -142,31 +155,6 @@ export default function PendingUsersPage() {
                           </p>
                         )}
                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleReject(user.id, user.displayName)}
-                        disabled={isProcessing}
-                      >
-                        {rejectMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          'Reject'
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleApprove(user.id, user.displayName)}
-                        disabled={isProcessing}
-                      >
-                        {approveMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          'Approve'
-                        )}
-                      </Button>
                     </div>
                   </div>
                 </CardHeader>
@@ -197,7 +185,7 @@ export default function PendingUsersPage() {
                         )}
                       {profile.socialLinks && (
                         <div className="col-span-2">
-                          <p className="mb-2 font-medium">Social Links</p>
+                          <p className="font-medium">Social Links</p>
                           <div className="flex flex-wrap gap-3">
                             {profile.socialLinks.github && (
                               <a
@@ -245,10 +233,35 @@ export default function PendingUsersPage() {
                     </div>
                   </CardContent>
                 )}
+                <CardFooter className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleReject(user.id, user.displayName)}
+                    disabled={isProcessing}
+                  >
+                    {rejectMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Reject'
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleApprove(user.id, user.displayName)}
+                    disabled={isProcessing}
+                  >
+                    {approveMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Approve'
+                    )}
+                  </Button>
+                </CardFooter>
               </Card>
             )
           })}
-        </div>
+        </Section>
       )}
     </div>
   )

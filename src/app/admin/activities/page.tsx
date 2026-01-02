@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Loader2 } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -22,59 +23,19 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-
-interface Activity {
-  id: string
-  title: string
-  activityType: string
-  difficulty: string
-  rewardPulpaAmount: string
-  status: string
-  currentSubmissionsCount: number
-  totalAvailableSlots: number | null
-  createdAt: string
-}
+import { useActivities } from '@/hooks/use-activities'
 
 function AdminActivitiesPageContent() {
   const router = useRouter()
-  const [activities, setActivities] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
     status: 'all',
     type: 'all',
     search: '',
   })
 
-  const fetchActivities = useCallback(async () => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (filters.status !== 'all') params.append('status', filters.status)
-      if (filters.type !== 'all') params.append('type', filters.type)
-      if (filters.search) params.append('search', filters.search)
+  const { data, isLoading, error } = useActivities(filters)
 
-      const response = await fetch(`/api/admin/activities?${params.toString()}`)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to fetch activities')
-      }
-
-      const result = await response.json()
-      setActivities(result.data.activities || [])
-    } catch (error) {
-      console.error('Error fetching activities:', error)
-      alert(
-        error instanceof Error ? error.message : 'Failed to fetch activities',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [filters])
-
-  useEffect(() => {
-    fetchActivities()
-  }, [fetchActivities])
+  const activities = data?.activities || []
 
   const getStatusBadge = (status: string) => {
     const variants: Record<
@@ -99,7 +60,7 @@ function AdminActivitiesPageContent() {
 
   return (
     <div className="page-content">
-      <div className="mb-6 flex w-full items-center justify-between">
+      <div className="flex w-full items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Activities Management
@@ -115,7 +76,7 @@ function AdminActivitiesPageContent() {
       </div>
 
       {/* Filters */}
-      <Card className="mb-6 w-full">
+      <Card className="w-full gap-0!">
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
@@ -190,8 +151,15 @@ function AdminActivitiesPageContent() {
       {/* Activities Table */}
       <Card className="w-full">
         <CardContent className="pt-6">
-          {loading ? (
-            <div className="py-8 text-center">Loading activities...</div>
+          {error ? (
+            <div className="py-8 text-center text-destructive">
+              Failed to load activities. Please try again.
+            </div>
+          ) : isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span className="ml-2">Loading activities...</span>
+            </div>
           ) : activities.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No activities found. Create your first activity to get started!

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
+import { ExternalLinkIcon, Link2Icon, Loader2 } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -29,139 +30,69 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-
-interface Submission {
-  submission: {
-    id: string
-    activityId: string
-    userId: string
-    submissionUrl: string | null
-    submissionText: string | null
-    status: string
-    submittedAt: string
-    rewardPulpaAmount: string
-  }
-  activity: {
-    id: string
-    title: string
-    activityType: string
-    rewardPulpaAmount: string
-  }
-  user: {
-    id: string
-    username: string | null
-    email: string
-    appWallet: string | null
-  }
-}
+import {
+  useSubmissions,
+  useApproveSubmission,
+  useRejectSubmission,
+} from '@/hooks/use-submissions'
+import type { Submission } from '@/services/submissions'
+import { toast } from 'sonner'
 
 function AdminSubmissionsPageContent() {
-  const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('pending')
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null)
   const [reviewNotes, setReviewNotes] = useState('')
-  const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => {
-    fetchSubmissions()
-  }, [filter])
+  const { data, isLoading, error } = useSubmissions(filter)
+  const approveMutation = useApproveSubmission()
+  const rejectMutation = useRejectSubmission()
 
-  const fetchSubmissions = async () => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({ status: filter })
-      const response = await fetch(
-        `/api/admin/submissions?${params.toString()}`,
-      )
-
-      if (!response.ok) throw new Error('Failed to fetch submissions')
-
-      const result = await response.json()
-      setSubmissions(result.data.submissions)
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : 'Failed to fetch submissions',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
+  const submissions = data?.submissions || []
 
   const handleApprove = async (submissionId: string) => {
     if (!reviewNotes && !confirm('No review notes provided. Continue?')) return
 
-    setActionLoading(true)
-    try {
-      const response = await fetch(
-        `/api/admin/submissions/${submissionId}/approve`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            review_notes: reviewNotes || undefined,
-          }),
+    approveMutation.mutate(
+      {
+        submissionId,
+        data: { review_notes: reviewNotes || undefined },
+      },
+      {
+        onSuccess: () => {
+          toast.success('Submission approved successfully!')
+          setSelectedSubmission(null)
+          setReviewNotes('')
         },
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to approve submission')
-      }
-
-      alert('Submission approved successfully!')
-      setSelectedSubmission(null)
-      setReviewNotes('')
-      fetchSubmissions()
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : 'Failed to approve submission',
-      )
-    } finally {
-      setActionLoading(false)
-    }
+        onError: (err) => {
+          toast.error(err.message || 'Failed to approve submission')
+        },
+      },
+    )
   }
 
   const handleReject = async (submissionId: string) => {
     if (!reviewNotes) {
-      alert('Please provide a reason for rejection')
+      toast.error('Please provide a reason for rejection')
       return
     }
 
-    setActionLoading(true)
-    try {
-      const response = await fetch(
-        `/api/admin/submissions/${submissionId}/reject`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            review_notes: reviewNotes,
-          }),
+    rejectMutation.mutate(
+      {
+        submissionId,
+        data: { review_notes: reviewNotes },
+      },
+      {
+        onSuccess: () => {
+          toast.success('Submission rejected')
+          setSelectedSubmission(null)
+          setReviewNotes('')
         },
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to reject submission')
-      }
-
-      alert('Submission rejected')
-      setSelectedSubmission(null)
-      setReviewNotes('')
-      fetchSubmissions()
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : 'Failed to reject submission',
-      )
-    } finally {
-      setActionLoading(false)
-    }
+        onError: (err) => {
+          toast.error(err.message || 'Failed to reject submission')
+        },
+      },
+    )
   }
 
   const getStatusBadge = (status: string) => {
@@ -183,8 +114,8 @@ function AdminSubmissionsPageContent() {
   }
 
   return (
-    <div className="page-content space-y-6">
-      <div className="mb-6 w-full">
+    <div className="page-content">
+      <div className="w-full">
         <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
           Review and approve user submissions for $PULPA token rewards
@@ -192,7 +123,7 @@ function AdminSubmissionsPageContent() {
       </div>
 
       {/* Filter */}
-      <Card className="mb-6 w-full">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Filter by Status</CardTitle>
         </CardHeader>
@@ -215,8 +146,15 @@ function AdminSubmissionsPageContent() {
       {/* Submissions Table */}
       <Card className="w-full">
         <CardContent className="pt-6">
-          {loading ? (
-            <div className="py-8 text-center">Loading submissions...</div>
+          {error ? (
+            <div className="py-8 text-center text-destructive">
+              Failed to load submissions. Please try again.
+            </div>
+          ) : isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span className="ml-2">Loading submissions...</span>
+            </div>
           ) : submissions.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No submissions found with status: {filter}
@@ -256,9 +194,10 @@ function AdminSubmissionsPageContent() {
                           href={item.submission.submissionUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="flex items-center gap-2 hover:underline hover:decoration-primary hover:decoration-[1.1px] hover:underline-offset-2"
                         >
-                          View Link
+                          <span>View Link</span>
+                          <ExternalLinkIcon className="h-4 w-4" />
                         </a>
                       )}
                       {item.submission.submissionText && (
@@ -380,22 +319,22 @@ function AdminSubmissionsPageContent() {
                   setSelectedSubmission(null)
                   setReviewNotes('')
                 }}
-                disabled={actionLoading}
+                disabled={approveMutation.isPending || rejectMutation.isPending}
               >
                 Cancel
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => handleReject(selectedSubmission.submission.id)}
-                disabled={actionLoading}
+                disabled={approveMutation.isPending || rejectMutation.isPending}
               >
-                {actionLoading ? 'Rejecting...' : 'Reject'}
+                {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
               </Button>
               <Button
                 onClick={() => handleApprove(selectedSubmission.submission.id)}
-                disabled={actionLoading}
+                disabled={approveMutation.isPending || rejectMutation.isPending}
               >
-                {actionLoading ? 'Approving...' : 'Approve'}
+                {approveMutation.isPending ? 'Approving...' : 'Approve'}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -53,7 +53,7 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
                 className={cn(
                   'inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none',
                   pathname === menuItem.href &&
-                    'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:!text-secondary-foreground',
+                    'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:text-secondary-foreground!',
                 )}
                 href={menuItem.href}
               >

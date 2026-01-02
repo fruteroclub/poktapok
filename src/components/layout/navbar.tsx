@@ -86,7 +86,7 @@ export default function Navbar() {
                 key={`${menuItem.displayText}-menuItem-${index}`}
                 className={`inline-flex items-center justify-center px-4 py-2 font-funnel text-xl font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none ${
                   pathname === menuItem.href &&
-                  'pointer-events-none underline decoration-primary decoration-2 underline-offset-[6px] hover:!text-foreground'
+                  'pointer-events-none underline decoration-primary decoration-2 underline-offset-[6px] hover:text-foreground!'
                 }`}
                 href={menuItem.href}
                 target={menuItem.isExternal ? '_blank' : ''}
@@ -97,20 +97,20 @@ export default function Navbar() {
           </nav>
         </div>
 
-        <div className="hidden lg:col-span-1 lg:flex lg:justify-end">
+        <div className="col-span-1 flex justify-end">
           {!ready || isLoading ? (
             // Placeholder maintains layout space during initialization
             <div className="h-10 w-32" />
           ) : isSignedIn && user ? (
             <MobileMenuDropdown ready={ready} user={user} />
           ) : (
-            <AuthButton size="lg">
+            <AuthButton size="lg" className="hidden lg:flex">
               <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" />{' '}
               Únete
             </AuthButton>
           )}
+          <MobileMenu menuItems={MENU_ITEMS} pathname={pathname} />
         </div>
-        <MobileMenu menuItems={MENU_ITEMS} pathname={pathname} />
       </div>
     </header>
   )

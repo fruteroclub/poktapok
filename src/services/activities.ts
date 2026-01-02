@@ -8,7 +8,9 @@ import { apiFetch } from "@/lib/api/fetch";
 export interface Activity {
   id: string;
   title: string;
+  description: string;
   activityType: string;
+  category: string | null;
   difficulty: string;
   rewardPulpaAmount: string;
   status: string;
@@ -87,4 +89,39 @@ export async function createActivity(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
+}
+
+export interface PublicActivitiesFilters {
+  type?: string;
+  difficulty?: string;
+  search?: string;
+  status?: string;
+}
+
+export interface PublicActivitiesResponse {
+  activities: Activity[];
+}
+
+/**
+ * Fetch public activities (user-facing, only active activities)
+ */
+export async function fetchPublicActivities(
+  filters?: PublicActivitiesFilters
+): Promise<PublicActivitiesResponse> {
+  const params = new URLSearchParams({ status: filters?.status || 'active' });
+
+  if (filters?.type && filters.type !== 'all') {
+    params.append('type', filters.type);
+  }
+  if (filters?.difficulty && filters.difficulty !== 'all') {
+    params.append('difficulty', filters.difficulty);
+  }
+  if (filters?.search) {
+    params.append('search', filters.search);
+  }
+
+  const queryString = params.toString();
+  const url = queryString ? `/api/activities?${queryString}` : '/api/activities';
+
+  return apiFetch<PublicActivitiesResponse>(url);
 }

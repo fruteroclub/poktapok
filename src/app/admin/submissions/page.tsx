@@ -164,7 +164,7 @@ function AdminSubmissionsPageContent() {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content">
+        <div className="page-content space-y-6">
           <div className="w-full mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">

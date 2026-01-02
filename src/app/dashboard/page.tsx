@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import PageWrapper from "@/components/layout/page-wrapper";
 import { ProtectedRoute } from "@/components/layout/protected-route-wrapper";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Section } from "@/components/layout/section";

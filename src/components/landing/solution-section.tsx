@@ -51,13 +51,13 @@ export default function SolutionSection() {
       id="solution-section"
       className="page relative overflow-hidden py-8 md:pt-12"
     >
-      <div className="page-content">
+      <div className="page-content space-y-6">
         {/* Gradient Background Accent */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
 
         <div className="section relative space-y-8 md:space-y-12">
           {/* Hero Title Area - Asymmetric Layout */}
-          <div className="page-content">
+          <div className="page-content space-y-6">
             <div className="relative max-w-xl">
               {/* Decorative Element */}
               <div className="absolute top-0 -left-4 h-32 w-1 bg-primary md:-left-8 md:h-40 lg:-left-4 lg:h-22" />

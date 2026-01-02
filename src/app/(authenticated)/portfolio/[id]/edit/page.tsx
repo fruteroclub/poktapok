@@ -96,7 +96,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content gap-y-4">
+        <div className="page-content">
           <div className="header-section">
             <h1 className="text-3xl font-bold">Edit Project</h1>
             <p className="text-muted-foreground mt-1">

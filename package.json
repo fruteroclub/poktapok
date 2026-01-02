@@ -12,6 +12,7 @@
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:check": "drizzle-kit check",
+    "db:list-migrations": "bun run scripts/list-applied-migrations.ts",
     "db:seed-skills": "bun run scripts/seed-skills.ts"
   },
   "dependencies": {

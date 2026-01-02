@@ -22,9 +22,9 @@ bun run lint               # Lint codebase
 # Database
 bun run db:generate        # Generate migrations from schema changes
 bun run db:migrate         # Apply pending migrations
+bun run db:list-migrations # List all applied migrations
 bun run db:studio          # Open Drizzle Studio (visual DB browser)
 bun run db:check           # Check for schema drift
-bun run db:push            # Push schema changes directly (dev only)
 
 # Database Testing
 bun run scripts/test-db-connection.ts      # Test database connectivity
@@ -411,13 +411,17 @@ const { data, isLoading, isError } = useMe();
 
 ## Important Notes
 
-### Database Schema Changes (Local Development)
+### Database Schema Changes
 
-**For local development and fast iteration**, use `db:push` to apply schema changes directly without generating migrations:
+**⚠️ IMPORTANT**: The project uses **migration-based workflow** for team collaboration. Never use `db:push`.
 
-1. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts)
-2. **Push changes directly**: `bun run db:push`
-3. **Verify**: `bun run scripts/test-db-connection.ts`
+**Standard workflow for schema changes:**
+
+1. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts, activities.ts, projects.ts, skills.ts)
+2. **Generate migration**: `bun run db:generate`
+3. **Review migration**: Check `drizzle/migrations/XXXX_*.sql`
+4. **Apply migration**: `bun run db:migrate`
+5. **Verify**: `bun run db:list-migrations`
 
 **Important constraints to follow:**
 - **CHECK constraints must use inlined patterns** - never use variable references:
@@ -437,10 +441,15 @@ const { data, isLoading, isError } = useMe();
   status: varchar('status').default('pending').notNull()
   ```
 
-**Migration workflow (v1 MVP freeze only):**
-- During active development: Use `db:push` for all schema changes
-- Once MVP schema is finalized: Generate a single comprehensive migration with `bun run db:generate`
-- Future changes: Will use proper migration workflow (`db:generate` → `db:migrate`)
+**Migration rules:**
+- ✅ Always use `db:generate` → `db:migrate` for schema changes
+- ✅ Commit migration files to version control
+- ✅ Apply migrations when pulling changes: `bun run db:migrate`
+- ❌ Never use `db:push` (bypasses migration tracking)
+- ❌ Never edit migration files manually
+- ❌ Never delete migration files
+
+See [docs/database-migrations.md](docs/database-migrations.md) for complete guide.
 
 ### Build Configuration (Next.js 16 + Turbopack)
 

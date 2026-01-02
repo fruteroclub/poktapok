@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="page">
         <div className="flex gap-6">
           {/* Sidebar - Fixed left */}
-          <aside className="w-64 flex-shrink-0">
+          <aside className="w-64 shrink-0">
             <Sidebar />
           </aside>
 

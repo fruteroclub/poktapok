@@ -49,6 +49,7 @@ The original E0-T0 ticket ([0-setup.md](../0-setup.md)) had several design issue
 ### What We're Fixing
 
 This enhanced version provides:
+
 - ✅ **Proper 3NF normalization** with justified denormalization
 - ✅ **Comprehensive constraints** (CHECK, UNIQUE, NOT NULL, FK cascades)
 - ✅ **Performance-optimized indexing** (GIN, partial, composite)
@@ -77,6 +78,7 @@ See [database-design.md](../database-design.md) for full architecture documentat
 ## Prerequisites
 
 Same as v1.0:
+
 - Vercel CLI installed (`npm i -g vercel`)
 - Bun runtime (1.0+)
 - Git configured
@@ -89,12 +91,14 @@ Same as v1.0:
 ### Step 1: Provision Database (Same as v1.0)
 
 **Option A: Vercel Postgres (Recommended)**
+
 ```bash
 vercel link
 vercel postgres create poktapok-db
 ```
 
 **Option B: Railway**
+
 - Create project at railway.app
 - Add PostgreSQL service
 - Copy DATABASE_URL
@@ -119,6 +123,7 @@ vercel env pull .env.local
 ```
 
 Verify `.env.local` contains:
+
 ```bash
 POSTGRES_URL=postgresql://...
 POSTGRES_URL_NON_POOLING=postgresql://...
@@ -157,6 +162,7 @@ export default defineConfig({
 ### Step 5: Define Database Schema (ENHANCED)
 
 Create directory structure:
+
 ```
 drizzle/
 ├── schema/
@@ -181,12 +187,8 @@ import { AnyPgColumn } from 'drizzle-orm/pg-core'
  * Shared timestamp columns for audit trail
  */
 export const timestamps = {
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 }
 
 /**
@@ -236,9 +238,9 @@ export const accountStatusEnum = pgEnum('account_status', [
 ])
 
 export const authMethodEnum = pgEnum('auth_method', [
-  'email',    // Email magic link
-  'wallet',   // External wallet (MetaMask, Coinbase, etc.)
-  'social',   // Social login (Google, GitHub, Discord, etc.)
+  'email', // Email magic link
+  'wallet', // External wallet (MetaMask, Coinbase, etc.)
+  'social', // Social login (Google, GitHub, Discord, etc.)
 ])
 
 // ============================================================
@@ -263,11 +265,11 @@ export const users = pgTable(
     privyDid: varchar('privy_did', { length: 255 }).unique().notNull(),
 
     // Contact & Identity
-    email: varchar('email', { length: 255 }).unique().notNull(),  // Always required
-    extWallet: varchar('ext_wallet', { length: 42 }),             // External wallet (optional)
+    email: varchar('email', { length: 255 }).unique().notNull(), // Always required
+    extWallet: varchar('ext_wallet', { length: 42 }), // External wallet (optional)
 
     // Embedded Wallet (created by Privy after auth)
-    appWallet: varchar('app_wallet', { length: 42 }),             // Privy embedded wallet
+    appWallet: varchar('app_wallet', { length: 42 }), // Privy embedded wallet
 
     // Login Method Tracking
     primaryAuthMethod: authMethodEnum('primary_auth_method').notNull(),
@@ -286,8 +288,10 @@ export const users = pgTable(
     ...softDelete,
 
     // Metadata (Separated Concerns)
-    privyMetadata: jsonb('privy_metadata').default(sql`'{}'::jsonb`).notNull(),  // Privy SDK data
-    ...metadata,  // Business logic (NFT memberships, feature flags)
+    privyMetadata: jsonb('privy_metadata')
+      .default(sql`'{}'::jsonb`)
+      .notNull(), // Privy SDK data
+    ...metadata, // Business logic (NFT memberships, feature flags)
   },
   (table) => ({
     // Foreign Keys (self-referencing)
@@ -306,19 +310,19 @@ export const users = pgTable(
     // Constraints
     emailFormatCheck: check(
       'email_format',
-      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'`
+      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'`,
     ),
 
     extWalletFormatCheck: check(
       'ext_wallet_format',
-      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* '^0x[a-fA-F0-9]{40}$'`
+      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* '^0x[a-fA-F0-9]{40}$'`,
     ),
 
     appWalletFormatCheck: check(
       'app_wallet_format',
-      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* '^0x[a-fA-F0-9]{40}$'`
+      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* '^0x[a-fA-F0-9]{40}$'`,
     ),
-  })
+  }),
 )
 
 // TypeScript Types
@@ -327,6 +331,7 @@ export type NewUser = typeof users.$inferInsert
 ```
 
 **Key Improvements:**
+
 1. ✅ `privyDid` instead of generic `authId` (Privy uses DIDs)
 2. ✅ Email always required (NOT NULL) - collected during onboarding
 3. ✅ Separate `extWallet` (external) and `appWallet` (embedded) fields
@@ -406,10 +411,11 @@ export const profiles = pgTable(
     countryCode: char('country_code', { length: 2 }), // ISO 3166-1 alpha-2 (for flag emoji)
 
     // Learning & Availability
-    learningTracks: learningTrackEnum('learning_tracks').array().default(sql`'{}'::learning_track[]`).notNull(),
-    availabilityStatus: availabilityStatusEnum('availability_status')
-      .default('learning')
+    learningTracks: learningTrackEnum('learning_tracks')
+      .array()
+      .default(sql`'{}'::learning_track[]`)
       .notNull(),
+    availabilityStatus: availabilityStatusEnum('availability_status').default('learning').notNull(),
 
     // Social Links
     githubUsername: varchar('github_username', { length: 100 }),
@@ -418,15 +424,11 @@ export const profiles = pgTable(
     telegramUsername: varchar('telegram_username', { length: 100 }),
 
     // Privacy
-    profileVisibility: profileVisibilityEnum('profile_visibility')
-      .default('public')
-      .notNull(),
+    profileVisibility: profileVisibilityEnum('profile_visibility').default('public').notNull(),
 
     // Stats (Denormalized for Performance - see database-design.md)
     completedBounties: integer('completed_bounties').default(0).notNull(),
-    totalEarningsCents: bigint('total_earnings_cents', { mode: 'number' })
-      .default(0)
-      .notNull(),
+    totalEarningsCents: bigint('total_earnings_cents', { mode: 'number' }).default(0).notNull(),
     profileViews: integer('profile_views').default(0).notNull(),
 
     // Timestamps
@@ -437,30 +439,18 @@ export const profiles = pgTable(
   },
   (table) => ({
     // Constraints
-    usernameFormatCheck: check(
-      'username_format',
-      sql`${table.username} ~* '^[a-z0-9_]{3,50}$'`
-    ),
+    usernameFormatCheck: check('username_format', sql`${table.username} ~* '^[a-z0-9_]{3,50}$'`),
 
-    bioLengthCheck: check(
-      'bio_length',
-      sql`char_length(${table.bio}) <= 280`
-    ),
+    bioLengthCheck: check('bio_length', sql`char_length(${table.bio}) <= 280`),
 
     countryCodeFormatCheck: check(
       'country_code_format',
-      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* '^[A-Z]{2}$'`
+      sql`${table.countryCode} IS NULL OR ${table.countryCode} ~* '^[A-Z]{2}$'`,
     ),
 
-    earningsPositiveCheck: check(
-      'earnings_positive',
-      sql`${table.totalEarningsCents} >= 0`
-    ),
+    earningsPositiveCheck: check('earnings_positive', sql`${table.totalEarningsCents} >= 0`),
 
-    bountiesPositiveCheck: check(
-      'bounties_positive',
-      sql`${table.completedBounties} >= 0`
-    ),
+    bountiesPositiveCheck: check('bounties_positive', sql`${table.completedBounties} >= 0`),
 
     // Indexes
     userIdIdx: index('idx_profiles_user_id').on(table.userId),
@@ -469,8 +459,7 @@ export const profiles = pgTable(
     availabilityIdx: index('idx_profiles_availability').on(table.availabilityStatus),
 
     // GIN index for array containment queries (learning_tracks)
-    learningTracksIdx: index('idx_profiles_learning_tracks')
-      .using('gin', table.learningTracks),
+    learningTracksIdx: index('idx_profiles_learning_tracks').using('gin', table.learningTracks),
 
     countryIdx: index('idx_profiles_country').on(table.country),
 
@@ -481,13 +470,15 @@ export const profiles = pgTable(
     // Note: deletedAt doesn't exist on profiles (cascade delete from users)
 
     // Full-text search GIN index
-    searchIdx: index('idx_profiles_search')
-      .using('gin', sql`to_tsvector('english',
+    searchIdx: index('idx_profiles_search').using(
+      'gin',
+      sql`to_tsvector('english',
         coalesce(${table.username}, '') || ' ' ||
         coalesce(${table.displayName}, '') || ' ' ||
         coalesce(${table.bio}, '')
-      )`),
-  })
+      )`,
+    ),
+  }),
 )
 
 // TypeScript Types
@@ -496,6 +487,7 @@ export type NewProfile = typeof profiles.$inferInsert
 ```
 
 **Key Improvements:**
+
 1. ✅ Separated from users table (proper normalization)
 2. ✅ `countryCode` for flag emoji rendering
 3. ✅ Currency as cents (integer, avoids floating-point errors)
@@ -558,9 +550,7 @@ export const applications = pgTable(
     }),
 
     // Timestamps
-    submittedAt: timestamp('submitted_at', { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }).defaultNow().notNull(),
 
     // Anti-Spam
     ipAddress: inet('ip_address'), // For rate limiting
@@ -571,16 +561,13 @@ export const applications = pgTable(
   },
   (table) => ({
     // Constraints
-    reasonLengthCheck: check(
-      'reason_length',
-      sql`char_length(${table.reason}) BETWEEN 50 AND 500`
-    ),
+    reasonLengthCheck: check('reason_length', sql`char_length(${table.reason}) BETWEEN 50 AND 500`),
 
     // Enforce review data integrity
     reviewedDataCompleteCheck: check(
       'reviewed_data_complete',
       sql`(${table.status} = 'pending' AND ${table.reviewedAt} IS NULL AND ${table.reviewedByUserId} IS NULL) OR
-          (${table.status} != 'pending' AND ${table.reviewedAt} IS NOT NULL AND ${table.reviewedByUserId} IS NOT NULL)`
+          (${table.status} != 'pending' AND ${table.reviewedAt} IS NOT NULL AND ${table.reviewedByUserId} IS NOT NULL)`,
     ),
 
     // Indexes
@@ -594,7 +581,7 @@ export const applications = pgTable(
       .where(sql`${table.referralCode} IS NOT NULL`),
 
     ipAddressIdx: index('idx_applications_ip_address').on(table.ipAddress),
-  })
+  }),
 )
 
 // TypeScript Types
@@ -603,6 +590,7 @@ export type NewApplication = typeof applications.$inferInsert
 ```
 
 **Key Improvements:**
+
 1. ✅ `inet` type for IP addresses (PostgreSQL native)
 2. ✅ CHECK constraint ensures review integrity
 3. ✅ `approvedUserId` links application to created user
@@ -622,11 +610,7 @@ import { users } from './users'
 // ENUMS
 // ============================================================
 
-export const invitationStatusEnum = pgEnum('invitation_status', [
-  'active',
-  'used',
-  'expired',
-])
+export const invitationStatusEnum = pgEnum('invitation_status', ['active', 'used', 'expired'])
 
 // ============================================================
 // TABLE: invitations (Referral System)
@@ -656,34 +640,25 @@ export const invitations = pgTable(
     }),
 
     // Expiry
-    createdAt: timestamp('created_at', { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 
     // Status (Computed Column - PostgreSQL GENERATED ALWAYS)
     // This is automatically computed based on redemption and expiry
-    status: invitationStatusEnum('status')
-      .generatedAlwaysAs(
-        sql`CASE
+    status: invitationStatusEnum('status').generatedAlwaysAs(
+      sql`CASE
           WHEN ${this.redeemedAt} IS NOT NULL THEN 'used'::"invitation_status"
           WHEN ${this.expiresAt} < NOW() THEN 'expired'::"invitation_status"
           ELSE 'active'::"invitation_status"
         END`,
-        { mode: 'stored' }
-      ),
+      { mode: 'stored' },
+    ),
   },
   (table) => ({
     // Constraints
-    codeFormatCheck: check(
-      'code_format',
-      sql`${table.code} ~* '^[A-Z0-9]{8}$'`
-    ),
+    codeFormatCheck: check('code_format', sql`${table.code} ~* '^[A-Z0-9]{8}$'`),
 
-    expiryFutureCheck: check(
-      'expiry_future',
-      sql`${table.expiresAt} > ${table.createdAt}`
-    ),
+    expiryFutureCheck: check('expiry_future', sql`${table.expiresAt} > ${table.createdAt}`),
 
     // Indexes
     inviterIdx: index('idx_invitations_inviter').on(table.inviterUserId),
@@ -691,7 +666,7 @@ export const invitations = pgTable(
     emailIdx: index('idx_invitations_email').on(table.inviteeEmail),
     statusIdx: index('idx_invitations_status').on(table.status),
     expiresAtIdx: index('idx_invitations_expires_at').on(table.expiresAt),
-  })
+  }),
 )
 
 // TypeScript Types
@@ -700,6 +675,7 @@ export type NewInvitation = typeof invitations.$inferInsert
 ```
 
 **Key Improvements:**
+
 1. ✅ **Generated status column**: PostgreSQL computes status automatically
 2. ✅ Code format CHECK constraint (8-char alphanumeric)
 3. ✅ Expiry validation (must be future date)
@@ -735,9 +711,7 @@ import * as schema from './schema'
 const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL
 
 if (!connectionString) {
-  throw new Error(
-    'POSTGRES_URL or DATABASE_URL is not set. Please add it to your .env.local file.'
-  )
+  throw new Error('POSTGRES_URL or DATABASE_URL is not set. Please add it to your .env.local file.')
 }
 
 // PostgreSQL client with connection pooling
@@ -908,6 +882,7 @@ verifySchema().catch((err) => {
 ```
 
 Run verification:
+
 ```bash
 bun run scripts/verify-schema.ts
 ```
@@ -974,10 +949,7 @@ async function testNormalization() {
   // Test 2: Verify foreign key cascade (delete user should cascade to profile)
   await db.delete(users).where(eq(users.id, user.id))
 
-  const profileCheck = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.userId, user.id))
+  const profileCheck = await db.select().from(profiles).where(eq(profiles.userId, user.id))
 
   if (profileCheck.length === 0) {
     console.log('✅ CASCADE DELETE working (profile deleted with user)')
@@ -997,6 +969,7 @@ testNormalization().catch((err) => {
 ```
 
 Run test:
+
 ```bash
 bun run scripts/test-normalization.ts
 ```
@@ -1011,6 +984,7 @@ bun run db:studio
 ```
 
 Checklist:
+
 - [ ] All 4 tables visible (users, profiles, applications, invitations)
 - [ ] All enums created (8 total)
 - [ ] Constraints visible in table definitions
@@ -1023,11 +997,13 @@ Checklist:
 Before marking this ticket complete:
 
 ### Database Setup
+
 - [ ] Hosted database provisioned (Vercel Postgres or Railway)
 - [ ] All dependencies installed (`drizzle-orm`, `postgres`, `drizzle-kit`)
 - [ ] `drizzle.config.ts` created and uses POSTGRES_URL_NON_POOLING
 
 ### Schema Quality
+
 - [ ] **All 4 tables created with correct column types**
 - [ ] **All 8 enums created (user_role, account_status, learning_track, etc.)**
 - [ ] **All CHECK constraints present and tested**
@@ -1037,16 +1013,19 @@ Before marking this ticket complete:
 - [ ] **Generated status column working on invitations table**
 
 ### Indexing
+
 - [ ] **All primary indexes created (24+ total across 4 tables)**
 - [ ] **GIN indexes present for arrays and full-text search**
 - [ ] **Partial indexes created for conditional queries**
 - [ ] **Foreign key columns all indexed**
 
 ### Triggers & Functions
+
 - [ ] **update_updated_at_column() trigger function created**
 - [ ] **Triggers applied to profiles and users tables**
 
 ### Testing
+
 - [ ] Initial migration generated (`bun run db:generate`)
 - [ ] Migration applied to hosted database (`bun run db:migrate`)
 - [ ] Migration files committed to git
@@ -1058,9 +1037,10 @@ Before marking this ticket complete:
 - [ ] At least 2 team members synced successfully
 
 ### Documentation
+
 - [ ] **database-design.md reviewed by team**
 - [ ] **Schema diagram generated (Mermaid or dbdiagram.io)**
-- [ ] `.gitignore` updated (excludes .env*, includes migrations)
+- [ ] `.gitignore` updated (excludes .env\*, includes migrations)
 - [ ] All 4 database scripts added to `package.json`
 
 ---
@@ -1068,6 +1048,7 @@ Before marking this ticket complete:
 ## Files Changed Summary (Enhanced)
 
 **Created:**
+
 - `drizzle.config.ts`
 - `drizzle/schema/utils.ts` (NEW)
 - `drizzle/schema/users.ts` (ENHANCED)
@@ -1084,6 +1065,7 @@ Before marking this ticket complete:
 - `docs/database-design.md` (NEW - comprehensive design doc)
 
 **Modified:**
+
 - `package.json` (add db scripts)
 - `.gitignore` (ensure proper exclusions)
 - `.env.local` (via `vercel env pull`, not committed)
@@ -1097,6 +1079,7 @@ Before marking this ticket complete:
 See original [0-setup.md](../0-setup.md) for detailed sync workflow.
 
 **Key changes:**
+
 - After syncing, all team members should run verification scripts
 - Review database-design.md as a team before implementation
 
@@ -1118,6 +1101,7 @@ After completing this ticket:
    - Get approval from senior developer/architect
 
 3. **Commit Changes:**
+
    ```bash
    git add .
    git commit -m "E0-T0: Implement production-grade PostgreSQL schema with comprehensive constraints and indexing"
@@ -1149,6 +1133,7 @@ After completing this ticket:
 ---
 
 **Contributors:**
+
 - Schema Design: Backend Developer + Database Architect
 - Review: Team Lead
 - Approval: Technical Lead / CTO

@@ -5,14 +5,14 @@
  * Used in the individual project view page
  */
 
-'use client';
+'use client'
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Edit, Trash2, Eye, Calendar, ArrowLeft } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Edit, Trash2, Eye, Calendar, ArrowLeft } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,19 +23,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
-import { useDeleteProject } from '@/hooks/use-projects';
-import type { ProjectWithSkills } from '@/types/api-v1';
+} from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
+import { useDeleteProject } from '@/hooks/use-projects'
+import type { ProjectWithSkills } from '@/types/api-v1'
 
 interface ProjectHeaderProps {
-  project: ProjectWithSkills;
-  isOwner?: boolean;
+  project: ProjectWithSkills
+  isOwner?: boolean
 }
 
-export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) {
-  const router = useRouter();
-  const deleteProjectMutation = useDeleteProject();
+export function ProjectHeader({
+  project,
+  isOwner = false,
+}: ProjectHeaderProps) {
+  const router = useRouter()
+  const deleteProjectMutation = useDeleteProject()
 
   const {
     id,
@@ -48,13 +51,13 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
     createdAt,
     updatedAt,
     featured,
-  } = project;
+  } = project
 
   // Format project type for display
   const typeLabel = projectType
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(' ')
 
   // Status colors
   const statusColors: Record<string, string> = {
@@ -62,7 +65,7 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
     wip: 'bg-blue-500',
     completed: 'bg-green-500',
     archived: 'bg-gray-400',
-  };
+  }
 
   // Format dates
   const formatDate = (date: Date) => {
@@ -70,20 +73,20 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    });
-  };
+    })
+  }
 
   const handleDelete = async () => {
     try {
-      await deleteProjectMutation.mutateAsync(id);
-      toast.success('Project deleted successfully');
-      router.push('/portfolio');
+      await deleteProjectMutation.mutateAsync(id)
+      toast.success('Project deleted successfully')
+      router.push('/portfolio')
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message || 'Failed to delete project');
+        toast.error(error.message || 'Failed to delete project')
       }
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -91,7 +94,7 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/portfolio">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Portfolio
           </Link>
         </Button>
@@ -100,15 +103,19 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link href={`/portfolio/${id}/edit`}>
-                <Edit className="h-4 w-4 mr-2" />
+                <Edit className="mr-2 h-4 w-4" />
                 Edit Project
               </Link>
             </Button>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                  <Trash2 className="h-4 w-4 mr-2" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </Button>
               </AlertDialogTrigger>
@@ -116,8 +123,9 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Project?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your project
-                    &quot;{title}&quot; and remove all associated data.
+                    This action cannot be undone. This will permanently delete
+                    your project &quot;{title}&quot; and remove all associated
+                    data.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -136,20 +144,27 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
       </div>
 
       {/* Project header content */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col gap-6 md:flex-row">
         {/* Logo */}
         {logoUrl && (
-          <div className="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 border">
-            <Image src={logoUrl} alt={`${title} logo`} fill className="object-cover" />
+          <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl border bg-gray-100">
+            <Image
+              src={logoUrl}
+              alt={`${title} logo`}
+              fill
+              className="object-cover"
+            />
           </div>
         )}
 
         {/* Title and metadata */}
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="min-w-0 flex-1 space-y-4">
           {/* Title and badges */}
           <div className="space-y-2">
-            <div className="flex items-start gap-3 flex-wrap">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{title}</h1>
+            <div className="flex flex-wrap items-start gap-3">
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                {title}
+              </h1>
               {featured && (
                 <Badge variant="secondary" className="mt-1">
                   Featured
@@ -157,7 +172,7 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
               )}
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{typeLabel}</Badge>
               <Badge className={`text-white ${statusColors[projectStatus]}`}>
                 {projectStatus.toUpperCase()}
@@ -166,10 +181,12 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
           </div>
 
           {/* Description */}
-          <p className="text-lg text-muted-foreground leading-relaxed">{description}</p>
+          <p className="text-lg leading-relaxed text-muted-foreground">
+            {description}
+          </p>
 
           {/* Metadata */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <Eye className="h-4 w-4" />
               <span>{viewCount.toLocaleString()} views</span>
@@ -178,15 +195,17 @@ export function ProjectHeader({ project, isOwner = false }: ProjectHeaderProps) 
               <Calendar className="h-4 w-4" />
               <span>Created {formatDate(createdAt)}</span>
             </div>
-            {updatedAt && new Date(updatedAt).getTime() !== new Date(createdAt).getTime() && (
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
-                <span>Updated {formatDate(updatedAt)}</span>
-              </div>
-            )}
+            {updatedAt &&
+              new Date(updatedAt).getTime() !==
+                new Date(createdAt).getTime() && (
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" />
+                  <span>Updated {formatDate(updatedAt)}</span>
+                </div>
+              )}
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

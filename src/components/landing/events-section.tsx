@@ -106,12 +106,13 @@ export default function EventsSection() {
               >
                 <div className="mb-6 text-center">
                   <div
-                    className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${event.color === 'dark'
-                      ? 'bg-foreground'
-                      : event.color === 'blue'
-                        ? 'bg-blue-500'
-                        : 'bg-purple-500'
-                      }`}
+                    className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
+                      event.color === 'dark'
+                        ? 'bg-foreground'
+                        : event.color === 'blue'
+                          ? 'bg-blue-500'
+                          : 'bg-purple-500'
+                    }`}
                   >
                     <span className="text-2xl">{event.icon}</span>
                   </div>
@@ -121,9 +122,7 @@ export default function EventsSection() {
                   <p className="mb-3 text-sm font-bold tracking-wide text-primary uppercase">
                     {event.subtitle}
                   </p>
-                  <p className="mb-4 text-sm text-muted">
-                    {event.description}
-                  </p>
+                  <p className="mb-4 text-sm text-muted">{event.description}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -162,12 +161,13 @@ export default function EventsSection() {
                   )}
 
                   <div
-                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${event.availability === 'Cupo limitado'
-                      ? 'bg-primary/20 text-primary'
-                      : event.availability === 'Registro abierto'
-                        ? 'bg-accent/20 text-accent'
-                        : 'bg-secondary/20 text-secondary'
-                      }`}
+                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+                      event.availability === 'Cupo limitado'
+                        ? 'bg-primary/20 text-primary'
+                        : event.availability === 'Registro abierto'
+                          ? 'bg-accent/20 text-accent'
+                          : 'bg-secondary/20 text-secondary'
+                    }`}
                   >
                     {event.availability}
                   </div>

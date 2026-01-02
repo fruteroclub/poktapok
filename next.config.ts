@@ -1,17 +1,10 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   // Turbopack configuration for Next.js 16+
   turbopack: {
     // Resolve only these extensions
-    resolveExtensions: [
-      '.tsx',
-      '.ts',
-      '.jsx',
-      '.js',
-      '.mjs',
-      '.json',
-    ],
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
   },
 
   // Only process these file extensions as pages
@@ -36,6 +29,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

@@ -5,14 +5,17 @@
  * DELETE /api/projects/[id]/logo  - Delete project logo
  */
 
-import { NextRequest } from 'next/server';
-import { put, del } from '@vercel/blob';
-import { requireAuth } from '@/lib/auth/helpers';
-import { db } from '@/lib/db';
-import { projects } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
-import { apiSuccess, apiError, apiErrors } from '@/lib/api/response';
-import { validateUploadedFile, IMAGE_CONFIG } from '@/lib/upload/image-validation';
+import { NextRequest } from 'next/server'
+import { put, del } from '@vercel/blob'
+import { requireAuth } from '@/lib/auth/helpers'
+import { db } from '@/lib/db'
+import { projects } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
+import { apiSuccess, apiError, apiErrors } from '@/lib/api/response'
+import {
+  validateUploadedFile,
+  IMAGE_CONFIG,
+} from '@/lib/upload/image-validation'
 
 /**
  * POST /api/projects/[id]/logo
@@ -23,48 +26,48 @@ import { validateUploadedFile, IMAGE_CONFIG } from '@/lib/upload/image-validatio
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authentication required
-    const { user } = await requireAuth();
+    const { user } = await requireAuth()
 
-    const { id: projectId } = await params;
+    const { id: projectId } = await params
 
     // Verify project exists and user is owner
     const [project] = await db
       .select()
       .from(projects)
       .where(and(eq(projects.id, projectId), eq(projects.userId, user.id)))
-      .limit(1);
+      .limit(1)
 
     if (!project) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
     // Parse form data
-    const formData = await request.formData();
-    const file = formData.get('logo') as File | null;
+    const formData = await request.formData()
+    const file = formData.get('logo') as File | null
 
     if (!file) {
-      return apiError('No file provided', { status: 400, code: 'NO_FILE' });
+      return apiError('No file provided', { status: 400, code: 'NO_FILE' })
     }
 
     // Validate file
-    const validation = await validateUploadedFile(file);
+    const validation = await validateUploadedFile(file)
     if (!validation.valid) {
       return apiError(validation.error.message, {
         status: 400,
         code: validation.error.code,
-      });
+      })
     }
 
     // Delete old logo from Vercel Blob Storage if it exists
     if (project.logoUrl && project.logoUrl.includes('vercel-storage.com')) {
       try {
-        await del(project.logoUrl);
+        await del(project.logoUrl)
       } catch (error) {
-        console.error('Failed to delete old logo from blob storage:', error);
+        console.error('Failed to delete old logo from blob storage:', error)
         // Continue with upload even if deletion fails
       }
     }
@@ -77,10 +80,10 @@ export async function POST(
       {
         access: 'public',
         addRandomSuffix: true, // Prevents filename collisions
-      }
-    );
+      },
+    )
 
-    const logoUrl = blob.url;
+    const logoUrl = blob.url
 
     // Update project's logoUrl in database
     await db
@@ -89,17 +92,17 @@ export async function POST(
         logoUrl: logoUrl,
         updatedAt: new Date(),
       })
-      .where(eq(projects.id, projectId));
+      .where(eq(projects.id, projectId))
 
     return apiSuccess(
       { logoUrl },
       {
         message: 'Logo uploaded successfully',
-      }
-    );
+      },
+    )
   } catch (error) {
-    console.error('Error uploading project logo:', error);
-    return apiErrors.internal();
+    console.error('Error uploading project logo:', error)
+    return apiErrors.internal()
   }
 }
 
@@ -111,31 +114,31 @@ export async function POST(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authentication required
-    const { user } = await requireAuth();
+    const { user } = await requireAuth()
 
-    const { id: projectId } = await params;
+    const { id: projectId } = await params
 
     // Verify project exists and user is owner
     const [project] = await db
       .select()
       .from(projects)
       .where(and(eq(projects.id, projectId), eq(projects.userId, user.id)))
-      .limit(1);
+      .limit(1)
 
     if (!project) {
-      return apiErrors.notFound('Project');
+      return apiErrors.notFound('Project')
     }
 
     // Delete from Vercel Blob Storage if URL exists
     if (project.logoUrl && project.logoUrl.includes('vercel-storage.com')) {
       try {
-        await del(project.logoUrl);
+        await del(project.logoUrl)
       } catch (error) {
-        console.error('Failed to delete logo from blob storage:', error);
+        console.error('Failed to delete logo from blob storage:', error)
         // Continue with database update even if blob deletion fails
       }
     }
@@ -147,16 +150,16 @@ export async function DELETE(
         logoUrl: null,
         updatedAt: new Date(),
       })
-      .where(eq(projects.id, projectId));
+      .where(eq(projects.id, projectId))
 
     return apiSuccess(
       {},
       {
         message: 'Logo removed successfully',
-      }
-    );
+      },
+    )
   } catch (error) {
-    console.error('Error removing project logo:', error);
-    return apiErrors.internal();
+    console.error('Error removing project logo:', error)
+    return apiErrors.internal()
   }
 }

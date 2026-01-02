@@ -1,7 +1,14 @@
 import { NextRequest } from 'next/server'
-import { getSubmissionById, updateSubmission } from '@/lib/db/queries/activities'
+import {
+  getSubmissionById,
+  updateSubmission,
+} from '@/lib/db/queries/activities'
 import { approveSubmissionSchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  requireAdmin,
+} from '@/lib/auth/middleware'
 
 /**
  * PATCH /api/admin/submissions/[id]/approve
@@ -9,7 +16,7 @@ import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middle
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const admin = await requireAdmin(req)
@@ -23,11 +30,14 @@ export async function PATCH(
           success: false,
           error: { message: 'Submission not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 
-    if (submission.submission.status !== 'pending' && submission.submission.status !== 'under_review') {
+    if (
+      submission.submission.status !== 'pending' &&
+      submission.submission.status !== 'under_review'
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -36,7 +46,7 @@ export async function PATCH(
             code: 'INVALID_STATUS',
           },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -44,7 +54,8 @@ export async function PATCH(
     const validated = approveSubmissionSchema.parse(body)
 
     // Use custom reward amount if provided, otherwise use submission's default
-    const rewardAmount = validated.reward_pulpa_amount || submission.submission.rewardPulpaAmount
+    const rewardAmount =
+      validated.reward_pulpa_amount || submission.submission.rewardPulpaAmount
 
     const updated = await updateSubmission(id, {
       status: 'approved',

@@ -6,7 +6,11 @@ import {
   incrementActivitySubmissionCount,
 } from '@/lib/db/queries/activities'
 import { submitActivitySchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAuth } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  requireAuth,
+} from '@/lib/auth/middleware'
 
 /**
  * POST /api/activities/[id]/submit
@@ -14,7 +18,7 @@ import { handleApiError, successResponse, requireAuth } from '@/lib/auth/middlew
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Require authentication
@@ -30,7 +34,7 @@ export async function POST(
           success: false,
           error: { message: 'Activity not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -39,9 +43,12 @@ export async function POST(
       return new Response(
         JSON.stringify({
           success: false,
-          error: { message: 'Activity is not active', code: 'ACTIVITY_NOT_ACTIVE' },
+          error: {
+            message: 'Activity is not active',
+            code: 'ACTIVITY_NOT_ACTIVE',
+          },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -52,7 +59,7 @@ export async function POST(
           success: false,
           error: { message: 'Activity has expired', code: 'ACTIVITY_EXPIRED' },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -68,7 +75,7 @@ export async function POST(
             code: 'ALREADY_SUBMITTED',
           },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -80,9 +87,12 @@ export async function POST(
       return new Response(
         JSON.stringify({
           success: false,
-          error: { message: 'All slots for this activity are filled', code: 'SLOTS_FULL' },
+          error: {
+            message: 'All slots for this activity are filled',
+            code: 'SLOTS_FULL',
+          },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -97,13 +107,19 @@ export async function POST(
       return new Response(
         JSON.stringify({
           success: false,
-          error: { message: 'URL is required for this activity', code: 'URL_REQUIRED' },
+          error: {
+            message: 'URL is required for this activity',
+            code: 'URL_REQUIRED',
+          },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    if (requirements.screenshot_required && (!validated.evidence_files || validated.evidence_files.length === 0)) {
+    if (
+      requirements.screenshot_required &&
+      (!validated.evidence_files || validated.evidence_files.length === 0)
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -112,7 +128,7 @@ export async function POST(
             code: 'SCREENSHOT_REQUIRED',
           },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -120,9 +136,12 @@ export async function POST(
       return new Response(
         JSON.stringify({
           success: false,
-          error: { message: 'Text description is required for this activity', code: 'TEXT_REQUIRED' },
+          error: {
+            message: 'Text description is required for this activity',
+            code: 'TEXT_REQUIRED',
+          },
         }),
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -131,12 +150,15 @@ export async function POST(
       activityId: activity.id,
       userId: user.id,
       submissionUrl: validated.submission_url || null,
-      evidenceFiles: validated.evidence_files ? JSON.stringify(validated.evidence_files) : JSON.stringify([]),
+      evidenceFiles: validated.evidence_files
+        ? JSON.stringify(validated.evidence_files)
+        : JSON.stringify([]),
       submissionText: validated.submission_text || null,
       status: 'pending',
       rewardPulpaAmount: activity.rewardPulpaAmount,
       metadata: JSON.stringify({
-        ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+        ip_address:
+          req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
         user_agent: req.headers.get('user-agent'),
       }),
     })
@@ -151,7 +173,7 @@ export async function POST(
         status: submission.status,
         submitted_at: submission.submittedAt,
       },
-      201
+      201,
     )
   } catch (error) {
     return handleApiError(error)

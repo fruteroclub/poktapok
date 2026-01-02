@@ -9,6 +9,7 @@
 ---
 
 ## Success Metrics (MVP)
+
 - [ ] 50 complete profiles within 2 weeks of launch
 - [ ] < 3-minute average profile creation time
 - [ ] Profile creation completion rate >70%
@@ -21,6 +22,7 @@
 ## Prerequisites Status
 
 ### Epic 0: Database Setup
+
 - ✅ **COMPLETED** (2025-12-20)
 - Database schema implemented (users, profiles, applications, invitations)
 - Migrations applied to Neon DB
@@ -28,6 +30,7 @@
 - Documentation completed
 
 **Key Infrastructure Ready:**
+
 - PostgreSQL via Neon DB (pooled + unpooled connections)
 - Drizzle ORM with node-postgres
 - 4 tables, 7 enums, 31 indexes, 47+ CHECK constraints
@@ -37,16 +40,17 @@
 
 ## Ticket Status Overview
 
-| Ticket ID | Title | Story Points | Status | Progress | Next Steps |
-|-----------|-------|--------------|--------|----------|------------|
-| E1-T1 | Authentication Integration | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T2 | Profile Creation Flow | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T3 | Public Directory Page | 5 | 🟢 Completed | 100% - All features working | ✅ Done |
-| E1-T4 | Individual Profile Page | 3 | 🟢 Completed (MVP) | 100% - Core features, 2 tasks deferred | ✅ Done |
-| E1-T5 | Application System | 5 | ⏭️ Deferred to Epic 2 | - | Quality control feature |
-| E1-T6 | Invitation System | 3 | ⏭️ Deferred to Epic 2 | - | Growth mechanism feature |
+| Ticket ID | Title                      | Story Points | Status                | Progress                               | Next Steps               |
+| --------- | -------------------------- | ------------ | --------------------- | -------------------------------------- | ------------------------ |
+| E1-T1     | Authentication Integration | 5            | 🟢 Completed          | 100% - All features working            | ✅ Done                  |
+| E1-T2     | Profile Creation Flow      | 5            | 🟢 Completed          | 100% - All features working            | ✅ Done                  |
+| E1-T3     | Public Directory Page      | 5            | 🟢 Completed          | 100% - All features working            | ✅ Done                  |
+| E1-T4     | Individual Profile Page    | 3            | 🟢 Completed (MVP)    | 100% - Core features, 2 tasks deferred | ✅ Done                  |
+| E1-T5     | Application System         | 5            | ⏭️ Deferred to Epic 2 | -                                      | Quality control feature  |
+| E1-T6     | Invitation System          | 3            | ⏭️ Deferred to Epic 2 | -                                      | Growth mechanism feature |
 
 **Status Legend:**
+
 - 🔴 Not Started
 - 🟡 In Progress
 - 🟢 Completed
@@ -58,6 +62,7 @@
 ## Work Streams (Parallelization)
 
 ### ✅ Days 1-2: Infrastructure Setup (COMPLETED)
+
 - **E0:** Database Setup ✅
   - Schema design and implementation
   - Migration system setup
@@ -65,6 +70,7 @@
   - Verification scripts and documentation
 
 ### Days 1-2: Core Systems (Can Start Immediately)
+
 - **Stream A:** E1-T1 (Auth Integration) - 5 points
   - Privy integration (already partially done)
   - User registration flow with application check
@@ -78,6 +84,7 @@
 **Blockers Removed:** Database tables ready, can proceed with both streams in parallel
 
 ### Days 3-4: User-Facing Features
+
 - **Stream A:** E1-T2 (Profile Form) - 5 points
   - React Hook Form with Zod validation
   - Username availability check
@@ -91,6 +98,7 @@
 **Dependencies:** Both require E1-T1 (Auth) to be completed
 
 ### Days 5-6: Polish & Secondary Features
+
 - **Stream A:** E1-T4 (Profile Page) - 3 points
   - Individual profile view with visibility tiers
   - Share functionality and SEO metadata
@@ -104,6 +112,7 @@
 **Dependencies:** E1-T4 needs E1-T2 (profile structure), E1-T6 needs E1-T1 + E1-T5
 
 ### Day 7: Testing & Launch Prep
+
 - **Integration Testing:** All flows end-to-end
 - **Performance Testing:** Load testing with 100+ profiles
 - **Mobile Testing:** Responsive design verification
@@ -114,16 +123,19 @@
 ## Ticket Files
 
 ### Core MVP (Completed)
+
 - [E1-T1: Authentication Integration](./E1-T1-auth-integration.md) ✅
 - [E1-T2: Profile Creation Flow](./E1-T2-profile-creation.md) ✅
 - [E1-T3: Public Directory Page](./E1-T3-directory-page.md) ✅
 - [E1-T4: Individual Profile Page](./E1-T4-profile-page.md) ✅ (MVP features complete)
 
 ### Deferred to Epic 2
+
 - [E1-T5: Application System](../deferred/E1-T5-application-system.md) ⏭️ (Quality Control)
 - [E1-T6: Invitation System](../deferred/E1-T6-invitation-system.md) ⏭️ (Growth Mechanisms)
 
 ### Partial Implementations
+
 - [E1-T4-partial: Profile Page Deferred Features](../deferred/E1-T4-partial-profile-page.md) (Report modal, Custom 404)
 
 ---
@@ -143,6 +155,7 @@
 ### 🟢 E1-T1: Authentication Integration (COMPLETED - 100%)
 
 **✅ Completed (2025-12-21):**
+
 - Privy authentication working (wallet + email + social)
 - Auth button component ([auth-button-privy.tsx](../../src/components/buttons/auth-button-privy.tsx))
 - User creation API endpoint ([/api/auth/check-user](../../src/app/api/auth/check-user/route.ts))
@@ -157,6 +170,7 @@
 - Redirect logic based on account status (incomplete → onboarding, active → profile)
 
 **Key Features:**
+
 - Server-side token verification using `@privy-io/server-auth`
 - React Query integration for session caching (5-minute stale time)
 - Username/email uniqueness validation
@@ -168,6 +182,7 @@
 ### 🟢 E1-T2: Profile Creation Flow (COMPLETED - 100%)
 
 **✅ Completed (2025-12-22):**
+
 - Profile edit page at [/profile/edit](../../src/app/profile/edit/page.tsx)
 - Profile form component with React Hook Form + Zod ([profile-form.tsx](../../src/components/profile/profile-form.tsx))
 - Username availability check with debouncing ([useUsernameCheck.ts](../../src/lib/hooks/useUsernameCheck.ts))
@@ -181,6 +196,7 @@
 - Username uniqueness check endpoint ([/api/profiles/check-username](../../src/app/api/profiles/check-username/route.ts))
 
 **Key Features:**
+
 - Real-time username availability indicator
 - Bio character count with color warning at 50 chars remaining
 - Form validation with instant feedback
@@ -194,6 +210,7 @@
 ### 🟢 E1-T3: Public Directory Page (COMPLETED - 100%)
 
 **✅ Completed (2025-12-22):**
+
 - Directory page at [/directory](../../src/app/directory/page.tsx)
 - Profile card grid with responsive layout ([profile-card.tsx](../../src/components/directory/profile-card.tsx))
 - Search functionality with debounced input ([search-bar.tsx](../../src/components/directory/search-bar.tsx))
@@ -207,6 +224,7 @@
 - Mobile-responsive design (375px to 1920px)
 
 **Key Features:**
+
 - 3-column grid on desktop, single column on mobile
 - Search across username, display name, and bio (debounced 300ms)
 - Filters update URL query params for shareable links
@@ -222,6 +240,7 @@
 ### 🟢 E1-T4: Individual Profile Page (COMPLETED - MVP)
 
 **✅ Completed (2025-12-24):**
+
 - Profile page at [/profile/[username]](../../src/app/profile/[username]/page.tsx)
 - Zustand store for global auth state ([auth-store.ts](../../src/store/auth-store.ts))
 - Auth helpers for server components ([helpers.ts](../../src/lib/auth/helpers.ts))
@@ -241,6 +260,7 @@
 - SSR with dynamic rendering
 
 **Key Features:**
+
 - Three-tier visibility (public, members-only, private)
 - Private profiles show basic data (username, displayName, avatar, bio) to everyone
 - Field-level visibility permissions
@@ -253,6 +273,7 @@
 - Full SEO support with metadata generation
 
 **Technical Implementation:**
+
 - Zustand + React Query for state management
 - Privy server-side auth with `@privy-io/server-auth`
 - Server Components with SSR
@@ -261,6 +282,7 @@
 - Vercel Blob Storage for avatar upload
 
 **Deferred Features (Post-MVP):**
+
 - Report/abuse modal - Community safety feature for future iteration
 - Custom 404 page - Default Next.js 404 sufficient for MVP
 
@@ -271,11 +293,13 @@
 ### 📋 Simplified Flow (No Application/Email System for MVP)
 
 **Decision:** Deprioritize E1-T5 (Application System) and E1-T6 (Invitations) for initial MVP
+
 - Email service setup not needed yet
 - CAPTCHA not needed yet
 - Admin approval flow not needed yet
 
 **Simplified User Flow:**
+
 1. User authenticates with Privy → `accountStatus: "incomplete"`
 2. User redirected to `/onboarding` form
 3. User fills profile data → `accountStatus: "active"` (auto-approved for MVP)
@@ -291,11 +315,13 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 4. **E1-T4** (individual profile page) → ✅ COMPLETED (2025-12-22)
 
 **🎉 MVP Core Features Complete!**
+
 - All critical path tickets (E1-T1 through E1-T4) finished
 - Full user journey working: auth → profile → directory → individual profiles
 - Ready for testing and deployment
 
 **Later:**
+
 - E1-T5 (Application System) - when we need quality control
 - E1-T6 (Invitations) - when we need referral growth
 
@@ -304,9 +330,11 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 ## Deferred Features (Epic 2)
 
 ### E1-T5: Application System → [Moved to deferred/](../deferred/E1-T5-application-system.md)
+
 **Why Deferred:** Quality control not essential for MVP validation. Open signup faster to market.
 
 **Reactivation Triggers:**
+
 - Spam profiles >10% of total
 - Manual review burden >1 hour/day
 - Companies request developer vetting
@@ -316,9 +344,11 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 ---
 
 ### E1-T6: Invitation System → [Moved to deferred/](../deferred/E1-T6-invitation-system.md)
+
 **Why Deferred:** Viral growth premature before product-market fit. Focus on organic acquisition first.
 
 **Reactivation Triggers:**
+
 - Growth stalls (<10 signups/week)
 - Developers request "invite friends"
 - Need quality signaling mechanism
@@ -328,14 +358,17 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 ---
 
 ### E1-T4 Partial: Report Feature & Custom 404 → [Tracking doc](../deferred/E1-T4-partial-profile-page.md)
+
 **Why Deferred:** Community moderation and polish features not critical for launch.
 
 **Report Modal Reactivation:**
+
 - First abuse report received
 - Community >100 profiles
 - Moderation workload requires tooling
 
 **Custom 404 Reactivation:**
+
 - User feedback on 404 experience
 - Branding refinement phase
 
@@ -344,6 +377,7 @@ This removes blockers and focuses on core functionality: **auth → profile → 
 ---
 
 ### See Also: [Deferred Tickets README](../deferred/README.md)
+
 Complete documentation of deferred features, reactivation criteria, and migration paths.
 
 ---
@@ -353,9 +387,11 @@ Complete documentation of deferred features, reactivation criteria, and migratio
 _Use this section to track impediments, questions, or coordination needs._
 
 ### Current Blockers
+
 - None - All MVP core features (E1-T1 through E1-T4) completed
 
 ### Decisions Made
+
 - ✅ Database schema finalized (4 tables ready)
 - ✅ Privy for authentication
 - ✅ node-postgres over postgres-js for database client
@@ -364,6 +400,7 @@ _Use this section to track impediments, questions, or coordination needs._
 - ✅ Onboarding form in E1-T1 (not separate E1-T2 ticket)
 
 ### Recent Changes
+
 - **2025-12-20:** Epic 0 completed - database ready
 - **2025-12-20:** E1-T1 started - auth flow + user creation working
 - **2025-12-20:** Onboarding page created with ProtectedRoute wrapper
@@ -379,6 +416,7 @@ _Use this section to track impediments, questions, or coordination needs._
 - **2025-12-24:** E1-T4 marked as MVP complete - Report feature and custom 404 deferred
 
 ### Immediate Next Steps
+
 1. ✅ ~~Complete OnboardingForm component~~ DONE
 2. ✅ ~~Update user status: `incomplete` → `active`~~ DONE
 3. ✅ ~~Add `/api/auth/me` endpoint for session management~~ DONE

@@ -1,7 +1,14 @@
 import { NextRequest } from 'next/server'
 import { getActivities, createActivity } from '@/lib/db/queries/activities'
-import { createActivitySchema, listActivitiesQuerySchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middleware'
+import {
+  createActivitySchema,
+  listActivitiesQuerySchema,
+} from '@/lib/validators/activity'
+import {
+  handleApiError,
+  successResponse,
+  requireAdmin,
+} from '@/lib/auth/middleware'
 
 /**
  * GET /api/admin/activities
@@ -37,9 +44,13 @@ export async function GET(req: NextRequest) {
     const allActivities = await getActivities({ limit: 1000 })
     const stats = {
       total: allActivities.total,
-      active: allActivities.activities.filter((a) => a.status === 'active').length,
-      draft: allActivities.activities.filter((a) => a.status === 'draft').length,
-      completed: allActivities.activities.filter((a) => a.status === 'completed').length,
+      active: allActivities.activities.filter((a) => a.status === 'active')
+        .length,
+      draft: allActivities.activities.filter((a) => a.status === 'draft')
+        .length,
+      completed: allActivities.activities.filter(
+        (a) => a.status === 'completed',
+      ).length,
     }
 
     return successResponse({

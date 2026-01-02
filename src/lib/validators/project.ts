@@ -4,14 +4,26 @@
  * Zod schemas for validating project-related API requests
  */
 
-import { z } from 'zod';
+import { z } from 'zod'
 
 // ============================================================
 // ENUMS
 // ============================================================
 
-export const projectStatusEnum = z.enum(['draft', 'wip', 'completed', 'archived']);
-export const projectTypeEnum = z.enum(['personal', 'bootcamp', 'hackathon', 'work-related', 'freelance', 'bounty']);
+export const projectStatusEnum = z.enum([
+  'draft',
+  'wip',
+  'completed',
+  'archived',
+])
+export const projectTypeEnum = z.enum([
+  'personal',
+  'bootcamp',
+  'hackathon',
+  'work-related',
+  'freelance',
+  'bounty',
+])
 
 // ============================================================
 // PROJECT SCHEMAS
@@ -77,7 +89,7 @@ export const createProjectSchema = z
   .refine((data) => data.repositoryUrl || data.videoUrl || data.liveUrl, {
     message: 'At least one URL (repository, video, or live demo) is required',
     path: ['urls'],
-  });
+  })
 
 /**
  * Update Project Schema
@@ -89,7 +101,7 @@ export const updateProjectSchema = createProjectSchema.partial().extend({
     .min(1, 'At least one skill is required')
     .max(10, 'Maximum 10 skills allowed')
     .optional(),
-});
+})
 
 /**
  * Publish Project Schema
@@ -97,7 +109,7 @@ export const updateProjectSchema = createProjectSchema.partial().extend({
  */
 export const publishProjectSchema = z.object({
   status: z.enum(['wip', 'completed', 'archived']),
-});
+})
 
 /**
  * List Projects Query Schema
@@ -119,13 +131,13 @@ export const listProjectsQuerySchema = z.object({
     .string()
     .default('0')
     .transform((val) => parseInt(val, 10)),
-});
+})
 
 // ============================================================
 // TYPE EXPORTS
 // ============================================================
 
-export type CreateProjectInput = z.infer<typeof createProjectSchema>;
-export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
-export type PublishProjectInput = z.infer<typeof publishProjectSchema>;
-export type ListProjectsQuery = z.infer<typeof listProjectsQuerySchema>;
+export type CreateProjectInput = z.infer<typeof createProjectSchema>
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>
+export type PublishProjectInput = z.infer<typeof publishProjectSchema>
+export type ListProjectsQuery = z.infer<typeof listProjectsQuerySchema>

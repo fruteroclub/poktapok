@@ -30,13 +30,14 @@ Allow users to invite friends directly, bypassing the application process.
 
 ### Invitation Limits (Quota System)
 
-| User Type | Invitation Quota |
-|-----------|------------------|
-| Standard users | 2 invites |
-| Power users (3+ completed bounties) | 5 invites |
-| Admins | Unlimited |
+| User Type                           | Invitation Quota |
+| ----------------------------------- | ---------------- |
+| Standard users                      | 2 invites        |
+| Power users (3+ completed bounties) | 5 invites        |
+| Admins                              | Unlimited        |
 
 ### Invitation Lifecycle
+
 ```mermaid
 graph TD
     A[User Creates Invitation] --> B[Generate 8-char Code]
@@ -56,6 +57,7 @@ graph TD
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/app/dashboard/page.tsx` - Dashboard with invitation section (modify existing or create)
 - `src/components/invitations/invite-form.tsx` - Invite input form
 - `src/components/invitations/invite-list.tsx` - List of sent invites
@@ -74,13 +76,13 @@ graph TD
 ### 1. Invitation Code Generator (`src/lib/utils/generate-code.ts`)
 
 ```typescript
-import { customAlphabet } from 'nanoid';
+import { customAlphabet } from 'nanoid'
 
 // Generate URL-safe alphanumeric code (no ambiguous chars: 0, O, I, l)
-const generateId = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', 8);
+const generateId = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', 8)
 
 export function generateInvitationCode(): string {
-  return generateId();
+  return generateId()
 }
 
 // Example output: "aB3kM9pQ"
@@ -359,6 +361,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 **Purpose:** Create new invitation (authenticated)
 
 **Request Body:**
+
 ```json
 {
   "inviteeEmail": "friend@example.com"
@@ -366,6 +369,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ```
 
 **Response:**
+
 ```json
 {
   "invitation": {
@@ -380,6 +384,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ```
 
 **Error Cases:**
+
 - 400: Invalid email
 - 401: Not authenticated
 - 403: No invites remaining
@@ -390,6 +395,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 **Purpose:** List my sent invitations (authenticated)
 
 **Response:**
+
 ```json
 {
   "invitations": [
@@ -413,6 +419,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 **Purpose:** Verify invitation code (public)
 
 **Response:**
+
 ```json
 {
   "valid": true,
@@ -428,6 +435,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ```
 
 **Response (invalid):**
+
 ```json
 {
   "valid": false,
@@ -440,6 +448,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ## Database Schema
 
 ### Invitations Table
+
 ```typescript
 {
   id: uuid (PK)
@@ -455,6 +464,7 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ```
 
 **Indexes:**
+
 - `code` (unique)
 - `inviterId` (for querying user's invitations)
 - `status` (for cleanup queries)
@@ -466,29 +476,24 @@ export default async function InviteRedemptionPage({ params }: { params: { code:
 ```typescript
 // src/lib/db/queries/invitations.ts
 export async function getRemainingInvites(userId: string): Promise<number> {
-  const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const user = await db.select().from(users).where(eq(users.id, userId)).limit(1)
 
-  if (!user) return 0;
+  if (!user) return 0
 
   // Determine quota
-  let quota = 2; // Standard users
+  let quota = 2 // Standard users
 
   if (user.role === 'admin') {
-    quota = Infinity;
+    quota = Infinity
   } else {
     // Count completed bounties (Epic 3)
     const completedBounties = await db
       .select({ count: count() })
       .from(bountySubmissions)
-      .where(
-        and(
-          eq(bountySubmissions.userId, userId),
-          eq(bountySubmissions.status, 'approved')
-        )
-      );
+      .where(and(eq(bountySubmissions.userId, userId), eq(bountySubmissions.status, 'approved')))
 
     if (completedBounties[0]?.count >= 3) {
-      quota = 5; // Power users
+      quota = 5 // Power users
     }
   }
 
@@ -496,9 +501,9 @@ export async function getRemainingInvites(userId: string): Promise<number> {
   const usedInvites = await db
     .select({ count: count() })
     .from(invitations)
-    .where(eq(invitations.inviterId, userId));
+    .where(eq(invitations.inviterId, userId))
 
-  return Math.max(0, quota - usedInvites[0]?.count);
+  return Math.max(0, quota - usedInvites[0]?.count)
 }
 ```
 
@@ -601,12 +606,14 @@ curl http://localhost:3000/api/invitations/aB3kM9pQ
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E1-T1: Authentication Integration completed
 - [ ] E1-T5: Application System completed
 - [ ] Email service configured
 - [ ] Users can register and create profiles
 
 ### Blocks
+
 - None (last ticket in Epic 1)
 
 ---
@@ -614,21 +621,25 @@ curl http://localhost:3000/api/invitations/aB3kM9pQ
 ## Notes & Questions
 
 ### Implementation Notes
+
 - Use nanoid for code generation (better than UUID for short codes)
 - Set up cron job to expire old invitations (mark as "expired")
 - Consider adding invitation analytics (click rate, conversion rate)
 
 ### Email Deliverability
+
 - Use same email service as application system
 - Include plain text version of email
 - Add unsubscribe link (future)
 
 ### Security Considerations
+
 - Rate limit invitation creation (5 per hour per user)
 - Validate email format server-side
 - Prevent invitation to already-registered emails
 
 ### Questions
+
 - [ ] Should invitations refresh (2 per month) or be one-time?
   - **Decision:** One-time quota, increases with activity (bounties)
 - [ ] Can users invite same email twice if first expired?
@@ -637,6 +648,7 @@ curl http://localhost:3000/api/invitations/aB3kM9pQ
   - **Decision:** Yes, badge on profile: "Invited by @username"
 
 ### Future Enhancements (Not in Scope)
+
 - Invitation rewards (inviter gets credits when invitee completes bounty)
 - Team invitations (invite multiple people at once)
 - Custom invitation messages
@@ -647,4 +659,5 @@ curl http://localhost:3000/api/invitations/aB3kM9pQ
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-20
 **Status Changes:**
+
 - 2025-12-20: Created ticket

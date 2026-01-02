@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Dialog,
@@ -7,36 +7,45 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ProfileFormData } from "@/lib/validators/profile";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Github, Twitter, Linkedin, Send, Cpu, Wallet, Lock } from "lucide-react";
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { ProfileFormData } from '@/lib/validators/profile'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import {
+  MapPin,
+  Github,
+  Twitter,
+  Linkedin,
+  Send,
+  Cpu,
+  Wallet,
+  Lock,
+} from 'lucide-react'
 
 interface ProfilePreviewModalProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  data: ProfileFormData;
+  open: boolean
+  onClose: () => void
+  onConfirm: () => void
+  data: ProfileFormData
   userInfo: {
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-  };
-  isSubmitting: boolean;
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
+  isSubmitting: boolean
 }
 
 const LEARNING_TRACK_LABELS = {
-  ai: { label: "AI", icon: Cpu },
-  crypto: { label: "Crypto/DeFi", icon: Wallet },
-  privacy: { label: "Privacy", icon: Lock },
-};
+  ai: { label: 'AI', icon: Cpu },
+  crypto: { label: 'Crypto/DeFi', icon: Wallet },
+  privacy: { label: 'Privacy', icon: Lock },
+}
 
 const AVAILABILITY_LABELS = {
-  available: "Learning",
-  open_to_offers: "Building",
-  unavailable: "Open to Bounties",
-};
+  available: 'Learning',
+  open_to_offers: 'Building',
+  unavailable: 'Open to Bounties',
+}
 
 /**
  * ProfilePreviewModal - Shows profile preview before submission
@@ -53,20 +62,20 @@ export function ProfilePreviewModal({
   isSubmitting,
 }: ProfilePreviewModalProps) {
   const initials = (userInfo.displayName || userInfo.username)
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
 
   const learningTrack = data.learningTrack
     ? LEARNING_TRACK_LABELS[data.learningTrack]
-    : null;
-  const LearningIcon = learningTrack?.icon;
+    : null
+  const LearningIcon = learningTrack?.icon
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Vista Previa del Perfil</DialogTitle>
           <DialogDescription>
@@ -74,7 +83,7 @@ export function ProfilePreviewModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="border rounded-lg p-6 space-y-4 ">
+        <div className="space-y-4 rounded-lg border p-6">
           {/* Avatar and Basic Info */}
           <div className="flex items-start gap-4">
             <Avatar className="h-20 w-20">
@@ -87,7 +96,7 @@ export function ProfilePreviewModal({
               </h3>
               <p className="text-muted-foreground">@{userInfo.username}</p>
               {data.city && data.country && (
-                <p className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
+                <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   {data.city}, {data.country}
                 </p>
@@ -115,56 +124,56 @@ export function ProfilePreviewModal({
             data.socialLinks?.twitter ||
             data.socialLinks?.linkedin ||
             data.socialLinks?.telegram) && (
-              <div className="pt-3 border-t">
-                <p className="text-sm font-medium mb-2">Redes Sociales</p>
-                <div className="flex flex-wrap gap-3">
-                  {data.socialLinks.github && (
-                    <a
-                      href={`https://github.com/${data.socialLinks.github}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                      <Github className="h-4 w-4" />
-                      GitHub
-                    </a>
-                  )}
-                  {data.socialLinks.twitter && (
-                    <a
-                      href={`https://twitter.com/${data.socialLinks.twitter.replace("@", "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                      <Twitter className="h-4 w-4" />
-                      Twitter
-                    </a>
-                  )}
-                  {data.socialLinks.linkedin && (
-                    <a
-                      href={`https://linkedin.com/in/${data.socialLinks.linkedin}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                      LinkedIn
-                    </a>
-                  )}
-                  {data.socialLinks.telegram && (
-                    <a
-                      href={`https://t.me/${data.socialLinks.telegram.replace("@", "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                      <Send className="h-4 w-4" />
-                      Telegram
-                    </a>
-                  )}
-                </div>
+            <div className="border-t pt-3">
+              <p className="mb-2 text-sm font-medium">Redes Sociales</p>
+              <div className="flex flex-wrap gap-3">
+                {data.socialLinks.github && (
+                  <a
+                    href={`https://github.com/${data.socialLinks.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+                  >
+                    <Github className="h-4 w-4" />
+                    GitHub
+                  </a>
+                )}
+                {data.socialLinks.twitter && (
+                  <a
+                    href={`https://twitter.com/${data.socialLinks.twitter.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+                  >
+                    <Twitter className="h-4 w-4" />
+                    Twitter
+                  </a>
+                )}
+                {data.socialLinks.linkedin && (
+                  <a
+                    href={`https://linkedin.com/in/${data.socialLinks.linkedin}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </a>
+                )}
+                {data.socialLinks.telegram && (
+                  <a
+                    href={`https://t.me/${data.socialLinks.telegram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+                  >
+                    <Send className="h-4 w-4" />
+                    Telegram
+                  </a>
+                )}
               </div>
-            )}
+            </div>
+          )}
         </div>
 
         <DialogFooter className="flex gap-2 sm:gap-2">
@@ -181,10 +190,10 @@ export function ProfilePreviewModal({
             disabled={isSubmitting}
             className="flex-1 sm:flex-none"
           >
-            {isSubmitting ? "Creando..." : "Confirmar y Crear Perfil"}
+            {isSubmitting ? 'Creando...' : 'Confirmar y Crear Perfil'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -1,4 +1,14 @@
-import { pgTable, uuid, varchar, text, timestamp, pgEnum, jsonb, check, index } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  timestamp,
+  pgEnum,
+  jsonb,
+  check,
+  index,
+} from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, softDelete, metadata } from './utils'
 
@@ -9,26 +19,30 @@ import { timestamps, softDelete, metadata } from './utils'
 /**
  * User role for access control
  */
-export const userRoleEnum = pgEnum('user_role', ['member', 'moderator', 'admin'])
+export const userRoleEnum = pgEnum('user_role', [
+  'member',
+  'moderator',
+  'admin',
+])
 
 /**
  * Account status for user lifecycle management
  */
 export const accountStatusEnum = pgEnum('account_status', [
-  'incomplete',   // Authenticated but onboarding not completed
-  'pending',      // Onboarding complete, waiting for approval
-  'active',       // Approved and active
-  'suspended',    // Temporarily disabled
-  'banned',       // Permanently disabled
+  'incomplete', // Authenticated but onboarding not completed
+  'pending', // Onboarding complete, waiting for approval
+  'active', // Approved and active
+  'suspended', // Temporarily disabled
+  'banned', // Permanently disabled
 ])
 
 /**
  * Primary authentication method tracking
  */
 export const authMethodEnum = pgEnum('auth_method', [
-  'email',    // Email magic link
-  'wallet',   // External wallet (MetaMask, Coinbase, etc.)
-  'social',   // Social login (Google, GitHub, Discord, etc.)
+  'email', // Email magic link
+  'wallet', // External wallet (MetaMask, Coinbase, etc.)
+  'social', // Social login (Google, GitHub, Discord, etc.)
 ])
 
 // ============================================================
@@ -61,33 +75,26 @@ export const users = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Authentication (Privy Integration)
-    privyDid: varchar('privy_did', { length: 255 })
-      .unique()
-      .notNull(),
+    privyDid: varchar('privy_did', { length: 255 }).unique().notNull(),
 
     // Contact & Identity (optional for some auth methods like GitHub)
-    email: varchar('email', { length: 255 })
-      .unique(),
+    email: varchar('email', { length: 255 }).unique(),
 
     // Profile Identifiers (collected during onboarding)
-    username: varchar('username', { length: 50 })
-      .unique(),
+    username: varchar('username', { length: 50 }).unique(),
     displayName: varchar('display_name', { length: 100 }),
-    bio: text('bio'),                                      // Max 280 characters enforced at app level
+    bio: text('bio'), // Max 280 characters enforced at app level
     avatarUrl: varchar('avatar_url', { length: 500 }),
 
     // Wallets
-    extWallet: varchar('ext_wallet', { length: 42 }),      // External wallet (optional)
-    appWallet: varchar('app_wallet', { length: 42 }),      // Privy embedded wallet (created async)
+    extWallet: varchar('ext_wallet', { length: 42 }), // External wallet (optional)
+    appWallet: varchar('app_wallet', { length: 42 }), // Privy embedded wallet (created async)
 
     // Login Method Tracking
-    primaryAuthMethod: authMethodEnum('primary_auth_method')
-      .notNull(),
+    primaryAuthMethod: authMethodEnum('primary_auth_method').notNull(),
 
     // Account Management
-    role: userRoleEnum('role')
-      .default('member')
-      .notNull(),
+    role: userRoleEnum('role').default('member').notNull(),
 
     accountStatus: accountStatusEnum('account_status')
       .default('pending')
@@ -103,29 +110,29 @@ export const users = pgTable(
     // Metadata (Separated Concerns)
     privyMetadata: jsonb('privy_metadata')
       .default(sql`'{}'::jsonb`)
-      .notNull(),  // Privy SDK data (wallet timestamps, connection info)
-    ...metadata,   // Business logic (NFT memberships, feature flags, preferences)
+      .notNull(), // Privy SDK data (wallet timestamps, connection info)
+    ...metadata, // Business logic (NFT memberships, feature flags, preferences)
   },
   (table) => ({
     // Constraints
     emailFormatCheck: check(
       'email_format',
-      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'`
+      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'`,
     ),
 
     usernameFormatCheck: check(
       'username_format',
-      sql`${table.username} ~* '^[a-z0-9_]{3,50}$'`
+      sql`${table.username} ~* '^[a-z0-9_]{3,50}$'`,
     ),
 
     extWalletFormatCheck: check(
       'ext_wallet_format',
-      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* '^0x[a-fA-F0-9]{40}$'`
+      sql`${table.extWallet} IS NULL OR ${table.extWallet} ~* '^0x[a-fA-F0-9]{40}$'`,
     ),
 
     appWalletFormatCheck: check(
       'app_wallet_format',
-      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* '^0x[a-fA-F0-9]{40}$'`
+      sql`${table.appWallet} IS NULL OR ${table.appWallet} ~* '^0x[a-fA-F0-9]{40}$'`,
     ),
 
     // Indexes
@@ -150,7 +157,7 @@ export const users = pgTable(
       .where(sql`${table.deletedAt} IS NULL`),
 
     primaryAuthIdx: index('idx_users_primary_auth').on(table.primaryAuthMethod),
-  })
+  }),
 )
 
 // ============================================================

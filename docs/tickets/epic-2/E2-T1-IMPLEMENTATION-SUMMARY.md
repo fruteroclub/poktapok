@@ -17,18 +17,21 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 ### 1. Database Schema
 
 **Created Tables:**
+
 - ✅ `projects` - Portfolio projects with full validation constraints
 - ✅ `skills` - Preset skill library (seeded with 43 skills)
 - ✅ `user_skills` - Many-to-many relationship (project-validated)
 - ✅ `project_skills` - Many-to-many relationship (projects ↔ skills)
 
 **Created Enums:**
+
 - ✅ `project_type` - personal, bootcamp, hackathon, work-related, freelance, bounty
 - ✅ `project_status` - draft, wip, completed, archived
 - ✅ `skill_category` - language, framework, tool, blockchain, other
 - ✅ `proficiency_level` - beginner, intermediate, advanced
 
 **Key Features:**
+
 - Character limits enforced via CHECK constraints (title: 5-100, description: 20-280)
 - URL format validation (must start with `http://` or `https://`)
 - At least one URL required (repository, video, or live demo)
@@ -37,6 +40,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 - Cascading deletes for referential integrity
 
 **Schema Files:**
+
 - [drizzle/schema/projects.ts](../../../drizzle/schema/projects.ts)
 - [drizzle/schema/skills.ts](../../../drizzle/schema/skills.ts)
 
@@ -45,6 +49,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 **File:** [scripts/seed-skills.ts](../../../scripts/seed-skills.ts)
 
 **Seeded Skills (43 total):**
+
 - 7 **Languages**: JavaScript, TypeScript, Python, Rust, Solidity, Go, Java
 - 12 **Frameworks**: React, Next.js, Vue.js, Angular, Svelte, Tailwind CSS, Node.js, Express, NestJS, Django, FastAPI, Ruby on Rails
 - 8 **Tools**: Git, Docker, PostgreSQL, MongoDB, Redis, GraphQL, Prisma, Drizzle ORM
@@ -58,6 +63,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 **Types File:** [src/types/api-v1.ts](../../../src/types/api-v1.ts)
 
 **Added Types:**
+
 - `ProjectWithSkills` - Project with related skills
 - `CreateProjectResponse`, `GetProjectResponse`, `ListProjectsResponse`
 - `UpdateProjectResponse`, `DeleteProjectResponse`
@@ -65,6 +71,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 - `ListSkillsResponse`, `ListProjectsQuery`, `ListSkillsQuery`
 
 **Validators:**
+
 - [src/lib/validators/project.ts](../../../src/lib/validators/project.ts) - Zod schemas for project operations
 - [src/lib/validators/skill.ts](../../../src/lib/validators/skill.ts) - Zod schemas for skill operations
 
@@ -73,6 +80,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 #### Projects Endpoints
 
 **POST /api/projects** - Create new project
+
 - ✅ Validates request body (title, description, URLs, type, status, skills)
 - ✅ Links skills to project via `project_skills` table
 - ✅ Auto-syncs `user_skills` table (increments project count)
@@ -80,6 +88,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 - **Auth**: Required (Privy token)
 
 **GET /api/projects** - List projects with filters
+
 - ✅ Query params: `userId`, `status`, `type`, `featured`, `limit`, `offset`
 - ✅ Draft visibility: Only owners can see drafts
 - ✅ Pagination with `hasMore` indicator
@@ -87,12 +96,14 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 - **Auth**: Optional (affects draft visibility)
 
 **GET /api/projects/:id** - Fetch single project
+
 - ✅ Increments view count (non-owners only)
 - ✅ Draft visibility: Only owners can see drafts
 - ✅ Returns 404 if soft-deleted
 - **Auth**: Optional (affects draft visibility)
 
 **PUT /api/projects/:id** - Update project
+
 - ✅ Validates ownership (owner only)
 - ✅ Partial updates supported (all fields optional)
 - ✅ Skill replacement with user_skills sync
@@ -100,6 +111,7 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 - **Auth**: Required (Privy token)
 
 **DELETE /api/projects/:id** - Soft delete project
+
 - ✅ Validates ownership (owner only)
 - ✅ Sets `deletedAt` timestamp (soft delete)
 - ✅ Decrements user_skills project counts
@@ -109,12 +121,14 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 #### Skills Endpoints
 
 **GET /api/skills** - List all skills
+
 - ✅ Query params: `category`, `search`, `limit`, `offset`
 - ✅ Ordered by usage count (popularity), then alphabetically
 - ✅ Pagination with `hasMore` indicator
 - **Auth**: Not required (public endpoint)
 
 **Implementation Files:**
+
 - [src/app/api/projects/route.ts](../../../src/app/api/projects/route.ts) - POST, GET (list)
 - [src/app/api/projects/[id]/route.ts](../../../src/app/api/projects/[id]/route.ts) - GET, PUT, DELETE
 - [src/app/api/skills/route.ts](../../../src/app/api/skills/route.ts) - GET
@@ -124,20 +138,25 @@ Successfully implemented the complete database schema and CRUD API for the Portf
 ## 🎯 Key Design Decisions
 
 ### 1. Skills are Project-Validated
+
 Users cannot manually add skills. Skills are automatically added when linked to a project and removed when no longer used in any project.
 
 **Implementation:**
+
 - `user_skills.projectCount` tracks how many projects use each skill
 - When `projectCount` reaches 0, the skill is removed from `user_skills`
 - This ensures skills are earned through demonstrated work
 
 ### 2. Character Limits Enforce Clarity
+
 - **Title**: 5-100 characters (concise project identification)
 - **Description**: 20-280 characters (Twitter-length summary)
 - Rationale: Forces clarity, heavy content should be in README or video
 
 ### 3. At Least One URL Required
+
 Projects must have either:
+
 - Repository URL (GitHub, GitLab, etc.)
 - Live demo URL
 - Video URL (YouTube, Loom, etc.)
@@ -145,13 +164,17 @@ Projects must have either:
 This ensures projects have verifiable evidence.
 
 ### 4. Soft Deletes for Data Integrity
+
 Projects are never hard-deleted. The `deletedAt` timestamp allows:
+
 - Referential integrity preservation
 - Potential "restore" functionality in future
 - Historical data retention
 
 ### 5. Logo vs Thumbnail
+
 Projects use `logoUrl` (single, square branding image) instead of "thumbnail" for:
+
 - Project identification in grids
 - Brand recognition
 - Cleaner UI hierarchy
@@ -167,6 +190,7 @@ Projects use `logoUrl` (single, square branding image) instead of "thumbnail" fo
 **CHECK Constraints**: 9
 
 **Skills Seeded**: 43
+
 - Language: 7
 - Framework: 12
 - Tool: 8
@@ -178,6 +202,7 @@ Projects use `logoUrl` (single, square branding image) instead of "thumbnail" fo
 ## 🔄 User Skill Sync Logic
 
 **On Project Create:**
+
 ```
 FOR each skillId in project:
   IF user_skills exists:
@@ -187,6 +212,7 @@ FOR each skillId in project:
 ```
 
 **On Project Update:**
+
 ```
 removedSkills = oldSkills - newSkills
 addedSkills = newSkills - oldSkills
@@ -205,6 +231,7 @@ FOR each added skill:
 ```
 
 **On Project Delete:**
+
 ```
 FOR each skill in project:
   IF projectCount <= 1:
@@ -263,6 +290,7 @@ With the API complete, the next ticket is **E2-T2: Portfolio Builder UI**:
 5. Form validation with real-time feedback
 
 **Dependencies Met:**
+
 - ✅ Database schema ready
 - ✅ API endpoints functional
 - ✅ Types exported for frontend use

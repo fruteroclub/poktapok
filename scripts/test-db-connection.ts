@@ -11,7 +11,9 @@ async function testDatabaseConnection() {
     console.log('✅ Database connected:', result.rows[0])
 
     // Test 2: Count users
-    const userCount = await db.select({ count: sql<number>`COUNT(*)` }).from(users)
+    const userCount = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(users)
     console.log('✅ User count:', userCount[0].count)
 
     // Test 3: Test all tables exist

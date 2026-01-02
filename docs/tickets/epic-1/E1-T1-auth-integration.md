@@ -32,6 +32,7 @@ Integrate Privy for wallet + email authentication with user creation flow.
 ## Files Created/Modified
 
 ### New Files ✅
+
 - ✅ `src/lib/auth/middleware.ts` - API route protection with Privy token verification
 - ✅ `src/app/api/auth/me/route.ts` - Get current user endpoint
 - ✅ `src/app/api/auth/check-user/route.ts` - User registration endpoint
@@ -40,6 +41,7 @@ Integrate Privy for wallet + email authentication with user creation flow.
 - ✅ `src/lib/hooks/index.ts` - Hook exports
 
 ### Modified Files ✅
+
 - ✅ `src/components/buttons/auth-button-privy.tsx` - Added toast deduplication
 - ✅ `src/app/api/users/update-profile/route.ts` - Now uses authentication middleware
 - ✅ `src/components/onboarding/onboarding-form.tsx` - Removed privyDid from request body
@@ -51,8 +53,8 @@ Integrate Privy for wallet + email authentication with user creation flow.
 ### 1. Authentication Middleware (`src/lib/auth/middleware.ts`)
 
 ```typescript
-import { type NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
+import { type NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 
 export async function getAuthUser(req: NextRequest) {
   // Get Privy session token from cookies
@@ -62,24 +64,26 @@ export async function getAuthUser(req: NextRequest) {
 
 export function requireAuth(handler: Function) {
   return async (req: NextRequest) => {
-    const user = await getAuthUser(req);
+    const user = await getAuthUser(req)
     if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    return handler(req, user);
-  };
+    return handler(req, user)
+  }
 }
 ```
 
 ### 2. User Registration Flow
 
 **Current Flow (from existing code):**
+
 1. User authenticates via Privy (wallet or email)
 2. `auth-button-privy.tsx` handles onComplete callback
 3. Calls `POST /api/users` with user data
 4. Redirects to `/profile`
 
 **Needs Enhancement:**
+
 1. Add application approval check
 2. Create proper `users` + `profiles` split (currently combined)
 3. Better error handling for unapproved users
@@ -114,18 +118,18 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 ```typescript
 // src/lib/hooks/useAuth.ts
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query'
 
 export function useAuth() {
   return useQuery({
     queryKey: ['auth', 'me'],
     queryFn: async () => {
-      const res = await fetch('/api/auth/me');
-      if (!res.ok) return null;
-      return res.json();
+      const res = await fetch('/api/auth/me')
+      if (!res.ok) return null
+      return res.json()
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  })
 }
 ```
 
@@ -138,6 +142,7 @@ export function useAuth() {
 **Purpose:** Get current authenticated user with profile data
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -157,6 +162,7 @@ export function useAuth() {
 ```
 
 **Error Cases:**
+
 - 401: Not authenticated
 - 404: User exists but profile not created yet
 
@@ -166,11 +172,13 @@ export function useAuth() {
 
 **Current Behavior:** Creates combined user record
 **New Behavior:**
+
 1. Check if application approved (query `applications` table)
 2. Create separate `users` and `profiles` records
 3. Return proper error for unapproved applications
 
 **Request Body:**
+
 ```json
 {
   "id": "privy:id:abc123",
@@ -182,6 +190,7 @@ export function useAuth() {
 ```
 
 **Response:**
+
 ```json
 {
   "user": { ... },
@@ -191,6 +200,7 @@ export function useAuth() {
 ```
 
 **Error Cases:**
+
 - 400: Missing required fields
 - 403: Application not approved
 - 409: User already exists
@@ -200,6 +210,7 @@ export function useAuth() {
 ## Database Schema (Reference)
 
 **Users Table:**
+
 ```typescript
 {
   id: uuid (PK)
@@ -212,6 +223,7 @@ export function useAuth() {
 ```
 
 **Profiles Table (one-to-one with Users):**
+
 ```typescript
 {
   id: uuid (PK)
@@ -293,29 +305,29 @@ describe('POST /api/users (updated)', () => {
     // Mock approved application in DB
     // Call endpoint
     // Assert user + profile created
-  });
+  })
 
   it('returns 403 for unapproved application', async () => {
     // Mock Privy verification
     // No approved application in DB
     // Call endpoint
     // Assert 403 response
-  });
-});
+  })
+})
 
 describe('GET /api/auth/me', () => {
   it('returns user + profile for authenticated user', async () => {
     // Mock authenticated session
     // Call endpoint
     // Assert correct data returned
-  });
+  })
 
   it('returns 401 for unauthenticated user', async () => {
     // No auth cookie
     // Call endpoint
     // Assert 401 response
-  });
-});
+  })
+})
 ```
 
 ---
@@ -323,16 +335,19 @@ describe('GET /api/auth/me', () => {
 ## Security Considerations
 
 ### 1. Token Verification
+
 - Always verify Privy access token on the server
 - Never trust client-side authentication state for API calls
 - Use short-lived tokens (15-30 min) with refresh mechanism
 
 ### 2. Session Management
+
 - Store session tokens in httpOnly cookies
 - Use secure flag in production (HTTPS only)
 - Implement CSRF protection for state-changing operations
 
 ### 3. Rate Limiting
+
 - Limit `/api/users` to 5 requests per hour per IP
 - Prevent automated account creation
 
@@ -341,11 +356,13 @@ describe('GET /api/auth/me', () => {
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E0-T0: Database Setup completed
 - [x] Privy app credentials in `.env.local` (already configured)
 - [ ] Database schema migrated (users + profiles tables)
 
 ### Blocks
+
 - E1-T2: Profile Creation Flow (needs auth)
 - E1-T6: Invitation System (needs auth)
 
@@ -354,6 +371,7 @@ describe('GET /api/auth/me', () => {
 ## Notes & Questions
 
 ### Implementation Notes
+
 - ✅ Privy provider is already configured in `src/providers/auth/privy-provider.tsx`
 - ✅ Auth button component exists at `src/components/buttons/auth-button-privy.tsx`
 - ✅ Basic login flow works, redirects to `/profile`
@@ -363,13 +381,16 @@ describe('GET /api/auth/me', () => {
 - ✅ React Query is already set up in provider hierarchy
 
 ### Current Implementation Status
+
 **What's Working:**
+
 - Privy authentication (wallet + email)
 - User creation via `/api/users` endpoint
 - Basic login/logout functionality
 - Redirect to profile after login
 
 **What Needs Work:**
+
 - Application approval check
 - Separate users/profiles database structure
 - Protected route component
@@ -378,6 +399,7 @@ describe('GET /api/auth/me', () => {
 - Better error handling
 
 ### Questions
+
 - [ ] Should we create empty profile records on registration, or wait for user to complete profile setup?
   - **Decision:** Create minimal profile record with `userId` on registration, user completes it in E1-T2
 - [ ] What happens if user authenticates but application is still pending?
@@ -386,6 +408,7 @@ describe('GET /api/auth/me', () => {
   - **Decision:** Update existing `/api/users` endpoint to include application check
 
 ### Related Documentation
+
 - [Privy Authentication Docs](https://docs.privy.io/guide/authentication)
 - [Next.js Middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 - [Existing auth-button-privy.tsx](../../src/components/buttons/auth-button-privy.tsx)
@@ -395,4 +418,5 @@ describe('GET /api/auth/me', () => {
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-20
 **Status Changes:**
+
 - 2025-12-20: Created ticket

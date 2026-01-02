@@ -1,7 +1,14 @@
 import { NextRequest } from 'next/server'
-import { getSubmissionById, updateSubmission } from '@/lib/db/queries/activities'
+import {
+  getSubmissionById,
+  updateSubmission,
+} from '@/lib/db/queries/activities'
 import { rejectSubmissionSchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  requireAdmin,
+} from '@/lib/auth/middleware'
 
 /**
  * PATCH /api/admin/submissions/[id]/reject
@@ -9,7 +16,7 @@ import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middle
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const admin = await requireAdmin(req)
@@ -23,7 +30,7 @@ export async function PATCH(
           success: false,
           error: { message: 'Submission not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 

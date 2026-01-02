@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import * as React from 'react'
+import { Check, ChevronsUpDown, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -10,50 +10,50 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { useSkills } from "@/hooks/use-skills";
-import type { Skill } from "@/types/api-v1";
+} from '@/components/ui/popover'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { useSkills } from '@/hooks/use-skills'
+import type { Skill } from '@/types/api-v1'
 
 interface SkillsFilterProps {
-  selectedSkillIds: string[];
-  onSelectionChange: (skillIds: string[]) => void;
+  selectedSkillIds: string[]
+  onSelectionChange: (skillIds: string[]) => void
 }
 
 export function SkillsFilter({
   selectedSkillIds,
   onSelectionChange,
 }: SkillsFilterProps) {
-  const [open, setOpen] = React.useState(false);
-  const { data: skillsData, isLoading } = useSkills();
+  const [open, setOpen] = React.useState(false)
+  const { data: skillsData, isLoading } = useSkills()
 
-  const skills = skillsData?.skills || [];
+  const skills = skillsData?.skills || []
   const selectedSkills = skills.filter((skill) =>
-    selectedSkillIds.includes(skill.id)
-  );
+    selectedSkillIds.includes(skill.id),
+  )
 
   const handleSelect = (skill: Skill) => {
-    const isSelected = selectedSkillIds.includes(skill.id);
+    const isSelected = selectedSkillIds.includes(skill.id)
     if (isSelected) {
-      onSelectionChange(selectedSkillIds.filter((id) => id !== skill.id));
+      onSelectionChange(selectedSkillIds.filter((id) => id !== skill.id))
     } else {
-      onSelectionChange([...selectedSkillIds, skill.id]);
+      onSelectionChange([...selectedSkillIds, skill.id])
     }
-  };
+  }
 
   const handleRemove = (skillId: string) => {
-    onSelectionChange(selectedSkillIds.filter((id) => id !== skillId));
-  };
+    onSelectionChange(selectedSkillIds.filter((id) => id !== skillId))
+  }
 
   const handleClear = () => {
-    onSelectionChange([]);
-  };
+    onSelectionChange([])
+  }
 
   return (
     <div className="space-y-2">
@@ -67,7 +67,7 @@ export function SkillsFilter({
           >
             {selectedSkills.length > 0
               ? `${selectedSkills.length} selected`
-              : "Select skills..."}
+              : 'Select skills...'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -76,11 +76,11 @@ export function SkillsFilter({
             <CommandInput placeholder="Search skills..." />
             <CommandList>
               <CommandEmpty>
-                {isLoading ? "Loading skills..." : "No skills found."}
+                {isLoading ? 'Loading skills...' : 'No skills found.'}
               </CommandEmpty>
               <CommandGroup>
                 {skills.map((skill) => {
-                  const isSelected = selectedSkillIds.includes(skill.id);
+                  const isSelected = selectedSkillIds.includes(skill.id)
                   return (
                     <CommandItem
                       key={skill.id}
@@ -89,8 +89,8 @@ export function SkillsFilter({
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4",
-                          isSelected ? "opacity-100" : "opacity-0"
+                          'mr-2 h-4 w-4',
+                          isSelected ? 'opacity-100' : 'opacity-0',
                         )}
                       />
                       <span>{skill.name}</span>
@@ -98,7 +98,7 @@ export function SkillsFilter({
                         {skill.category}
                       </span>
                     </CommandItem>
-                  );
+                  )
                 })}
               </CommandGroup>
             </CommandList>
@@ -141,5 +141,5 @@ export function SkillsFilter({
         </div>
       )}
     </div>
-  );
+  )
 }

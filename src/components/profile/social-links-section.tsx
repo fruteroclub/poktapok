@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { ProfileFormData } from "@/lib/validators/profile";
+import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { ProfileFormData } from '@/lib/validators/profile'
 import {
   FormField,
   FormItem,
@@ -10,10 +10,17 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Github, Twitter, Linkedin, Send } from "lucide-react";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import {
+  ChevronDown,
+  ChevronUp,
+  Github,
+  Twitter,
+  Linkedin,
+  Send,
+} from 'lucide-react'
 
 /**
  * SocialLinksSection - Optional social media links (collapsible)
@@ -22,8 +29,8 @@ import { ChevronDown, ChevronUp, Github, Twitter, Linkedin, Send } from "lucide-
  * - Collapsed by default for progressive disclosure
  */
 export function SocialLinksSection() {
-  const form = useFormContext<ProfileFormData>();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const form = useFormContext<ProfileFormData>()
+  const [isExpanded, setIsExpanded] = useState(false)
 
   return (
     <div className="space-y-4">
@@ -66,13 +73,11 @@ export function SocialLinksSection() {
                   GitHub
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="usuario"
-                    {...field}
-                  />
+                  <Input type="text" placeholder="usuario" {...field} />
                 </FormControl>
-                <FormDescription>Tu nombre de usuario de GitHub</FormDescription>
+                <FormDescription>
+                  Tu nombre de usuario de GitHub
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -110,13 +115,11 @@ export function SocialLinksSection() {
                   LinkedIn
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="usuario"
-                    {...field}
-                  />
+                  <Input type="text" placeholder="usuario" {...field} />
                 </FormControl>
-                <FormDescription>Tu nombre de usuario de LinkedIn (linkedin.com/in/usuario)</FormDescription>
+                <FormDescription>
+                  Tu nombre de usuario de LinkedIn (linkedin.com/in/usuario)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -145,5 +148,5 @@ export function SocialLinksSection() {
         </div>
       )}
     </div>
-  );
+  )
 }

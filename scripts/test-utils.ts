@@ -49,7 +49,11 @@ const testCases = [
       'TEST_INVITE_CODE_123',
       'a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p',
     ],
-    invalid: ['SHORT', 'TOO_LONG_CODE_WITH_MORE_THAN_32_CHARACTERS_FAILS', 'code with spaces'],
+    invalid: [
+      'SHORT',
+      'TOO_LONG_CODE_WITH_MORE_THAN_32_CHARACTERS_FAILS',
+      'code with spaces',
+    ],
   },
 ]
 

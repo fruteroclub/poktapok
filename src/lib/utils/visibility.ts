@@ -1,6 +1,6 @@
-import type { User, Profile } from "@/lib/db/schema";
+import type { User, Profile } from '@/lib/db/schema'
 
-export type VisibilityLevel = "public" | "members" | "private";
+export type VisibilityLevel = 'public' | 'members' | 'private'
 
 /**
  * Check if a field can be viewed based on profile visibility and current user
@@ -18,53 +18,53 @@ export type VisibilityLevel = "public" | "members" | "private";
 export function canViewField(
   field: string,
   profile: Profile,
-  currentUser: User | null
+  currentUser: User | null,
 ): boolean {
   // Owner can always view everything
   if (currentUser?.id === profile.userId) {
-    return true;
+    return true
   }
 
   // Define field categories
   const publicFields = [
-    "username",
-    "displayName",
-    "avatar",
-    "avatarUrl",
-    "bio",
-    "joinedAt",
-    "createdAt",
-  ];
+    'username',
+    'displayName',
+    'avatar',
+    'avatarUrl',
+    'bio',
+    'joinedAt',
+    'createdAt',
+  ]
 
   const membersOnlyFields = [
-    "city",
-    "country",
-    "countryCode",
-    "learningTracks",
-    "availabilityStatus",
-    "socialLinks",
-    "githubUrl",
-    "twitterUrl",
-    "linkedinUrl",
-    "telegramHandle",
-    "lastActiveAt",
-    "completedBounties",
-    "totalEarningsUsd",
-  ];
+    'city',
+    'country',
+    'countryCode',
+    'learningTracks',
+    'availabilityStatus',
+    'socialLinks',
+    'githubUrl',
+    'twitterUrl',
+    'linkedinUrl',
+    'telegramHandle',
+    'lastActiveAt',
+    'completedBounties',
+    'totalEarningsUsd',
+  ]
 
   // Private profile logic
-  if (profile.profileVisibility === "private") {
+  if (profile.profileVisibility === 'private') {
     // Only basic data visible if not owner
-    return publicFields.includes(field);
+    return publicFields.includes(field)
   }
 
   // Public profile logic - all fields are visible to everyone
-  if (profile.profileVisibility === "public") {
-    return publicFields.includes(field) || membersOnlyFields.includes(field);
+  if (profile.profileVisibility === 'public') {
+    return publicFields.includes(field) || membersOnlyFields.includes(field)
   }
 
   // Default: not visible
-  return false;
+  return false
 }
 
 /**
@@ -73,15 +73,15 @@ export function canViewField(
  */
 export function canViewProfile(
   profile: Profile,
-  currentUser: User | null
+  currentUser: User | null,
 ): boolean {
   // Owner can always view
   if (currentUser?.id === profile.userId) {
-    return true;
+    return true
   }
 
   // Private profiles still show basic data
-  return true;
+  return true
 }
 
 /**
@@ -89,9 +89,9 @@ export function canViewProfile(
  */
 export function isProfileOwner(
   profile: Profile,
-  currentUser: User | null
+  currentUser: User | null,
 ): boolean {
-  return currentUser?.id === profile.userId;
+  return currentUser?.id === profile.userId
 }
 
 /**
@@ -99,19 +99,19 @@ export function isProfileOwner(
  */
 export function getVisibilityLevel(
   profile: Profile,
-  currentUser: User | null
+  currentUser: User | null,
 ): VisibilityLevel {
   if (isProfileOwner(profile, currentUser)) {
-    return "private"; // Owner sees everything
+    return 'private' // Owner sees everything
   }
 
-  if (profile.profileVisibility === "private") {
-    return "public"; // Non-owners see basic data only
+  if (profile.profileVisibility === 'private') {
+    return 'public' // Non-owners see basic data only
   }
 
   if (currentUser) {
-    return "members"; // Authenticated users see members-only data
+    return 'members' // Authenticated users see members-only data
   }
 
-  return "public"; // Public visitors see public data only
+  return 'public' // Public visitors see public data only
 }

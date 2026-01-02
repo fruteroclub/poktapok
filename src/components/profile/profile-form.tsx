@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { profileSchema, type ProfileFormData } from "@/lib/validators/profile";
-import { useCreateProfile } from "@/hooks/use-profile";
-import { LocationSection } from "./location-section";
-import { LearningSection } from "./learning-section";
-import { SocialLinksSection } from "./social-links-section";
-import { ProfilePreviewModal } from "./profile-preview-modal";
-import { Eye } from "lucide-react";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Form } from '@/components/ui/form'
+import { profileSchema, type ProfileFormData } from '@/lib/validators/profile'
+import { useCreateProfile } from '@/hooks/use-profile'
+import { LocationSection } from './location-section'
+import { LearningSection } from './learning-section'
+import { SocialLinksSection } from './social-links-section'
+import { ProfilePreviewModal } from './profile-preview-modal'
+import { Eye } from 'lucide-react'
 
 interface ProfileFormProps {
   userInfo: {
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-  };
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
 }
 
 /**
@@ -30,60 +30,60 @@ interface ProfileFormProps {
  * - Redirects to /dashboard on success
  */
 export function ProfileForm({ userInfo }: ProfileFormProps) {
-  const router = useRouter();
-  const [showPreview, setShowPreview] = useState(false);
-  const createProfileMutation = useCreateProfile();
+  const router = useRouter()
+  const [showPreview, setShowPreview] = useState(false)
+  const createProfileMutation = useCreateProfile()
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      city: "",
-      country: "",
-      countryCode: "",
-      learningTrack: undefined as "ai" | "crypto" | "privacy" | undefined,
-      availabilityStatus: "available" as const,
+      city: '',
+      country: '',
+      countryCode: '',
+      learningTrack: undefined as 'ai' | 'crypto' | 'privacy' | undefined,
+      availabilityStatus: 'available' as const,
       socialLinks: {
-        github: "",
-        twitter: "",
-        linkedin: "",
-        telegram: "",
+        github: '',
+        twitter: '',
+        linkedin: '',
+        telegram: '',
       },
     },
-  });
+  })
 
   const handleSubmit = (data: ProfileFormData) => {
     createProfileMutation.mutate(data, {
       onSuccess: () => {
-        toast.success("¡Perfil creado exitosamente!");
-        router.push("/dashboard");
+        toast.success('¡Perfil creado exitosamente!')
+        router.push('/dashboard')
       },
       onError: (error) => {
-        console.error("Error creating profile:", error);
+        console.error('Error creating profile:', error)
         toast.error(
           error instanceof Error
             ? error.message
-            : "Error al crear perfil. Intenta de nuevo"
-        );
+            : 'Error al crear perfil. Intenta de nuevo',
+        )
       },
-    });
-  };
+    })
+  }
 
   const handlePreview = () => {
     // Trigger validation before showing preview
     form.trigger().then((isValid) => {
       if (isValid) {
-        setShowPreview(true);
+        setShowPreview(true)
       } else {
-        toast.error("Por favor, completa todos los campos requeridos");
+        toast.error('Por favor, completa todos los campos requeridos')
       }
-    });
-  };
+    })
+  }
 
   const handleConfirmSubmit = () => {
-    const data = form.getValues();
-    handleSubmit(data);
-  };
+    const data = form.getValues()
+    handleSubmit(data)
+  }
 
   return (
     <>
@@ -94,7 +94,7 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
           <SocialLinksSection />
 
           {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-4 sm:flex-row">
             <Button
               type="button"
               variant="outline"
@@ -110,7 +110,7 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
               className="flex-1"
               disabled={createProfileMutation.isPending}
             >
-              {createProfileMutation.isPending ? "Creando..." : "Crear Perfil"}
+              {createProfileMutation.isPending ? 'Creando...' : 'Crear Perfil'}
             </Button>
           </div>
         </form>
@@ -125,5 +125,5 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
         isSubmitting={createProfileMutation.isPending}
       />
     </>
-  );
+  )
 }

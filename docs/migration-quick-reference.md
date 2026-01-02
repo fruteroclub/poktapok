@@ -3,6 +3,7 @@
 ## 🚀 Common Workflows
 
 ### Making a Schema Change
+
 ```bash
 # 1. Edit schema file
 vim drizzle/schema/profiles.ts
@@ -15,6 +16,7 @@ bun run db:migrate
 ```
 
 ### Pulling Changes from Team
+
 ```bash
 # 1. Pull code
 git pull
@@ -24,6 +26,7 @@ bun run db:migrate
 ```
 
 ### Checking Database State
+
 ```bash
 # List applied migrations
 bun run db:list-migrations
@@ -53,17 +56,22 @@ bun run db:studio
 ## 🆘 Troubleshooting
 
 ### "Type already exists" error
+
 → Migration partially applied. Contact team lead.
 
 ### "Schema drift detected"
+
 → Someone used `db:push`. Generate a migration to capture drift:
+
 ```bash
 bun run db:generate
 bun run db:migrate
 ```
 
 ### Migration conflict (same number)
+
 → Regenerate your migration with next number:
+
 ```bash
 rm drizzle/migrations/000X_*.sql
 bun run db:generate  # Will create next number

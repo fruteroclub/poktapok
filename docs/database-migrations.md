@@ -122,6 +122,7 @@ git push origin feat/add-user-badges
 ```
 
 **Resolution**:
+
 1. Pull the main branch migration
 2. Delete your local migration: `rm drizzle/migrations/0001_*.sql`
 3. Clear journal: `rm drizzle/migrations/meta/_journal.json`
@@ -131,19 +132,20 @@ git push origin feat/add-user-badges
 
 ## Common Commands Reference
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `bun run db:generate` | Generate migration from schema | After editing schema files |
-| `bun run db:migrate` | Apply pending migrations | After generating or pulling migrations |
-| `bun run db:list-migrations` | List applied migrations | Check database state |
-| `bun run db:check` | Detect schema drift | Verify schema matches database |
-| `bun run db:studio` | Open database GUI | Visual database inspection |
+| Command                      | Purpose                        | When to Use                            |
+| ---------------------------- | ------------------------------ | -------------------------------------- |
+| `bun run db:generate`        | Generate migration from schema | After editing schema files             |
+| `bun run db:migrate`         | Apply pending migrations       | After generating or pulling migrations |
+| `bun run db:list-migrations` | List applied migrations        | Check database state                   |
+| `bun run db:check`           | Detect schema drift            | Verify schema matches database         |
+| `bun run db:studio`          | Open database GUI              | Visual database inspection             |
 
 ## Schema Constraints
 
 When editing schema files, follow these rules (enforced by Drizzle):
 
 ### CHECK Constraints
+
 ```typescript
 // ✅ CORRECT: Inline patterns
 check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@...'`)
@@ -153,6 +155,7 @@ check('email_format', sql`${table.email} ~* ${PATTERNS.EMAIL}`)
 ```
 
 ### Generated Columns
+
 ```typescript
 // ❌ WRONG: Time-based functions (PostgreSQL rejects)
 status: varchar('status').generatedAlwaysAs(sql`CASE WHEN expires_at < NOW() ...`)
@@ -164,6 +167,7 @@ status: varchar('status').default('pending').notNull()
 ## Troubleshooting
 
 ### "Migration already applied" error
+
 ```bash
 # Check what's applied
 bun run db:list-migrations
@@ -173,6 +177,7 @@ bun run db:list-migrations
 ```
 
 ### "Schema drift detected"
+
 ```bash
 # Check what's different
 bun run db:check
@@ -184,6 +189,7 @@ bun run db:migrate
 ```
 
 ### "Type already exists" error
+
 ```bash
 # This means migration was partially applied
 # Check applied migrations:
@@ -199,9 +205,11 @@ bun run db:list-migrations
 **Important**: Migrations must be applied during deployment.
 
 ### Vercel Deployment
+
 Migrations are automatically applied via `postbuild` script (future enhancement).
 
 ### Manual Deployment
+
 ```bash
 # 1. Apply migrations using unpooled connection
 DATABASE_URL=$DATABASE_URL_UNPOOLED bun run db:migrate
@@ -227,6 +235,7 @@ The project uses two connection strings:
 ## Architecture Reference
 
 ### Schema File Structure
+
 ```
 drizzle/schema/
 ├── utils.ts              # Shared helpers (timestamps, softDelete, metadata)
@@ -241,7 +250,9 @@ drizzle/schema/
 ```
 
 ### Migration Naming
+
 Drizzle auto-generates migration names: `XXXX_adjective_noun.sql`
+
 - `XXXX`: Sequential number (0000, 0001, 0002, ...)
 - `adjective_noun`: Random Marvel character names (for fun)
 

@@ -1,4 +1,12 @@
-import { pgTable, uuid, varchar, timestamp, foreignKey, index, check } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  uuid,
+  varchar,
+  timestamp,
+  foreignKey,
+  index,
+  check,
+} from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 import { timestamps, metadata } from './utils'
 import { users } from './users'
@@ -26,21 +34,17 @@ export const invitations = pgTable(
       .default(sql`gen_random_uuid()`),
 
     // Inviter (who created the invite)
-    inviterUserId: uuid('inviter_user_id')
-      .notNull(),
+    inviterUserId: uuid('inviter_user_id').notNull(),
 
     // Redeemer (who used the invite)
     redeemerUserId: uuid('redeemer_user_id'),
 
     // Invitation Details
-    inviteCode: varchar('invite_code', { length: 32 })
-      .unique()
-      .notNull(),  // URL-safe random string
+    inviteCode: varchar('invite_code', { length: 32 }).unique().notNull(), // URL-safe random string
 
     // Status Tracking
     redeemedAt: timestamp('redeemed_at', { withTimezone: true }),
-    expiresAt: timestamp('expires_at', { withTimezone: true })
-      .notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 
     // Status field
     // Note: Originally designed as generated column, but PostgreSQL doesn't support
@@ -49,15 +53,13 @@ export const invitations = pgTable(
     // 'pending': Not redeemed and not expired
     // 'redeemed': Has redeemed_at timestamp
     // 'expired': Past expires_at and not redeemed
-    status: varchar('status', { length: 20 })
-      .default('pending')
-      .notNull(),
+    status: varchar('status', { length: 20 }).default('pending').notNull(),
 
     // Timestamps & Audit
     ...timestamps,
 
     // Metadata
-    ...metadata,  // Campaign tracking, invite source, etc.
+    ...metadata, // Campaign tracking, invite source, etc.
   },
   (table) => ({
     // Foreign Keys
@@ -76,12 +78,14 @@ export const invitations = pgTable(
     // Constraints
     inviteCodeFormatCheck: check(
       'invite_code_format',
-      sql`${table.inviteCode} ~* '^[A-Za-z0-9_-]{16,32}$'`
+      sql`${table.inviteCode} ~* '^[A-Za-z0-9_-]{16,32}$'`,
     ),
 
     // Indexes
     inviterUserIdIdx: index('idx_invitations_inviter').on(table.inviterUserId),
-    redeemerUserIdIdx: index('idx_invitations_redeemer').on(table.redeemerUserId),
+    redeemerUserIdIdx: index('idx_invitations_redeemer').on(
+      table.redeemerUserId,
+    ),
     inviteCodeIdx: index('idx_invitations_code').on(table.inviteCode),
 
     // Generated status index for filtering
@@ -91,7 +95,7 @@ export const invitations = pgTable(
     pendingInvitesIdx: index('idx_invitations_pending')
       .on(table.inviterUserId, table.status)
       .where(sql`${table.status} = 'pending'`),
-  })
+  }),
 )
 
 // ============================================================

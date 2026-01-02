@@ -5,26 +5,30 @@
  * Used in the individual project view page
  */
 
-import { ExternalLink, Github, Video } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { ExternalLink, Github, Video } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 interface ProjectLinksProps {
-  repositoryUrl?: string | null;
-  liveUrl?: string | null;
-  videoUrl?: string | null;
+  repositoryUrl?: string | null
+  liveUrl?: string | null
+  videoUrl?: string | null
 }
 
-export function ProjectLinks({ repositoryUrl, liveUrl, videoUrl }: ProjectLinksProps) {
+export function ProjectLinks({
+  repositoryUrl,
+  liveUrl,
+  videoUrl,
+}: ProjectLinksProps) {
   // If no links, don't render the component
   if (!repositoryUrl && !liveUrl && !videoUrl) {
-    return null;
+    return null
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl">
           <ExternalLink className="h-5 w-5" />
           Links
         </CardTitle>
@@ -46,7 +50,7 @@ export function ProjectLinks({ repositoryUrl, liveUrl, videoUrl }: ProjectLinksP
               >
                 <Github className="h-5 w-5" />
                 <span>Repository</span>
-                <ExternalLink className="h-4 w-4 ml-1 opacity-50" />
+                <ExternalLink className="ml-1 h-4 w-4 opacity-50" />
               </a>
             </Button>
           )}
@@ -66,7 +70,7 @@ export function ProjectLinks({ repositoryUrl, liveUrl, videoUrl }: ProjectLinksP
               >
                 <ExternalLink className="h-5 w-5" />
                 <span>Live Demo</span>
-                <ExternalLink className="h-4 w-4 ml-1 opacity-50" />
+                <ExternalLink className="ml-1 h-4 w-4 opacity-50" />
               </a>
             </Button>
           )}
@@ -86,12 +90,12 @@ export function ProjectLinks({ repositoryUrl, liveUrl, videoUrl }: ProjectLinksP
               >
                 <Video className="h-5 w-5" />
                 <span>Video Demo</span>
-                <ExternalLink className="h-4 w-4 ml-1 opacity-50" />
+                <ExternalLink className="ml-1 h-4 w-4 opacity-50" />
               </a>
             </Button>
           )}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

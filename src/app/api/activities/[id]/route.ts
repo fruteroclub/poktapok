@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server'
 import { getActivityById, hasUserSubmitted } from '@/lib/db/queries/activities'
-import { handleApiError, successResponse, getUserFromRequest } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  getUserFromRequest,
+} from '@/lib/auth/middleware'
 
 /**
  * GET /api/activities/[id]
@@ -8,7 +12,7 @@ import { handleApiError, successResponse, getUserFromRequest } from '@/lib/auth/
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params
@@ -20,7 +24,7 @@ export async function GET(
           success: false,
           error: { message: 'Activity not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 

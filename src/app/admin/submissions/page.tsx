@@ -27,9 +27,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-import PageWrapper from '@/components/layout/page-wrapper'
 
 interface Submission {
   submission: {
@@ -60,7 +59,8 @@ function AdminSubmissionsPageContent() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('pending')
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null)
   const [reviewNotes, setReviewNotes] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
@@ -72,14 +72,18 @@ function AdminSubmissionsPageContent() {
     setLoading(true)
     try {
       const params = new URLSearchParams({ status: filter })
-      const response = await fetch(`/api/admin/submissions?${params.toString()}`)
+      const response = await fetch(
+        `/api/admin/submissions?${params.toString()}`,
+      )
 
       if (!response.ok) throw new Error('Failed to fetch submissions')
 
       const result = await response.json()
       setSubmissions(result.data.submissions)
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to fetch submissions')
+      alert(
+        error instanceof Error ? error.message : 'Failed to fetch submissions',
+      )
     } finally {
       setLoading(false)
     }
@@ -90,15 +94,18 @@ function AdminSubmissionsPageContent() {
 
     setActionLoading(true)
     try {
-      const response = await fetch(`/api/admin/submissions/${submissionId}/approve`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/admin/submissions/${submissionId}/approve`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            review_notes: reviewNotes || undefined,
+          }),
         },
-        body: JSON.stringify({
-          review_notes: reviewNotes || undefined,
-        }),
-      })
+      )
 
       if (!response.ok) {
         const error = await response.json()
@@ -110,7 +117,9 @@ function AdminSubmissionsPageContent() {
       setReviewNotes('')
       fetchSubmissions()
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to approve submission')
+      alert(
+        error instanceof Error ? error.message : 'Failed to approve submission',
+      )
     } finally {
       setActionLoading(false)
     }
@@ -124,15 +133,18 @@ function AdminSubmissionsPageContent() {
 
     setActionLoading(true)
     try {
-      const response = await fetch(`/api/admin/submissions/${submissionId}/reject`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `/api/admin/submissions/${submissionId}/reject`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            review_notes: reviewNotes,
+          }),
         },
-        body: JSON.stringify({
-          review_notes: reviewNotes,
-        }),
-      })
+      )
 
       if (!response.ok) {
         const error = await response.json()
@@ -144,62 +156,69 @@ function AdminSubmissionsPageContent() {
       setReviewNotes('')
       fetchSubmissions()
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to reject submission')
+      alert(
+        error instanceof Error ? error.message : 'Failed to reject submission',
+      )
     } finally {
       setActionLoading(false)
     }
   }
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    const variants: Record<
+      string,
+      'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
       pending: 'outline',
       under_review: 'secondary',
       approved: 'default',
       rejected: 'destructive',
       distributed: 'default',
     }
-    return <Badge variant={variants[status] || 'default'}>{status.replace('_', ' ')}</Badge>
+    return (
+      <Badge variant={variants[status] || 'default'}>
+        {status.replace('_', ' ')}
+      </Badge>
+    )
   }
 
   return (
-    <PageWrapper>
-      <div className="page">
-        <div className="page-content space-y-6">
-          <div className="w-full mb-6">
-            <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Review and approve user submissions for $PULPA token rewards
-            </p>
-          </div>
+    <div className="page-content space-y-6">
+      <div className="mb-6 w-full">
+        <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          Review and approve user submissions for $PULPA token rewards
+        </p>
+      </div>
 
-          {/* Filter */}
-          <Card className="mb-6 w-full">
-          <CardHeader>
-            <CardTitle>Filter by Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger className="w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">Pending Review</SelectItem>
-                <SelectItem value="under_review">Under Review</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-                <SelectItem value="distributed">Distributed</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-          </Card>
+      {/* Filter */}
+      <Card className="mb-6 w-full">
+        <CardHeader>
+          <CardTitle>Filter by Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-64">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending Review</SelectItem>
+              <SelectItem value="under_review">Under Review</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="distributed">Distributed</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
 
-          {/* Submissions Table */}
-          <Card className="w-full">
+      {/* Submissions Table */}
+      <Card className="w-full">
         <CardContent className="pt-6">
           {loading ? (
-            <div className="text-center py-8">Loading submissions...</div>
+            <div className="py-8 text-center">Loading submissions...</div>
           ) : submissions.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="py-8 text-center text-muted-foreground">
               No submissions found with status: {filter}
             </div>
           ) : (
@@ -218,7 +237,7 @@ function AdminSubmissionsPageContent() {
               <TableBody>
                 {submissions.map((item) => (
                   <TableRow key={item.submission.id}>
-                    <TableCell className="font-medium max-w-xs truncate">
+                    <TableCell className="max-w-xs truncate font-medium">
                       {item.activity.title}
                     </TableCell>
                     <TableCell>
@@ -226,7 +245,7 @@ function AdminSubmissionsPageContent() {
                         <span className="font-medium">
                           {item.user.username || 'Anonymous'}
                         </span>
-                        <span className="text-sm text-muted-foreground truncate max-w-[200px]">
+                        <span className="max-w-[200px] truncate text-sm text-muted-foreground">
                           {item.user.email}
                         </span>
                       </div>
@@ -243,15 +262,21 @@ function AdminSubmissionsPageContent() {
                         </a>
                       )}
                       {item.submission.submissionText && (
-                        <p className="text-sm max-w-xs truncate">
+                        <p className="max-w-xs truncate text-sm">
                           {item.submission.submissionText}
                         </p>
                       )}
                     </TableCell>
-                    <TableCell>{item.submission.rewardPulpaAmount} $PULPA</TableCell>
-                    <TableCell>{getStatusBadge(item.submission.status)}</TableCell>
                     <TableCell>
-                      {new Date(item.submission.submittedAt).toLocaleDateString()}
+                      {item.submission.rewardPulpaAmount} $PULPA
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(item.submission.status)}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(
+                        item.submission.submittedAt,
+                      ).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -268,12 +293,15 @@ function AdminSubmissionsPageContent() {
               </TableBody>
             </Table>
           )}
-          </CardContent>
-          </Card>
+        </CardContent>
+      </Card>
 
-          {/* Review Dialog */}
-          {selectedSubmission && (
-          <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
+      {/* Review Dialog */}
+      {selectedSubmission && (
+        <Dialog
+          open={!!selectedSubmission}
+          onOpenChange={() => setSelectedSubmission(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Review Submission</DialogTitle>
@@ -284,22 +312,25 @@ function AdminSubmissionsPageContent() {
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold mb-2">Activity</h3>
+                <h3 className="mb-2 font-semibold">Activity</h3>
                 <p>{selectedSubmission.activity.title}</p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">User</h3>
-                <p>{selectedSubmission.user.username || selectedSubmission.user.email}</p>
+                <h3 className="mb-2 font-semibold">User</h3>
+                <p>
+                  {selectedSubmission.user.username ||
+                    selectedSubmission.user.email}
+                </p>
                 {selectedSubmission.user.appWallet && (
-                  <p className="text-sm text-muted-foreground truncate">
+                  <p className="truncate text-sm text-muted-foreground">
                     Wallet: {selectedSubmission.user.appWallet}
                   </p>
                 )}
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Submission Details</h3>
+                <h3 className="mb-2 font-semibold">Submission Details</h3>
                 {selectedSubmission.submission.submissionUrl && (
                   <div className="mb-2">
                     <span className="text-sm font-medium">URL: </span>
@@ -307,7 +338,7 @@ function AdminSubmissionsPageContent() {
                       href={selectedSubmission.submission.submissionUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline break-all"
+                      className="break-all text-blue-600 hover:underline"
                     >
                       {selectedSubmission.submission.submissionUrl}
                     </a>
@@ -316,18 +347,22 @@ function AdminSubmissionsPageContent() {
                 {selectedSubmission.submission.submissionText && (
                   <div>
                     <span className="text-sm font-medium">Description: </span>
-                    <p className="mt-1 text-sm">{selectedSubmission.submission.submissionText}</p>
+                    <p className="mt-1 text-sm">
+                      {selectedSubmission.submission.submissionText}
+                    </p>
                   </div>
                 )}
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Reward Amount</h3>
+                <h3 className="mb-2 font-semibold">Reward Amount</h3>
                 <p>{selectedSubmission.submission.rewardPulpaAmount} $PULPA</p>
               </div>
 
               <div>
-                <label className="text-sm font-medium">Review Notes (optional for approval, required for rejection)</label>
+                <label className="text-sm font-medium">
+                  Review Notes (optional for approval, required for rejection)
+                </label>
                 <Textarea
                   value={reviewNotes}
                   onChange={(e) => setReviewNotes(e.target.value)}
@@ -364,11 +399,9 @@ function AdminSubmissionsPageContent() {
               </Button>
             </DialogFooter>
           </DialogContent>
-          </Dialog>
-          )}
-        </div>
-      </div>
-    </PageWrapper>
+        </Dialog>
+      )}
+    </div>
   )
 }
 

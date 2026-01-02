@@ -20,8 +20,8 @@ if (!connectionString) {
 // Create node-postgres pool with connection pooling
 export const pool = new Pool({
   connectionString,
-  max: 10,                      // Maximum connections in pool
-  idleTimeoutMillis: 20000,     // Close idle connections after 20 seconds
+  max: 10, // Maximum connections in pool
+  idleTimeoutMillis: 20000, // Close idle connections after 20 seconds
   connectionTimeoutMillis: 10000, // Connection timeout (10 seconds)
 })
 

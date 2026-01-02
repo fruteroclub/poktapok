@@ -1,116 +1,130 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/components/directory/search-bar";
-import { Filters } from "@/components/directory/filters";
-import { DirectoryGrid } from "@/components/directory/directory-grid";
+import { useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { SearchBar } from '@/components/directory/search-bar'
+import { Filters } from '@/components/directory/filters'
+import { DirectoryGrid } from '@/components/directory/directory-grid'
 import {
   useDirectoryProfiles,
   useDirectoryCountries,
-} from "@/hooks/use-directory";
-import { formatProfileCount } from "@/lib/utils/directory";
-import type { DirectoryFilters } from "@/types/api-v1";
-import PageWrapper from "@/components/layout/page-wrapper";
-import { Section } from "@/components/layout/section";
+} from '@/hooks/use-directory'
+import { formatProfileCount } from '@/lib/utils/directory'
+import type { DirectoryFilters } from '@/types/api-v1'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { Section } from '@/components/layout/section'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { SlidersHorizontal } from "lucide-react";
+} from '@/components/ui/sheet'
+import { SlidersHorizontal } from 'lucide-react'
 
 export default function DirectoryPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   // Parse skills from URL (comma-separated)
-  const skillsParam = searchParams.get("skills");
-  const skillsFromUrl = skillsParam ? skillsParam.split(",").filter(Boolean) : undefined;
+  const skillsParam = searchParams.get('skills')
+  const skillsFromUrl = skillsParam
+    ? skillsParam.split(',').filter(Boolean)
+    : undefined
 
   const [currentFilters, setCurrentFilters] = useState<DirectoryFilters>({
-    search: searchParams.get("search") || undefined,
-    learningTrack: (searchParams.get("learningTrack") as "ai" | "crypto" | "privacy" | undefined) || undefined,
+    search: searchParams.get('search') || undefined,
+    learningTrack:
+      (searchParams.get('learningTrack') as
+        | 'ai'
+        | 'crypto'
+        | 'privacy'
+        | undefined) || undefined,
     availabilityStatus:
-      (searchParams.get("availabilityStatus") as "available" | "open_to_offers" | "unavailable" | undefined) || undefined,
-    country: searchParams.get("country") || undefined,
+      (searchParams.get('availabilityStatus') as
+        | 'available'
+        | 'open_to_offers'
+        | 'unavailable'
+        | undefined) || undefined,
+    country: searchParams.get('country') || undefined,
     skills: skillsFromUrl,
-    page: parseInt(searchParams.get("page") || "1"),
+    page: parseInt(searchParams.get('page') || '1'),
     limit: 24,
-  });
+  })
 
-  const { data, isLoading, isError } = useDirectoryProfiles(currentFilters);
-  const { data: countriesData } = useDirectoryCountries();
+  const { data, isLoading, isError } = useDirectoryProfiles(currentFilters)
+  const { data: countriesData } = useDirectoryCountries()
 
-  const updateFilter = (key: keyof DirectoryFilters, value: string | string[] | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const updateFilter = (
+    key: keyof DirectoryFilters,
+    value: string | string[] | null,
+  ) => {
+    const params = new URLSearchParams(searchParams.toString())
 
     if (value) {
       // Handle array values (skills)
       if (Array.isArray(value)) {
-        params.set(key, value.join(","));
+        params.set(key, value.join(','))
       } else {
-        params.set(key, value);
+        params.set(key, value)
       }
     } else {
-      params.delete(key);
+      params.delete(key)
     }
 
-    if (key !== "page") {
-      params.delete("page");
+    if (key !== 'page') {
+      params.delete('page')
     }
 
-    router.push(`/directory?${params.toString()}`);
+    router.push(`/directory?${params.toString()}`)
 
     setCurrentFilters((prev) => ({
       ...prev,
       [key]: value || undefined,
-      ...(key !== "page" && { page: 1 }),
-    }));
-  };
+      ...(key !== 'page' && { page: 1 }),
+    }))
+  }
 
   const handleClearAll = () => {
-    router.push("/directory");
+    router.push('/directory')
     setCurrentFilters({
       page: 1,
       limit: 24,
-    });
-  };
+    })
+  }
 
   const handleLoadMore = () => {
-    const nextPage = (currentFilters.page || 1) + 1;
-    updateFilter("page", nextPage.toString());
-  };
+    const nextPage = (currentFilters.page || 1) + 1
+    updateFilter('page', nextPage.toString())
+  }
 
   const hasActiveFilters =
     currentFilters.search ||
     currentFilters.learningTrack ||
     currentFilters.availabilityStatus ||
     currentFilters.country ||
-    (currentFilters.skills && currentFilters.skills.length > 0);
+    (currentFilters.skills && currentFilters.skills.length > 0)
 
-  const profiles = data?.profiles || [];
-  const pagination = data?.pagination;
-  const countries = countriesData || [];
+  const profiles = data?.profiles || []
+  const pagination = data?.pagination
+  const countries = countriesData || []
 
   return (
     <PageWrapper>
       <div className="page">
         <div className="page-content">
           <div className="header-section">
-            <h1 className="text-4xl font-bold mb-2">Talent Directory</h1>
+            <h1 className="mb-2 text-4xl font-bold">Talent Directory</h1>
             <p className="text-gray-600 dark:text-gray-400">
               Discover talented builders from Latin America
             </p>
           </div>
 
-          <Section className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+          <Section className="grid grid-cols-1 items-start gap-4 lg:grid-cols-4">
             {/* Desktop Sidebar - Hidden on mobile */}
-            <aside className="hidden lg:block lg:col-span-1">
+            <aside className="hidden lg:col-span-1 lg:block">
               <div className="lg:sticky lg:top-8">
                 <Filters
                   filters={currentFilters}
@@ -121,17 +135,23 @@ export default function DirectoryPage() {
               </div>
             </aside>
 
-            <div className="lg:col-span-3 min-h-[600px] space-y-4">
+            <div className="min-h-[600px] space-y-4 lg:col-span-3">
               <div className="flex items-center gap-2">
                 {/* Mobile Filter Button */}
-                <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                <Sheet
+                  open={mobileFiltersOpen}
+                  onOpenChange={setMobileFiltersOpen}
+                >
                   <SheetTrigger asChild>
                     <Button variant="outline" className="lg:hidden">
-                      <SlidersHorizontal className="h-4 w-4 mr-2" />
+                      <SlidersHorizontal className="mr-2 h-4 w-4" />
                       Filters
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[300px] sm:w-[400px] px-4">
+                  <SheetContent
+                    side="left"
+                    className="w-[300px] px-4 sm:w-[400px]"
+                  >
                     <SheetHeader>
                       <SheetTitle>Filters</SheetTitle>
                     </SheetHeader>
@@ -140,12 +160,12 @@ export default function DirectoryPage() {
                         filters={currentFilters}
                         countries={countries}
                         onFilterChange={(key, value) => {
-                          updateFilter(key, value);
-                          setMobileFiltersOpen(false);
+                          updateFilter(key, value)
+                          setMobileFiltersOpen(false)
                         }}
                         onClearAll={() => {
-                          handleClearAll();
-                          setMobileFiltersOpen(false);
+                          handleClearAll()
+                          setMobileFiltersOpen(false)
                         }}
                       />
                     </div>
@@ -155,8 +175,8 @@ export default function DirectoryPage() {
                 {/* Search Bar */}
                 <div className="flex-1">
                   <SearchBar
-                    value={currentFilters.search || ""}
-                    onChange={(value) => updateFilter("search", value || null)}
+                    value={currentFilters.search || ''}
+                    onChange={(value) => updateFilter('search', value || null)}
                     placeholder="Search by name or bio..."
                   />
                 </div>
@@ -171,7 +191,7 @@ export default function DirectoryPage() {
               )}
 
               {isError && (
-                <div className="text-center py-8">
+                <div className="py-8 text-center">
                   <p className="text-red-500">
                     Failed to load directory. Please try again.
                   </p>
@@ -216,5 +236,5 @@ export default function DirectoryPage() {
         </div>
       </div>
     </PageWrapper>
-  );
+  )
 }

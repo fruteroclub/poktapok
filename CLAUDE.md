@@ -54,18 +54,21 @@ This creates a provider chain: `Suspense` → `Privy` → `QueryClient` → `Wag
 The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** and **node-postgres**.
 
 **Schema Structure:**
+
 - **users** - Core identity & authentication (linked to Privy DID)
 - **profiles** - Extended user data (location, social links, learning tracks, stats)
 - **applications** - Onboarding queue (pending/approved/rejected signup applications)
 - **invitations** - Referral system (invite codes with expiration tracking)
 
 **Connection Strategy:**
+
 - `DATABASE_URL` - Pooled connection for application queries (10 connections max)
 - `DATABASE_URL_UNPOOLED` - Direct connection for migrations
 - Database client: `src/lib/db/index.ts` (exports `db`, `pool`, `closeDatabase`)
 - Schema exports: `src/lib/db/schema.ts` (re-exports all tables for app use)
 
 **Key Patterns:**
+
 - Soft deletes via `deletedAt` timestamp (in users table)
 - Timestamps (`createdAt`, `updatedAt`) on all tables
 - Metadata JSONB column (default `'{}'::jsonb`) on all tables
@@ -73,6 +76,7 @@ The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** an
 - Composite indexes for common query patterns
 
 **Important Notes:**
+
 - Schema files are in `drizzle/schema/` (utils.ts, users.ts, profiles.ts, applications.ts, invitations.ts)
 - Never use parameterized CHECK constraints - inline all patterns directly
 - Generated columns cannot use time-based functions (NOW(), CURRENT_TIMESTAMP)
@@ -87,6 +91,7 @@ All API endpoints follow a **standardized envelope pattern** with discriminated 
 #### Response Structure
 
 **Success Response:**
+
 ```typescript
 {
   success: true,
@@ -97,6 +102,7 @@ All API endpoints follow a **standardized envelope pattern** with discriminated 
 ```
 
 **Error Response:**
+
 ```typescript
 {
   success: false,
@@ -113,38 +119,35 @@ All API endpoints follow a **standardized envelope pattern** with discriminated 
 Use the response helpers from `src/lib/api/response.ts`:
 
 ```typescript
-import { apiSuccess, apiError, apiValidationError, apiErrors } from "@/lib/api/response";
+import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/response'
 
 // Success response
-return apiSuccess({ user, profile });
+return apiSuccess({ user, profile })
 
 // Success with message
-return apiSuccess({ profile }, { message: "Profile created successfully" });
+return apiSuccess({ profile }, { message: 'Profile created successfully' })
 
 // Success with metadata (e.g., pagination)
-return apiSuccess(
-  { profiles },
-  { meta: { pagination: { page: 1, total: 100, hasMore: true } } }
-);
+return apiSuccess({ profiles }, { meta: { pagination: { page: 1, total: 100, hasMore: true } } })
 
 // Validation error (from Zod)
-const result = schema.safeParse(data);
+const result = schema.safeParse(data)
 if (!result.success) {
-  return apiValidationError(result.error);
+  return apiValidationError(result.error)
 }
 
 // Specific error shortcuts
-return apiErrors.unauthorized();               // 401
-return apiErrors.notFound("User");            // 404
-return apiErrors.conflict("Username taken");  // 409
-return apiErrors.internal("Database error");  // 500
+return apiErrors.unauthorized() // 401
+return apiErrors.notFound('User') // 404
+return apiErrors.conflict('Username taken') // 409
+return apiErrors.internal('Database error') // 500
 
 // Custom error
-return apiError("Custom error message", {
-  code: "CUSTOM_ERROR",
-  details: { field: "email" },
-  status: 400
-});
+return apiError('Custom error message', {
+  code: 'CUSTOM_ERROR',
+  details: { field: 'email' },
+  status: 400,
+})
 ```
 
 #### Client-Side Usage (Services)
@@ -152,24 +155,25 @@ return apiError("Custom error message", {
 Use the `apiFetch` wrapper from `src/lib/api/fetch.ts` for automatic error handling:
 
 ```typescript
-import { apiFetch } from "@/lib/api/fetch";
+import { apiFetch } from '@/lib/api/fetch'
 
 // Simple GET request
 export async function fetchMe(): Promise<MeResponse> {
-  return apiFetch<MeResponse>("/api/auth/me");
+  return apiFetch<MeResponse>('/api/auth/me')
 }
 
 // POST request with body
 export async function createProfile(data: ProfileFormData): Promise<CreateProfileResponse> {
-  return apiFetch<CreateProfileResponse>("/api/profiles", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  return apiFetch<CreateProfileResponse>('/api/profiles', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
-  });
+  })
 }
 ```
 
 The `apiFetch` wrapper:
+
 - Automatically unwraps the `{ success, data }` envelope
 - Throws structured `ApiError` on failure with `code`, `details`, and `status`
 - Handles JSON parsing errors gracefully
@@ -178,39 +182,40 @@ The `apiFetch` wrapper:
 #### Error Handling in Hooks
 
 ```typescript
-import { ApiError } from "@/lib/api/fetch";
-import { toast } from "sonner";
+import { ApiError } from '@/lib/api/fetch'
+import { toast } from 'sonner'
 
 const mutation = useMutation({
   mutationFn: createProfile,
   onSuccess: (data) => {
-    toast.success("Profile created successfully");
+    toast.success('Profile created successfully')
   },
   onError: (error: ApiError) => {
     // Access structured error data
-    toast.error(error.message);
-    console.error("Error code:", error.code);
-    console.error("Error details:", error.details);
-  }
-});
+    toast.error(error.message)
+    console.error('Error code:', error.code)
+    console.error('Error details:', error.details)
+  },
+})
 ```
 
 #### HTTP Status Code Standards
 
-| Status | Use Case | Helper |
-|--------|----------|--------|
-| 200 | Success | `apiSuccess()` |
-| 400 | Bad Request / Validation | `apiValidationError()` or `apiError(..., { status: 400 })` |
-| 401 | Unauthorized | `apiErrors.unauthorized()` |
-| 404 | Not Found | `apiErrors.notFound(resource)` |
-| 409 | Conflict (duplicate) | `apiErrors.conflict(message)` |
-| 500 | Internal Server Error | `apiErrors.internal()` |
+| Status | Use Case                 | Helper                                                     |
+| ------ | ------------------------ | ---------------------------------------------------------- |
+| 200    | Success                  | `apiSuccess()`                                             |
+| 400    | Bad Request / Validation | `apiValidationError()` or `apiError(..., { status: 400 })` |
+| 401    | Unauthorized             | `apiErrors.unauthorized()`                                 |
+| 404    | Not Found                | `apiErrors.notFound(resource)`                             |
+| 409    | Conflict (duplicate)     | `apiErrors.conflict(message)`                              |
+| 500    | Internal Server Error    | `apiErrors.internal()`                                     |
 
 #### Type Definitions
 
 All API types are centralized in `src/types/api-v1.ts`. Response wrappers are defined in `src/types/api-response.ts`.
 
 **Example:**
+
 ```typescript
 // src/types/api-v1.ts
 export interface User { id: string; username: string; ... }
@@ -246,6 +251,7 @@ export async function fetchMe(): Promise<MeResponse> {
 - Storage location: `avatars/{userId}/{filename}` with random suffix
 
 Required environment variables:
+
 ```
 # Database
 DATABASE_URL=postgresql://...              # Pooled connection
@@ -310,6 +316,7 @@ poktapok/
 ### Error Handling
 
 The `src/lib/error-filter.ts` file suppresses known console warnings from third-party libraries:
+
 - SVG attribute warnings from Privy
 - Hydration warnings from Privy's styled-components
 - Coinbase Wallet SDK COOP check failures in dev
@@ -333,6 +340,7 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
   - Use proper type definitions or `unknown` for truly unknown types
   - For error handling: Use `error instanceof Error` pattern instead of `error: any`
   - Example:
+
     ```typescript
     // ❌ WRONG
     catch (error: any) {
@@ -354,41 +362,44 @@ This file is imported globally in `layout.tsx` and should be updated if new thir
 **NEVER use `useEffect` for data fetching.** Always prefer TanStack Query for all API interactions.
 
 Follow this abstraction pattern:
+
 1. **Service Layer** (`src/services/`) - Abstract API calls into dedicated service functions
 2. **Hooks Layer** (`src/hooks/`) - Create custom hooks using TanStack Query (queries and mutations)
 3. **Components** - Import and use the custom hooks
 
 **Example:**
+
 ```typescript
 // ❌ WRONG - Never do this
 useEffect(() => {
   fetch('/api/auth/me')
-    .then(res => res.json())
-    .then(data => setUser(data.user));
-}, []);
+    .then((res) => res.json())
+    .then((data) => setUser(data.user))
+}, [])
 
 // ✅ CORRECT - Service + Hook pattern
 // 1. Service (src/services/auth.ts)
 export async function fetchMe(): Promise<MeResponse> {
-  const response = await fetch("/api/auth/me");
-  if (!response.ok) throw new Error("Failed to fetch user data");
-  return response.json();
+  const response = await fetch('/api/auth/me')
+  if (!response.ok) throw new Error('Failed to fetch user data')
+  return response.json()
 }
 
 // 2. Hook (src/hooks/use-auth.ts)
 export function useMe() {
   return useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ['auth', 'me'],
     queryFn: fetchMe,
     staleTime: 5 * 60 * 1000,
-  });
+  })
 }
 
 // 3. Component
-const { data, isLoading, isError } = useMe();
+const { data, isLoading, isError } = useMe()
 ```
 
 **Error Handling:**
+
 - Use try-catch blocks in service functions
 - Throw descriptive errors that can be displayed to users
 - Use toast notifications (via `sonner`) for user-facing error messages
@@ -401,10 +412,12 @@ const { data, isLoading, isError } = useMe();
 ### File Naming
 
 **Always use kebab-case (snake-case with hyphens) for file names:**
+
 - ✅ `user-card.tsx`, `profile-header.tsx`, `avatar-upload.tsx`
 - ❌ `UserCard.tsx`, `profileHeader.tsx`, `AvatarUpload.tsx`
 
 **Before creating new files:**
+
 1. Search for existing files with similar names using Glob or Grep
 2. Check the project structure to avoid duplicates
 3. Follow the existing naming conventions in the directory
@@ -424,7 +437,9 @@ const { data, isLoading, isError } = useMe();
 5. **Verify**: `bun run db:list-migrations`
 
 **Important constraints to follow:**
+
 - **CHECK constraints must use inlined patterns** - never use variable references:
+
   ```typescript
   // ✅ CORRECT
   check('email_format', sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@...'`)
@@ -432,7 +447,9 @@ const { data, isLoading, isError } = useMe();
   // ❌ WRONG
   check('email_format', sql`${table.email} ~* ${PATTERNS.EMAIL}`)
   ```
+
 - **Generated columns cannot use time-based functions** - use application-level computation:
+
   ```typescript
   // ❌ WRONG - PostgreSQL rejects as non-immutable
   status: varchar('status').generatedAlwaysAs(sql`CASE WHEN expires_at < NOW() ...`)
@@ -442,6 +459,7 @@ const { data, isLoading, isError } = useMe();
   ```
 
 **Migration rules:**
+
 - ✅ Always use `db:generate` → `db:migrate` for schema changes
 - ✅ Commit migration files to version control
 - ✅ Apply migrations when pulling changes: `bun run db:migrate`
@@ -460,11 +478,14 @@ The build configuration has been optimized for Next.js 16 with Turbopack:
 - **Server externals**: Packages like `thread-stream`, `pino`, and `@reown/appkit` are externalized to avoid bundling issues
 
 If you encounter build errors related to test files or node_modules, check:
+
 1. [tsconfig.json](tsconfig.json) - `include` and `exclude` arrays
 2. [next.config.ts](next.config.ts) - `turbopack.resolveExtensions` and `serverExternalPackages`
 
 ### Adding shadcn/ui Components
+
 To add new UI components from shadcn or MagicUI:
+
 ```bash
 # shadcn/ui components
 bunx shadcn@latest add [component-name]

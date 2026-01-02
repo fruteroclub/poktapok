@@ -2,8 +2,8 @@
  * Auth Service - API abstractions for authentication endpoints
  */
 
-import { apiFetch } from "@/lib/api/fetch";
-import type { MeResponse } from "@/types/api-v1";
+import { apiFetch } from '@/lib/api/fetch'
+import type { MeResponse } from '@/types/api-v1'
 
 /**
  * Fetch current authenticated user and their profile
@@ -15,5 +15,5 @@ import type { MeResponse } from "@/types/api-v1";
  */
 export async function fetchMe(): Promise<MeResponse> {
   // apiFetch automatically unwraps { success: true, data: { user, profile } }
-  return apiFetch<MeResponse>("/api/auth/me");
+  return apiFetch<MeResponse>('/api/auth/me')
 }

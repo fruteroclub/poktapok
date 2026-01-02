@@ -11,9 +11,9 @@ export function buildSocialUrl(platform: string, handle: string): string {
     twitter: `https://twitter.com/${handle}`,
     linkedin: `https://linkedin.com/in/${handle}`,
     telegram: `https://t.me/${handle}`,
-  };
+  }
 
-  return urlMap[platform.toLowerCase()] || "#";
+  return urlMap[platform.toLowerCase()] || '#'
 }
 
 /**
@@ -26,26 +26,26 @@ export function buildSocialUrl(platform: string, handle: string): string {
  */
 export function extractHandleFromUrl(
   platform: string,
-  url: string
+  url: string,
 ): string | null {
   try {
-    const urlObj = new URL(url);
-    const pathname = urlObj.pathname;
+    const urlObj = new URL(url)
+    const pathname = urlObj.pathname
 
     switch (platform.toLowerCase()) {
-      case "github":
-        return pathname.split("/")[1] || null;
-      case "twitter":
-        return pathname.split("/")[1] || null;
-      case "linkedin":
-        return pathname.split("/in/")[1]?.replace("/", "") || null;
-      case "telegram":
-        return pathname.replace("/", "") || null;
+      case 'github':
+        return pathname.split('/')[1] || null
+      case 'twitter':
+        return pathname.split('/')[1] || null
+      case 'linkedin':
+        return pathname.split('/in/')[1]?.replace('/', '') || null
+      case 'telegram':
+        return pathname.replace('/', '') || null
       default:
-        return null;
+        return null
     }
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -58,11 +58,11 @@ export function extractHandleFromUrl(
  */
 export function isValidHandle(platform: string, handle: string): boolean {
   if (!handle || handle.trim().length === 0) {
-    return false;
+    return false
   }
 
   // Remove @ symbol if present
-  const cleanHandle = handle.replace(/^@/, "");
+  const cleanHandle = handle.replace(/^@/, '')
 
   // Basic validation patterns
   const patterns: Record<string, RegExp> = {
@@ -70,12 +70,12 @@ export function isValidHandle(platform: string, handle: string): boolean {
     twitter: /^[a-zA-Z0-9_]{1,15}$/,
     linkedin: /^[a-zA-Z0-9-]+$/,
     telegram: /^[a-zA-Z0-9_]{5,32}$/,
-  };
-
-  const pattern = patterns[platform.toLowerCase()];
-  if (!pattern) {
-    return false;
   }
 
-  return pattern.test(cleanHandle);
+  const pattern = patterns[platform.toLowerCase()]
+  if (!pattern) {
+    return false
+  }
+
+  return pattern.test(cleanHandle)
 }

@@ -29,6 +29,7 @@ Build application submission form and admin review dashboard for quality control
 ## Application Form
 
 ### Location
+
 - Public page: `/apply`
 - Accessible without authentication
 - Mobile-optimized design
@@ -55,6 +56,7 @@ Build application submission form and admin review dashboard for quality control
    - Prevents bot spam
 
 ### UX/UI
+
 - Simple, welcoming design
 - No intimidating corporate feel
 - Encouraging micro-copy
@@ -66,6 +68,7 @@ Build application submission form and admin review dashboard for quality control
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/app/apply/page.tsx` - Application form page
 - `src/app/apply/success/page.tsx` - Success confirmation page
 - `src/components/application/application-form.tsx` - Form component
@@ -89,13 +92,10 @@ Build application submission form and admin review dashboard for quality control
 ### 1. Application Form Validation (`src/lib/validators/application.ts`)
 
 ```typescript
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const applicationSchema = z.object({
-  email: z
-    .string()
-    .email('Please enter a valid email address')
-    .toLowerCase(),
+  email: z.string().email('Please enter a valid email address').toLowerCase(),
 
   reason: z
     .string()
@@ -109,9 +109,9 @@ export const applicationSchema = z.object({
     .or(z.literal('')),
 
   captchaToken: z.string().min(1, 'Please complete the CAPTCHA'),
-});
+})
 
-export type ApplicationFormData = z.infer<typeof applicationSchema>;
+export type ApplicationFormData = z.infer<typeof applicationSchema>
 ```
 
 ### 2. Application Submission Flow
@@ -352,26 +352,26 @@ export function RejectionEmail({ email, notes }) {
 ### 6. Admin Authorization Middleware
 
 ```typescript
-import { getCurrentUser } from '@/lib/auth/helpers';
-import { redirect } from 'next/navigation';
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { redirect } from 'next/navigation'
 
 export async function requireAdmin() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser()
 
   if (!user) {
-    redirect('/');
+    redirect('/')
   }
 
   // Check if user is admin (stored in users.role)
   if (user.role !== 'admin') {
-    redirect('/');
+    redirect('/')
   }
 
-  return user;
+  return user
 }
 
 export function isAdmin(user: User | null): boolean {
-  return user?.role === 'admin';
+  return user?.role === 'admin'
 }
 ```
 
@@ -384,6 +384,7 @@ export function isAdmin(user: User | null): boolean {
 **Purpose:** Submit new application
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -394,6 +395,7 @@ export function isAdmin(user: User | null): boolean {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -403,6 +405,7 @@ export function isAdmin(user: User | null): boolean {
 ```
 
 **Response (with valid referral):**
+
 ```json
 {
   "success": true,
@@ -412,6 +415,7 @@ export function isAdmin(user: User | null): boolean {
 ```
 
 **Error Cases:**
+
 - 400: Validation error
 - 409: Email already applied
 - 429: Rate limit exceeded (5 per hour per IP)
@@ -421,6 +425,7 @@ export function isAdmin(user: User | null): boolean {
 **Purpose:** List applications (admin only)
 
 **Response:**
+
 ```json
 {
   "applications": [
@@ -442,6 +447,7 @@ export function isAdmin(user: User | null): boolean {
 **Purpose:** Approve application (admin only)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -454,6 +460,7 @@ export function isAdmin(user: User | null): boolean {
 **Purpose:** Reject application (admin only)
 
 **Request Body:**
+
 ```json
 {
   "notes": "Optional reason for rejection"
@@ -461,6 +468,7 @@ export function isAdmin(user: User | null): boolean {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -473,6 +481,7 @@ export function isAdmin(user: User | null): boolean {
 ## Database Schema Updates
 
 ### Applications Table
+
 ```typescript
 {
   id: uuid (PK)
@@ -489,6 +498,7 @@ export function isAdmin(user: User | null): boolean {
 ```
 
 ### Users Table Addition
+
 ```typescript
 {
   // ... existing fields
@@ -606,12 +616,14 @@ curl -X POST "http://localhost:3000/api/admin/applications/UUID/reject" \
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E0-T0: Database Setup completed
 - [ ] Email service configured (Resend, SendGrid, or similar)
 - [ ] hCaptcha or Cloudflare Turnstile account
 - [ ] Admin users created in database
 
 ### Blocks
+
 - E1-T1: Authentication Integration (needs application approval check)
 - E1-T6: Invitation System (invitations can skip application)
 
@@ -620,21 +632,25 @@ curl -X POST "http://localhost:3000/api/admin/applications/UUID/reject" \
 ## Notes & Questions
 
 ### Implementation Notes
+
 - Use React Email for templating (better than plain HTML)
 - Store CAPTCHA tokens temporarily (verify once, discard)
 - Log all admin actions for audit trail
 - Consider adding bulk approve/reject for efficiency
 
 ### Email Service
+
 - **Recommended:** Resend (developer-friendly, React Email integration)
 - **Alternative:** SendGrid, Postmark, AWS SES
 - Set up SPF/DKIM records for deliverability
 
 ### Admin Access
+
 - **Initial admins:** Manually set `role='admin'` in database
 - **Future:** Add admin invitation system (Epic 2)
 
 ### Questions
+
 - [ ] How many admins will review applications?
   - **Decision:** Start with 2-3, scale as needed
 - [ ] Should we send confirmation email on application submission?
@@ -643,6 +659,7 @@ curl -X POST "http://localhost:3000/api/admin/applications/UUID/reject" \
   - **Decision:** Add "Resend approval email" button in admin panel
 
 ### Future Enhancements (Not in Scope)
+
 - AI-powered spam detection
 - Automated approval based on criteria (LinkedIn profile quality, etc.)
 - Application analytics dashboard
@@ -653,4 +670,5 @@ curl -X POST "http://localhost:3000/api/admin/applications/UUID/reject" \
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-20
 **Status Changes:**
+
 - 2025-12-20: Created ticket

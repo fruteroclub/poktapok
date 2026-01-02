@@ -5,37 +5,43 @@
  * Uses apiFetch wrapper for automatic error handling
  */
 
-import { apiFetch } from '@/lib/api/fetch';
+import { apiFetch } from '@/lib/api/fetch'
 import type {
   ListSkillsResponse,
   ListUserSkillsResponse,
   LinkProjectSkillResponse,
   UnlinkProjectSkillResponse,
   ListSkillsQuery,
-} from '@/types/api-v1';
+} from '@/types/api-v1'
 
 /**
  * Fetch all available skills with optional filters
  */
-export async function fetchSkills(filters?: ListSkillsQuery): Promise<ListSkillsResponse> {
-  const params = new URLSearchParams();
+export async function fetchSkills(
+  filters?: ListSkillsQuery,
+): Promise<ListSkillsResponse> {
+  const params = new URLSearchParams()
 
-  if (filters?.category) params.append('category', filters.category);
-  if (filters?.search) params.append('search', filters.search);
-  if (filters?.limit !== undefined) params.append('limit', String(filters.limit));
-  if (filters?.offset !== undefined) params.append('offset', String(filters.offset));
+  if (filters?.category) params.append('category', filters.category)
+  if (filters?.search) params.append('search', filters.search)
+  if (filters?.limit !== undefined)
+    params.append('limit', String(filters.limit))
+  if (filters?.offset !== undefined)
+    params.append('offset', String(filters.offset))
 
-  const queryString = params.toString();
-  const url = queryString ? `/api/skills?${queryString}` : '/api/skills';
+  const queryString = params.toString()
+  const url = queryString ? `/api/skills?${queryString}` : '/api/skills'
 
-  return apiFetch<ListSkillsResponse>(url);
+  return apiFetch<ListSkillsResponse>(url)
 }
 
 /**
  * Fetch user's skills with project counts
  */
-export async function fetchUserSkills(userId: string): Promise<ListUserSkillsResponse> {
-  return apiFetch<ListUserSkillsResponse>(`/api/users/${userId}/skills`);
+export async function fetchUserSkills(
+  userId: string,
+): Promise<ListUserSkillsResponse> {
+  return apiFetch<ListUserSkillsResponse>(`/api/users/${userId}/skills`)
 }
 
 /**
@@ -43,13 +49,16 @@ export async function fetchUserSkills(userId: string): Promise<ListUserSkillsRes
  */
 export async function linkProjectSkill(
   projectId: string,
-  skillId: string
+  skillId: string,
 ): Promise<LinkProjectSkillResponse> {
-  return apiFetch<LinkProjectSkillResponse>(`/api/projects/${projectId}/skills`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ skillId }),
-  });
+  return apiFetch<LinkProjectSkillResponse>(
+    `/api/projects/${projectId}/skills`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skillId }),
+    },
+  )
 }
 
 /**
@@ -57,9 +66,12 @@ export async function linkProjectSkill(
  */
 export async function unlinkProjectSkill(
   projectId: string,
-  skillId: string
+  skillId: string,
 ): Promise<UnlinkProjectSkillResponse> {
-  return apiFetch<UnlinkProjectSkillResponse>(`/api/projects/${projectId}/skills/${skillId}`, {
-    method: 'DELETE',
-  });
+  return apiFetch<UnlinkProjectSkillResponse>(
+    `/api/projects/${projectId}/skills/${skillId}`,
+    {
+      method: 'DELETE',
+    },
+  )
 }

@@ -33,7 +33,9 @@ Create detailed profile view with tiered visibility controls.
 ## Visibility Tiers
 
 ### Public (Anyone - No Authentication Required)
+
 Display:
+
 - Username, display name, avatar
 - Bio
 - Location (city + country with flag)
@@ -42,23 +44,28 @@ Display:
 - Availability status with colored indicator
 
 Hidden:
+
 - Social links
 - Email
 - Wallet address
 - Full portfolio (Epic 2+)
 
 ### Members-Only (Authenticated Users)
+
 Display:
+
 - All public data PLUS:
 - Social links (GitHub, Twitter, LinkedIn, Telegram) with icons
 - "Send message" button placeholder (Epic 3)
 - Last active timestamp
 
 Hidden:
+
 - Email
 - Full portfolio (visible in Epic 2)
 
 ### Private (Profile Hidden from Directory)
+
 - Profile owner only can view
 - Not listed in directory
 - Direct URL shows "This profile is private"
@@ -68,6 +75,7 @@ Hidden:
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/app/profile/[username]/page.tsx` - Profile page
 - `src/app/profile/[username]/not-found.tsx` - 404 page
 - `src/components/profile/profile-header.tsx` - Avatar + bio section
@@ -143,23 +151,19 @@ export async function generateMetadata({ params }) {
 ### 2. Visibility Helper (`src/lib/utils/visibility.ts`)
 
 ```typescript
-import type { Profile, User } from '@/lib/db/schema';
+import type { Profile, User } from '@/lib/db/schema'
 
-export type VisibilityLevel = 'public' | 'members' | 'private';
+export type VisibilityLevel = 'public' | 'members' | 'private'
 
-export function canViewField(
-  field: string,
-  profile: Profile,
-  currentUser: User | null
-): boolean {
+export function canViewField(field: string, profile: Profile, currentUser: User | null): boolean {
   // Owner can always view
   if (currentUser?.id === profile.userId) {
-    return true;
+    return true
   }
 
   // Private profiles: only owner
   if (profile.visibility === 'private') {
-    return false;
+    return false
   }
 
   // Public fields
@@ -173,20 +177,20 @@ export function canViewField(
     'learningTrack',
     'availabilityStatus',
     'joinedAt',
-  ];
+  ]
 
   if (publicFields.includes(field)) {
-    return true;
+    return true
   }
 
   // Members-only fields
-  const membersFields = ['socialLinks', 'lastActiveAt'];
+  const membersFields = ['socialLinks', 'lastActiveAt']
 
   if (membersFields.includes(field)) {
-    return currentUser !== null; // Must be authenticated
+    return currentUser !== null // Must be authenticated
   }
 
-  return false;
+  return false
 }
 ```
 
@@ -449,6 +453,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 **Purpose:** Get profile by username with visibility rules applied
 
 **Response:**
+
 ```json
 {
   "profile": {
@@ -472,6 +477,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 ```
 
 **Error Cases:**
+
 - 404: Profile not found
 - 403: Private profile (not owner)
 
@@ -480,6 +486,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 **Purpose:** Report profile for abuse/spam
 
 **Request Body:**
+
 ```json
 {
   "reason": "Spam content in bio"
@@ -487,6 +494,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -499,6 +507,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 ## SEO & Metadata
 
 ### Open Graph Tags
+
 ```html
 <meta property="og:title" content="Carlos Rodriguez (@carlos_dev) | Poktapok" />
 <meta property="og:description" content="Learning Web3 development at Frutero" />
@@ -507,6 +516,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 ```
 
 ### Twitter Cards
+
 ```html
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Carlos Rodriguez (@carlos_dev)" />
@@ -514,6 +524,7 @@ export function ReportButton({ profileId }: { profileId: string }) {
 ```
 
 ### Canonical URL
+
 ```html
 <link rel="canonical" href="https://poktapok.club/profile/carlos_dev" />
 ```
@@ -618,11 +629,13 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E1-T2: Profile Creation Flow completed
 - [ ] Test profiles in database
 - [ ] Visibility logic defined
 
 ### Blocks
+
 - None (can work in parallel with E1-T3)
 
 ---
@@ -630,16 +643,19 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 ## Notes & Questions
 
 ### Design Decisions
+
 - **Why three visibility tiers?** Balances openness with privacy control
 - **Why show social links only to members?** Prevents scraping, encourages sign-ups
 - **Why allow reporting without authentication?** Lowers barrier for abuse reporting
 
 ### Technical Notes
+
 - Use Next.js `generateMetadata` for dynamic SEO
 - Implement share button with Web Share API fallback to clipboard
 - Store reports in database for admin review (not email)
 
 ### Questions
+
 - [ ] Should "New" badge show for profiles < 7 or < 14 days old?
   - **Decision:** 7 days
 - [ ] What happens to reported profiles?
@@ -648,6 +664,7 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
   - **Decision:** Yes, for members-only (format: "Active 2 hours ago")
 
 ### Future Enhancements (Not in Scope)
+
 - Profile analytics (view count, profile clicks)
 - QR code for profile sharing
 - Verified badge for completed bounties
@@ -658,6 +675,7 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-24
 **Status Changes:**
+
 - 2025-12-20: Created ticket
 - 2025-12-22: Core implementation completed
 - 2025-12-24: Marked as MVP complete - Report feature and custom 404 deferred
@@ -667,6 +685,7 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 ## MVP Implementation Summary
 
 ### ✅ Implemented Features
+
 1. **Profile Page** - [/profile/[username]](../../src/app/profile/[username]/page.tsx)
 2. **Visibility System** - [visibility.ts](../../src/lib/utils/visibility.ts) with public/members/private tiers
 3. **Profile Header** - [profile-header.tsx](../../src/components/profile/profile-header.tsx) with avatar, bio, badges
@@ -677,10 +696,12 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 8. **API Endpoint** - [/api/profiles/[username]](../../src/app/api/profiles/[username]/route.ts) with visibility filtering
 
 ### ⚠️ Deferred Features (Post-MVP)
+
 1. **Report Modal** - Abuse reporting system (community safety feature for future)
 2. **Custom 404 Page** - Default Next.js 404 sufficient for MVP launch
 
 ### 🎯 Implementation Quality
+
 - Type-safe implementation (no `any` types)
 - Follows project patterns (envelope responses, service layer)
 - Comprehensive visibility logic with documentation
@@ -689,4 +710,5 @@ curl -X POST "http://localhost:3000/api/profiles/carlos_dev/report" \
 - Clean component separation
 
 ### 📝 Known Issues
+
 None blocking MVP launch. Visibility logic differs slightly from original ticket spec (location/tracks are members-only instead of public), but this is acceptable for security.

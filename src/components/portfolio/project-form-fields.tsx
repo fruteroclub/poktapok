@@ -5,36 +5,49 @@
  * Integrates with React Hook Form for validation
  */
 
-'use client';
+'use client'
 
-import { Control, FieldErrors } from 'react-hook-form';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ProjectTypeSelector } from './project-type-selector';
-import { SkillSelector } from './skill-selector';
-import { LogoUpload } from './logo-upload';
-import { ImagesUpload } from './images-upload';
-import type { Skill } from '@/types/api-v1';
-import type { CreateProjectInput } from '@/lib/validators/project';
+import { Control, FieldErrors } from 'react-hook-form'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ProjectTypeSelector } from './project-type-selector'
+import { SkillSelector } from './skill-selector'
+import { LogoUpload } from './logo-upload'
+import { ImagesUpload } from './images-upload'
+import type { Skill } from '@/types/api-v1'
+import type { CreateProjectInput } from '@/lib/validators/project'
 
 interface ProjectFormFieldsProps {
-  control: Control<CreateProjectInput>;
-  errors: FieldErrors<CreateProjectInput>;
-  selectedSkills: Skill[];
-  onSkillsChange: (skills: Skill[]) => void;
-  projectId?: string | null; // For edit mode (existing projects)
-  currentLogoUrl?: string | null; // For edit mode (existing logo)
-  currentImageUrls?: string[]; // For edit mode (existing images)
-  onLogoUploadComplete?: (logoUrl: string) => void;
-  onLogoFileSelected?: (file: File) => void; // For new projects (file selection)
-  onLogoDelete?: () => void;
-  onImagesUploadComplete?: (imageUrls: string[]) => void;
-  onImageFilesSelected?: (files: File[]) => void; // For new projects (file selection)
-  onImageDelete?: (imageUrl: string) => void;
-  onImagesReorder?: (imageUrls: string[]) => void;
-  disabled?: boolean;
+  control: Control<CreateProjectInput>
+  errors: FieldErrors<CreateProjectInput>
+  selectedSkills: Skill[]
+  onSkillsChange: (skills: Skill[]) => void
+  projectId?: string | null // For edit mode (existing projects)
+  currentLogoUrl?: string | null // For edit mode (existing logo)
+  currentImageUrls?: string[] // For edit mode (existing images)
+  onLogoUploadComplete?: (logoUrl: string) => void
+  onLogoFileSelected?: (file: File) => void // For new projects (file selection)
+  onLogoDelete?: () => void
+  onImagesUploadComplete?: (imageUrls: string[]) => void
+  onImageFilesSelected?: (files: File[]) => void // For new projects (file selection)
+  onImageDelete?: (imageUrl: string) => void
+  onImagesReorder?: (imageUrls: string[]) => void
+  disabled?: boolean
 }
 
 export function ProjectFormFields({
@@ -88,7 +101,7 @@ export function ProjectFormFields({
             <FormControl>
               <Textarea
                 placeholder="Brief description of your project (20-280 characters)"
-                className="resize-none min-h-[100px]"
+                className="min-h-[100px] resize-none"
                 {...field}
                 maxLength={280}
               />
@@ -220,7 +233,8 @@ export function ProjectFormFields({
       {/* URL Requirement Note */}
       <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
         <p className="text-sm text-orange-800">
-          <strong>Note:</strong> At least one URL (repository, live demo, or video) is required to verify your project.
+          <strong>Note:</strong> At least one URL (repository, live demo, or
+          video) is required to verify your project.
         </p>
       </div>
 
@@ -234,15 +248,15 @@ export function ProjectFormFields({
               projectId={projectId ?? null}
               currentLogoUrl={currentLogoUrl || field.value}
               onUploadComplete={(logoUrl) => {
-                field.onChange(logoUrl);
-                onLogoUploadComplete?.(logoUrl);
+                field.onChange(logoUrl)
+                onLogoUploadComplete?.(logoUrl)
               }}
               onFileSelected={(file) => {
-                onLogoFileSelected?.(file);
+                onLogoFileSelected?.(file)
               }}
               onDelete={() => {
-                field.onChange(null);
-                onLogoDelete?.();
+                field.onChange(null)
+                onLogoDelete?.()
               }}
               disabled={disabled}
             />
@@ -259,22 +273,26 @@ export function ProjectFormFields({
           <FormItem>
             <ImagesUpload
               projectId={projectId ?? null}
-              currentImageUrls={currentImageUrls.length > 0 ? currentImageUrls : field.value}
+              currentImageUrls={
+                currentImageUrls.length > 0 ? currentImageUrls : field.value
+              }
               onUploadComplete={(imageUrls) => {
-                field.onChange(imageUrls);
-                onImagesUploadComplete?.(imageUrls);
+                field.onChange(imageUrls)
+                onImagesUploadComplete?.(imageUrls)
               }}
               onFilesSelected={(files) => {
-                onImageFilesSelected?.(files);
+                onImageFilesSelected?.(files)
               }}
               onDelete={(imageUrl) => {
-                const updated = (field.value || []).filter((url) => url !== imageUrl);
-                field.onChange(updated);
-                onImageDelete?.(imageUrl);
+                const updated = (field.value || []).filter(
+                  (url) => url !== imageUrl,
+                )
+                field.onChange(updated)
+                onImageDelete?.(imageUrl)
               }}
               onReorder={(imageUrls) => {
-                field.onChange(imageUrls);
-                onImagesReorder?.(imageUrls);
+                field.onChange(imageUrls)
+                onImagesReorder?.(imageUrls)
               }}
               disabled={disabled}
             />
@@ -294,8 +312,8 @@ export function ProjectFormFields({
               <SkillSelector
                 selectedSkills={selectedSkills}
                 onSkillsChange={(skills) => {
-                  onSkillsChange(skills);
-                  field.onChange(skills.map((s) => s.id));
+                  onSkillsChange(skills)
+                  field.onChange(skills.map((s) => s.id))
                 }}
                 maxSkills={10}
                 required
@@ -307,5 +325,5 @@ export function ProjectFormFields({
         )}
       />
     </div>
-  );
+  )
 }

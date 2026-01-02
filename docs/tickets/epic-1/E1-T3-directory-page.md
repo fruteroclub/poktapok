@@ -30,6 +30,7 @@ Build browsable directory with search, filters, and pagination.
 ## Layout Specifications
 
 ### Desktop (≥768px)
+
 - 3-column card grid
 - Sidebar filters (left or right)
 - Search bar at top
@@ -37,6 +38,7 @@ Build browsable directory with search, filters, and pagination.
 - "Load More" button pagination
 
 ### Mobile (<768px)
+
 - 1-column stacked cards
 - Collapsible filter drawer
 - Fixed search bar
@@ -50,6 +52,7 @@ Build browsable directory with search, filters, and pagination.
 Each card should display:
 
 ### Always Visible
+
 1. **Avatar** (generated from username or uploaded)
    - Fallback to initials if no avatar
    - Circular, 64px on desktop, 48px on mobile
@@ -75,6 +78,7 @@ Each card should display:
    - Text label
 
 ### On Hover (Desktop Only)
+
 - Subtle card elevation
 - "View Profile" button appears
 - Slight scale animation
@@ -84,6 +88,7 @@ Each card should display:
 ## Files to Create/Modify
 
 ### New Files
+
 - `src/app/directory/page.tsx` - Directory page
 - `src/components/directory/profile-card.tsx` - Profile card component
 - `src/components/directory/filters.tsx` - Filter sidebar/drawer
@@ -101,26 +106,26 @@ Each card should display:
 ### 1. Directory Query Function (`src/lib/db/queries/profiles.ts`)
 
 ```typescript
-import { db } from '@/lib/db';
-import { profiles, users } from '@/lib/db/schema';
-import { and, or, like, eq, desc } from 'drizzle-orm';
+import { db } from '@/lib/db'
+import { profiles, users } from '@/lib/db/schema'
+import { and, or, like, eq, desc } from 'drizzle-orm'
 
 export type DirectoryFilters = {
-  search?: string;
-  learningTrack?: 'ai' | 'crypto' | 'privacy';
-  availabilityStatus?: 'learning' | 'building' | 'open-to-bounties';
-  country?: string;
-  page?: number;
-  limit?: number;
-};
+  search?: string
+  learningTrack?: 'ai' | 'crypto' | 'privacy'
+  availabilityStatus?: 'learning' | 'building' | 'open-to-bounties'
+  country?: string
+  page?: number
+  limit?: number
+}
 
 export async function getDirectoryProfiles(filters: DirectoryFilters) {
-  const { search, learningTrack, availabilityStatus, country, page = 1, limit = 24 } = filters;
+  const { search, learningTrack, availabilityStatus, country, page = 1, limit = 24 } = filters
 
-  const conditions = [];
+  const conditions = []
 
   // Visibility: only public profiles
-  conditions.push(eq(profiles.visibility, 'public'));
+  conditions.push(eq(profiles.visibility, 'public'))
 
   // Search
   if (search) {
@@ -128,23 +133,23 @@ export async function getDirectoryProfiles(filters: DirectoryFilters) {
       or(
         like(profiles.username, `%${search}%`),
         like(profiles.displayName, `%${search}%`),
-        like(profiles.bio, `%${search}%`)
-      )
-    );
+        like(profiles.bio, `%${search}%`),
+      ),
+    )
   }
 
   // Filters
   if (learningTrack) {
-    conditions.push(eq(profiles.learningTrack, learningTrack));
+    conditions.push(eq(profiles.learningTrack, learningTrack))
   }
   if (availabilityStatus) {
-    conditions.push(eq(profiles.availabilityStatus, availabilityStatus));
+    conditions.push(eq(profiles.availabilityStatus, availabilityStatus))
   }
   if (country) {
-    conditions.push(eq(profiles.country, country));
+    conditions.push(eq(profiles.country, country))
   }
 
-  const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit
 
   const results = await db
     .select()
@@ -153,20 +158,20 @@ export async function getDirectoryProfiles(filters: DirectoryFilters) {
     .where(and(...conditions))
     .orderBy(desc(profiles.createdAt))
     .limit(limit)
-    .offset(offset);
+    .offset(offset)
 
-  return results.map((r) => r.profiles);
+  return results.map((r) => r.profiles)
 }
 ```
 
 ### 2. API Endpoint (`src/app/api/directory/route.ts`)
 
 ```typescript
-import { NextRequest } from 'next/server';
-import { getDirectoryProfiles } from '@/lib/db/queries/profiles';
+import { NextRequest } from 'next/server'
+import { getDirectoryProfiles } from '@/lib/db/queries/profiles'
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(req.url)
 
   const filters = {
     search: searchParams.get('search') || undefined,
@@ -175,13 +180,13 @@ export async function GET(req: NextRequest) {
     country: searchParams.get('country') || undefined,
     page: parseInt(searchParams.get('page') || '1'),
     limit: parseInt(searchParams.get('limit') || '24'),
-  };
+  }
 
   try {
-    const profiles = await getDirectoryProfiles(filters);
-    return Response.json({ profiles, page: filters.page });
+    const profiles = await getDirectoryProfiles(filters)
+    return Response.json({ profiles, page: filters.page })
   } catch (error) {
-    return Response.json({ error: 'Failed to fetch directory' }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch directory' }, { status: 500 })
   }
 }
 ```
@@ -189,26 +194,26 @@ export async function GET(req: NextRequest) {
 ### 3. Filter State Hook (`src/lib/hooks/useDirectoryFilters.ts`)
 
 ```typescript
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation'
 
 export function useDirectoryFilters() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   const updateFilter = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams.toString())
 
     if (value) {
-      params.set(key, value);
+      params.set(key, value)
     } else {
-      params.delete(key);
+      params.delete(key)
     }
 
     // Reset to page 1 when filters change
-    params.delete('page');
+    params.delete('page')
 
-    router.push(`/directory?${params.toString()}`);
-  };
+    router.push(`/directory?${params.toString()}`)
+  }
 
   return {
     search: searchParams.get('search') || '',
@@ -217,7 +222,7 @@ export function useDirectoryFilters() {
     country: searchParams.get('country') || null,
     page: parseInt(searchParams.get('page') || '1'),
     updateFilter,
-  };
+  }
 }
 ```
 
@@ -270,6 +275,7 @@ export function ProfileCard({ profile }) {
 ## Search & Filter Requirements
 
 ### Search Bar
+
 - **Placeholder:** "Search by name or bio..."
 - **Debounce:** 300ms delay before triggering search
 - **Minimum length:** 2 characters
@@ -279,22 +285,26 @@ export function ProfileCard({ profile }) {
 ### Filters
 
 #### Learning Track
+
 - Radio buttons (single select)
 - Options: All, Code: AI, Crypto/DeFi, Privacy
 - Default: All
 
 #### Availability Status
+
 - Radio buttons (single select)
 - Options: All, Learning, Building, Open to Bounties
 - Default: All
 
 #### Location (Country)
+
 - Dropdown select
 - Options: All, [list of countries with profiles]
 - Sorted alphabetically
 - Show country flags
 
 ### Filter Behavior
+
 - Changes update URL query params
 - Page resets to 1 when filter changes
 - Filters persist on page refresh
@@ -305,18 +315,21 @@ export function ProfileCard({ profile }) {
 ## Pagination & Performance
 
 ### Desktop Pagination
+
 - 24 profiles per page
 - Show "Load More" button at bottom
 - Display: "Showing 1-24 of 156 builders"
 - Button loads next page, appends to list
 
 ### Mobile Infinite Scroll
+
 - Initial load: 12 profiles
 - Intersection Observer triggers load when scrolling near bottom
 - Show loading spinner while fetching
 - "No more profiles" message when exhausted
 
 ### Performance Optimizations
+
 1. **Database Indexes**
    - Index on `profiles.visibility`
    - Index on `profiles.learningTrack`
@@ -338,9 +351,11 @@ export function ProfileCard({ profile }) {
 ## Sorting Options
 
 ### Default: Recently Joined
+
 - `ORDER BY createdAt DESC`
 
 ### Future Options (not in Epic 1)
+
 - Alphabetical (A-Z)
 - Most Active (requires activity tracking)
 - Reputation Score (requires reputation system)
@@ -436,11 +451,13 @@ curl "http://localhost:3000/api/directory?page=2&limit=24"
 ## Dependencies
 
 ### Before Starting
+
 - [ ] E1-T2: Profile Creation Flow completed
 - [ ] At least 10 test profiles in database
 - [ ] Database indexes created
 
 ### Blocks
+
 - E1-T4: Individual Profile Page (directory links to profiles)
 
 ---
@@ -448,16 +465,19 @@ curl "http://localhost:3000/api/directory?page=2&limit=24"
 ## Notes & Questions
 
 ### Design Decisions
+
 - **Why 24 profiles per page?** Divisible by 2, 3, 4, 6 (responsive grid flexibility)
 - **Why infinite scroll on mobile?** Better UX for touch devices, less button tapping
 - **Why truncate bio at 100 chars?** Keeps cards consistent height, encourages profile clicks
 
 ### Technical Notes
+
 - Use React Query for data fetching and caching
 - Implement optimistic UI updates where possible
 - Consider using Algolia for search in future (full-text search at scale)
 
 ### Questions
+
 - [ ] Should we show profile count by filter?
   - **Decision:** Yes, show "156 builders found" after applying filters
 - [ ] What if user has no avatar?
@@ -466,6 +486,7 @@ curl "http://localhost:3000/api/directory?page=2&limit=24"
   - **Decision:** Yes, add small "New" badge next to username
 
 ### Future Enhancements (Not in Scope)
+
 - Advanced search (semantic, skills-based)
 - "Featured" profiles section
 - Map view of builder locations
@@ -477,5 +498,6 @@ curl "http://localhost:3000/api/directory?page=2&limit=24"
 **Created:** 2025-12-20
 **Last Updated:** 2025-12-22
 **Status Changes:**
+
 - 2025-12-20: Created ticket
 - 2025-12-22: ✅ Completed - All features implemented and working

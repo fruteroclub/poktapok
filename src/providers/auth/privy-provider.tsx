@@ -29,7 +29,12 @@ function PrivyProviderComponent({ children }: { children: ReactNode }) {
         appearance: {
           // Wallet display preferences
           showWalletLoginFirst: false,
-          walletList: ['metamask', 'coinbase_wallet', 'rainbow', 'wallet_connect'],
+          walletList: [
+            'metamask',
+            'coinbase_wallet',
+            'rainbow',
+            'wallet_connect',
+          ],
         },
         legal: {
           // Simplify legal text to avoid complex HTML nesting

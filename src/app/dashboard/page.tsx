@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import PageWrapper from "@/components/layout/page-wrapper";
-import { ProtectedRoute } from "@/components/layout/protected-route-wrapper";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Section } from "@/components/layout/section";
+import { useAuth } from '@/hooks/use-auth'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { ProtectedRoute } from '@/components/layout/protected-route-wrapper'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Section } from '@/components/layout/section'
 
 /**
  * Dashboard Page - User's home page after completing profile
@@ -18,27 +18,27 @@ import { Section } from "@/components/layout/section";
  * - Links to profile edit
  */
 export default function DashboardPage() {
-  const router = useRouter();
-  const { data, isLoading, isError } = useAuth();
+  const router = useRouter()
+  const { data, isLoading, isError } = useAuth()
 
   // Redirect if user hasn't completed onboarding
   useEffect(() => {
     if (data?.user) {
-      if (data.user.accountStatus === "incomplete" || !data.user.username) {
-        router.push("/onboarding");
+      if (data.user.accountStatus === 'incomplete' || !data.user.username) {
+        router.push('/onboarding')
       } else if (!data.profile) {
         // User completed onboarding but not profile
-        router.push("/profile");
+        router.push('/profile')
       }
     }
-  }, [data, router]);
+  }, [data, router])
 
   // Handle error state
   useEffect(() => {
     if (isError) {
-      router.push("/");
+      router.push('/')
     }
-  }, [isError, router]);
+  }, [isError, router])
 
   // Loading state
   if (isLoading) {
@@ -46,28 +46,28 @@ export default function DashboardPage() {
       <ProtectedRoute>
         <PageWrapper>
           <div className="page">
-            <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="flex min-h-[50vh] items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           </div>
         </PageWrapper>
       </ProtectedRoute>
-    );
+    )
   }
 
   // No data state
   if (!data?.user || !data?.profile) {
-    return null;
+    return null
   }
 
-  const { user, profile } = data;
+  const { user, profile } = data
 
-  const initials = (user.displayName || user.username || "")
-    .split(" ")
+  const initials = (user.displayName || user.username || '')
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
 
   return (
     <ProtectedRoute>
@@ -95,21 +95,21 @@ export default function DashboardPage() {
                   <div className="flex items-start gap-4">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={user.avatarUrl || undefined} />
-                      <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+                      <AvatarFallback className="text-xl">
+                        {initials}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <h3 className="text-2xl font-bold">
                         {user.displayName || user.username}
                       </h3>
                       <p className="text-muted-foreground">@{user.username}</p>
-                      {user.bio && (
-                        <p className="mt-2 text-sm">{user.bio}</p>
-                      )}
+                      {user.bio && <p className="mt-2 text-sm">{user.bio}</p>}
                     </div>
                   </div>
 
                   {/* Profile Details */}
-                  <div className="grid gap-4 pt-4 border-t">
+                  <div className="grid gap-4 border-t pt-4">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                           Estado
                         </p>
                         <p className="text-sm capitalize">
-                          {profile.availabilityStatus.replace(/_/g, " ")}
+                          {profile.availabilityStatus.replace(/_/g, ' ')}
                         </p>
                       </div>
                       {user.email && (
@@ -147,14 +147,14 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 w-full justify-center">
+                  <div className="flex w-full justify-center gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => router.push("/profile")}
+                      onClick={() => router.push('/profile')}
                     >
                       Editar Perfil
                     </Button>
-                    <Button onClick={() => router.push("/directory")}>
+                    <Button onClick={() => router.push('/directory')}>
                       Ver Directorio
                     </Button>
                   </div>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* Quick Stats / Future sections can go here */}
-              <div className="w-full grid gap-4 md:grid-cols-3">
+              <div className="grid w-full gap-4 md:grid-cols-3">
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">
@@ -170,8 +170,10 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-600">100%</div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <div className="text-2xl font-bold text-green-600">
+                      100%
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
                       Todos los campos requeridos completados
                     </p>
                   </CardContent>
@@ -187,7 +189,7 @@ export default function DashboardPage() {
                     <div className="text-2xl font-bold capitalize">
                       {user.accountStatus}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       Tu cuenta está activa
                     </p>
                   </CardContent>
@@ -201,7 +203,7 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">Público</div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       Visible en el directorio de talento
                     </p>
                   </CardContent>
@@ -212,5 +214,5 @@ export default function DashboardPage() {
         </div>
       </PageWrapper>
     </ProtectedRoute>
-  );
+  )
 }

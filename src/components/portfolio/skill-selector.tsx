@@ -5,24 +5,35 @@
  * Used in project forms to select skills
  */
 
-'use client';
+'use client'
 
-import { useState, useMemo } from 'react';
-import { Check, X, Search } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { SkillBadge } from './skill-badge';
-import { useSkills } from '@/hooks/use-skills';
-import type { Skill } from '@/types/api-v1';
+import { useState, useMemo } from 'react'
+import { Check, X, Search } from 'lucide-react'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { SkillBadge } from './skill-badge'
+import { useSkills } from '@/hooks/use-skills'
+import type { Skill } from '@/types/api-v1'
 
 interface SkillSelectorProps {
-  selectedSkills: Skill[];
-  onSkillsChange: (skills: Skill[]) => void;
-  maxSkills?: number;
-  required?: boolean;
-  error?: string;
+  selectedSkills: Skill[]
+  onSkillsChange: (skills: Skill[]) => void
+  maxSkills?: number
+  required?: boolean
+  error?: string
 }
 
 export function SkillSelector({
@@ -32,43 +43,46 @@ export function SkillSelector({
   required = false,
   error,
 }: SkillSelectorProps) {
-  const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [open, setOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
 
   // Fetch all skills
-  const { data: skillsData, isLoading } = useSkills();
-  const allSkills = skillsData?.skills || [];
+  const { data: skillsData, isLoading } = useSkills()
+  const allSkills = skillsData?.skills || []
 
   // Filter skills based on search and category
   const filteredSkills = useMemo(() => {
     return allSkills.filter((skill) => {
-      const matchesSearch = skill.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = !categoryFilter || skill.category === categoryFilter;
-      return matchesSearch && matchesCategory;
-    });
-  }, [allSkills, searchQuery, categoryFilter]);
+      const matchesSearch = skill.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+      const matchesCategory =
+        !categoryFilter || skill.category === categoryFilter
+      return matchesSearch && matchesCategory
+    })
+  }, [allSkills, searchQuery, categoryFilter])
 
   // Check if skill is selected
   const isSelected = (skillId: string) => {
-    return selectedSkills.some((s) => s.id === skillId);
-  };
+    return selectedSkills.some((s) => s.id === skillId)
+  }
 
   // Toggle skill selection
   const toggleSkill = (skill: Skill) => {
     if (isSelected(skill.id)) {
-      onSkillsChange(selectedSkills.filter((s) => s.id !== skill.id));
+      onSkillsChange(selectedSkills.filter((s) => s.id !== skill.id))
     } else {
       if (selectedSkills.length < maxSkills) {
-        onSkillsChange([...selectedSkills, skill]);
+        onSkillsChange([...selectedSkills, skill])
       }
     }
-  };
+  }
 
   // Remove skill from selection
   const removeSkill = (skillId: string) => {
-    onSkillsChange(selectedSkills.filter((s) => s.id !== skillId));
-  };
+    onSkillsChange(selectedSkills.filter((s) => s.id !== skillId))
+  }
 
   // Categories for filtering
   const categories = [
@@ -77,21 +91,21 @@ export function SkillSelector({
     { value: 'tool', label: 'Tools' },
     { value: 'blockchain', label: 'Blockchain' },
     { value: 'other', label: 'Other' },
-  ];
+  ]
 
   return (
     <div className="space-y-2">
       {/* Selected skills display */}
       {selectedSkills.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 p-3 border rounded-lg bg-muted/50">
+        <div className="flex flex-wrap gap-1.5 rounded-lg border bg-muted/50 p-3">
           {selectedSkills.map((skill) => (
-            <div key={skill.id} className="flex items-center gap-1 group">
+            <div key={skill.id} className="group flex items-center gap-1">
               <SkillBadge skill={skill} size="sm" />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-5 w-5 p-0 opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={() => removeSkill(skill.id)}
               >
                 <X className="h-3 w-3" />
@@ -130,7 +144,7 @@ export function SkillSelector({
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
-            <div className="flex items-center gap-1 px-3 py-2 border-b">
+            <div className="flex items-center gap-1 border-b px-3 py-2">
               <Button
                 variant={categoryFilter === null ? 'secondary' : 'ghost'}
                 size="sm"
@@ -157,8 +171,9 @@ export function SkillSelector({
               </CommandEmpty>
               <CommandGroup>
                 {filteredSkills.map((skill) => {
-                  const selected = isSelected(skill.id);
-                  const disabled = !selected && selectedSkills.length >= maxSkills;
+                  const selected = isSelected(skill.id)
+                  const disabled =
+                    !selected && selectedSkills.length >= maxSkills
 
                   return (
                     <CommandItem
@@ -172,7 +187,7 @@ export function SkillSelector({
                         <div
                           className={`flex h-4 w-4 items-center justify-center rounded-sm border ${
                             selected
-                              ? 'bg-primary border-primary text-primary-foreground'
+                              ? 'border-primary bg-primary text-primary-foreground'
                               : 'border-input'
                           }`}
                         >
@@ -184,7 +199,7 @@ export function SkillSelector({
                         {skill.category}
                       </Badge>
                     </CommandItem>
-                  );
+                  )
                 })}
               </CommandGroup>
             </CommandList>
@@ -197,8 +212,9 @@ export function SkillSelector({
 
       {/* Helper text */}
       <p className="text-sm text-muted-foreground">
-        Select {required ? 'at least 1' : 'up to'} {maxSkills} skill{maxSkills > 1 ? 's' : ''} used in this project
+        Select {required ? 'at least 1' : 'up to'} {maxSkills} skill
+        {maxSkills > 1 ? 's' : ''} used in this project
       </p>
     </div>
-  );
+  )
 }

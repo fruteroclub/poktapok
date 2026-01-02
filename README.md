@@ -17,17 +17,20 @@ la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, mues
 ## tech stack
 
 **frontend**
+
 - Next.js 16 (app router)
 - React 19 + TypeScript
 - Tailwind CSS v4 + shadcn/ui
 - Zustand + React Query
 
 **backend**
+
 - PostgreSQL (Neon DB via Vercel)
 - Drizzle ORM + node-postgres
 - Next.js API routes
 
 **web3**
+
 - Privy (autenticación + wallets)
 - Wagmi (interacción blockchain)
 - Ethereum Sepolia (testnet)
@@ -61,6 +64,7 @@ la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, mues
 3. **configura las variables de entorno:**
 
    **opción 1: vercel (recomendado)**
+
    ```bash
    vercel env pull .env.local
    ```
@@ -135,6 +139,7 @@ bun run db:check      # verificar drift del esquema
 ### documentación completa
 
 consulta [docs/database-setup.md](docs/database-setup.md) para:
+
 - guía de configuración completa
 - referencia del esquema de tablas
 - patrones de consulta comunes

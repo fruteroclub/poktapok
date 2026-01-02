@@ -5,26 +5,35 @@
  * Shows top 5 skills by project count with option to view all
  */
 
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Loader2, Code2, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { SkillBadge } from '@/components/portfolio/skill-badge';
-import { useUserSkills } from '@/hooks/use-skills';
-import { SkillsModal } from './skills-modal';
+import { useState } from 'react'
+import { Loader2, Code2, ChevronRight } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { SkillBadge } from '@/components/portfolio/skill-badge'
+import { useUserSkills } from '@/hooks/use-skills'
+import { SkillsModal } from './skills-modal'
 
 interface ProfileSkillsSectionProps {
-  userId: string;
-  isOwner: boolean;
+  userId: string
+  isOwner: boolean
 }
 
-export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionProps) {
-  const [showAllSkills, setShowAllSkills] = useState(false);
+export function ProfileSkillsSection({
+  userId,
+  isOwner,
+}: ProfileSkillsSectionProps) {
+  const [showAllSkills, setShowAllSkills] = useState(false)
 
   // Fetch user skills (limit to 5 for display)
-  const { data, isLoading, isError } = useUserSkills(userId);
+  const { data, isLoading, isError } = useUserSkills(userId)
 
   if (isLoading) {
     return (
@@ -42,7 +51,7 @@ export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionPr
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (isError) {
@@ -59,12 +68,12 @@ export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionPr
           <p className="text-sm text-destructive">Failed to load skills</p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const skills = data?.skills || [];
-  const topSkills = skills.slice(0, 5);
-  const hasMoreSkills = skills.length > 5;
+  const skills = data?.skills || []
+  const topSkills = skills.slice(0, 5)
+  const hasMoreSkills = skills.length > 5
 
   // Empty state
   if (skills.length === 0) {
@@ -78,22 +87,26 @@ export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionPr
           <CardDescription>Earned through projects</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <Code2 className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
-            <p className="text-sm text-muted-foreground mb-4">
+          <div className="py-8 text-center">
+            <Code2 className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
+            <p className="mb-4 text-sm text-muted-foreground">
               {isOwner
                 ? "You haven't earned any skills yet. Add skills to your projects to showcase your expertise."
                 : 'No skills earned yet'}
             </p>
             {isOwner && (
-              <Button variant="outline" size="sm" onClick={() => (window.location.href = '/portfolio/new')}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => (window.location.href = '/portfolio/new')}
+              >
                 Create Project
               </Button>
             )}
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -105,8 +118,11 @@ export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionPr
             Skills ({skills.length})
           </CardTitle>
           <CardDescription>
-            Earned through {skills.reduce((sum, s) => sum + s.projectCount, 0)} project
-            {skills.reduce((sum, s) => sum + s.projectCount, 0) !== 1 ? 's' : ''}
+            Earned through {skills.reduce((sum, s) => sum + s.projectCount, 0)}{' '}
+            project
+            {skills.reduce((sum, s) => sum + s.projectCount, 0) !== 1
+              ? 's'
+              : ''}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,5 +158,5 @@ export function ProfileSkillsSection({ userId, isOwner }: ProfileSkillsSectionPr
         onClose={() => setShowAllSkills(false)}
       />
     </>
-  );
+  )
 }

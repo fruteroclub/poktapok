@@ -1,7 +1,15 @@
 import { NextRequest } from 'next/server'
-import { getActivityById, updateActivity, deleteActivity } from '@/lib/db/queries/activities'
+import {
+  getActivityById,
+  updateActivity,
+  deleteActivity,
+} from '@/lib/db/queries/activities'
 import { updateActivitySchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  requireAdmin,
+} from '@/lib/auth/middleware'
 
 /**
  * PATCH /api/admin/activities/[id]
@@ -9,7 +17,7 @@ import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middle
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin(req)
@@ -23,7 +31,7 @@ export async function PATCH(
           success: false,
           error: { message: 'Activity not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -43,7 +51,9 @@ export async function PATCH(
       maxSubmissionsPerUser: validated.max_submissions_per_user,
       totalAvailableSlots: validated.total_available_slots,
       startsAt: validated.starts_at ? new Date(validated.starts_at) : undefined,
-      expiresAt: validated.expires_at ? new Date(validated.expires_at) : undefined,
+      expiresAt: validated.expires_at
+        ? new Date(validated.expires_at)
+        : undefined,
       status: validated.status,
     })
 
@@ -59,7 +69,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await requireAdmin(req)
@@ -73,7 +83,7 @@ export async function DELETE(
           success: false,
           error: { message: 'Activity not found', code: 'NOT_FOUND' },
         }),
-        { status: 404 }
+        { status: 404 },
       )
     }
 

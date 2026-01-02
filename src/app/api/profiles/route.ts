@@ -1,11 +1,11 @@
-import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
-import { users, profiles } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { requireAuth } from "@/lib/privy/middleware";
-import { profileSchema } from "@/lib/validators/profile";
-import { z } from "zod";
-import { apiSuccess, apiValidationError, apiErrors } from "@/lib/api/response";
+import { NextRequest } from 'next/server'
+import { db } from '@/lib/db'
+import { users, profiles } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import { requireAuth } from '@/lib/privy/middleware'
+import { profileSchema } from '@/lib/validators/profile'
+import { z } from 'zod'
+import { apiSuccess, apiValidationError, apiErrors } from '@/lib/api/response'
 
 /**
  * POST /api/profiles
@@ -28,26 +28,26 @@ import { apiSuccess, apiValidationError, apiErrors } from "@/lib/api/response";
 export const POST = requireAuth(async (request: NextRequest, authUser) => {
   try {
     // Parse and validate request body
-    const body = await request.json();
-    const validated = profileSchema.parse(body);
+    const body = await request.json()
+    const validated = profileSchema.parse(body)
 
     // Use privyDid from verified token
-    const privyDid = authUser.privyDid;
+    const privyDid = authUser.privyDid
 
-    console.log("Profile creation request for privyDid:", privyDid);
+    console.log('Profile creation request for privyDid:', privyDid)
 
     // Get user from database
     const userResults = await db
       .select()
       .from(users)
       .where(eq(users.privyDid, privyDid))
-      .limit(1);
+      .limit(1)
 
     if (userResults.length === 0) {
-      return apiErrors.notFound("User");
+      return apiErrors.notFound('User')
     }
 
-    const user = userResults[0];
+    const user = userResults[0]
 
     // Prepare profile data
     const profileData = {
@@ -62,9 +62,9 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       twitterUrl: validated.socialLinks?.twitter || null,
       linkedinUrl: validated.socialLinks?.linkedin || null,
       telegramHandle: validated.socialLinks?.telegram || null,
-      profileVisibility: "public" as const,
+      profileVisibility: 'public' as const,
       updatedAt: new Date(),
-    };
+    }
 
     // Insert or update profile (upsert)
     const upsertedProfiles = await db
@@ -74,24 +74,21 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         target: profiles.userId,
         set: profileData,
       })
-      .returning();
+      .returning()
 
-    const profile = upsertedProfiles[0];
+    const profile = upsertedProfiles[0]
 
-    console.log("Profile created/updated for user:", user.id);
+    console.log('Profile created/updated for user:', user.id)
 
-    return apiSuccess(
-      { profile },
-      { message: "Profile created successfully" }
-    );
+    return apiSuccess({ profile }, { message: 'Profile created successfully' })
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
-      return apiValidationError(error);
+      return apiValidationError(error)
     }
 
     // Handle unexpected errors
-    console.error("Error creating profile:", error);
-    return apiErrors.internal("Failed to create profile");
+    console.error('Error creating profile:', error)
+    return apiErrors.internal('Failed to create profile')
   }
-});
+})

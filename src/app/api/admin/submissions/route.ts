@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server'
 import { getSubmissions } from '@/lib/db/queries/activities'
 import { listSubmissionsQuerySchema } from '@/lib/validators/activity'
-import { handleApiError, successResponse, requireAdmin } from '@/lib/auth/middleware'
+import {
+  handleApiError,
+  successResponse,
+  requireAdmin,
+} from '@/lib/auth/middleware'
 import { count } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { activitySubmissions } from '@/lib/db/schema'
@@ -40,14 +44,23 @@ export async function GET(req: NextRequest) {
     today.setHours(0, 0, 0, 0)
 
     const stats = await Promise.all([
-      db.select({ count: count() }).from(activitySubmissions).where(eq(activitySubmissions.status, 'pending')),
-      db.select({ count: count() }).from(activitySubmissions).where(eq(activitySubmissions.status, 'under_review')),
-      db.select({ count: count() }).from(activitySubmissions).where(
-        and(
-          eq(activitySubmissions.status, 'approved'),
-          gte(activitySubmissions.reviewedAt, today)
-        )
-      ),
+      db
+        .select({ count: count() })
+        .from(activitySubmissions)
+        .where(eq(activitySubmissions.status, 'pending')),
+      db
+        .select({ count: count() })
+        .from(activitySubmissions)
+        .where(eq(activitySubmissions.status, 'under_review')),
+      db
+        .select({ count: count() })
+        .from(activitySubmissions)
+        .where(
+          and(
+            eq(activitySubmissions.status, 'approved'),
+            gte(activitySubmissions.reviewedAt, today),
+          ),
+        ),
     ])
 
     return successResponse({

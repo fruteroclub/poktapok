@@ -5,12 +5,12 @@
  * Used in the individual project view page
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type { Skill } from '@/types/api-v1';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import type { Skill } from '@/types/api-v1'
 
 interface ProjectSkillsProps {
-  skills: Skill[];
+  skills: Skill[]
 }
 
 // Category colors matching the design system
@@ -20,44 +20,44 @@ const categoryColors: Record<string, string> = {
   tool: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   blockchain: 'bg-purple-100 text-purple-800 border-purple-200',
   other: 'bg-gray-100 text-gray-800 border-gray-200',
-};
+}
 
 export function ProjectSkills({ skills }: ProjectSkillsProps) {
   if (skills.length === 0) {
-    return null;
+    return null
   }
 
   // Group skills by category
   const skillsByCategory = skills.reduce(
     (acc, skill) => {
-      const category = skill.category || 'other';
+      const category = skill.category || 'other'
       if (!acc[category]) {
-        acc[category] = [];
+        acc[category] = []
       }
-      acc[category].push(skill);
-      return acc;
+      acc[category].push(skill)
+      return acc
     },
-    {} as Record<string, Skill[]>
-  );
+    {} as Record<string, Skill[]>,
+  )
 
   // Sort categories
   const sortedCategories = Object.keys(skillsByCategory).sort((a, b) => {
-    const order = ['language', 'framework', 'tool', 'blockchain', 'other'];
-    return order.indexOf(a) - order.indexOf(b);
-  });
+    const order = ['language', 'framework', 'tool', 'blockchain', 'other']
+    return order.indexOf(a) - order.indexOf(b)
+  })
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl">
           🏷️ Technologies Used
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {sortedCategories.map((category) => {
-            const categorySkills = skillsByCategory[category];
-            const colorClass = categoryColors[category] || categoryColors.other;
+            const categorySkills = skillsByCategory[category]
+            const colorClass = categoryColors[category] || categoryColors.other
 
             return (
               <div key={category} className="space-y-2">
@@ -76,10 +76,10 @@ export function ProjectSkills({ skills }: ProjectSkillsProps) {
                   ))}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -1,50 +1,47 @@
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import { getProfileByUsername } from "@/lib/db/queries/profiles";
-import { getCurrentUser } from "@/lib/auth/helpers";
-import {
-  canViewField,
-  isProfileOwner,
-} from "@/lib/utils/visibility";
-import { ProfileHeader } from "@/components/profile/profile-header";
-import { ProfileInfo } from "@/components/profile/profile-info";
-import { SocialLinks } from "@/components/profile/social-links";
-import { PortfolioProjectsSection } from "@/components/profile/portfolio-projects-section";
-import { ProfileSkillsSection } from "@/components/profile/profile-skills-section";
-import PageWrapper from "@/components/layout/page-wrapper";
-import { Section } from "@/components/layout/section";
+import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
+import { getProfileByUsername } from '@/lib/db/queries/profiles'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { canViewField, isProfileOwner } from '@/lib/utils/visibility'
+import { ProfileHeader } from '@/components/profile/profile-header'
+import { ProfileInfo } from '@/components/profile/profile-info'
+import { SocialLinks } from '@/components/profile/social-links'
+import { PortfolioProjectsSection } from '@/components/profile/portfolio-projects-section'
+import { ProfileSkillsSection } from '@/components/profile/profile-skills-section'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { Section } from '@/components/layout/section'
 
 // Force dynamic rendering (uses cookies for auth)
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic'
 
 interface ProfilePageProps {
   params: Promise<{
-    username: string;
-  }>;
+    username: string
+  }>
 }
 
 export async function generateMetadata({
   params,
 }: ProfilePageProps): Promise<Metadata> {
-  const { username } = await params;
-  const profileData = await getProfileByUsername(username);
+  const { username } = await params
+  const profileData = await getProfileByUsername(username)
 
   if (!profileData) {
     return {
-      title: "Profile Not Found | Poktapok",
-    };
+      title: 'Profile Not Found | Poktapok',
+    }
   }
 
-  const { user, profile } = profileData;
-  const displayName = user.displayName || user.username;
-  const bio = user.bio || "Talent profile on Poktapok";
+  const { user, profile } = profileData
+  const displayName = user.displayName || user.username
+  const bio = user.bio || 'Talent profile on Poktapok'
 
   // For private profiles, use generic metadata
-  if (profile.profileVisibility === "private") {
+  if (profile.profileVisibility === 'private') {
     return {
       title: `${displayName} (@${user.username}) | Poktapok`,
-      description: "This is a private profile on Poktapok",
-    };
+      description: 'This is a private profile on Poktapok',
+    }
   }
 
   return {
@@ -53,52 +50,52 @@ export async function generateMetadata({
     openGraph: {
       title: displayName || user.username!,
       description: bio,
-      type: "profile",
+      type: 'profile',
       images: user.avatarUrl ? [user.avatarUrl] : [],
     },
     twitter: {
-      card: "summary",
+      card: 'summary',
       title: displayName || user.username!,
       description: bio,
       images: user.avatarUrl ? [user.avatarUrl] : [],
     },
-  };
+  }
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = await params;
+  const { username } = await params
 
   // Fetch profile with user data
-  const profileData = await getProfileByUsername(username);
+  const profileData = await getProfileByUsername(username)
 
   if (!profileData) {
-    notFound();
+    notFound()
   }
 
-  const { profile, user } = profileData;
+  const { profile, user } = profileData
 
   // Get current user for visibility checks
-  const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUser()
 
   // Determine if viewer is owner
-  const isOwner = isProfileOwner(profile, currentUser?.user || null);
+  const isOwner = isProfileOwner(profile, currentUser?.user || null)
 
   // Check what the viewer can see
   const canViewSocials = canViewField(
-    "socialLinks",
+    'socialLinks',
     profile,
-    currentUser?.user || null
-  );
+    currentUser?.user || null,
+  )
   const canViewLocation = canViewField(
-    "city",
+    'city',
     profile,
-    currentUser?.user || null
-  );
+    currentUser?.user || null,
+  )
   const canViewLearningTracks = canViewField(
-    "learningTracks",
+    'learningTracks',
     profile,
-    currentUser?.user || null
-  );
+    currentUser?.user || null,
+  )
 
   return (
     <PageWrapper>
@@ -123,7 +120,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           />
 
           {/* Content Grid */}
-          <Section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Section className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {/* Main Content (2/3 width on desktop) */}
             <div className="md:col-span-2">
               <ProfileInfo
@@ -148,10 +145,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               )}
 
               {/* Private Profile Message for Non-Authenticated Viewers */}
-              {profile.profileVisibility === "private" &&
+              {profile.profileVisibility === 'private' &&
                 !isOwner &&
                 !currentUser && (
-                  <div className="mt-6 p-4 bg-muted rounded-lg text-center">
+                  <div className="mt-6 rounded-lg bg-muted p-4 text-center">
                     <p className="text-sm text-muted-foreground">
                       This is a private profile. Sign in to view more details.
                     </p>
@@ -162,21 +159,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
           {/* Portfolio Projects Section - Full width */}
           <Section>
-            <PortfolioProjectsSection
-              userId={user.id}
-              isOwner={isOwner}
-            />
+            <PortfolioProjectsSection userId={user.id} isOwner={isOwner} />
           </Section>
 
           {/* Skills Section - Full width */}
           <Section>
-            <ProfileSkillsSection
-              userId={user.id}
-              isOwner={isOwner}
-            />
+            <ProfileSkillsSection userId={user.id} isOwner={isOwner} />
           </Section>
         </div>
       </div>
     </PageWrapper>
-  );
+  )
 }

@@ -43,8 +43,8 @@ export default function BenefitsSection() {
       <div className="page-content mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
-            Beneficios <span className="text-primary">exclusivos</span>{' '}
-            para miembros
+            Beneficios <span className="text-primary">exclusivos</span> para
+            miembros
           </h2>
           <p className="mx-auto max-w-2xl text-xl text-muted">
             Acceso a oportunidades que no encontrarás en ningún otro lugar
@@ -58,23 +58,25 @@ export default function BenefitsSection() {
               className="rounded-2xl border-2 border-gray-100 bg-white p-8 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
               <div
-                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${benefit.color === 'orange'
-                  ? 'bg-primary/20'
-                  : benefit.color === 'green'
-                    ? 'bg-accent/20'
-                    : 'bg-secondary/20'
-                  }`}
+                className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
+                  benefit.color === 'orange'
+                    ? 'bg-primary/20'
+                    : benefit.color === 'green'
+                      ? 'bg-accent/20'
+                      : 'bg-secondary/20'
+                }`}
               >
                 <span className="text-3xl">{benefit.icon}</span>
               </div>
 
               <h3
-                className={`mb-3 text-xl font-bold ${benefit.color === 'orange'
-                  ? 'text-primary'
-                  : benefit.color === 'green'
-                    ? 'text-accent'
-                    : 'text-secondary'
-                  }`}
+                className={`mb-3 text-xl font-bold ${
+                  benefit.color === 'orange'
+                    ? 'text-primary'
+                    : benefit.color === 'green'
+                      ? 'text-accent'
+                      : 'text-secondary'
+                }`}
               >
                 {benefit.title}
               </h3>

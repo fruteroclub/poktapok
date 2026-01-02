@@ -4,13 +4,19 @@
  * Zod schemas for validating skill-related API requests
  */
 
-import { z } from 'zod';
+import { z } from 'zod'
 
 // ============================================================
 // ENUMS
 // ============================================================
 
-export const skillCategoryEnum = z.enum(['language', 'framework', 'tool', 'blockchain', 'other']);
+export const skillCategoryEnum = z.enum([
+  'language',
+  'framework',
+  'tool',
+  'blockchain',
+  'other',
+])
 
 // ============================================================
 // SKILL SCHEMAS
@@ -31,7 +37,7 @@ export const listSkillsQuerySchema = z.object({
     .string()
     .default('0')
     .transform((val) => parseInt(val, 10)),
-});
+})
 
 /**
  * Link Project Skill Schema
@@ -39,7 +45,7 @@ export const listSkillsQuerySchema = z.object({
  */
 export const linkProjectSkillSchema = z.object({
   skillId: z.string().uuid('Invalid skill ID'),
-});
+})
 
 /**
  * Link Multiple Project Skills Schema
@@ -50,12 +56,14 @@ export const linkProjectSkillsBatchSchema = z.object({
     .array(z.string().uuid('Invalid skill ID'))
     .min(1, 'At least one skill is required')
     .max(10, 'Maximum 10 skills allowed'),
-});
+})
 
 // ============================================================
 // TYPE EXPORTS
 // ============================================================
 
-export type ListSkillsQuery = z.infer<typeof listSkillsQuerySchema>;
-export type LinkProjectSkillInput = z.infer<typeof linkProjectSkillSchema>;
-export type LinkProjectSkillsBatchInput = z.infer<typeof linkProjectSkillsBatchSchema>;
+export type ListSkillsQuery = z.infer<typeof listSkillsQuerySchema>
+export type LinkProjectSkillInput = z.infer<typeof linkProjectSkillSchema>
+export type LinkProjectSkillsBatchInput = z.infer<
+  typeof linkProjectSkillsBatchSchema
+>

@@ -40,6 +40,7 @@ Create database tables and REST API endpoints for projects and skills management
 ### API Endpoints
 
 **Projects:**
+
 - [ ] `POST /api/projects` - Create new project
 - [ ] `GET /api/projects` - List user's projects (auth required)
 - [ ] `GET /api/projects/:id` - Get single project details
@@ -48,6 +49,7 @@ Create database tables and REST API endpoints for projects and skills management
 - [ ] `PATCH /api/projects/:id/publish` - Toggle draft/published status
 
 **Skills:**
+
 - [ ] `GET /api/skills` - List all available skills
 - [ ] `POST /api/users/:userId/skills` - Add skill to user (auth required)
 - [ ] `DELETE /api/users/:userId/skills/:skillId` - Remove skill from user
@@ -124,6 +126,7 @@ projects {
 ```
 
 **Indexes:**
+
 ```sql
 CREATE INDEX idx_projects_user_id ON projects(user_id);
 CREATE INDEX idx_projects_status ON projects(project_status);
@@ -135,6 +138,7 @@ CREATE INDEX idx_projects_deleted_at ON projects(deleted_at) WHERE deleted_at IS
 ```
 
 **CHECK Constraints:**
+
 ```sql
 -- Title length
 CHECK (char_length(title) >= 5 AND char_length(title) <= 100)
@@ -193,6 +197,7 @@ skills {
 ```
 
 **Preset Skills to Seed:**
+
 ```typescript
 // Languages
 JavaScript, TypeScript, Python, Rust, Solidity, Go, Java
@@ -268,6 +273,7 @@ project_skills {
 ### POST /api/projects
 
 **Request Body:**
+
 ```typescript
 {
   title: string (5-100 chars, required)
@@ -284,6 +290,7 @@ project_skills {
 ```
 
 **Response:** `201 Created`
+
 ```typescript
 {
   success: true,
@@ -299,6 +306,7 @@ project_skills {
 ### GET /api/projects
 
 **Query Params:**
+
 ```typescript
 {
   userId?: string // Filter by user (public)
@@ -310,6 +318,7 @@ project_skills {
 ```
 
 **Response:** `200 OK`
+
 ```typescript
 {
   success: true,
@@ -336,6 +345,7 @@ project_skills {
 **Request Body:** Same as POST (all fields optional)
 
 **Response:** `200 OK`
+
 ```typescript
 {
   success: true,
@@ -353,6 +363,7 @@ project_skills {
 **Authorization:** Owner only
 
 **Request Body:**
+
 ```typescript
 {
   status: 'wip' | 'completed' | 'archived'
@@ -360,6 +371,7 @@ project_skills {
 ```
 
 **Response:** `200 OK`
+
 ```typescript
 {
   success: true,
@@ -412,23 +424,31 @@ src/
 // src/lib/validators/project.ts
 
 const projectStatusEnum = z.enum(['draft', 'wip', 'completed', 'archived'])
-const projectTypeEnum = z.enum(['personal', 'bootcamp', 'hackathon', 'work-related', 'freelance', 'bounty'])
+const projectTypeEnum = z.enum([
+  'personal',
+  'bootcamp',
+  'hackathon',
+  'work-related',
+  'freelance',
+  'bounty',
+])
 
-export const createProjectSchema = z.object({
-  title: z.string().min(5).max(100),
-  description: z.string().min(20).max(280),
-  liveUrl: z.string().url().optional(),
-  repositoryUrl: z.string().url().optional(),
-  videoUrl: z.string().url().optional(),
-  logoUrl: z.string().url().optional(),
-  imageUrls: z.array(z.string().url()).max(5).optional(),
-  projectType: projectTypeEnum,
-  projectStatus: projectStatusEnum,
-  skillIds: z.array(z.string().uuid())
-}).refine(
-  (data) => data.repositoryUrl || data.videoUrl || data.liveUrl,
-  { message: "At least one URL (repository, video, or live demo) is required" }
-)
+export const createProjectSchema = z
+  .object({
+    title: z.string().min(5).max(100),
+    description: z.string().min(20).max(280),
+    liveUrl: z.string().url().optional(),
+    repositoryUrl: z.string().url().optional(),
+    videoUrl: z.string().url().optional(),
+    logoUrl: z.string().url().optional(),
+    imageUrls: z.array(z.string().url()).max(5).optional(),
+    projectType: projectTypeEnum,
+    projectStatus: projectStatusEnum,
+    skillIds: z.array(z.string().uuid()),
+  })
+  .refine((data) => data.repositoryUrl || data.videoUrl || data.liveUrl, {
+    message: 'At least one URL (repository, video, or live demo) is required',
+  })
 
 export const updateProjectSchema = createProjectSchema.partial()
 ```
@@ -457,11 +477,13 @@ function canViewProject(userId: string | null, project: Project): boolean {
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] Zod schema validation (valid/invalid inputs)
 - [ ] Authorization logic (owner vs public access)
 - [ ] Database queries (CRUD operations)
 
 ### API Tests
+
 - [ ] Create project with all fields
 - [ ] Create project with minimal fields
 - [ ] Update project (owner)
@@ -473,6 +495,7 @@ function canViewProject(userId: string | null, project: Project): boolean {
 - [ ] Skill must be in at least one project before adding to user
 
 ### Edge Cases
+
 - [ ] Create project without required URL (should fail)
 - [ ] Add >5 images (should fail)
 - [ ] Update deleted project (should fail)

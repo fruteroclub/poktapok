@@ -1,19 +1,19 @@
-import { cookies } from "next/headers";
-import { PrivyClient } from "@privy-io/server-auth";
-import { db } from "@/lib/db";
-import { users, profiles } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import type { User, Profile } from "@/lib/db/schema";
+import { cookies } from 'next/headers'
+import { PrivyClient } from '@privy-io/server-auth'
+import { db } from '@/lib/db'
+import { users, profiles } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import type { User, Profile } from '@/lib/db/schema'
 
 const privy = new PrivyClient(
   process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
-  process.env.PRIVY_APP_SECRET!
-);
+  process.env.PRIVY_APP_SECRET!,
+)
 
 export type CurrentUser = {
-  user: User;
-  profile: Profile | null;
-} | null;
+  user: User
+  profile: Profile | null
+} | null
 
 /**
  * Server-side helper to get the current authenticated user
@@ -31,18 +31,18 @@ export type CurrentUser = {
 export async function getCurrentUser(): Promise<CurrentUser> {
   try {
     // Get Privy auth token from cookies
-    const cookieStore = await cookies();
-    const authToken = cookieStore.get("privy-token")?.value;
+    const cookieStore = await cookies()
+    const authToken = cookieStore.get('privy-token')?.value
 
     if (!authToken) {
-      return null;
+      return null
     }
 
     // Verify token with Privy
-    const verifiedClaims = await privy.verifyAuthToken(authToken);
+    const verifiedClaims = await privy.verifyAuthToken(authToken)
 
     if (!verifiedClaims || !verifiedClaims.userId) {
-      return null;
+      return null
     }
 
     // Fetch user from database using Privy DID
@@ -50,30 +50,30 @@ export async function getCurrentUser(): Promise<CurrentUser> {
       .select()
       .from(users)
       .where(eq(users.privyDid, verifiedClaims.userId))
-      .limit(1);
+      .limit(1)
 
     if (userResult.length === 0) {
-      return null;
+      return null
     }
 
-    const user = userResult[0];
+    const user = userResult[0]
 
     // Fetch profile if exists
     const profileResult = await db
       .select()
       .from(profiles)
       .where(eq(profiles.userId, user.id))
-      .limit(1);
+      .limit(1)
 
-    const profile = profileResult.length > 0 ? profileResult[0] : null;
+    const profile = profileResult.length > 0 ? profileResult[0] : null
 
     return {
       user,
       profile,
-    };
+    }
   } catch (error) {
-    console.error("Error getting current user:", error);
-    return null;
+    console.error('Error getting current user:', error)
+    return null
   }
 }
 
@@ -84,12 +84,15 @@ export async function getCurrentUser(): Promise<CurrentUser> {
  * @example
  * const { user, profile } = await requireAuth();
  */
-export async function requireAuth(): Promise<{ user: User; profile: Profile | null }> {
-  const currentUser = await getCurrentUser();
+export async function requireAuth(): Promise<{
+  user: User
+  profile: Profile | null
+}> {
+  const currentUser = await getCurrentUser()
 
   if (!currentUser) {
-    throw new Error("Unauthorized");
+    throw new Error('Unauthorized')
   }
 
-  return currentUser;
+  return currentUser
 }

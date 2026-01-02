@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
-import { usePrivy } from "@privy-io/react-auth";
-import { Loader2 } from "lucide-react";
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/use-auth'
+import { usePrivy } from '@privy-io/react-auth'
+import { Loader2 } from 'lucide-react'
 
 interface AdminRouteProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 /**
@@ -19,40 +19,40 @@ interface AdminRouteProps {
  * - Authenticated but not admin → redirect to activities page
  */
 export function AdminRoute({ children }: AdminRouteProps) {
-  const router = useRouter();
-  const { authenticated, ready } = usePrivy();
-  const { data, isLoading } = useAuth();
-  const user = data?.user;
-  const isAdmin = user?.role === "admin";
+  const router = useRouter()
+  const { authenticated, ready } = usePrivy()
+  const { data, isLoading } = useAuth()
+  const user = data?.user
+  const isAdmin = user?.role === 'admin'
 
   // Redirect if not authenticated
   useEffect(() => {
     if (ready && !authenticated) {
-      router.push("/");
+      router.push('/')
     }
-  }, [authenticated, ready, router]);
+  }, [authenticated, ready, router])
 
   // Redirect if not admin
   useEffect(() => {
     if (ready && authenticated && user && !isAdmin) {
-      router.push("/activities");
+      router.push('/activities')
     }
-  }, [ready, authenticated, user, isAdmin, router]);
+  }, [ready, authenticated, user, isAdmin, router])
 
   // Loading state
   if (!ready || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    );
+    )
   }
 
   // Not authenticated or not admin
   if (!authenticated || !user || !isAdmin) {
-    return null;
+    return null
   }
 
   // User is admin - render protected content
-  return <>{children}</>;
+  return <>{children}</>
 }

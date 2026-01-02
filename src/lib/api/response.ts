@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
+import { NextResponse } from 'next/server'
+import { ZodError } from 'zod'
 import type {
   ApiSuccessResponse,
   ApiErrorResponse,
   ApiErrorCode,
-} from "@/types/api-response";
-import { API_ERROR_CODES } from "@/types/api-response";
+} from '@/types/api-response'
+import { API_ERROR_CODES } from '@/types/api-response'
 
 /**
  * Create a standardized success response
@@ -32,10 +32,10 @@ import { API_ERROR_CODES } from "@/types/api-response";
 export function apiSuccess<T>(
   data: T,
   options?: {
-    message?: string;
-    meta?: Record<string, unknown>;
-    status?: number;
-  }
+    message?: string
+    meta?: Record<string, unknown>
+    status?: number
+  },
 ): NextResponse<ApiSuccessResponse<T>> {
   return NextResponse.json(
     {
@@ -44,8 +44,8 @@ export function apiSuccess<T>(
       ...(options?.message && { message: options.message }),
       ...(options?.meta && { meta: options.meta }),
     },
-    { status: options?.status || 200 }
-  );
+    { status: options?.status || 200 },
+  )
 }
 
 /**
@@ -72,19 +72,19 @@ export function apiSuccess<T>(
 export function apiError(
   message: string,
   options?: {
-    code?: ApiErrorCode | string;
-    details?: unknown;
-    status?: number;
-  }
+    code?: ApiErrorCode | string
+    details?: unknown
+    status?: number
+  },
 ): NextResponse<ApiErrorResponse> {
-  const error: ApiErrorResponse["error"] = { message };
+  const error: ApiErrorResponse['error'] = { message }
 
   if (options?.code) {
-    error.code = options.code;
+    error.code = options.code
   }
 
   if (options?.details) {
-    error.details = options.details;
+    error.details = options.details
   }
 
   return NextResponse.json(
@@ -92,8 +92,8 @@ export function apiError(
       success: false as const,
       error,
     },
-    { status: options?.status || 500 }
-  );
+    { status: options?.status || 500 },
+  )
 }
 
 /**
@@ -111,13 +111,13 @@ export function apiError(
  * ```
  */
 export function apiValidationError(
-  zodError: ZodError
+  zodError: ZodError,
 ): NextResponse<ApiErrorResponse> {
-  return apiError("Validation failed", {
+  return apiError('Validation failed', {
     code: API_ERROR_CODES.VALIDATION_ERROR,
     details: zodError.format(),
     status: 400,
-  });
+  })
 }
 
 /**
@@ -125,14 +125,14 @@ export function apiValidationError(
  */
 export const apiErrors = {
   /** 401 Unauthorized */
-  unauthorized: (message = "Unauthorized") =>
+  unauthorized: (message = 'Unauthorized') =>
     apiError(message, {
       code: API_ERROR_CODES.UNAUTHORIZED,
       status: 401,
     }),
 
   /** 404 Not Found */
-  notFound: (resource = "Resource") =>
+  notFound: (resource = 'Resource') =>
     apiError(`${resource} not found`, {
       code: API_ERROR_CODES.NOT_FOUND,
       status: 404,
@@ -146,9 +146,9 @@ export const apiErrors = {
     }),
 
   /** 500 Internal Server Error */
-  internal: (message = "Internal server error") =>
+  internal: (message = 'Internal server error') =>
     apiError(message, {
       code: API_ERROR_CODES.INTERNAL_ERROR,
       status: 500,
     }),
-};
+}

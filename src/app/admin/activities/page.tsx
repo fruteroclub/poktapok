@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,9 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-import PageWrapper from '@/components/layout/page-wrapper'
 
 interface Activity {
   id: string
@@ -46,11 +45,7 @@ function AdminActivitiesPageContent() {
     search: '',
   })
 
-  useEffect(() => {
-    fetchActivities()
-  }, [filters])
-
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -69,14 +64,23 @@ function AdminActivitiesPageContent() {
       setActivities(result.data.activities || [])
     } catch (error) {
       console.error('Error fetching activities:', error)
-      alert(error instanceof Error ? error.message : 'Failed to fetch activities')
+      alert(
+        error instanceof Error ? error.message : 'Failed to fetch activities',
+      )
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
+
+  useEffect(() => {
+    fetchActivities()
+  }, [fetchActivities])
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    const variants: Record<
+      string,
+      'default' | 'secondary' | 'destructive' | 'outline'
+    > = {
       draft: 'outline',
       active: 'default',
       paused: 'secondary',
@@ -89,25 +93,26 @@ function AdminActivitiesPageContent() {
   const formatActivityType = (type: string) => {
     return type
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ')
   }
 
   return (
-    <PageWrapper>
-      <div className="page">
-        <div className="page-content space-y-6">
-          <div className="w-full flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Activities Management</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Create and manage educational activities for $PULPA token distribution
-              </p>
-            </div>
-            <Button onClick={() => router.push('/admin/activities/new')}>
-              Create New Activity
-            </Button>
-          </div>
+    <div className="page-content">
+      <div className="mb-6 flex w-full items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Activities Management
+          </h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Create and manage educational activities for $PULPA token
+            distribution
+          </p>
+        </div>
+        <Button onClick={() => router.push('/admin/activities/new')}>
+          Create New Activity
+        </Button>
+      </div>
 
       {/* Filters */}
       <Card className="mb-6 w-full">
@@ -115,12 +120,14 @@ function AdminActivitiesPageContent() {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
               <Select
                 value={filters.status}
-                onValueChange={(value) => setFilters({ ...filters, status: value })}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, status: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -140,7 +147,9 @@ function AdminActivitiesPageContent() {
               <label className="text-sm font-medium">Activity Type</label>
               <Select
                 value={filters.type}
-                onValueChange={(value) => setFilters({ ...filters, type: value })}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, type: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -152,8 +161,12 @@ function AdminActivitiesPageContent() {
                   <SelectItem value="photo">Photo Upload</SelectItem>
                   <SelectItem value="video">Video Upload</SelectItem>
                   <SelectItem value="blog_post">Blog Post</SelectItem>
-                  <SelectItem value="workshop_completion">Workshop Completion</SelectItem>
-                  <SelectItem value="build_in_public">Build in Public</SelectItem>
+                  <SelectItem value="workshop_completion">
+                    Workshop Completion
+                  </SelectItem>
+                  <SelectItem value="build_in_public">
+                    Build in Public
+                  </SelectItem>
                   <SelectItem value="code_review">Code Review</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
@@ -165,7 +178,9 @@ function AdminActivitiesPageContent() {
               <Input
                 placeholder="Search by title..."
                 value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, search: e.target.value })
+                }
               />
             </div>
           </div>
@@ -176,9 +191,9 @@ function AdminActivitiesPageContent() {
       <Card className="w-full">
         <CardContent className="pt-6">
           {loading ? (
-            <div className="text-center py-8">Loading activities...</div>
+            <div className="py-8 text-center">Loading activities...</div>
           ) : activities.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="py-8 text-center text-muted-foreground">
               No activities found. Create your first activity to get started!
             </div>
           ) : (
@@ -198,15 +213,20 @@ function AdminActivitiesPageContent() {
               <TableBody>
                 {activities.map((activity) => (
                   <TableRow key={activity.id}>
-                    <TableCell className="font-medium max-w-xs truncate">
+                    <TableCell className="max-w-xs truncate font-medium">
                       {activity.title}
                     </TableCell>
-                    <TableCell>{formatActivityType(activity.activityType)}</TableCell>
-                    <TableCell className="capitalize">{activity.difficulty}</TableCell>
+                    <TableCell>
+                      {formatActivityType(activity.activityType)}
+                    </TableCell>
+                    <TableCell className="capitalize">
+                      {activity.difficulty}
+                    </TableCell>
                     <TableCell>{activity.rewardPulpaAmount} $PULPA</TableCell>
                     <TableCell>
                       {activity.currentSubmissionsCount}
-                      {activity.totalAvailableSlots && ` / ${activity.totalAvailableSlots}`}
+                      {activity.totalAvailableSlots &&
+                        ` / ${activity.totalAvailableSlots}`}
                     </TableCell>
                     <TableCell>{getStatusBadge(activity.status)}</TableCell>
                     <TableCell>
@@ -216,7 +236,9 @@ function AdminActivitiesPageContent() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => router.push(`/admin/activities/${activity.id}`)}
+                        onClick={() =>
+                          router.push(`/admin/activities/${activity.id}`)
+                        }
                       >
                         View
                       </Button>
@@ -228,9 +250,7 @@ function AdminActivitiesPageContent() {
           )}
         </CardContent>
       </Card>
-        </div>
-      </div>
-    </PageWrapper>
+    </div>
   )
 }
 

@@ -4,22 +4,26 @@
  * Project logo upload with drag-and-drop, compression, and preview
  */
 
-'use client';
+'use client'
 
-import { useState, useCallback, useRef } from 'react';
-import { X, Loader2, ImageIcon } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { validateImage } from '@/lib/upload/image-validation';
-import { compressImage, createPreviewUrl, revokePreviewUrl } from '@/lib/upload/image-compression';
+import { useState, useCallback, useRef } from 'react'
+import { X, Loader2, ImageIcon } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { validateImage } from '@/lib/upload/image-validation'
+import {
+  compressImage,
+  createPreviewUrl,
+  revokePreviewUrl,
+} from '@/lib/upload/image-compression'
 
 interface LogoUploadProps {
-  projectId: string | null; // null for new projects (upload after creation)
-  currentLogoUrl?: string | null;
-  onUploadComplete?: (logoUrl: string) => void;
-  onFileSelected?: (file: File) => void; // For new projects (file selection before upload)
-  onDelete?: () => void;
-  disabled?: boolean;
+  projectId: string | null // null for new projects (upload after creation)
+  currentLogoUrl?: string | null
+  onUploadComplete?: (logoUrl: string) => void
+  onFileSelected?: (file: File) => void // For new projects (file selection before upload)
+  onDelete?: () => void
+  disabled?: boolean
 }
 
 export function LogoUpload({
@@ -30,138 +34,144 @@ export function LogoUpload({
   onDelete,
   disabled = false,
 }: LogoUploadProps) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentLogoUrl || null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    currentLogoUrl || null,
+  )
+  const [isUploading, setIsUploading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = useCallback(
     async (file: File) => {
       // Validate file
-      const error = validateImage(file);
+      const error = validateImage(file)
       if (error) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
       try {
-        setIsUploading(true);
+        setIsUploading(true)
 
         // Compress image
-        toast.info('Compressing image...');
-        const compressedFile = await compressImage(file, { preserveFormat: false });
+        toast.info('Compressing image...')
+        const compressedFile = await compressImage(file, {
+          preserveFormat: false,
+        })
 
         // Show preview
-        const preview = createPreviewUrl(compressedFile);
+        const preview = createPreviewUrl(compressedFile)
         if (previewUrl && previewUrl.startsWith('blob:')) {
-          revokePreviewUrl(previewUrl);
+          revokePreviewUrl(previewUrl)
         }
-        setPreviewUrl(preview);
+        setPreviewUrl(preview)
 
         // If projectId exists, upload immediately
         if (projectId) {
-          const formData = new FormData();
-          formData.append('logo', compressedFile);
+          const formData = new FormData()
+          formData.append('logo', compressedFile)
 
-          toast.info('Uploading logo...');
+          toast.info('Uploading logo...')
           const response = await fetch(`/api/projects/${projectId}/logo`, {
             method: 'POST',
             body: formData,
-          });
+          })
 
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || 'Upload failed');
+            const errorData = await response.json()
+            throw new Error(errorData.error?.message || 'Upload failed')
           }
 
-          const data = await response.json();
-          const logoUrl = data.data.logoUrl;
+          const data = await response.json()
+          const logoUrl = data.data.logoUrl
 
           // Update preview with uploaded URL
-          setPreviewUrl(logoUrl);
-          toast.success('Logo uploaded successfully');
+          setPreviewUrl(logoUrl)
+          toast.success('Logo uploaded successfully')
 
-          onUploadComplete?.(logoUrl);
+          onUploadComplete?.(logoUrl)
         } else {
           // For new projects, store the file object (will upload after project creation)
-          toast.success('Logo ready');
-          onFileSelected?.(compressedFile);
+          toast.success('Logo ready')
+          onFileSelected?.(compressedFile)
         }
       } catch (error) {
-        console.error('Logo upload error:', error);
-        toast.error(error instanceof Error ? error.message : 'Failed to upload logo');
-        setPreviewUrl(currentLogoUrl || null);
+        console.error('Logo upload error:', error)
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to upload logo',
+        )
+        setPreviewUrl(currentLogoUrl || null)
       } finally {
-        setIsUploading(false);
+        setIsUploading(false)
       }
     },
-    [projectId, currentLogoUrl, previewUrl, onUploadComplete, onFileSelected]
-  );
+    [projectId, currentLogoUrl, previewUrl, onUploadComplete, onFileSelected],
+  )
 
   const handleDelete = async () => {
-    if (!projectId || !currentLogoUrl) return;
+    if (!projectId || !currentLogoUrl) return
 
     try {
-      setIsDeleting(true);
+      setIsDeleting(true)
 
       const response = await fetch(`/api/projects/${projectId}/logo`, {
         method: 'DELETE',
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to delete logo');
+        throw new Error('Failed to delete logo')
       }
 
-      setPreviewUrl(null);
-      toast.success('Logo removed successfully');
+      setPreviewUrl(null)
+      toast.success('Logo removed successfully')
 
-      onDelete?.();
+      onDelete?.()
     } catch (error) {
-      console.error('Logo delete error:', error);
-      toast.error('Failed to delete logo');
+      console.error('Logo delete error:', error)
+      toast.error('Failed to delete logo')
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
+      e.preventDefault()
+      setIsDragging(false)
 
-      const file = e.dataTransfer.files[0];
+      const file = e.dataTransfer.files[0]
       if (file && file.type.startsWith('image/')) {
-        handleFileSelect(file);
+        handleFileSelect(file)
       } else {
-        toast.error('Please drop an image file');
+        toast.error('Please drop an image file')
       }
     },
-    [handleFileSelect]
-  );
+    [handleFileSelect],
+  )
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      handleFileSelect(file);
+      handleFileSelect(file)
     }
-  };
+  }
 
   const handleClick = () => {
     if (!disabled && !isUploading) {
-      fileInputRef.current?.click();
+      fileInputRef.current?.click()
     }
-  };
+  }
 
   return (
     <div className="space-y-4">
@@ -175,19 +185,18 @@ export function LogoUpload({
             onClick={handleDelete}
             disabled={isDeleting || disabled}
           >
-            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
+            {isDeleting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
             Remove
           </Button>
         )}
       </div>
 
       <div
-        className={`
-          relative border-2 border-dashed rounded-lg p-8
-          transition-colors cursor-pointer
-          ${isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-          ${disabled || isUploading ? 'opacity-50 cursor-not-allowed' : ''}
-        `}
+        className={`relative cursor-pointer rounded-lg border-2 border-dashed p-8 transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'} ${disabled || isUploading ? 'cursor-not-allowed opacity-50' : ''} `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -207,7 +216,7 @@ export function LogoUpload({
             <img
               src={previewUrl}
               alt="Logo preview"
-              className="max-w-full max-h-48 object-contain rounded-md"
+              className="max-h-48 max-w-full rounded-md object-contain"
             />
             <p className="text-sm text-muted-foreground">
               Click or drag to replace
@@ -240,8 +249,9 @@ export function LogoUpload({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Your project logo will be displayed on cards and detail pages. Square images work best.
+        Your project logo will be displayed on cards and detail pages. Square
+        images work best.
       </p>
     </div>
-  );
+  )
 }

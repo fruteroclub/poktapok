@@ -53,7 +53,7 @@ export default function SolutionSection() {
     >
       <div className="page-content space-y-6">
         {/* Gradient Background Accent */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5" />
 
         <div className="section relative space-y-8 md:space-y-12">
           {/* Hero Title Area - Asymmetric Layout */}
@@ -123,7 +123,7 @@ export default function SolutionSection() {
                     </div>
 
                     {/* Corner Accent */}
-                    <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-gradient-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute top-0 right-0 h-20 w-20 translate-x-8 -translate-y-8 rounded-full bg-linear-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   </div>
                 )
               })}

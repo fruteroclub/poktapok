@@ -33,7 +33,7 @@ export function SkillsModal({ skills, isOpen, onClose }: SkillsModalProps) {
         acc[category] = []
       }
       acc[category].push(userSkill)
-      return {}
+      return acc
     },
     {} as Record<string, UserSkillWithDetails[]>,
   )
@@ -53,8 +53,7 @@ export function SkillsModal({ skills, isOpen, onClose }: SkillsModalProps) {
         <DialogHeader>
           <DialogTitle>All Skills ({skills.length})</DialogTitle>
           <DialogDescription>
-            Skills earned through{' '}
-            {skills.reduce((sum, s) => sum + s.projectCount, 0)} projects
+            Complete list of technical skills organized by category
           </DialogDescription>
         </DialogHeader>
 

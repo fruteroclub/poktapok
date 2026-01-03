@@ -22,7 +22,6 @@ import {
 import { Folder, SlidersHorizontal, X } from 'lucide-react'
 import { useUserProjects } from '@/hooks/use-projects'
 import { SkillsFilter } from '@/components/directory/skills-filter'
-import type { ProjectWithSkills } from '@/types/api-v1'
 
 interface PortfolioProjectsSectionProps {
   userId: string
@@ -59,7 +58,7 @@ export function PortfolioProjectsSection({
   // Fetch user's projects (all if owner, published only if visitor)
   const { data, isLoading, isError } = useUserProjects(userId)
 
-  const projects = data?.projects || []
+  const projects = useMemo(() => data?.projects || [], [data?.projects])
 
   // Filter projects based on selected filters
   const filteredProjects = useMemo(() => {
@@ -153,7 +152,7 @@ export function PortfolioProjectsSection({
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center">
-            <p className="mb-4 text-red-500">Failed to load projects</p>
+            <p className="text-red-500">Failed to load projects</p>
             <Button variant="outline" onClick={() => window.location.reload()}>
               Retry
             </Button>
@@ -174,7 +173,7 @@ export function PortfolioProjectsSection({
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center">
-            <Folder className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
+            <Folder className="mx-auto h-12 w-12 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               {isOwner
                 ? 'No projects yet. Create your first project to showcase your work!'
@@ -188,7 +187,7 @@ export function PortfolioProjectsSection({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="gap-4">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -197,7 +196,7 @@ export function PortfolioProjectsSection({
                 Projects ({sortedProjects.length})
               </CardTitle>
               {filteredProjects.length < projects.length && (
-                <CardDescription className="mt-1">
+                <CardDescription>
                   Showing {filteredProjects.length} of {projects.length}{' '}
                   projects
                 </CardDescription>
@@ -225,7 +224,7 @@ export function PortfolioProjectsSection({
 
         {/* Filters Panel */}
         {showFilters && (
-          <div className="border-b px-6 pb-4">
+          <div className="px-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {/* Skills Filter */}
               <div className="space-y-2">
@@ -278,7 +277,7 @@ export function PortfolioProjectsSection({
 
             {/* Clear Filters */}
             {hasActiveFilters && (
-              <div className="mt-4">
+              <div>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -293,11 +292,11 @@ export function PortfolioProjectsSection({
           </div>
         )}
 
-        <CardContent className="pt-6">
+        <CardContent>
           {/* Projects Grid */}
           {filteredProjects.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="mb-4 text-sm text-muted-foreground">
+              <p className="text-muted-foreground">
                 No projects match your filters
               </p>
               <Button variant="outline" onClick={handleClearFilters}>
@@ -314,7 +313,7 @@ export function PortfolioProjectsSection({
 
               {/* Load More Button */}
               {hasMore && (
-                <div className="mt-6 flex justify-center">
+                <div className="flex justify-center">
                   <Button
                     onClick={() => setDisplayCount((prev) => prev + 6)}
                     variant="outline"

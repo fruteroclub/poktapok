@@ -198,111 +198,117 @@ export function EditableProfileCard({
       <CardContent className="space-y-4">
         <div className="space-y-4">
           {/* Location */}
-          <h3 className="mb-4 text-lg font-semibold">Location & Learning</h3>
-          <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Location & Learning</h3>
+          <div className="space-y-2">
             {isEditing ? (
               <>
-                <div>
-                  <Label>Country</Label>
-                  <Select
-                    value={formData.countryCode}
-                    onValueChange={(value) => {
-                      const country = COUNTRIES.find((c) => c.code === value)
-                      setFormData({
-                        ...formData,
-                        countryCode: value,
-                        country: country?.name || '',
-                        city: '', // Reset city when country changes
-                      })
-                    }}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COUNTRIES.map((country) => (
-                        <SelectItem key={country.code} value={country.code}>
-                          {country.flag} {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:gap-4">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-semibold">Country</Label>
+                    <Select
+                      value={formData.countryCode}
+                      onValueChange={(value) => {
+                        const country = COUNTRIES.find((c) => c.code === value)
+                        setFormData({
+                          ...formData,
+                          countryCode: value,
+                          country: country?.name || '',
+                          city: '', // Reset city when country changes
+                        })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            {country.flag} {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-semibold">City</Label>
+                    <Select
+                      value={formData.city}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, city: value })
+                      }
+                      disabled={!formData.countryCode}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select city" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <Label>City</Label>
-                  <Select
-                    value={formData.city}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, city: value })
-                    }
-                    disabled={!formData.countryCode}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select city" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map((city) => (
-                        <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Learning Track</Label>
-                  <Select
-                    value={formData.learningTrack}
-                    onValueChange={(value: 'ai' | 'crypto' | 'privacy') =>
-                      setFormData({ ...formData, learningTrack: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LEARNING_TRACKS.map((track) => (
-                        <SelectItem key={track.value} value={track.value}>
-                          {track.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Availability</Label>
-                  <Select
-                    value={formData.availabilityStatus}
-                    onValueChange={(
-                      value: 'available' | 'open_to_offers' | 'unavailable',
-                    ) =>
-                      setFormData({ ...formData, availabilityStatus: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AVAILABILITY_STATUS.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`h-2 w-2 rounded-full ${status.color}`}
-                            />
-                            {status.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="flex flex-col gap-2 md:grid md:grid-cols-2 md:gap-4">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-semibold">
+                      Learning Track
+                    </Label>
+                    <Select
+                      value={formData.learningTrack}
+                      onValueChange={(value: 'ai' | 'crypto' | 'privacy') =>
+                        setFormData({ ...formData, learningTrack: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEARNING_TRACKS.map((track) => (
+                          <SelectItem key={track.value} value={track.value}>
+                            {track.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-sm font-semibold">
+                      Availability
+                    </Label>
+                    <Select
+                      value={formData.availabilityStatus}
+                      onValueChange={(
+                        value: 'available' | 'open_to_offers' | 'unavailable',
+                      ) =>
+                        setFormData({ ...formData, availabilityStatus: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {AVAILABILITY_STATUS.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`h-2 w-2 rounded-full ${status.color}`}
+                              />
+                              {status.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </>
             ) : (
-              <>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Location
-                  </Label>
+                  <Label className="text-sm font-semibold">Location</Label>
                   <p className="text-sm">
                     {profile?.city && profile?.country ? (
                       <>
@@ -316,10 +322,10 @@ export function EditableProfileCard({
                   </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <Label className="text-sm font-semibold">
                     Learning Track
                   </Label>
-                  <div className="mt-1">
+                  <div>
                     {currentLearningTrack ? (
                       <Badge variant="secondary">
                         {currentLearningTrack.label}
@@ -330,10 +336,8 @@ export function EditableProfileCard({
                   </div>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Availability
-                  </Label>
-                  <div className="mt-1 flex items-center gap-2">
+                  <Label className="text-sm font-semibold">Availability</Label>
+                  <div className="flex items-center gap-2">
                     {currentAvailability && (
                       <>
                         <span
@@ -346,91 +350,87 @@ export function EditableProfileCard({
                     )}
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
 
         {/* Social Links */}
-        <div>
-          <h3 className="mb-4 text-lg font-semibold">Social Links</h3>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Social Links</h3>
           <div className="space-y-4">
             {isEditing ? (
               <>
-                <div>
-                  <Label>GitHub</Label>
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold">GitHub</Label>
                   <Input
                     value={formData.github}
                     onChange={(e) =>
                       setFormData({ ...formData, github: e.target.value })
                     }
                     placeholder="username"
-                    className="mt-1"
                   />
                 </div>
-                <div>
-                  <Label>Twitter/X</Label>
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold">Twitter/X</Label>
                   <Input
                     value={formData.twitter}
                     onChange={(e) =>
                       setFormData({ ...formData, twitter: e.target.value })
                     }
                     placeholder="username"
-                    className="mt-1"
                   />
                 </div>
-                <div>
-                  <Label>LinkedIn</Label>
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold">LinkedIn</Label>
                   <Input
                     value={formData.linkedin}
                     onChange={(e) =>
                       setFormData({ ...formData, linkedin: e.target.value })
                     }
                     placeholder="username"
-                    className="mt-1"
                   />
                 </div>
-                <div>
-                  <Label>Telegram</Label>
+                <div className="space-y-1">
+                  <Label className="text-sm font-semibold">Telegram</Label>
                   <Input
                     value={formData.telegram}
                     onChange={(e) =>
                       setFormData({ ...formData, telegram: e.target.value })
                     }
                     placeholder="username"
-                    className="mt-1"
                   />
                 </div>
               </>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 md:grid md:grid-cols-2 md:gap-2">
                 {profile?.socialLinks?.github && (
-                  <div className="flex items-center gap-2">
-                    <span className="w-24 text-sm font-medium">GitHub:</span>
+                  <div className="flex gap-2">
+                    <span className="text-sm font-semibold">GitHub:</span>
                     <span className="text-sm">
                       {profile.socialLinks.github}
                     </span>
                   </div>
                 )}
                 {profile?.socialLinks?.twitter && (
-                  <div className="flex items-center gap-2">
-                    <span className="w-24 text-sm font-medium">Twitter:</span>
+                  <div className="flex gap-2">
+                    <span className="text-sm font-semibold">Twitter:</span>
                     <span className="text-sm">
                       {profile.socialLinks.twitter}
                     </span>
                   </div>
                 )}
                 {profile?.socialLinks?.linkedin && (
-                  <div className="flex items-center gap-2">
-                    <span className="w-24 text-sm font-medium">LinkedIn:</span>
+                  <div className="flex gap-2">
+                    <span className="text-sm font-semibold">LinkedIn:</span>
                     <span className="text-sm">
                       {profile.socialLinks.linkedin}
                     </span>
                   </div>
                 )}
                 {profile?.socialLinks?.telegram && (
-                  <div className="flex items-center gap-2">
-                    <span className="w-24 text-sm font-medium">Telegram:</span>
+                  <div className="flex gap-2">
+                    <span className="text-sm font-semibold">Telegram:</span>
                     <span className="text-sm">
                       {profile.socialLinks.telegram}
                     </span>

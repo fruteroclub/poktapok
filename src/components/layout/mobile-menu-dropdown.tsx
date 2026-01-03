@@ -40,6 +40,7 @@ const MENU_ITEMS: MenuItem[] = [
 
 const ADMIN_MENU_ITEMS: MenuItem[] = [
   { label: 'Admin Dashboard', href: '/admin', adminOnly: true },
+  { label: 'Users Management', href: '/admin/users', adminOnly: true },
   { label: 'Crear Actividad', href: '/admin/activities/new', adminOnly: true },
   { label: 'Revisar Submissions', href: '/admin/submissions', adminOnly: true },
 ]
@@ -101,8 +102,8 @@ export default function MobileMenuDropdown({
       <DropdownMenuContent align="end" className="w-56 p-4">
         {/* Regular menu items */}
         {MENU_ITEMS.map((item) => (
-          <DropdownMenuItem key={item.href}>
-            <Link className="w-full text-foreground" href={item.href}>
+          <DropdownMenuItem key={item.href} asChild>
+            <Link className="w-full cursor-pointer text-foreground" href={item.href}>
               {item.label}
             </Link>
           </DropdownMenuItem>
@@ -116,8 +117,8 @@ export default function MobileMenuDropdown({
               Admin
             </DropdownMenuLabel>
             {ADMIN_MENU_ITEMS.map((item) => (
-              <DropdownMenuItem key={item.href}>
-                <Link className="w-full text-foreground" href={item.href}>
+              <DropdownMenuItem key={item.href} asChild>
+                <Link className="w-full cursor-pointer text-foreground" href={item.href}>
                   {item.label}
                 </Link>
               </DropdownMenuItem>

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { users, profiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAuth } from '@/lib/privy/middleware'
+import { requirePrivyAuth } from '@/lib/privy/middleware'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 
 /**
@@ -20,12 +20,11 @@ import { apiSuccess, apiErrors } from '@/lib/api/response'
  * - extWallet: string | null
  * - primaryAuthMethod: "email" | "wallet" | "social"
  *
- * Security: Uses requireAuth middleware to extract privyDid from verified token
+ * Security: Uses requirePrivyAuth middleware to verify Privy token (doesn't require existing DB user)
  */
-export const POST = requireAuth(async (request: NextRequest, authUser) => {
+export const POST = requirePrivyAuth(async (request: NextRequest, privyDid: string) => {
   try {
-    // Use privyDid from verified token (secure)
-    const privyDid = authUser.privyDid
+    // privyDid comes from verified Privy token (secure)
 
     // Get optional Privy metadata from request body
     const body = await request.json().catch(() => ({}))

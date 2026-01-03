@@ -41,13 +41,7 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
           Navigation items
         </SheetDescription>
         <div className="grid gap-2 py-6">
-          {menuItems
-            ?.filter((menuItem) => {
-              // Filter out auth-required items if not signed in
-              if (menuItem.requiresAuth && !isSignedIn) return false
-              return true
-            })
-            .map((menuItem, index) => (
+          {menuItems?.map((menuItem, index) => (
               <Link
                 key={`${menuItem.displayText}-menuItem-${index}`}
                 className={cn(

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin } from '@/lib/privy/middleware'
+import { requireAdmin, handleApiError } from '@/lib/auth/middleware'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -11,10 +11,16 @@ import { apiSuccess, apiErrors } from '@/lib/api/response'
  * Approves a pending user by updating their accountStatus to 'active'.
  * Admin only endpoint.
  */
-export const POST = requireAdmin(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    try {
-      const { id } = await params
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Verify admin authentication
+    await requireAdmin(request)
+
+    // Await params (Next.js 16 requirement)
+    const { id } = await params
 
       // Validate user exists and is pending
       const userResults = await db
@@ -47,13 +53,12 @@ export const POST = requireAdmin(
         })
         .where(eq(users.id, id))
 
-      return apiSuccess(
-        { userId: id, accountStatus: 'active' },
-        { message: 'User approved successfully' },
-      )
-    } catch (error) {
-      console.error('Error approving user:', error)
-      return apiErrors.internal('Failed to approve user')
-    }
-  },
-)
+    return apiSuccess(
+      { userId: id, accountStatus: 'active' },
+      { message: 'User approved successfully' }
+    )
+  } catch (error) {
+    console.error('Error approving user:', error)
+    return handleApiError(error)
+  }
+}

@@ -117,6 +117,62 @@ export function requireAuth<T = unknown>(
 }
 
 /**
+ * Verify Privy token without requiring database user
+ *
+ * Used for login/signup endpoints where user may not exist in DB yet
+ * Only verifies the Privy token is valid, returns the privyDid
+ *
+ * Usage:
+ * ```typescript
+ * export const POST = requirePrivyAuth(async (req, privyDid) => {
+ *   // privyDid is verified, but user may not exist in DB yet
+ *   return NextResponse.json({ data: "signup-or-login" });
+ * });
+ * ```
+ *
+ * @param handler - Route handler that receives verified privyDid
+ * @returns Protected route handler that only verifies Privy token
+ */
+export function requirePrivyAuth<T = unknown>(
+  handler: (req: NextRequest, privyDid: string) => Promise<Response | T>,
+) {
+  return async (req: NextRequest): Promise<Response> => {
+    try {
+      // Extract access token from Authorization header or cookies
+      const authHeader = req.headers.get('authorization')
+      const accessToken =
+        authHeader?.replace('Bearer ', '') ||
+        req.cookies.get('privy-token')?.value
+
+      if (!accessToken) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      // Verify token with Privy (doesn't check DB)
+      const claims = await privy.verifyAuthToken(accessToken)
+
+      if (!claims.userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      // Call handler with verified privyDid
+      const result = await handler(req, claims.userId)
+
+      // If handler returns a Response, return it directly
+      if (result instanceof Response) {
+        return result
+      }
+
+      // Otherwise, wrap in JSON response
+      return NextResponse.json(result)
+    } catch (error) {
+      console.error('Privy token verification failed:', error)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+  }
+}
+
+/**
  * Higher-order function to protect API routes with admin authorization
  *
  * Requires user to have role === 'admin'

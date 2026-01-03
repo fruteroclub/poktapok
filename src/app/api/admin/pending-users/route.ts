@@ -41,15 +41,13 @@ export const GET = requireAdmin(async (_req: NextRequest) => {
         ? {
             id: profile.id,
             userId: profile.userId,
-            location: profile.location,
-            linkedin: profile.linkedin,
-            github: profile.github,
-            twitter: profile.twitter,
-            telegram: profile.telegram,
-            learningTrack: profile.learningTrack,
-            experienceLevel: profile.experienceLevel,
-            interests: profile.interests,
-            website: profile.website,
+            city: profile.city,
+            country: profile.country,
+            githubUrl: profile.githubUrl,
+            twitterUrl: profile.twitterUrl,
+            linkedinUrl: profile.linkedinUrl,
+            telegramHandle: profile.telegramHandle,
+            learningTracks: profile.learningTracks,
           }
         : null,
     }))

@@ -16,7 +16,6 @@ export type MenuItemType = {
   href: string
   isMobileOnly: boolean
   isExternal?: boolean
-  requiresAuth?: boolean
 }
 
 const MENU_ITEMS: MenuItemType[] = [
@@ -37,12 +36,6 @@ const MENU_ITEMS: MenuItemType[] = [
   },
   // { displayText: 'recursos', href: '/recursos', isMobileOnly: false },
   { displayText: '$PULPA', href: '/pulpa', isMobileOnly: false },
-  {
-    displayText: 'actividades',
-    href: '/activities',
-    isMobileOnly: false,
-    requiresAuth: true,
-  },
 ]
 
 export default function Navbar() {
@@ -78,8 +71,6 @@ export default function Navbar() {
             {MENU_ITEMS.filter((menuItem) => {
               // Filter out mobile-only items
               if (menuItem.isMobileOnly) return false
-              // Filter out auth-required items if not signed in
-              if (menuItem.requiresAuth && !isSignedIn) return false
               return true
             }).map((menuItem, index) => (
               <Link

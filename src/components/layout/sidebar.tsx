@@ -32,6 +32,12 @@ const MENU_ITEMS: MenuItemType[] = [
     adminOnly: true,
   },
   {
+    displayText: 'users management',
+    href: '/admin/users',
+    isMobileOnly: false,
+    adminOnly: true,
+  },
+  {
     displayText: 'activities',
     href: '/admin/activities',
     isMobileOnly: false,

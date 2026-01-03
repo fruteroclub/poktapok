@@ -37,7 +37,7 @@ export function ProfileSkillsSection({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="gap-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Code2 className="h-5 w-5" />
@@ -56,7 +56,7 @@ export function ProfileSkillsSection({
 
   if (isError) {
     return (
-      <Card>
+      <Card className="gap-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Code2 className="h-5 w-5" />
@@ -78,7 +78,7 @@ export function ProfileSkillsSection({
   // Empty state
   if (skills.length === 0) {
     return (
-      <Card>
+      <Card className="gap-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Code2 className="h-5 w-5" />
@@ -111,21 +111,17 @@ export function ProfileSkillsSection({
 
   return (
     <>
-      <Card>
+      <Card className="gap-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Code2 className="h-5 w-5" />
             Skills ({skills.length})
           </CardTitle>
           <CardDescription>
-            Earned through {skills.reduce((sum, s) => sum + s.projectCount, 0)}{' '}
-            project
-            {skills.reduce((sum, s) => sum + s.projectCount, 0) !== 1
-              ? 's'
-              : ''}
+            Technical skills demonstrated across projects
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
             {topSkills.map((userSkill) => (
               <div key={userSkill.skill.id} className="flex items-center gap-1">
@@ -138,15 +134,16 @@ export function ProfileSkillsSection({
           </div>
 
           {hasMoreSkills && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-4 w-full"
-              onClick={() => setShowAllSkills(true)}
-            >
-              View All {skills.length} Skills
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAllSkills(true)}
+              >
+                View All {skills.length} Skills
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

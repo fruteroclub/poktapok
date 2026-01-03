@@ -98,7 +98,7 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
     <Card className={className}>
       <CardContent className="space-y-4">
         {/* Avatar Section */}
-        <div className="flex items-start gap-6">
+        <div className="flex items-start gap-4">
           <div className="shrink-0">
             {isEditing ? (
               <AvatarUpload
@@ -134,26 +134,27 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
             )}
           </div>
 
-          <div className="flex-1 space-y-2">
+          <div
+            className={
+              isEditing
+                ? 'flex-1 space-y-4'
+                : 'flex-1 space-y-2 md:grid md:grid-cols-2 md:gap-2'
+            }
+          >
             {/* Username (read-only) */}
             <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Username
-              </label>
+              <label className="text-sm font-semibold">Username</label>
               <p className="text-lg font-semibold">@{user.username}</p>
             </div>
 
             {/* Display Name */}
             <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Display Name
-              </label>
+              <label className="text-sm font-semibold">Display Name</label>
               {isEditing ? (
                 <Input
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Your display name"
-                  className="mt-1"
                 />
               ) : (
                 <p className="text-lg">
@@ -166,9 +167,7 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
 
             {/* Email (read-only) */}
             <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Email
-              </label>
+              <label className="text-sm font-semibold">Email</label>
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 {user.email || <span className="text-gray-400">Not set</span>}
               </p>
@@ -176,16 +175,13 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
 
             {/* Bio */}
             <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Bio
-              </label>
+              <label className="text-sm font-semibold">Bio</label>
               {isEditing ? (
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Tell us about yourself"
-                  className="mt-1"
-                  rows={3}
+                  rows={5}
                 />
               ) : (
                 <p className="text-sm text-gray-700 dark:text-gray-300">

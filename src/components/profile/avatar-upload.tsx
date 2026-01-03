@@ -177,15 +177,10 @@ export function AvatarUpload({
           // Change avatar button when no file selected
           <Button onClick={triggerFileInput} variant="outline" size="sm">
             <Upload className="mr-2 h-4 w-4" />
-            Change Avatar
+            Change
           </Button>
         )}
       </div>
-
-      {/* Helper Text */}
-      <p className="text-center text-xs text-muted-foreground">
-        JPEG, PNG, or WebP. Max 5MB.
-      </p>
     </div>
   )
 }

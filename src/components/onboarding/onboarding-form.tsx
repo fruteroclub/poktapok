@@ -16,8 +16,15 @@ export default function OnboardingForm() {
   const queryClient = useQueryClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Extract email from Privy user (email, Google, GitHub, Discord)
+  const privyEmail =
+    user?.email?.address ||
+    user?.google?.email ||
+    user?.github?.email ||
+    user?.discord?.email ||
+    ''
+
   const [formData, setFormData] = useState({
-    email: '',
     username: '',
     displayName: '',
     bio: '',
@@ -39,7 +46,10 @@ export default function OnboardingForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          email: privyEmail, // Use email from Privy (read-only)
+        }),
       })
 
       const responseData = await response.json()
@@ -80,9 +90,10 @@ export default function OnboardingForm() {
           id="email"
           type="email"
           required
+          disabled
           placeholder="tu@email.com"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={privyEmail}
+          className="cursor-not-allowed"
         />
       </div>
 

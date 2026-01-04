@@ -409,6 +409,39 @@ const { data, isLoading, isError } = useMe()
 
 **NEVER use `bg-muted` or any variation of it** (e.g., `bg-muted/50`, `hover:bg-muted`) in component styling. Use explicit color classes or semantic alternatives from the design system.
 
+### Layout and Spacing
+
+**NEVER use margin or padding on the y-axis for spacing in containers.** Use Tailwind's spacing utilities instead:
+
+- **For block/flex containers**: Use `space-y-{size}` to add consistent vertical spacing between children
+- **For flex containers**: Use `gap-{size}` for both horizontal and vertical spacing
+- **For grid containers**: Use `gap-{size}` for consistent spacing
+
+**Examples:**
+
+```tsx
+// ❌ WRONG - Manual margin/padding
+<div className="py-4">
+  <div className="mb-2">Item 1</div>
+  <div className="mb-2">Item 2</div>
+  <div>Item 3</div>
+</div>
+
+// ✅ CORRECT - space-y utility
+<div className="space-y-2">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</div>
+
+// ✅ CORRECT - gap for flex
+<div className="flex flex-col gap-2">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</div>
+```
+
 ### File Naming
 
 **Always use kebab-case (snake-case with hyphens) for file names:**

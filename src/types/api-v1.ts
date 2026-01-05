@@ -49,6 +49,22 @@ export interface MeResponse {
 }
 
 // ============================================================================
+// User API Requests & Responses
+// ============================================================================
+
+export interface UpdateUserRequest {
+  email?: string
+  username?: string
+  displayName?: string
+  bio?: string
+  avatarUrl?: string | null
+}
+
+export interface UpdateUserResponse {
+  user: User
+}
+
+// ============================================================================
 // Profile API Responses
 // ============================================================================
 
@@ -56,6 +72,14 @@ export interface CreateProfileResponse {
   success: boolean
   profile: Profile
   message: string
+}
+
+export interface UploadAvatarResponse {
+  avatarUrl: string
+}
+
+export interface DeleteAvatarResponse {
+  success: boolean
 }
 
 // ============================================================================

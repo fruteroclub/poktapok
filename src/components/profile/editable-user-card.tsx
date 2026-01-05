@@ -10,8 +10,10 @@ import { Pencil, X, Check, Loader2 } from 'lucide-react'
 import { AvatarUpload } from './avatar-upload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { apiFetch } from '@/lib/api/fetch'
 import { useAuthStore } from '@/store/auth-store'
+import { uploadAvatar } from '@/services/profile'
+import { updateUser as updateUserService } from '@/services/auth'
+import { ApiError } from '@/lib/api/fetch'
 import type { User } from '@/types/api-v1'
 
 interface EditableUserCardProps {
@@ -33,43 +35,73 @@ interface UpdateUserData {
   bio?: string
 }
 
-interface UpdateUserResponse {
-  data?: {
-    user: User
-  }
-}
-
-async function updateUser(data: UpdateUserData): Promise<UpdateUserResponse> {
-  return apiFetch('/api/users/update', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-}
-
 export function EditableUserCard({ className, user }: EditableUserCardProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [displayName, setDisplayName] = useState(user.displayName || '')
   const [bio, setBio] = useState(user.bio || '')
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const { setUser } = useAuthStore()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: updateUser,
-    onSuccess: (response: UpdateUserResponse) => {
+    mutationFn: async (data: UpdateUserData) => {
+      const response = await updateUserService(data)
+      return response.user
+    },
+    onSuccess: (updatedUser: User) => {
       // Update store directly with response data
-      if (response.data?.user) {
-        setUser(response.data.user)
-      }
+      setUser(updatedUser)
       // Invalidate React Query cache to trigger parent re-render
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
       toast.success('Profile updated successfully')
       setIsEditing(false)
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update profile')
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error('Failed to update profile')
+      }
     },
   })
+
+  // Handle avatar file selection - immediate upload pattern
+  const handleAvatarFileSelect = async (file: File | null) => {
+    if (!file) return
+
+    setIsUploadingAvatar(true)
+
+    try {
+      // Service handles FormData creation and API call
+      const avatarUrl = await uploadAvatar(file)
+
+      // Update store with new avatar URL
+      setUser({
+        id: user.id,
+        username: user.username || '',
+        displayName: user.displayName,
+        email: user.email,
+        bio: user.bio,
+        avatarUrl,
+        accountStatus: user.accountStatus,
+        role: user.role,
+      })
+
+      // Invalidate React Query cache to trigger parent re-render
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+
+      toast.success('Avatar updated successfully')
+    } catch (error) {
+      // Structured error handling from ApiError
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error('Failed to upload avatar')
+      }
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
 
   const handleSave = () => {
     // Only send fields that are being updated
@@ -105,21 +137,8 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
                 currentAvatarUrl={user.avatarUrl}
                 username={user.username || ''}
                 displayName={user.displayName}
-                onUploadComplete={(avatarUrl) => {
-                  // Update store with new avatar URL
-                  setUser({
-                    id: user.id,
-                    username: user.username || '',
-                    displayName: user.displayName,
-                    email: user.email,
-                    bio: user.bio,
-                    avatarUrl,
-                    accountStatus: user.accountStatus,
-                    role: user.role,
-                  })
-                  // Invalidate React Query cache to trigger parent re-render
-                  queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-                }}
+                onFileSelect={handleAvatarFileSelect}
+                disabled={isUploadingAvatar}
               />
             ) : (
               <Avatar className="h-24 w-24">
@@ -200,14 +219,14 @@ export function EditableUserCard({ className, user }: EditableUserCardProps) {
                 size="sm"
                 variant="outline"
                 onClick={handleCancel}
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || isUploadingAvatar}
               >
                 Cancelar <X className="ml-1.5 h-4 w-4" />
               </Button>
               <Button
                 size="sm"
                 onClick={handleSave}
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || isUploadingAvatar}
               >
                 {mutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

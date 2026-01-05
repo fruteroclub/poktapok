@@ -4,6 +4,56 @@
 
 Avatar upload functionality using Vercel Blob Storage for persistent, CDN-backed image storage.
 
+## Architecture
+
+### Design Principles
+
+**Separation of Concerns:**
+
+The avatar upload system follows a clear separation between UI and business logic:
+
+1. **UI Component** (`AvatarUpload`) - Pure presentation layer
+   - File selection interface
+   - Preview display with fallbacks (blo for Ethereum addresses)
+   - Client-side validation feedback
+   - Returns File object to parent via callback
+   - **NO API calls or upload logic**
+
+2. **Parent Components** - Business logic layer
+   - Determines WHEN to upload (immediate vs deferred)
+   - Handles upload orchestration
+   - Manages success/error states
+   - Updates application state
+
+3. **Backend API** - Server-side processing
+   - File validation and security checks
+   - Blob storage operations
+   - Database updates
+   - Auto-cleanup of old avatars
+
+### Flow Patterns
+
+**Onboarding Flow (Unified Submission):**
+```
+User fills form → Clicks submit → Backend uploads avatar → Backend creates account
+                                  ↓
+                         User sees single submission
+```
+
+- Single user action ("Complete Profile")
+- Backend orchestrates: upload avatar first, then create account
+- Provides seamless experience without exposing multi-step process
+
+**Profile Editing Flow (Separate Operations):**
+```
+Avatar change → Immediate upload → Update UI
+Field edits → Click save → Update user data
+```
+
+- Avatar and profile fields update separately
+- Clear visual feedback for each operation
+- Maintains flexibility for independent updates
+
 ## Technical Implementation
 
 ### Storage Provider
@@ -11,6 +61,13 @@ Avatar upload functionality using Vercel Blob Storage for persistent, CDN-backed
 - **Vercel Blob Storage** - Global CDN with automatic optimization
 - Package: `@vercel/blob` (already installed)
 - Environment: `BLOB_READ_WRITE_TOKEN` (configured)
+
+### Avatar Fallback System
+
+- **Blo Package** - Ethereum address to deterministic avatar generation
+- Generates colorful, unique blockies from wallet addresses
+- Used when no custom avatar uploaded
+- Seamless integration with Privy embedded wallets
 
 ### API Endpoints
 
@@ -81,25 +138,68 @@ DELETE /api/profiles/avatar
 
 **Component:** `src/components/profile/avatar-upload.tsx`
 
-**Features:**
+**Responsibilities (UI Only):**
 
-- File input with drag-and-drop support
-- Live preview before upload
-- Client-side validation
-- Loading states during upload
-- Error handling with toast notifications
-- Upload progress feedback
+- File selection interface with validation feedback
+- Live preview display before upload
+- Fallback avatar generation (blo for Ethereum addresses, initials otherwise)
+- Client-side validation (file type, size)
+- Returns selected File object to parent
+- **Does NOT handle:** API calls, upload orchestration, state management
 
-**Usage:**
+**Props Interface:**
+
+```typescript
+interface AvatarUploadProps {
+  currentAvatarUrl: string | null
+  username?: string                           // For initials fallback
+  displayName?: string | null                 // For initials fallback
+  ethAddress?: `0x${string}` | null           // For blo fallback
+  onFileSelect: (file: File | null) => void   // Returns File to parent
+  disabled?: boolean                          // Loading state from parent
+}
+```
+
+**Usage Example (Onboarding):**
 
 ```tsx
 import { AvatarUpload } from '@/components/profile/avatar-upload'
 
+const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null)
+
+;<AvatarUpload
+  currentAvatarUrl={null}
+  username={formData.username}
+  displayName={formData.displayName}
+  ethAddress={privyWallet?.address}
+  onFileSelect={setSelectedAvatar}
+  disabled={isSubmitting}
+/>
+```
+
+**Usage Example (Profile Editing):**
+
+```tsx
+const handleFileSelect = async (file: File | null) => {
+  if (!file) return
+
+  // Parent handles upload orchestration
+  try {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    const response = await fetch('/api/profiles/avatar', {
+      method: 'POST',
+      body: formData,
+    })
+    // Update UI with new avatar URL
+  } catch (error) {
+    toast.error('Upload failed')
+  }
+}
+
 ;<AvatarUpload
   currentAvatarUrl={user.avatarUrl}
-  onUploadSuccess={(newUrl) => {
-    // Handle success
-  }}
+  onFileSelect={handleFileSelect}
 />
 ```
 
@@ -186,21 +286,112 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 2. Configure environment variable ✅ Done
 3. Deploy to Vercel (token available automatically in production)
 
-## Usage Example
+## Usage Examples
 
-### Upload Flow
+### Onboarding Flow (Unified Submission)
 
-1. User navigates to `/profile/edit`
-2. Clicks "Change Avatar" button
-3. Selects image file (or drags and drops)
-4. Preview displays immediately
-5. Clicks "Upload" button
-6. File validates client-side
-7. Uploads to server via FormData
-8. Server validates and stores in Blob Storage
-9. Database updated with new URL
-10. Success toast notification
-11. Page refreshes to show new avatar
+**User Experience:**
+1. User fills onboarding form (username, display name, bio)
+2. User selects avatar file (optional)
+3. Preview displays immediately with validation feedback
+4. User clicks "Complete Profile" button (single action)
+5. Success feedback once account created
+
+**Implementation:**
+```typescript
+import { uploadAvatar } from '@/services/profile'
+import { updateUser } from '@/services/auth'
+import { ApiError } from '@/lib/api/fetch'
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
+
+  try {
+    // Step 1: Upload avatar if selected (service handles FormData and API call)
+    let avatarUrl = null
+    if (selectedAvatar) {
+      avatarUrl = await uploadAvatar(selectedAvatar)
+    }
+
+    // Step 2: Update user with all form data + avatar URL (service handles API call)
+    await updateUser({
+      ...formData,
+      avatarUrl,
+    })
+
+    // Success handling
+    toast.success('Profile completed successfully')
+    router.push('/profile')
+  } catch (error) {
+    // Structured error handling from ApiError
+    if (error instanceof ApiError) {
+      toast.error(error.message)
+    } else {
+      toast.error('Failed to complete profile')
+    }
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+```
+
+### Profile Editing Flow (Separate Operations)
+
+**User Experience:**
+1. User clicks edit button on profile
+2. User selects new avatar file
+3. Avatar uploads immediately with loading feedback
+4. Success toast notification
+5. User can edit other fields independently
+6. Other field changes saved separately
+
+**Implementation:**
+```typescript
+import { uploadAvatar } from '@/services/profile'
+import { ApiError } from '@/lib/api/fetch'
+
+const handleFileSelect = async (file: File | null) => {
+  if (!file) return
+
+  setIsUploading(true)
+
+  try {
+    // Service handles FormData creation and API call
+    const avatarUrl = await uploadAvatar(file)
+
+    // Update local state with new avatar URL
+    setUser({ ...user, avatarUrl })
+
+    toast.success('Avatar updated successfully')
+  } catch (error) {
+    // Structured error handling from ApiError
+    if (error instanceof ApiError) {
+      toast.error(error.message)
+    } else {
+      toast.error('Failed to upload avatar')
+    }
+  } finally {
+    setIsUploading(false)
+  }
+}
+```
+
+### Backend Upload Flow
+
+**Server Responsibilities:**
+1. Authenticate request (Privy token validation)
+2. Validate file type and size
+3. Delete old avatar from blob storage (if exists)
+4. Upload new avatar to Vercel Blob Storage
+5. Update user record in database with new URL
+6. Return new avatar URL to client
+
+**Key Implementation Details:**
+- Auto-cleanup prevents orphaned files
+- Random suffix prevents filename collisions
+- Graceful degradation (continues if old file deletion fails)
+- Atomic operation (database updated only after successful upload)
 
 ### Delete Flow
 
@@ -210,7 +401,7 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 4. Blob storage file deleted
 5. Database updated (`avatarUrl = null`)
 6. Success toast notification
-7. Avatar reverts to default (DiceBear initials)
+7. Avatar reverts to fallback (blo or initials)
 
 ## Testing
 
@@ -248,6 +439,41 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 - **Bandwidth:** 500GB/month free on Hobby plan
 - **Requests:** Unlimited on all plans
 
+## Design Rationale
+
+### Why Separate UI from Business Logic?
+
+**Modularity Benefits:**
+- Component remains reusable across different flows (onboarding, profile editing, admin tools)
+- Parent components control upload timing and orchestration
+- Easier to test UI independently from upload logic
+- Simpler component API with single responsibility
+
+**Flow Flexibility:**
+- Onboarding: Deferred upload (on form submission)
+- Profile editing: Immediate upload (on file selection)
+- Future use cases: Batch uploads, admin operations
+
+**Developer Experience:**
+- Clear separation of concerns
+- Predictable component behavior
+- Easy to reason about data flow
+- Reduced coupling between UI and API
+
+### Why Different Flows for Onboarding vs Profile?
+
+**Onboarding (Unified):**
+- User expectation: "Complete my profile" = one action
+- Backend orchestrates multi-step process
+- Simpler mental model for first-time users
+- Reduces perceived complexity
+
+**Profile Editing (Separate):**
+- User expectation: "Change avatar" is distinct from "Edit bio"
+- Immediate feedback improves perceived responsiveness
+- Allows independent updates without re-saving entire profile
+- Matches mental model of discrete profile sections
+
 ## Future Improvements
 
 ### Potential Enhancements
@@ -259,6 +485,7 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 - [ ] Avatar gallery (previous avatars)
 - [ ] Face detection and auto-cropping
 - [ ] NFT avatar support (Web3 integration)
+- [ ] Drag-and-drop file upload
 
 ### Current Limitations
 
@@ -266,6 +493,7 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 - No image editing (crop, rotate, filter)
 - No animated avatars (GIF, APNG)
 - No vector formats (SVG)
+- File selection via button only (no drag-and-drop)
 
 ## Related Files
 

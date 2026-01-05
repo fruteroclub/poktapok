@@ -10,6 +10,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
+import { uploadAvatar } from '@/services/profile'
+import { updateUser } from '@/services/auth'
+import { ApiError } from '@/lib/api/fetch'
 
 export default function OnboardingForm() {
   const { user } = usePrivy()
@@ -34,15 +37,14 @@ export default function OnboardingForm() {
     bio: '',
   })
 
-  // Track uploaded avatar separately
-  const [uploadedAvatarUrl, setUploadedAvatarUrl] = useState<string | null>(
+  // Track selected avatar file (not uploaded yet)
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
     null,
   )
 
-  // Handle avatar upload completion
-  const handleAvatarUpload = (newAvatarUrl: string) => {
-    setUploadedAvatarUrl(newAvatarUrl)
-    toast.success('¡Avatar subido exitosamente!')
+  // Handle avatar file selection (UI component returns File object)
+  const handleAvatarFileSelect = (file: File | null) => {
+    setSelectedAvatarFile(file)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,29 +56,28 @@ export default function OnboardingForm() {
         throw new Error('User not authenticated')
       }
 
-      // Update user profile (privyDid extracted from token by middleware)
-      const response = await fetch('/api/users/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          email: privyEmail, // Use email from Privy (read-only)
-          avatarUrl: uploadedAvatarUrl, // Include uploaded avatar URL (or null)
-        }),
-      })
-
-      const responseData = await response.json()
-
-      if (!response.ok) {
-        // Handle new error format: { success: false, error: { message, code?, details? } }
-        const errorMessage =
-          responseData.error?.message ||
-          responseData.error ||
-          'Failed to update profile'
-        throw new Error(errorMessage)
+      // Step 1: Upload avatar if selected (service handles FormData and API call)
+      let avatarUrl = null
+      if (selectedAvatarFile) {
+        try {
+          avatarUrl = await uploadAvatar(selectedAvatarFile)
+        } catch (error) {
+          // Avatar upload failed - warn user but allow profile completion
+          if (error instanceof ApiError) {
+            toast.error(`Avatar upload failed: ${error.message}`)
+          } else {
+            toast.error('Avatar upload failed')
+          }
+          // Continue without avatar
+        }
       }
+
+      // Step 2: Update user with all form data + avatar URL (service handles API call)
+      await updateUser({
+        ...formData,
+        email: privyEmail, // Use email from Privy (read-only)
+        avatarUrl, // Include uploaded avatar URL (or null)
+      })
 
       // Invalidate auth query to refetch user with updated status
       await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
@@ -85,11 +86,12 @@ export default function OnboardingForm() {
       router.push('/profile')
     } catch (error) {
       console.error('Error updating profile:', error)
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Error al actualizar perfil. Intenta de nuevo',
-      )
+      // Structured error handling from ApiError
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error('Error al actualizar perfil. Intenta de nuevo')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -100,11 +102,12 @@ export default function OnboardingForm() {
       {/* Avatar Upload Section - TOP OF FORM */}
       <div className="flex flex-col items-center gap-2">
         <AvatarUpload
-          currentAvatarUrl={uploadedAvatarUrl}
+          currentAvatarUrl={null}
           username={formData.username || undefined}
           displayName={formData.displayName || undefined}
           ethAddress={ethAddress}
-          onUploadComplete={handleAvatarUpload}
+          onFileSelect={handleAvatarFileSelect}
+          disabled={isSubmitting}
         />
         <p className="text-center text-sm text-muted-foreground">
           Sube una foto de perfil (opcional)

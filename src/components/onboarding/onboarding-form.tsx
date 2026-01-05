@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { AvatarUpload } from '@/components/profile/avatar-upload'
 
 export default function OnboardingForm() {
   const { user } = usePrivy()
@@ -24,12 +25,25 @@ export default function OnboardingForm() {
     user?.discord?.email ||
     ''
 
+  // Extract Ethereum address from Privy wallet (if available)
+  const ethAddress = user?.wallet?.address as `0x${string}` | undefined
+
   const [formData, setFormData] = useState({
     username: '',
     displayName: '',
     bio: '',
-    avatarUrl: '',
   })
+
+  // Track uploaded avatar separately
+  const [uploadedAvatarUrl, setUploadedAvatarUrl] = useState<string | null>(
+    null,
+  )
+
+  // Handle avatar upload completion
+  const handleAvatarUpload = (newAvatarUrl: string) => {
+    setUploadedAvatarUrl(newAvatarUrl)
+    toast.success('¡Avatar subido exitosamente!')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,6 +63,7 @@ export default function OnboardingForm() {
         body: JSON.stringify({
           ...formData,
           email: privyEmail, // Use email from Privy (read-only)
+          avatarUrl: uploadedAvatarUrl, // Include uploaded avatar URL (or null)
         }),
       })
 
@@ -81,7 +96,21 @@ export default function OnboardingForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Avatar Upload Section - TOP OF FORM */}
+      <div className="flex flex-col items-center gap-2">
+        <AvatarUpload
+          currentAvatarUrl={uploadedAvatarUrl}
+          username={formData.username || undefined}
+          displayName={formData.displayName || undefined}
+          ethAddress={ethAddress}
+          onUploadComplete={handleAvatarUpload}
+        />
+        <p className="text-center text-sm text-muted-foreground">
+          Sube una foto de perfil (opcional)
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="email">
           Email <span className="text-destructive">*</span>
@@ -148,20 +177,6 @@ export default function OnboardingForm() {
         <p className="text-sm text-muted-foreground">
           {formData.bio.length}/280 caracteres
         </p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="avatarUrl">URL del avatar (opcional)</Label>
-        <Input
-          id="avatarUrl"
-          type="url"
-          placeholder="https://ejemplo.com/avatar.jpg"
-          value={formData.avatarUrl}
-          onChange={(e) =>
-            setFormData({ ...formData, avatarUrl: e.target.value })
-          }
-          maxLength={500}
-        />
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, ChangeEvent } from 'react'
+import { blo } from 'blo'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Upload, X, Loader2 } from 'lucide-react'
@@ -8,8 +9,9 @@ import { toast } from 'sonner'
 
 interface AvatarUploadProps {
   currentAvatarUrl: string | null
-  username: string
-  displayName: string | null
+  username?: string
+  displayName?: string | null
+  ethAddress?: `0x${string}` | null
   onUploadComplete?: (newAvatarUrl: string) => void
 }
 
@@ -20,6 +22,7 @@ export function AvatarUpload({
   currentAvatarUrl,
   username,
   displayName,
+  ethAddress,
   onUploadComplete,
 }: AvatarUploadProps) {
   const [preview, setPreview] = useState<string | null>(currentAvatarUrl)
@@ -27,10 +30,15 @@ export function AvatarUpload({
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Generate fallback image from Ethereum address (if available)
+  const bloFallback = ethAddress ? blo(ethAddress) : undefined
+
   // Get initials for fallback
   const initials = displayName
     ? displayName.charAt(0).toUpperCase()
-    : username.charAt(0).toUpperCase()
+    : username
+      ? username.charAt(0).toUpperCase()
+      : '?'
 
   // Handle file selection
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +139,9 @@ export function AvatarUpload({
       {/* Avatar Preview */}
       <Avatar className="h-24 w-24">
         {preview ? (
-          <AvatarImage src={preview} alt={displayName || username} />
+          <AvatarImage src={preview} alt={displayName || username || 'User'} />
+        ) : bloFallback ? (
+          <AvatarImage src={bloFallback} alt="Ethereum avatar" />
         ) : null}
         <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
       </Avatar>
@@ -150,7 +160,12 @@ export function AvatarUpload({
         {selectedFile ? (
           // Upload/Cancel buttons when file selected
           <>
-            <Button onClick={handleUpload} disabled={isUploading} size="sm">
+            <Button
+              type="button"
+              onClick={handleUpload}
+              disabled={isUploading}
+              size="sm"
+            >
               {isUploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -164,6 +179,7 @@ export function AvatarUpload({
               )}
             </Button>
             <Button
+              type="button"
               onClick={handleCancel}
               disabled={isUploading}
               variant="outline"
@@ -175,7 +191,12 @@ export function AvatarUpload({
           </>
         ) : (
           // Change avatar button when no file selected
-          <Button onClick={triggerFileInput} variant="outline" size="sm">
+          <Button
+            type="button"
+            onClick={triggerFileInput}
+            variant="outline"
+            size="sm"
+          >
             <Upload className="mr-2 h-4 w-4" />
             Change
           </Button>

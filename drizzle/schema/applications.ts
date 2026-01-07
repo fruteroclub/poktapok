@@ -2,6 +2,7 @@ import {
   pgTable,
   uuid,
   text,
+  varchar,
   timestamp,
   pgEnum,
   foreignKey,
@@ -10,6 +11,7 @@ import {
 import { sql } from 'drizzle-orm'
 import { timestamps, metadata } from './utils'
 import { users } from './users'
+import { programs } from './programs'
 
 // ============================================================
 // ENUMS
@@ -50,6 +52,16 @@ export const applications = pgTable(
 
     // Application Content
     motivationText: text('motivation_text').notNull(), // Why they want to join
+
+    // Program Selection (NEW)
+    programId: uuid('program_id').references(() => programs.id),
+
+    // Goal Commitment (NEW - 140-280 characters)
+    goal: text('goal'),
+
+    // Social Accounts (NEW)
+    githubUsername: varchar('github_username', { length: 100 }),
+    twitterUsername: varchar('twitter_username', { length: 100 }),
 
     // Review Status
     status: applicationStatusEnum('status').default('pending').notNull(),

@@ -55,10 +55,28 @@ The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** an
 
 **Schema Structure:**
 
+**Core Tables:**
 - **users** - Core identity & authentication (linked to Privy DID)
 - **profiles** - Extended user data (location, social links, learning tracks, stats)
-- **applications** - Onboarding queue (pending/approved/rejected signup applications)
+- **applications** - Onboarding queue (pending/approved/rejected signup applications, now includes program_id and goal)
 - **invitations** - Referral system (invite codes with expiration tracking)
+
+**Program Management (E3-T1):**
+- **programs** - Program definitions (cohort/evergreen types, e.g., "De Cero a Chamba", "DeFi-esta", "Open")
+- **program_activities** - Junction table linking programs to activities (many-to-many)
+- **program_enrollments** - User enrollments in programs (tracks status, completion, promotion)
+- **attendance** - Session attendance tracking (marked by admins, affects guest→member promotion)
+
+**Projects & Skills:**
+- **projects** - User portfolio projects
+- **skills** - Skill catalog (languages, frameworks, tools)
+- **user_skills** - User skill proficiency levels
+- **project_skills** - Skills used in projects
+
+**Activities & Bounties:**
+- **activities** - Learning activities and bounties
+- **activity_submissions** - User submissions to activities
+- **pulpa_distributions** - Token distributions for completed work
 
 **Connection Strategy:**
 

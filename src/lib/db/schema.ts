@@ -27,6 +27,10 @@ export * from '../../../drizzle/schema/invitations'
 export * from '../../../drizzle/schema/projects'
 export * from '../../../drizzle/schema/skills'
 export * from '../../../drizzle/schema/activities'
+export * from '../../../drizzle/schema/programs'
+export * from '../../../drizzle/schema/program-activities'
+export * from '../../../drizzle/schema/program-enrollments'
+export * from '../../../drizzle/schema/attendance'
 
 // ============================================================
 // RE-EXPORT TYPES FOR CONVENIENCE

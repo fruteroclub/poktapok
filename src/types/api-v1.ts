@@ -938,14 +938,14 @@ export interface Session {
 }
 
 /**
- * Session with program details
+ * Session with program details (program is nullable for standalone sessions)
  */
 export interface SessionWithProgram extends Session {
   program: {
     id: string
     name: string
     slug: string
-  }
+  } | null
 }
 
 /**
@@ -954,6 +954,66 @@ export interface SessionWithProgram extends Session {
 export interface SessionWithActivityCount extends Session {
   activityCount: number
   attendanceCount: number
+}
+
+/**
+ * Activity with computed relationships (from activity_relationships_view)
+ * Automatically includes transitive program links via sessions
+ */
+export interface ActivityWithRelationships {
+  // Activity core fields
+  activityId: string
+  activityTitle: string
+  activityType: string
+  difficulty: string
+  rewardPulpaAmount: string
+  status: string
+
+  // Direct program link (via program_activities junction)
+  directProgramId: string | null
+  directProgramName: string | null
+  isProgramRequired: boolean | null
+  programOrderIndex: number | null
+
+  // Session link (via session_activities junction)
+  sessionId: string | null
+  sessionTitle: string | null
+  sessionDate: string | null
+  sessionOrderIndex: number | null
+
+  // Transitive program link (via session → program)
+  transitiveProgramId: string | null
+  transitiveProgramName: string | null
+
+  // Computed effective relationship
+  effectiveProgramId: string | null
+  effectiveProgramName: string | null
+
+  // Relationship type indicator
+  relationshipType: 'standalone' | 'program' | 'session' | 'session_transitive' | 'both'
+
+  // Timestamps
+  createdAt: string
+  updatedAt: string
+}
+
+/**
+ * Program with statistics
+ */
+export interface ProgramWithStats extends ProgramDetail {
+  stats: {
+    totalEnrollments: number
+    activeEnrollments: number
+    completedEnrollments: number
+    droppedEnrollments: number
+    totalSessions: number
+    completedSessions: number
+    upcomingSessions: number
+    totalActivities: number // Includes transitive
+    directActivities: number
+    transitiveActivities: number
+    averageCompletionRate: number
+  }
 }
 
 /**

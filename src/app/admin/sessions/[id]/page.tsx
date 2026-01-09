@@ -126,7 +126,9 @@ export default function SessionDetailPage({ params }: PageProps) {
                   <p className="text-sm font-medium text-muted-foreground">
                     Program
                   </p>
-                  <p className="text-base font-medium">{session.program.name}</p>
+                  <p className="text-base font-medium">
+                    {session.program ? session.program.name : <span className="text-muted-foreground">Standalone Session</span>}
+                  </p>
                 </div>
               </div>
 

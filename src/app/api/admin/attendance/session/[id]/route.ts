@@ -7,7 +7,7 @@ import {
   profiles,
   sessions,
 } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { requireAdmin } from '@/lib/auth/middleware'
 
@@ -60,7 +60,7 @@ export async function GET(
       .from(programEnrollments)
       .leftJoin(users, eq(programEnrollments.userId, users.id))
       .leftJoin(profiles, eq(users.id, profiles.userId))
-      .where(eq(programEnrollments.programId, session.programId))
+      .where(session.programId ? eq(programEnrollments.programId, session.programId) : sql`1=0`)
 
     // Get attendance records for this session
     const attendanceRecords = await db

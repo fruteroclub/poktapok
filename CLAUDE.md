@@ -57,8 +57,10 @@ The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** an
 
 **Core Tables:**
 - **users** - Core identity & authentication (linked to Privy DID)
-- **profiles** - Extended user data (location, social links, learning tracks, stats)
-- **applications** - Onboarding queue (pending/approved/rejected signup applications, now includes program_id and goal)
+- **profiles** - Extended user data (location, social links as usernames, learning tracks, stats)
+  - E3-T2: Updated to store `github_username`, `twitter_username`, `telegram_username` (usernames without @), `linkedin_url` (full URL)
+- **applications** - Onboarding queue (pending/approved/rejected signup applications)
+  - E3-T1: Added `program_id` (foreign key to programs), `goal` (140-280 chars), `github_username`, `twitter_username`
 - **invitations** - Referral system (invite codes with expiration tracking)
 
 **Program Management (E3-T1):**
@@ -258,6 +260,130 @@ export async function fetchMe(): Promise<MeResponse> {
 - **Wagmi** manages blockchain interactions
 - Default chain is Arbitrum; supports 6 chains total (Base, Ethereum, Optimism, Polygon, Scroll)
 - Alchemy API key is optional (falls back to public RPCs)
+
+### Epic 3: Program Management System
+
+The Program Management system implements a complete tiered membership workflow from application through promotion.
+
+**Status Flow**: `incomplete` → `pending` → `guest`/`active` → `active` (promoted)
+
+#### User Onboarding (E3-T2)
+
+Multi-step application process with program selection and goal commitment:
+
+**API Endpoints:**
+- `GET /api/programs/active` - Returns list of active programs for selection
+- `POST /api/applications` - Submits onboarding application with program choice and goal
+
+**Onboarding Steps:**
+1. **Program Selection** - User chooses from active programs (cohort or evergreen)
+2. **Goal Commitment** - User writes 1-month goal (140-280 characters)
+3. **Social Accounts** - User links GitHub, Twitter/X, LinkedIn, Telegram (optional)
+4. **Review & Submit** - User reviews and submits application
+
+**Components:**
+- [multi-step-onboarding-form](src/components/onboarding/multi-step-onboarding-form.tsx) - Main form with state management
+- [program-selector](src/components/onboarding/program-selector.tsx) - Program selection with cards
+- [goal-input](src/components/onboarding/goal-input.tsx) - Goal textarea with validation
+- [social-accounts-form](src/components/onboarding/social-accounts-form.tsx) - Social account inputs
+
+**Services & Hooks:**
+- [onboarding service](src/services/onboarding.ts) - API abstractions for onboarding endpoints
+- [use-onboarding hooks](src/hooks/use-onboarding.ts) - React Query hooks for data fetching
+
+#### Guest Access Control (E3-T3)
+
+Implements role-based access control for guest users with limited permissions.
+
+**Guest Capabilities:**
+- ✅ Browse talent directory, view activities, submit work
+- ❌ Admin routes, voting, marking attendance
+
+**Access Control:**
+- [guest-access middleware](src/middleware/guest-access.ts) - Route-level restrictions
+- [GuestBadge component](src/components/common/guest-badge.tsx) - Visual guest indicator
+- [MemberOnly component](src/components/common/member-only.tsx) - Content restriction
+
+#### Admin Application Review (E3-T4)
+
+Admin queue for reviewing and processing user applications.
+
+**API Endpoints:**
+- `GET /api/admin/applications` - List applications with filtering (status, program)
+- `GET /api/admin/applications/:id` - Detailed application view
+- `GET /api/admin/applications/stats` - Dashboard statistics
+- `POST /api/admin/applications/:id/approve` - Process application (guest/member/reject)
+
+**Decision Types:**
+- **Approve as Guest**: Limited access, must earn membership (most common)
+- **Approve as Member**: Full access immediately (fast-track for exceptional cases)
+- **Reject**: No platform access, can reapply
+
+**Components:**
+- [ApplicationsTable](src/components/admin/applications-table.tsx) - Applications data table
+- [ApplicationDetailDrawer](src/components/admin/application-detail-drawer.tsx) - Review drawer with decision buttons
+
+**Services & Hooks:**
+- [admin service](src/services/admin.ts) - Admin operations
+- [use-admin hooks](src/hooks/use-admin.ts) - React Query hooks for applications
+
+#### Admin Attendance Management (E3-T5)
+
+Session attendance tracking affecting guest promotion eligibility.
+
+**API Endpoints:**
+- `GET /api/admin/attendance/session/:id` - Session attendance with enrolled users
+- `POST /api/admin/attendance/mark` - Mark attendance (bulk upsert)
+- `POST /api/admin/attendance/bulk` - Bulk mark with different statuses
+
+**Attendance Statuses:**
+- **Present**: Counts toward promotion eligibility
+- **Absent**: Marked but not present
+- **Excused**: Marked but does NOT count toward promotion
+
+**Components:**
+- [AttendanceMarker](src/components/admin/attendance-marker.tsx) - Bulk attendance marking UI with checkboxes
+
+**Services & Hooks:**
+- [attendance service](src/services/attendance.ts) - Attendance operations
+- [use-attendance hooks](src/hooks/use-attendance.ts) - React Query hooks
+
+#### Program Dashboard (E3-T6)
+
+User-facing dashboard with participation tracking and promotion progress.
+
+**API Endpoints:**
+- `GET /api/programs/:id/dashboard` - Dashboard data with participation stats
+- `GET /api/programs/:id/sessions` - Program sessions (optional upcoming filter)
+
+**Dashboard Sections:**
+- Program information and user's goal
+- Participation statistics (attendance rate, submission approval, quality score)
+- Promotion progress (guest users only) - tracks 3 requirements
+- Upcoming sessions (top 3 with meeting URLs)
+
+**Promotion Requirements (Guest → Member):**
+- 5+ sessions attended (status='present')
+- 3+ submissions approved
+- 70%+ average quality score
+
+**Components:**
+- [ParticipationStatsCard](src/components/programs/participation-stats-card.tsx) - Statistics display
+- [PromotionProgressCard](src/components/programs/promotion-progress-card.tsx) - Guest-specific progress tracking
+
+**Services & Hooks:**
+- [programs service](src/services/programs.ts) - Program operations
+- [use-programs hooks](src/hooks/use-programs.ts) - React Query hooks
+
+#### Testing & Documentation (E3-T7)
+
+Comprehensive testing strategies and documentation:
+
+- [Feature Documentation](docs/features/program-management.md) - Complete system architecture and workflows
+- [Admin Application Review Guide](docs/guides/admin-application-review.md) - Application review process with examples
+- [User Onboarding Guide](docs/guides/user-onboarding.md) - User-facing onboarding instructions
+- [API Reference](docs/api-reference.md) - Complete API endpoint documentation
+- [Testing Guide](docs/testing-guide.md) - Manual and automated testing strategies
 
 ### File Storage
 

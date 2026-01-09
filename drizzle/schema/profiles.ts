@@ -76,11 +76,11 @@ export const profiles = pgTable(
     country: varchar('country', { length: 100 }),
     countryCode: varchar('country_code', { length: 2 }), // ISO 3166-1 alpha-2
 
-    // Social Links
-    githubUrl: varchar('github_url', { length: 500 }),
-    twitterUrl: varchar('twitter_url', { length: 500 }),
-    linkedinUrl: varchar('linkedin_url', { length: 500 }),
-    telegramHandle: varchar('telegram_handle', { length: 100 }),
+    // Social Links (Usernames/Handles for easier display and verification)
+    githubUsername: varchar('github_username', { length: 100 }), // GitHub username (without @)
+    twitterUsername: varchar('twitter_username', { length: 100 }), // X/Twitter handle (without @)
+    linkedinUrl: varchar('linkedin_url', { length: 500 }), // Full LinkedIn profile URL
+    telegramUsername: varchar('telegram_username', { length: 100 }), // Telegram username (without @)
 
     // Learning & Skills (3 core tracks: AI, Crypto, Privacy)
     learningTracks: learningTrackEnum('learning_tracks').array(),

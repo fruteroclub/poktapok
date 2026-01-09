@@ -32,9 +32,7 @@ export async function GET(
           goal: applications.goal,
           githubUsername: applications.githubUsername,
           twitterUsername: applications.twitterUsername,
-          linkedinUrl: applications.linkedinUrl,
-          telegramUsername: applications.telegramUsername,
-          reviewedBy: applications.reviewedBy,
+          reviewedByUserId: applications.reviewedByUserId,
           reviewedAt: applications.reviewedAt,
           reviewNotes: applications.reviewNotes,
           createdAt: applications.createdAt,
@@ -55,9 +53,6 @@ export async function GET(
         profile: {
           id: profiles.id,
           userId: profiles.userId,
-          displayName: profiles.displayName,
-          bio: profiles.bio,
-          avatarUrl: profiles.avatarUrl,
           city: profiles.city,
           country: profiles.country,
           countryCode: profiles.countryCode,
@@ -93,7 +88,7 @@ export async function GET(
 
     // If reviewed, fetch reviewer information
     let reviewer = null
-    if (applicationData.application.reviewedBy) {
+    if (applicationData.application.reviewedByUserId) {
       const [reviewerData] = await db
         .select({
           id: users.id,
@@ -101,7 +96,7 @@ export async function GET(
           displayName: users.displayName,
         })
         .from(users)
-        .where(eq(users.id, applicationData.application.reviewedBy))
+        .where(eq(users.id, applicationData.application.reviewedByUserId))
         .limit(1)
 
       reviewer = reviewerData || null

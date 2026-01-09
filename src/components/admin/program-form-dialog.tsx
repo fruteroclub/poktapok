@@ -32,7 +32,6 @@ interface ProgramFormDialogProps {
 
 interface FormData {
   name: string
-  slug: string
   description: string
   programType: 'cohort' | 'evergreen'
   startDate: string
@@ -45,7 +44,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    slug: '',
     description: '',
     programType: 'cohort',
     startDate: '',
@@ -54,7 +52,7 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
   })
 
   // Fetch program data if editing
-  const { data: programData, isLoading: isLoadingProgram } = useProgram(programId)
+  const { data: programData, isLoading: isLoadingProgram } = useProgram(programId || null)
 
   // Mutations
   const createMutation = useCreateProgram()
@@ -66,7 +64,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
       const program = programData.program
       setFormData({
         name: program.name,
-        slug: program.slug,
         description: program.description || '',
         programType: program.programType,
         startDate: program.startDate
@@ -83,7 +80,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
     if (!open) {
       setFormData({
         name: '',
-        slug: '',
         description: '',
         programType: 'cohort',
         startDate: '',
@@ -115,7 +111,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
           programId,
           data: {
             name: formData.name,
-            slug: formData.slug,
             description: formData.description,
             programType: formData.programType,
             startDate:
@@ -133,7 +128,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
       } else {
         await createMutation.mutateAsync({
           name: formData.name,
-          slug: formData.slug,
           description: formData.description,
           programType: formData.programType,
           startDate:
@@ -156,15 +150,10 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
     }
   }
 
-  // Auto-generate slug from name
   const handleNameChange = (name: string) => {
     setFormData((prev) => ({
       ...prev,
       name,
-      slug: name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, ''),
     }))
   }
 
@@ -203,26 +192,6 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
                   maxLength={100}
                   disabled={isPending}
                 />
-              </div>
-
-              {/* Slug */}
-              <div className="space-y-2">
-                <Label htmlFor="slug">
-                  URL Slug <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="e.g., de-cero-a-chamba"
-                  required
-                  maxLength={100}
-                  disabled={isPending}
-                  pattern="[a-z0-9-]+"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Lowercase letters, numbers, and hyphens only
-                </p>
               </div>
 
               {/* Description */}

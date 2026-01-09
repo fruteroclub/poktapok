@@ -129,15 +129,14 @@ export async function POST(request: NextRequest) {
         .where(eq(users.id, authUser.userId))
 
       // 3. Update profile with social accounts (create if doesn't exist)
-      const profileUpdates: Record<string, unknown> = {
+      const profileUpdates = {
         userId: authUser.userId,
+        githubUsername: githubUsername || null,
+        twitterUsername: twitterUsername || null,
+        linkedinUrl: linkedinUrl || null,
+        telegramUsername: telegramUsername || null,
         updatedAt: new Date(),
       }
-
-      if (githubUsername) profileUpdates.githubUsername = githubUsername
-      if (twitterUsername) profileUpdates.twitterUsername = twitterUsername
-      if (linkedinUrl) profileUpdates.linkedinUrl = linkedinUrl
-      if (telegramUsername) profileUpdates.telegramUsername = telegramUsername
 
       await tx
         .insert(profiles)

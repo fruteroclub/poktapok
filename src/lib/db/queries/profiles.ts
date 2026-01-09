@@ -34,10 +34,10 @@ export type DirectoryProfile = {
   availabilityStatus: 'available' | 'open_to_offers' | 'unavailable'
   completedBounties: number
   totalEarningsUsd: number
-  githubUrl: string | null
-  twitterUrl: string | null
+  githubUsername: string | null
+  twitterUsername: string | null
   linkedinUrl: string | null
-  telegramHandle: string | null
+  telegramUsername: string | null
   createdAt: Date
 }
 
@@ -133,10 +133,10 @@ export async function getDirectoryProfiles(
         availabilityStatus: profiles.availabilityStatus,
         completedBounties: profiles.completedBounties,
         totalEarningsUsd: profiles.totalEarningsUsd,
-        githubUrl: profiles.githubUrl,
-        twitterUrl: profiles.twitterUrl,
+        githubUsername: profiles.githubUsername,
+        twitterUsername: profiles.twitterUsername,
         linkedinUrl: profiles.linkedinUrl,
-        telegramHandle: profiles.telegramHandle,
+        telegramUsername: profiles.telegramUsername,
         profileCreatedAt: profiles.createdAt,
         // User fields
         username: users.username,
@@ -166,10 +166,10 @@ export async function getDirectoryProfiles(
       availabilityStatus: r.availabilityStatus,
       completedBounties: r.completedBounties,
       totalEarningsUsd: r.totalEarningsUsd,
-      githubUrl: r.githubUrl,
-      twitterUrl: r.twitterUrl,
+      githubUsername: r.githubUsername,
+      twitterUsername: r.twitterUsername,
       linkedinUrl: r.linkedinUrl,
-      telegramHandle: r.telegramHandle,
+      telegramUsername: r.telegramUsername,
       createdAt: r.profileCreatedAt,
     }))
   }
@@ -187,10 +187,10 @@ export async function getDirectoryProfiles(
       availabilityStatus: profiles.availabilityStatus,
       completedBounties: profiles.completedBounties,
       totalEarningsUsd: profiles.totalEarningsUsd,
-      githubUrl: profiles.githubUrl,
-      twitterUrl: profiles.twitterUrl,
+      githubUsername: profiles.githubUsername,
+      twitterUsername: profiles.twitterUsername,
       linkedinUrl: profiles.linkedinUrl,
-      telegramHandle: profiles.telegramHandle,
+      telegramUsername: profiles.telegramUsername,
       profileCreatedAt: profiles.createdAt,
       // User fields
       username: users.username,
@@ -220,10 +220,10 @@ export async function getDirectoryProfiles(
     availabilityStatus: r.availabilityStatus,
     completedBounties: r.completedBounties,
     totalEarningsUsd: r.totalEarningsUsd,
-    githubUrl: r.githubUrl,
-    twitterUrl: r.twitterUrl,
+    githubUsername: r.githubUsername,
+    twitterUsername: r.twitterUsername,
     linkedinUrl: r.linkedinUrl,
-    telegramHandle: r.telegramHandle,
+    telegramUsername: r.telegramUsername,
     createdAt: r.profileCreatedAt,
   }))
 }

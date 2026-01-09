@@ -33,15 +33,17 @@ const updateProgramSchema = z
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
+
     const [program] = await db
       .select()
       .from(programs)
-      .where(eq(programs.id, params.id))
+      .where(eq(programs.id, id))
       .limit(1)
 
     if (!program) {
@@ -60,11 +62,12 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
     const body = await request.json()
     const result = updateProgramSchema.safeParse(body)
 
@@ -89,7 +92,7 @@ export async function PATCH(
     const [program] = await db
       .update(programs)
       .set(updates)
-      .where(eq(programs.id, params.id))
+      .where(eq(programs.id, id))
       .returning()
 
     if (!program) {
@@ -109,15 +112,17 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
+
     const [program] = await db
       .update(programs)
       .set({ isActive: false, updatedAt: new Date() })
-      .where(eq(programs.id, params.id))
+      .where(eq(programs.id, id))
       .returning()
 
     if (!program) {

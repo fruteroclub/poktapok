@@ -15,10 +15,13 @@ import { requireAdmin } from '@/lib/auth/middleware'
  * GET /api/admin/attendance/session/:id
  * Get attendance records for a specific session
  */
-export const GET = requireAdmin(async (request: NextRequest) => {
-  // Extract session ID from URL
-  const url = new URL(request.url)
-  const sessionId = url.pathname.split('/').slice(-1)[0]
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  await requireAdmin(request)
+
+  const { id: sessionId } = await params
 
   if (!sessionId) {
     return apiErrors.notFound('Session ID')
@@ -48,8 +51,6 @@ export const GET = requireAdmin(async (request: NextRequest) => {
         },
         profile: {
           id: profiles.id,
-          displayName: profiles.displayName,
-          avatarUrl: profiles.avatarUrl,
         },
         enrollment: {
           id: programEnrollments.id,
@@ -91,8 +92,8 @@ export const GET = requireAdmin(async (request: NextRequest) => {
       user: enrolled.user,
       profile: enrolled.profile,
       enrollment: enrolled.enrollment,
-      attendance: attendanceMap.get(enrolled.user.id)?.attendance || null,
-      markedBy: attendanceMap.get(enrolled.user.id)?.markedByUser || null,
+      attendance: enrolled.user ? attendanceMap.get(enrolled.user.id)?.attendance || null : null,
+      markedBy: enrolled.user ? attendanceMap.get(enrolled.user.id)?.markedByUser || null : null,
     }))
 
     return apiSuccess({
@@ -109,4 +110,4 @@ export const GET = requireAdmin(async (request: NextRequest) => {
     console.error('Error fetching session attendance:', error)
     return apiErrors.internal()
   }
-})
+}

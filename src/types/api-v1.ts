@@ -759,12 +759,11 @@ export interface ProgramSessionsResponse {
 // ============================================================================
 
 /**
- * Program type for CRUD operations
+ * Detailed program type for CRUD operations
  */
-export interface Program {
+export interface ProgramDetail {
   id: string
   name: string
-  slug: string
   description: string | null
   programType: 'cohort' | 'evergreen'
   startDate: string | null
@@ -780,7 +779,6 @@ export interface Program {
  */
 export interface CreateProgramRequest {
   name: string
-  slug: string
   description: string
   programType: 'cohort' | 'evergreen'
   startDate?: string // ISO datetime string
@@ -792,7 +790,7 @@ export interface CreateProgramRequest {
  * Response for POST /api/admin/programs
  */
 export interface CreateProgramResponse {
-  program: Program
+  program: ProgramDetail
 }
 
 /**
@@ -800,7 +798,6 @@ export interface CreateProgramResponse {
  */
 export interface UpdateProgramRequest {
   name?: string
-  slug?: string
   description?: string
   programType?: 'cohort' | 'evergreen'
   startDate?: string | null // ISO datetime string or null
@@ -812,28 +809,28 @@ export interface UpdateProgramRequest {
  * Response for PATCH /api/admin/programs/:id
  */
 export interface UpdateProgramResponse {
-  program: Program
+  program: ProgramDetail
 }
 
 /**
  * Response for DELETE /api/admin/programs/:id (soft delete)
  */
 export interface DeleteProgramResponse {
-  program: Program
+  program: ProgramDetail
 }
 
 /**
  * Response for GET /api/admin/programs
  */
 export interface GetAllProgramsResponse {
-  programs: Program[]
+  programs: ProgramDetail[]
 }
 
 /**
  * Response for GET /api/admin/programs/:id
  */
 export interface GetProgramResponse {
-  program: Program
+  program: ProgramDetail
 }
 
 /**

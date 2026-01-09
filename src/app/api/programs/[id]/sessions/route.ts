@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { sessions } from '@/lib/db/schema'
-import { eq, gte, desc } from 'drizzle-orm'
+import { eq, gte, desc, and } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { getUserFromRequest } from '@/lib/auth/middleware'
 
@@ -11,19 +11,25 @@ import { getUserFromRequest } from '@/lib/auth/middleware'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authUser = await getUserFromRequest(request)
   if (!authUser) {
     return apiErrors.unauthorized()
   }
 
-  const programId = params.id
+  const { id: programId } = await params
   const url = new URL(request.url)
   const upcoming = url.searchParams.get('upcoming') === 'true'
 
   try {
-    let query = db
+    const whereConditions = [eq(sessions.programId, programId)]
+
+    if (upcoming) {
+      whereConditions.push(gte(sessions.sessionDate, new Date()))
+    }
+
+    const sessionsList = await db
       .select({
         id: sessions.id,
         title: sessions.title,
@@ -31,18 +37,12 @@ export async function GET(
         sessionDate: sessions.sessionDate,
         sessionType: sessions.sessionType,
         location: sessions.location,
-        meetingUrl: sessions.meetingUrl,
         programId: sessions.programId,
       })
       .from(sessions)
-      .where(eq(sessions.programId, programId))
-
-    if (upcoming) {
-      // Only get future sessions
-      query = query.where(gte(sessions.sessionDate, new Date().toISOString()))
-    }
-
-    const sessionsList = await query.orderBy(desc(sessions.sessionDate)).limit(10)
+      .where(and(...whereConditions))
+      .orderBy(desc(sessions.sessionDate))
+      .limit(10)
 
     return apiSuccess({ sessions: sessionsList })
   } catch (error) {

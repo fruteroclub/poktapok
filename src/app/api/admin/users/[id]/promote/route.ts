@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { users, programEnrollments } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/privy/middleware'
+import { requireAdmin } from '@/lib/auth/middleware'
 import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/response'
 
 const promoteUserSchema = z.object({
@@ -26,14 +26,16 @@ const promoteUserSchema = z.object({
  * - Enrollment metadata with promotion details
  *
  * @param request - Contains programEnrollmentId and optional promotion notes
- * @param authUser - Admin user from middleware
  * @returns {Object} { success: true, data: { user }, message: "..." }
  */
-export const POST = requireAdmin(async (request: NextRequest, authUser) => {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authUser = await requireAdmin(request)
+
   try {
-    // Get user ID from URL params
-    const url = new URL(request.url)
-    const userId = url.pathname.split('/').slice(-2)[0]
+    const { id: userId } = await params
 
     // Parse and validate request body
     const body = await request.json()
@@ -52,8 +54,8 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
       return apiErrors.notFound('User')
     }
 
-    if (user.accountStatus !== 'guest') {
-      return apiError('User must be a guest to be promoted to member', {
+    if (user.accountStatus !== 'active') {
+      return apiError('User must have active status', {
         code: 'INVALID_STATUS_FOR_PROMOTION',
         status: 400,
         details: { currentStatus: user.accountStatus },
@@ -91,7 +93,7 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
       const updatedMetadata = {
         ...(enrollment.metadata as object),
         promotedAt: new Date().toISOString(),
-        promotedBy: authUser.userId,
+        promotedBy: authUser.id,
         promotionNotes: promotionNotes || null,
       }
 
@@ -113,4 +115,4 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
     console.error('Error promoting user:', error)
     return apiErrors.internal()
   }
-})
+}

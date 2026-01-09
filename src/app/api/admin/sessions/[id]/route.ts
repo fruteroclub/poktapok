@@ -31,9 +31,14 @@ const updateSessionSchema = z.object({
  * GET /api/admin/sessions/:id - Get session details with program info
  * @requires Admin authentication
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
+
+    const { id } = await params
 
     const [sessionWithProgram] = await db
       .select({
@@ -41,12 +46,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         program: {
           id: programs.id,
           name: programs.name,
-          slug: programs.slug,
         },
       })
       .from(sessions)
       .innerJoin(programs, eq(sessions.programId, programs.id))
-      .where(eq(sessions.id, params.id))
+      .where(eq(sessions.id, id))
       .limit(1)
 
     if (!sessionWithProgram) {
@@ -68,10 +72,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
  * PATCH /api/admin/sessions/:id - Update session
  * @requires Admin authentication
  */
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
     const body = await request.json()
     const result = updateSessionSchema.safeParse(body)
 
@@ -83,7 +91,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const [existingSession] = await db
       .select()
       .from(sessions)
-      .where(eq(sessions.id, params.id))
+      .where(eq(sessions.id, id))
       .limit(1)
 
     if (!existingSession) {
@@ -107,7 +115,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const [updatedSession] = await db
       .update(sessions)
       .set(updateData)
-      .where(eq(sessions.id, params.id))
+      .where(eq(sessions.id, id))
       .returning()
 
     return successResponse({ session: updatedSession })
@@ -120,13 +128,18 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
  * DELETE /api/admin/sessions/:id - Delete session (hard delete with cascade)
  * @requires Admin authentication
  */
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
+
     const [deletedSession] = await db
       .delete(sessions)
-      .where(eq(sessions.id, params.id))
+      .where(eq(sessions.id, id))
       .returning()
 
     if (!deletedSession) {

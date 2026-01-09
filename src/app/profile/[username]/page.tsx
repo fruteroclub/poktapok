@@ -137,10 +137,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               {canViewSocials && (
                 <SocialLinks
                   className="h-full"
-                  githubUrl={profile.githubUrl}
-                  twitterUrl={profile.twitterUrl}
+                  githubUrl={profile.githubUsername}
+                  twitterUrl={profile.twitterUsername}
                   linkedinUrl={profile.linkedinUrl}
-                  telegramHandle={profile.telegramHandle}
+                  telegramHandle={profile.telegramUsername}
                 />
               )}
 

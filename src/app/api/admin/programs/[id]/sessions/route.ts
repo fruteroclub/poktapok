@@ -8,9 +8,14 @@ import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middle
  * GET /api/admin/programs/:id/sessions - Get all sessions for a program
  * @requires Admin authentication
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
+
+    const { id } = await params
 
     const programSessions = await db
       .select({
@@ -22,7 +27,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         sessionDate: sessions.sessionDate,
         duration: sessions.duration,
         location: sessions.location,
-        meetingUrl: sessions.meetingUrl,
         instructors: sessions.instructors,
         materials: sessions.materials,
         isActive: sessions.isActive,
@@ -41,7 +45,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         )`,
       })
       .from(sessions)
-      .where(eq(sessions.programId, params.id))
+      .where(eq(sessions.programId, id))
       .orderBy(sessions.sessionDate)
 
     return successResponse({ sessions: programSessions })

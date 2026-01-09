@@ -15,7 +15,9 @@ const markAttendanceSchema = z.object({
  * POST /api/admin/attendance/mark
  * Mark attendance for users at a session
  */
-export const POST = requireAdmin(async (request: NextRequest, authUser) => {
+export async function POST(request: NextRequest) {
+  const authUser = await requireAdmin(request)
+
   const body = await request.json()
   const result = markAttendanceSchema.safeParse(body)
 
@@ -35,14 +37,14 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
             userId,
             sessionId,
             status,
-            markedBy: authUser.userId,
+            markedBy: authUser.id,
             markedAt: new Date(),
           })
           .onConflictDoUpdate({
             target: [attendance.userId, attendance.sessionId],
             set: {
               status,
-              markedBy: authUser.userId,
+              markedBy: authUser.id,
               markedAt: new Date(),
               updatedAt: new Date(),
             },
@@ -58,4 +60,4 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
     console.error('Error marking attendance:', error)
     return apiErrors.internal()
   }
-})
+}

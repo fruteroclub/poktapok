@@ -1,6 +1,6 @@
 'use client'
 
-import { useMe } from '@/hooks/use-auth'
+import { useAuth } from '@/hooks/use-auth'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Lock } from 'lucide-react'
 import { ReactNode } from 'react'
@@ -20,13 +20,13 @@ export function MemberOnly({
   fallback,
   showMessage = true,
 }: MemberOnlyProps) {
-  const { data, isLoading } = useMe()
+  const { data, isLoading } = useAuth()
 
   if (isLoading) {
     return null
   }
 
-  const isActiveMember = data?.user.accountStatus === 'active'
+  const isActiveMember = data?.user?.accountStatus === 'active'
 
   if (isActiveMember) {
     return <>{children}</>

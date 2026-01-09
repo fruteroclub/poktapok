@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin } from '@/lib/privy/middleware'
+import { requireAdmin } from '@/lib/auth/middleware'
 import { db } from '@/lib/db'
 import { users, profiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -11,7 +11,8 @@ import { apiSuccess, apiErrors } from '@/lib/api/response'
  * Returns all users with accountStatus === 'pending' along with their profile data.
  * Admin only endpoint.
  */
-export const GET = requireAdmin(async (_req: NextRequest) => {
+export async function GET(_req: NextRequest) {
+  await requireAdmin(_req)
   try {
     // Query pending users with their profiles
     const pendingUsers = await db
@@ -43,10 +44,10 @@ export const GET = requireAdmin(async (_req: NextRequest) => {
             userId: profile.userId,
             city: profile.city,
             country: profile.country,
-            githubUrl: profile.githubUrl,
-            twitterUrl: profile.twitterUrl,
+            githubUsername: profile.githubUsername,
+            twitterUsername: profile.twitterUsername,
             linkedinUrl: profile.linkedinUrl,
-            telegramHandle: profile.telegramHandle,
+            telegramUsername: profile.telegramUsername,
             learningTracks: profile.learningTracks,
           }
         : null,
@@ -60,4 +61,4 @@ export const GET = requireAdmin(async (_req: NextRequest) => {
     console.error('Error fetching pending users:', error)
     return apiErrors.internal('Failed to fetch pending users')
   }
-})
+}

@@ -43,10 +43,10 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
           learningTracks: dbProfile.learningTracks || [],
           availabilityStatus: dbProfile.availabilityStatus,
           socialLinks: {
-            github: dbProfile.githubUrl || undefined,
-            twitter: dbProfile.twitterUrl || undefined,
+            github: dbProfile.githubUsername || undefined,
+            twitter: dbProfile.twitterUsername || undefined,
             linkedin: dbProfile.linkedinUrl || undefined,
-            telegram: dbProfile.telegramHandle || undefined,
+            telegram: dbProfile.telegramUsername || undefined,
           },
         }
       : null

@@ -17,11 +17,12 @@ const linkActivitySchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
     const body = await request.json()
     const result = linkActivitySchema.safeParse(body)
 
@@ -46,7 +47,7 @@ export async function POST(
       .from(programActivities)
       .where(
         and(
-          eq(programActivities.programId, params.id),
+          eq(programActivities.programId, id),
           eq(programActivities.activityId, result.data.activityId)
         )
       )
@@ -62,7 +63,7 @@ export async function POST(
     const [link] = await db
       .insert(programActivities)
       .values({
-        programId: params.id,
+        programId: id,
         activityId: result.data.activityId,
         isRequired: result.data.isRequired,
         orderIndex: result.data.orderIndex,
@@ -81,10 +82,12 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin(request)
+
+    const { id } = await params
 
     const links = await db
       .select({
@@ -97,12 +100,11 @@ export async function GET(
           title: activities.title,
           description: activities.description,
           activityType: activities.activityType,
-          isActive: activities.isActive,
         },
       })
       .from(programActivities)
       .innerJoin(activities, eq(programActivities.activityId, activities.id))
-      .where(eq(programActivities.programId, params.id))
+      .where(eq(programActivities.programId, id))
       .orderBy(programActivities.orderIndex)
 
     return successResponse({ activities: links })

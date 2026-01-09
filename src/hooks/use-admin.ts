@@ -23,6 +23,15 @@ import {
   linkActivityToProgram,
   updateActivityLink,
   unlinkActivityFromProgram,
+  fetchAllSessions,
+  fetchSession,
+  createSession,
+  updateSession,
+  deleteSession,
+  fetchProgramSessions,
+  fetchSessionActivities,
+  linkActivityToSession,
+  unlinkActivityFromSession,
 } from '@/services/admin'
 import type { ApiError } from '@/lib/api/fetch'
 import type {
@@ -32,6 +41,9 @@ import type {
   UpdateProgramRequest,
   LinkActivityRequest,
   UpdateActivityLinkRequest,
+  CreateSessionRequest,
+  UpdateSessionRequest,
+  LinkSessionActivityRequest,
 } from '@/types/api-v1'
 
 /**
@@ -313,6 +325,144 @@ export function useUnlinkActivity() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['admin', 'programs', variables.programId, 'activities'],
+      })
+    },
+  })
+}
+
+// ============================================================================
+// Session Management Hooks (Epic 3 - Phase 2)
+// ============================================================================
+
+/**
+ * Hook to fetch all sessions
+ */
+export function useAllSessions() {
+  return useQuery({
+    queryKey: ['admin', 'sessions'],
+    queryFn: fetchAllSessions,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Hook to fetch single session by ID
+ */
+export function useSession(sessionId: string | null) {
+  return useQuery({
+    queryKey: ['admin', 'sessions', sessionId],
+    queryFn: () => fetchSession(sessionId!),
+    enabled: !!sessionId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Hook to create new session
+ */
+export function useCreateSession() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: createSession,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions'] })
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'programs', data.session.programId, 'sessions'],
+      })
+    },
+  })
+}
+
+/**
+ * Hook to update existing session
+ */
+export function useUpdateSession() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ sessionId, data }: { sessionId: string; data: UpdateSessionRequest }) =>
+      updateSession(sessionId, data),
+    onSuccess: (result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions', variables.sessionId] })
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'programs', result.session.programId, 'sessions'],
+      })
+    },
+  })
+}
+
+/**
+ * Hook to delete session (hard delete with cascade)
+ */
+export function useDeleteSession() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: deleteSession,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions'] })
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'programs', data.session.programId, 'sessions'],
+      })
+    },
+  })
+}
+
+/**
+ * Hook to fetch sessions for a specific program
+ */
+export function useProgramSessions(programId: string | null) {
+  return useQuery({
+    queryKey: ['admin', 'programs', programId, 'sessions'],
+    queryFn: () => fetchProgramSessions(programId!),
+    enabled: !!programId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Hook to fetch session activities
+ */
+export function useSessionActivities(sessionId: string | null) {
+  return useQuery({
+    queryKey: ['admin', 'sessions', sessionId, 'activities'],
+    queryFn: () => fetchSessionActivities(sessionId!),
+    enabled: !!sessionId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Hook to link activity to session
+ */
+export function useLinkSessionActivity() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ sessionId, data }: { sessionId: string; data: LinkSessionActivityRequest }) =>
+      linkActivityToSession(sessionId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'sessions', variables.sessionId, 'activities'],
+      })
+    },
+  })
+}
+
+/**
+ * Hook to unlink activity from session
+ */
+export function useUnlinkSessionActivity() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ sessionId, activityId }: { sessionId: string; activityId: string }) =>
+      unlinkActivityFromSession(sessionId, activityId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'sessions', variables.sessionId, 'activities'],
       })
     },
   })

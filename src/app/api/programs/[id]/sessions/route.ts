@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { sessions } from '@/lib/db/schema'
 import { eq, gte, desc } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
-import { getAuthUser } from '@/lib/auth/middleware'
+import { getUserFromRequest } from '@/lib/auth/middleware'
 
 /**
  * GET /api/programs/:id/sessions
@@ -13,7 +13,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const authUser = await getAuthUser(request)
+  const authUser = await getUserFromRequest(request)
   if (!authUser) {
     return apiErrors.unauthorized()
   }

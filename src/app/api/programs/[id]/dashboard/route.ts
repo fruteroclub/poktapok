@@ -10,7 +10,7 @@ import {
 } from '@/lib/db/schema'
 import { eq, and, count, sql } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
-import { getAuthUser } from '@/lib/auth/middleware'
+import { getUserFromRequest } from '@/lib/auth/middleware'
 
 /**
  * GET /api/programs/:id/dashboard
@@ -20,7 +20,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  const authUser = await getAuthUser(request)
+  const authUser = await getUserFromRequest(request)
   if (!authUser) {
     return apiErrors.unauthorized()
   }
@@ -34,7 +34,7 @@ export async function GET(
       .from(programEnrollments)
       .where(
         and(
-          eq(programEnrollments.userId, authUser.userId),
+          eq(programEnrollments.userId, authUser.id),
           eq(programEnrollments.programId, programId),
         ),
       )
@@ -50,7 +50,7 @@ export async function GET(
       .from(applications)
       .where(
         and(
-          eq(applications.userId, authUser.userId),
+          eq(applications.userId, authUser.id),
           eq(applications.programId, programId),
         ),
       )
@@ -76,7 +76,7 @@ export async function GET(
         accountStatus: users.accountStatus,
       })
       .from(users)
-      .where(eq(users.id, authUser.userId))
+      .where(eq(users.id, authUser.id))
       .limit(1)
 
     // Get participation statistics
@@ -86,7 +86,7 @@ export async function GET(
         present: sql<number>`SUM(CASE WHEN ${attendance.status} = 'present' THEN 1 ELSE 0 END)`,
       })
       .from(attendance)
-      .where(eq(attendance.userId, authUser.userId))
+      .where(eq(attendance.userId, authUser.id))
 
     const [submissionStats] = await db
       .select({
@@ -95,7 +95,7 @@ export async function GET(
         pending: sql<number>`SUM(CASE WHEN ${activitySubmissions.status} = 'pending' THEN 1 ELSE 0 END)`,
       })
       .from(activitySubmissions)
-      .where(eq(activitySubmissions.userId, authUser.userId))
+      .where(eq(activitySubmissions.userId, authUser.id))
 
     // Calculate average quality score from approved submissions
     const [qualityStats] = await db
@@ -105,7 +105,7 @@ export async function GET(
       .from(activitySubmissions)
       .where(
         and(
-          eq(activitySubmissions.userId, authUser.userId),
+          eq(activitySubmissions.userId, authUser.id),
           eq(activitySubmissions.status, 'approved'),
         ),
       )

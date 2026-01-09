@@ -9,7 +9,9 @@ import { requireAdmin } from '@/lib/auth/middleware'
  * GET /api/admin/applications
  * List all applications with filtering and pagination
  */
-export const GET = requireAdmin(async (request: NextRequest) => {
+export async function GET(request: NextRequest) {
+  await requireAdmin(request)
+
   const { searchParams } = new URL(request.url)
   const status = searchParams.get('status') // pending, approved, rejected
   const programId = searchParams.get('programId')
@@ -104,4 +106,4 @@ export const GET = requireAdmin(async (request: NextRequest) => {
     console.error('Error fetching applications:', error)
     return apiErrors.internal()
   }
-})
+}

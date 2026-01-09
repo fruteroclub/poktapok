@@ -36,6 +36,13 @@
       "when": 1736387100000,
       "tag": "0004_add_sessions_and_session_activities",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1736472000000,
+      "tag": "0005_make_sessions_programid_nullable",
+      "breakpoints": true
     }
   ]
 }

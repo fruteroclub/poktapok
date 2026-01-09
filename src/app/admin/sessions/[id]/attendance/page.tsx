@@ -1,36 +1,55 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { use } from 'react'
+import Link from 'next/link'
 import { useSessionAttendance } from '@/hooks/use-attendance'
 import { AttendanceMarker } from '@/components/admin/attendance-marker'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 import { Calendar, Users, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
-export default function SessionAttendancePage() {
-  const params = useParams()
-  const sessionId = params.id as string
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default function SessionAttendancePage({ params }: PageProps) {
+  const resolvedParams = use(params)
+  const sessionId = resolvedParams.id
 
   const { data, isLoading } = useSessionAttendance(sessionId)
 
   if (isLoading) {
     return (
-      <div className="container mx-auto space-y-6 py-8">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-64 w-full" />
-      </div>
+      <PageWrapper>
+        <div className="space-y-6">
+          <Skeleton className="h-12 w-64" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </PageWrapper>
     )
   }
 
   if (!data) {
     return (
-      <div className="container mx-auto py-8">
+      <PageWrapper>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
           <p className="text-sm text-muted-foreground">Session not found.</p>
+          <Button asChild className="mt-4">
+            <Link href="/admin/sessions">Back to Sessions</Link>
+          </Button>
         </div>
-      </div>
+      </PageWrapper>
     )
   }
 
@@ -52,22 +71,42 @@ export default function SessionAttendancePage() {
   const unmarked = users.length - totalMarked
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">{session.title}</h1>
-        {session.description && (
-          <p className="text-muted-foreground">{session.description}</p>
-        )}
-        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar className="h-4 w-4" />
-          <span>
-            {formatDistanceToNow(new Date(session.sessionDate), {
-              addSuffix: true,
-            })}
-          </span>
+    <PageWrapper>
+      <div className="space-y-6">
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/admin/sessions">Sessions</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/admin/sessions/${sessionId}`}>{session.title}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Attendance</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Mark Attendance</h1>
+          <p className="text-muted-foreground">{session.title}</p>
+          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {formatDistanceToNow(new Date(session.sessionDate), {
+                addSuffix: true,
+              })}
+            </span>
+          </div>
         </div>
-      </div>
 
       {/* Statistics */}
       <div className="grid gap-4 md:grid-cols-5">
@@ -124,15 +163,16 @@ export default function SessionAttendancePage() {
         </Card>
       </div>
 
-      {/* Attendance Marking */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Attendance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AttendanceMarker sessionId={sessionId} users={users} />
-        </CardContent>
-      </Card>
-    </div>
+        {/* Attendance Marking */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Attendance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AttendanceMarker sessionId={sessionId} users={users} />
+          </CardContent>
+        </Card>
+      </div>
+    </PageWrapper>
   )
 }

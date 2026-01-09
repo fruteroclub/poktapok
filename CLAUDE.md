@@ -603,15 +603,21 @@ const { data, isLoading, isError } = useMe()
 
 ### Database Schema Changes
 
-**⚠️ IMPORTANT**: The project uses **migration-based workflow** for team collaboration. Never use `db:push`.
+**⚠️ CRITICAL**: The project uses **migration-based workflow** for database changes. **NEVER use `db:push` - it corrupts the migration system.**
 
 **Standard workflow for schema changes:**
 
-1. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts, activities.ts, projects.ts, skills.ts)
-2. **Generate migration**: `bun run db:generate`
-3. **Review migration**: Check `drizzle/migrations/XXXX_*.sql`
-4. **Apply migration**: `bun run db:migrate`
-5. **Verify**: `bun run db:list-migrations`
+1. **Check current state**: `bun run scripts/check-applied-migrations.ts`
+2. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts, activities.ts, sessions.ts, etc.)
+3. **Generate migration**: `bun run db:generate`
+   - If this fails with "data is malformed", see [docs/DATABASE-MIGRATION-FIX.md](docs/DATABASE-MIGRATION-FIX.md)
+4. **Review migration**: Check `drizzle/migrations/XXXX_*.sql` for correctness
+5. **Apply migration**: `bun run db:migrate`
+6. **Verify**: `bun run scripts/check-applied-migrations.ts`
+
+**Emergency procedure if migration system is corrupted:**
+- See [docs/DATABASE-MIGRATION-FIX.md](docs/DATABASE-MIGRATION-FIX.md) for recovery steps
+- Key diagnostic: `bun run scripts/check-applied-migrations.ts`
 
 **Important constraints to follow:**
 

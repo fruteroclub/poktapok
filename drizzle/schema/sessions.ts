@@ -5,14 +5,13 @@ import { timestamps, metadata } from './utils'
 /**
  * Sessions table - Content delivery units for programs
  *
- * Sessions are the smallest unit of a program where content is delivered
- * (in-person or virtual meetings). Each session teaches concepts related to
- * the program and can have related activities (deliverables/assignments).
+ * Sessions can be standalone OR linked to a program via optional programId.
+ * This supports both structured program sessions and standalone events
+ * (e.g., open coworking sessions, workshops, community events).
  */
 export const sessions = pgTable('sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   programId: uuid('program_id')
-    .notNull()
     .references(() => programs.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 200 }).notNull(),
   description: text('description'),

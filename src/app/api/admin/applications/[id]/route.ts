@@ -9,10 +9,13 @@ import { requireAdmin } from '@/lib/auth/middleware'
  * GET /api/admin/applications/:id
  * Get full application details with user and program information
  */
-export const GET = requireAdmin(async (request: NextRequest) => {
-  // Extract application ID from URL
-  const url = new URL(request.url)
-  const applicationId = url.pathname.split('/').slice(-1)[0]
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  await requireAdmin(request)
+
+  const { id: applicationId } = await params
 
   if (!applicationId) {
     return apiErrors.notFound('Application ID')
@@ -115,4 +118,4 @@ export const GET = requireAdmin(async (request: NextRequest) => {
     console.error('Error fetching application detail:', error)
     return apiErrors.internal()
   }
-})
+}

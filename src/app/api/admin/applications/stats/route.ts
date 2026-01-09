@@ -9,7 +9,9 @@ import { requireAdmin } from '@/lib/auth/middleware'
  * GET /api/admin/applications/stats
  * Get application statistics for admin dashboard
  */
-export const GET = requireAdmin(async (request: NextRequest) => {
+export async function GET(request: NextRequest) {
+  await requireAdmin(request)
+
   try {
     // Get counts by status
     const statusCounts = await db
@@ -56,4 +58,4 @@ export const GET = requireAdmin(async (request: NextRequest) => {
     console.error('Error fetching application statistics:', error)
     return apiErrors.internal()
   }
-})
+}

@@ -910,3 +910,190 @@ export interface UpdateActivityLinkResponse {
 export interface UnlinkActivityResponse {
   link: ProgramActivityLink
 }
+
+// ============================================================================
+// Session Management Types (Epic 3 - Phase 2)
+// ============================================================================
+
+/**
+ * Session type (content delivery unit within a program)
+ */
+export interface Session {
+  id: string
+  programId: string
+  title: string
+  description: string | null
+  sessionType: 'in-person' | 'virtual' | 'hybrid'
+  sessionDate: string // ISO datetime string
+  duration: string | null
+  location: string | null
+  meetingUrl: string | null
+  instructors: string[] | null
+  materials: Array<{
+    title: string
+    url: string
+    type: string
+  }> | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  metadata: Record<string, unknown>
+}
+
+/**
+ * Session with program details
+ */
+export interface SessionWithProgram extends Session {
+  program: {
+    id: string
+    name: string
+    slug: string
+  }
+}
+
+/**
+ * Session with activity count
+ */
+export interface SessionWithActivityCount extends Session {
+  activityCount: number
+  attendanceCount: number
+}
+
+/**
+ * Request body for POST /api/admin/sessions
+ */
+export interface CreateSessionRequest {
+  programId: string
+  title: string
+  description?: string
+  sessionType: 'in-person' | 'virtual' | 'hybrid'
+  sessionDate: string // ISO datetime string
+  duration?: string
+  location?: string
+  meetingUrl?: string
+  instructors?: string[]
+  materials?: Array<{
+    title: string
+    url: string
+    type: string
+  }>
+  isActive?: boolean
+}
+
+/**
+ * Response for POST /api/admin/sessions
+ */
+export interface CreateSessionResponse {
+  session: Session
+}
+
+/**
+ * Request body for PATCH /api/admin/sessions/:id
+ */
+export interface UpdateSessionRequest {
+  title?: string
+  description?: string | null
+  sessionType?: 'in-person' | 'virtual' | 'hybrid'
+  sessionDate?: string
+  duration?: string | null
+  location?: string | null
+  meetingUrl?: string | null
+  instructors?: string[] | null
+  materials?: Array<{
+    title: string
+    url: string
+    type: string
+  }> | null
+  isActive?: boolean
+}
+
+/**
+ * Response for PATCH /api/admin/sessions/:id
+ */
+export interface UpdateSessionResponse {
+  session: Session
+}
+
+/**
+ * Response for DELETE /api/admin/sessions/:id (soft delete)
+ */
+export interface DeleteSessionResponse {
+  session: Session
+}
+
+/**
+ * Response for GET /api/admin/sessions
+ */
+export interface GetAllSessionsResponse {
+  sessions: SessionWithActivityCount[]
+}
+
+/**
+ * Response for GET /api/admin/sessions/:id
+ */
+export interface GetSessionResponse {
+  session: SessionWithProgram
+}
+
+/**
+ * Response for GET /api/admin/programs/:id/sessions
+ */
+export interface GetProgramSessionsResponse {
+  sessions: SessionWithActivityCount[]
+}
+
+/**
+ * Session-Activity link
+ */
+export interface SessionActivityLink {
+  id: string
+  sessionId: string
+  activityId: string
+  orderIndex: number | null
+  createdAt: string
+}
+
+/**
+ * Session-Activity link with activity details
+ */
+export interface SessionActivityLinkWithDetails {
+  id: string
+  activityId: string
+  orderIndex: number | null
+  activity: {
+    id: string
+    title: string
+    description: string | null
+    activityType: string
+    isActive: boolean
+  }
+}
+
+/**
+ * Request body for POST /api/admin/sessions/:id/activities
+ */
+export interface LinkSessionActivityRequest {
+  activityId: string
+  orderIndex?: number
+}
+
+/**
+ * Response for POST /api/admin/sessions/:id/activities
+ */
+export interface LinkSessionActivityResponse {
+  link: SessionActivityLink
+}
+
+/**
+ * Response for GET /api/admin/sessions/:id/activities
+ */
+export interface GetSessionActivitiesResponse {
+  activities: SessionActivityLinkWithDetails[]
+}
+
+/**
+ * Response for DELETE /api/admin/sessions/:sessionId/activities/:activityId
+ */
+export interface UnlinkSessionActivityResponse {
+  link: SessionActivityLink
+}

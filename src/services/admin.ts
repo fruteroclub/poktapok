@@ -30,6 +30,18 @@ import type {
   UpdateActivityLinkRequest,
   UpdateActivityLinkResponse,
   UnlinkActivityResponse,
+  CreateSessionRequest,
+  CreateSessionResponse,
+  UpdateSessionRequest,
+  UpdateSessionResponse,
+  DeleteSessionResponse,
+  GetAllSessionsResponse,
+  GetSessionResponse,
+  GetProgramSessionsResponse,
+  LinkSessionActivityRequest,
+  LinkSessionActivityResponse,
+  GetSessionActivitiesResponse,
+  UnlinkSessionActivityResponse,
 } from '@/types/api-v1'
 
 /**
@@ -241,6 +253,105 @@ export async function unlinkActivityFromProgram(
 ): Promise<UnlinkActivityResponse> {
   return apiFetch<UnlinkActivityResponse>(
     `/api/admin/programs/${programId}/activities/${activityId}`,
+    {
+      method: 'DELETE',
+    }
+  )
+}
+
+// ============================================================================
+// Session CRUD Operations (Epic 3 - Phase 2)
+// ============================================================================
+
+/**
+ * Fetch all sessions
+ */
+export async function fetchAllSessions(): Promise<GetAllSessionsResponse> {
+  return apiFetch<GetAllSessionsResponse>('/api/admin/sessions')
+}
+
+/**
+ * Fetch single session by ID
+ */
+export async function fetchSession(sessionId: string): Promise<GetSessionResponse> {
+  return apiFetch<GetSessionResponse>(`/api/admin/sessions/${sessionId}`)
+}
+
+/**
+ * Create new session
+ */
+export async function createSession(data: CreateSessionRequest): Promise<CreateSessionResponse> {
+  return apiFetch<CreateSessionResponse>('/api/admin/sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Update existing session
+ */
+export async function updateSession(
+  sessionId: string,
+  data: UpdateSessionRequest
+): Promise<UpdateSessionResponse> {
+  return apiFetch<UpdateSessionResponse>(`/api/admin/sessions/${sessionId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Delete session (hard delete with cascade)
+ */
+export async function deleteSession(sessionId: string): Promise<DeleteSessionResponse> {
+  return apiFetch<DeleteSessionResponse>(`/api/admin/sessions/${sessionId}`, {
+    method: 'DELETE',
+  })
+}
+
+/**
+ * Fetch sessions for a specific program
+ */
+export async function fetchProgramSessions(
+  programId: string
+): Promise<GetProgramSessionsResponse> {
+  return apiFetch<GetProgramSessionsResponse>(`/api/admin/programs/${programId}/sessions`)
+}
+
+/**
+ * Fetch activities linked to a session
+ */
+export async function fetchSessionActivities(
+  sessionId: string
+): Promise<GetSessionActivitiesResponse> {
+  return apiFetch<GetSessionActivitiesResponse>(`/api/admin/sessions/${sessionId}/activities`)
+}
+
+/**
+ * Link an activity to a session
+ */
+export async function linkActivityToSession(
+  sessionId: string,
+  data: LinkSessionActivityRequest
+): Promise<LinkSessionActivityResponse> {
+  return apiFetch<LinkSessionActivityResponse>(`/api/admin/sessions/${sessionId}/activities`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Unlink activity from session
+ */
+export async function unlinkActivityFromSession(
+  sessionId: string,
+  activityId: string
+): Promise<UnlinkSessionActivityResponse> {
+  return apiFetch<UnlinkSessionActivityResponse>(
+    `/api/admin/sessions/${sessionId}/activities/${activityId}`,
     {
       method: 'DELETE',
     }

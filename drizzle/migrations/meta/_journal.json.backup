@@ -29,13 +29,6 @@
       "when": 1736201800000,
       "tag": "0003_onboarding_flow_social_accounts",
       "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1736387100000,
-      "tag": "0004_add_sessions_and_session_activities",
-      "breakpoints": true
     }
   ]
 }

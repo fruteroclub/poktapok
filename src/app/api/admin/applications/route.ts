@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
   await requireAdmin(request)
 
   const { searchParams } = new URL(request.url)
-  const status = searchParams.get('status') // pending, approved, rejected
+  const statusParam = searchParams.get('status')
+  const status = statusParam as 'pending' | 'approved' | 'rejected' | null // Type assertion for enum
   const programId = searchParams.get('programId')
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
@@ -30,9 +31,7 @@ export async function GET(request: NextRequest) {
           goal: applications.goal,
           githubUsername: applications.githubUsername,
           twitterUsername: applications.twitterUsername,
-          linkedinUrl: applications.linkedinUrl,
-          telegramUsername: applications.telegramUsername,
-          reviewedBy: applications.reviewedBy,
+          reviewedByUserId: applications.reviewedByUserId,
           reviewedAt: applications.reviewedAt,
           reviewNotes: applications.reviewNotes,
           createdAt: applications.createdAt,
@@ -46,8 +45,6 @@ export async function GET(request: NextRequest) {
         },
         profile: {
           id: profiles.id,
-          displayName: profiles.displayName,
-          avatarUrl: profiles.avatarUrl,
           city: profiles.city,
           country: profiles.country,
         },

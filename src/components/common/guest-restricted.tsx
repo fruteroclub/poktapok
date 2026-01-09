@@ -1,6 +1,6 @@
 'use client'
 
-import { useMe } from '@/hooks/use-auth'
+import { useAuth } from '@/hooks/use-auth'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
 import { ReactNode } from 'react'
@@ -20,13 +20,13 @@ export function GuestRestricted({
   fallback,
   showMessage = true,
 }: GuestRestrictedProps) {
-  const { data, isLoading } = useMe()
+  const { data, isLoading } = useAuth()
 
   if (isLoading) {
     return null
   }
 
-  const isGuest = data?.user.accountStatus === 'guest'
+  const isGuest = data?.user?.accountStatus === 'guest'
 
   if (!isGuest) {
     return <>{children}</>

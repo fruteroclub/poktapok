@@ -13,7 +13,6 @@ const createSessionSchema = z.object({
   sessionDate: z.string().datetime('Invalid date format'),
   duration: z.string().optional(),
   location: z.string().optional(),
-  meetingUrl: z.string().url('Invalid meeting URL').optional(),
   instructors: z.array(z.string()).optional(),
   materials: z
     .array(
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
         sessionDate: new Date(result.data.sessionDate),
         duration: result.data.duration || null,
         location: result.data.location || null,
-        meetingUrl: result.data.meetingUrl || null,
         instructors: result.data.instructors || [],
         materials: result.data.materials || [],
         isActive: result.data.isActive,
@@ -94,7 +92,6 @@ export async function GET(request: NextRequest) {
         sessionDate: sessions.sessionDate,
         duration: sessions.duration,
         location: sessions.location,
-        meetingUrl: sessions.meetingUrl,
         instructors: sessions.instructors,
         materials: sessions.materials,
         isActive: sessions.isActive,

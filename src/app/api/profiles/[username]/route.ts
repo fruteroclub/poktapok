@@ -71,10 +71,10 @@ export async function GET(
           ? profile.availabilityStatus
           : null,
         // Social links (members-only)
-        githubUrl: canViewSocials ? profile.githubUrl : null,
-        twitterUrl: canViewSocials ? profile.twitterUrl : null,
+        githubUsername: canViewSocials ? profile.githubUsername : null,
+        twitterUsername: canViewSocials ? profile.twitterUsername : null,
         linkedinUrl: canViewSocials ? profile.linkedinUrl : null,
-        telegramHandle: canViewSocials ? profile.telegramHandle : null,
+        telegramUsername: canViewSocials ? profile.telegramUsername : null,
         // Stats (members-only)
         completedBounties: canViewSocials ? profile.completedBounties : 0,
         totalEarningsUsd: canViewSocials ? profile.totalEarningsUsd : 0,

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin } from '@/lib/privy/middleware'
+import { requireAdmin } from '@/lib/auth/middleware'
 import { calculatePromotionEligibility } from '@/lib/promotion/calculate-eligibility'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 
@@ -14,14 +14,17 @@ import { apiSuccess, apiErrors } from '@/lib/api/response'
  * Returns eligibility criteria with progress indicators
  *
  * @param request - Contains enrollment ID in query params
- * @param authUser - Admin user from middleware
  * @returns {Object} { success: true, data: PromotionEligibility }
  */
-export const GET = requireAdmin(async (request: NextRequest, authUser) => {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  await requireAdmin(request)
+
   try {
-    // Get user ID from URL params
+    const { id: userId } = await params
     const url = new URL(request.url)
-    const userId = url.pathname.split('/').slice(-2)[0]
     const enrollmentId = url.searchParams.get('enrollmentId')
 
     if (!enrollmentId) {
@@ -41,4 +44,4 @@ export const GET = requireAdmin(async (request: NextRequest, authUser) => {
 
     return apiErrors.internal()
   }
-})
+}

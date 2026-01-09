@@ -7,10 +7,9 @@ import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middle
 const createProgramSchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
-    slug: z.string().min(1, 'Slug is required').max(100, 'Slug must be at most 100 characters'),
     description: z.string().min(1, 'Description is required'),
     programType: z.enum(['cohort', 'evergreen'], {
-      errorMap: () => ({ message: 'Program type must be cohort or evergreen' }),
+      message: 'Program type must be cohort or evergreen',
     }),
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
@@ -54,7 +53,6 @@ export async function POST(request: NextRequest) {
       .insert(programs)
       .values({
         name: result.data.name,
-        slug: result.data.slug,
         description: result.data.description,
         programType: result.data.programType,
         startDate: result.data.startDate ? new Date(result.data.startDate) : null,

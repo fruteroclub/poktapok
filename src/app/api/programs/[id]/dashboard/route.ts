@@ -18,14 +18,14 @@ import { getUserFromRequest } from '@/lib/auth/middleware'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authUser = await getUserFromRequest(request)
   if (!authUser) {
     return apiErrors.unauthorized()
   }
 
-  const programId = params.id
+  const { id: programId } = await params
 
   try {
     // Get enrollment

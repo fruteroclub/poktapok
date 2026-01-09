@@ -1,6 +1,6 @@
 'use client'
 
-import { Program } from '@/types/api-v1'
+import { ProgramDetail } from '@/types/api-v1'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -17,7 +17,7 @@ import { Edit, Trash2 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface ProgramsTableProps {
-  programs: Program[]
+  programs: ProgramDetail[]
   isLoading: boolean
   onEdit: (programId: string) => void
   onDelete: (programId: string) => void

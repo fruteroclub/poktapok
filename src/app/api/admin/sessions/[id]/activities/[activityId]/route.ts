@@ -5,22 +5,24 @@ import { eq, and } from 'drizzle-orm'
 import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middleware'
 
 /**
- * DELETE /api/admin/sessions/:sessionId/activities/:activityId - Unlink activity from session
+ * DELETE /api/admin/sessions/:id/activities/:activityId - Unlink activity from session
  * @requires Admin authentication
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { sessionId: string; activityId: string } }
+  { params }: { params: Promise<{ id: string; activityId: string }> }
 ) {
   try {
     await requireAdmin(request)
+
+    const { id: sessionId, activityId } = await params
 
     const [deletedLink] = await db
       .delete(sessionActivities)
       .where(
         and(
-          eq(sessionActivities.sessionId, params.sessionId),
-          eq(sessionActivities.activityId, params.activityId)
+          eq(sessionActivities.sessionId, sessionId),
+          eq(sessionActivities.activityId, activityId)
         )
       )
       .returning()

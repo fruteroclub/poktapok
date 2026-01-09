@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { applications, users, programEnrollments } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { requireAdmin } from '@/lib/privy/middleware'
+import { requireAdmin } from '@/lib/auth/middleware'
 import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/response'
 
 const approveApplicationSchema = z.object({
@@ -30,11 +30,14 @@ const approveApplicationSchema = z.object({
  * @param params - Application ID
  * @returns {Object} { success: true, data: { application }, message: "..." }
  */
-export const POST = requireAdmin(async (request: NextRequest, authUser) => {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authUser = await requireAdmin(request)
+
   try {
-    // Get application ID from URL params
-    const url = new URL(request.url)
-    const applicationId = url.pathname.split('/').slice(-2)[0]
+    const { id: applicationId } = await params
 
     // Parse and validate request body
     const body = await request.json()
@@ -73,9 +76,9 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
     }
 
     const accountStatusMap = {
-      approve_guest: 'guest' as const,
+      approve_guest: 'active' as const, // Both guest and member are "active" users
       approve_member: 'active' as const,
-      reject: 'rejected' as const,
+      reject: 'suspended' as const, // Rejected applications result in suspended accounts
     }
 
     // Process approval/rejection in transaction
@@ -85,7 +88,7 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
         .update(applications)
         .set({
           status: statusMap[decision],
-          reviewedByUserId: authUser.userId,
+          reviewedByUserId: authUser.id,
           reviewedAt: new Date(),
           reviewNotes: reviewNotes || null,
           updatedAt: new Date(),
@@ -127,4 +130,4 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
     console.error('Error approving application:', error)
     return apiErrors.internal()
   }
-})
+}

@@ -20,7 +20,9 @@ const bulkAttendanceSchema = z.object({
  * Bulk mark attendance with different statuses per user
  * Useful for marking multiple users with different attendance statuses in one request
  */
-export const POST = requireAdmin(async (request: NextRequest, authUser) => {
+export async function POST(request: NextRequest) {
+  const authUser = await requireAdmin(request)
+
   const body = await request.json()
   const result = bulkAttendanceSchema.safeParse(body)
 
@@ -39,14 +41,14 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
             userId: record.userId,
             sessionId,
             status: record.status,
-            markedBy: authUser.userId,
+            markedBy: authUser.id,
             markedAt: new Date(),
           })
           .onConflictDoUpdate({
             target: [attendance.userId, attendance.sessionId],
             set: {
               status: record.status,
-              markedBy: authUser.userId,
+              markedBy: authUser.id,
               markedAt: new Date(),
               updatedAt: new Date(),
             },
@@ -62,4 +64,4 @@ export const POST = requireAdmin(async (request: NextRequest, authUser) => {
     console.error('Error marking bulk attendance:', error)
     return apiErrors.internal()
   }
-})
+}

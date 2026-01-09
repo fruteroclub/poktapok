@@ -98,18 +98,18 @@ export function ApplicationDetailDrawer({
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
                 <AvatarImage
-                  src={profile?.avatarUrl || undefined}
-                  alt={profile?.displayName || user.username || ''}
+                  src={user.avatarUrl || undefined}
+                  alt={user.displayName || user.username || ''}
                 />
                 <AvatarFallback>
-                  {(profile?.displayName || user.username || 'U')
+                  {(user.displayName || user.username || 'U')
                     .charAt(0)
                     .toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-1">
                 <p className="font-medium">
-                  {profile?.displayName || user.username}
+                  {user.displayName || user.username}
                 </p>
                 {user.username && (
                   <p className="text-sm text-muted-foreground">
@@ -160,9 +160,7 @@ export function ApplicationDetailDrawer({
 
           {/* Social Accounts */}
           {(application.githubUsername ||
-            application.twitterUsername ||
-            application.linkedinUrl ||
-            application.telegramUsername) && (
+            application.twitterUsername) && (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Social Accounts</h3>
               <div className="space-y-2">
@@ -190,25 +188,6 @@ export function ApplicationDetailDrawer({
                     >
                       @{application.twitterUsername.replace('@', '')}
                     </a>
-                  </div>
-                )}
-                {application.linkedinUrl && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Linkedin className="h-4 w-4" />
-                    <a
-                      href={application.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      LinkedIn Profile
-                    </a>
-                  </div>
-                )}
-                {application.telegramUsername && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>@{application.telegramUsername.replace('@', '')}</span>
                   </div>
                 )}
               </div>

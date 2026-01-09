@@ -320,10 +320,10 @@ export async function getUserDetails(
           countryCode: profileData.countryCode,
           timezone: null,
           learningTracks: profileData.learningTracks || [],
-          githubUrl: profileData.githubUrl,
+          githubUrl: profileData.githubUsername,
           linkedinUrl: profileData.linkedinUrl,
-          twitterUrl: profileData.twitterUrl,
-          telegramUrl: profileData.telegramHandle,
+          twitterUrl: profileData.twitterUsername,
+          telegramUrl: profileData.telegramUsername,
           websiteUrl: null,
         }
       : null,

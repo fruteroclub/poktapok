@@ -16,11 +16,12 @@ const updateLinkSchema = z.object({
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; activityId: string } }
+  { params }: { params: Promise<{ id: string; activityId: string }> }
 ) {
   try {
     await requireAdmin(request)
 
+    const { id, activityId } = await params
     const body = await request.json()
     const result = updateLinkSchema.safeParse(body)
 
@@ -38,8 +39,8 @@ export async function PATCH(
       .set(updates)
       .where(
         and(
-          eq(programActivities.programId, params.id),
-          eq(programActivities.activityId, params.activityId)
+          eq(programActivities.programId, id),
+          eq(programActivities.activityId, activityId)
         )
       )
       .returning()
@@ -60,17 +61,19 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; activityId: string } }
+  { params }: { params: Promise<{ id: string; activityId: string }> }
 ) {
   try {
     await requireAdmin(request)
+
+    const { id, activityId } = await params
 
     const [link] = await db
       .delete(programActivities)
       .where(
         and(
-          eq(programActivities.programId, params.id),
-          eq(programActivities.activityId, params.activityId)
+          eq(programActivities.programId, id),
+          eq(programActivities.activityId, activityId)
         )
       )
       .returning()

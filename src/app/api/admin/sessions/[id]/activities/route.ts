@@ -14,10 +14,14 @@ const linkSessionActivitySchema = z.object({
  * POST /api/admin/sessions/:id/activities - Link activity to session
  * @requires Admin authentication
  */
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
 
+    const { id } = await params
     const body = await request.json()
     const result = linkSessionActivitySchema.safeParse(body)
 
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const [session] = await db
       .select()
       .from(sessions)
-      .where(eq(sessions.id, params.id))
+      .where(eq(sessions.id, id))
       .limit(1)
 
     if (!session) {
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       .from(sessionActivities)
       .where(
         and(
-          eq(sessionActivities.sessionId, params.id),
+          eq(sessionActivities.sessionId, id),
           eq(sessionActivities.activityId, result.data.activityId)
         )
       )
@@ -69,7 +73,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const [link] = await db
       .insert(sessionActivities)
       .values({
-        sessionId: params.id,
+        sessionId: id,
         activityId: result.data.activityId,
         orderIndex: result.data.orderIndex || null,
       })
@@ -85,9 +89,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
  * GET /api/admin/sessions/:id/activities - Get session activities
  * @requires Admin authentication
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin(request)
+
+    const { id } = await params
 
     const links = await db
       .select({
@@ -99,12 +108,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           title: activities.title,
           description: activities.description,
           activityType: activities.activityType,
-          isActive: activities.isActive,
         },
       })
       .from(sessionActivities)
       .innerJoin(activities, eq(sessionActivities.activityId, activities.id))
-      .where(eq(sessionActivities.sessionId, params.id))
+      .where(eq(sessionActivities.sessionId, id))
       .orderBy(sessionActivities.orderIndex)
 
     return successResponse({ activities: links })

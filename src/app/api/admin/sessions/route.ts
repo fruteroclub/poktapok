@@ -6,7 +6,7 @@ import { eq, sql } from 'drizzle-orm'
 import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middleware'
 
 const createSessionSchema = z.object({
-  programId: z.string().uuid('Invalid program ID'),
+  programId: z.string().uuid('Invalid program ID').optional(), // Optional - allows standalone sessions
   title: z.string().min(1, 'Title is required').max(200, 'Title must be 200 characters or less'),
   description: z.string().optional(),
   sessionType: z.enum(['in-person', 'virtual', 'hybrid']),
@@ -41,21 +41,23 @@ export async function POST(request: NextRequest) {
       return handleApiError(result.error)
     }
 
-    // Verify program exists
-    const [program] = await db
-      .select()
-      .from(programs)
-      .where(eq(programs.id, result.data.programId))
-      .limit(1)
+    // Verify program exists if programId is provided
+    if (result.data.programId) {
+      const [program] = await db
+        .select()
+        .from(programs)
+        .where(eq(programs.id, result.data.programId))
+        .limit(1)
 
-    if (!program) {
-      return handleApiError({ message: 'Program not found', code: 'NOT_FOUND' })
+      if (!program) {
+        return handleApiError({ message: 'Program not found', code: 'NOT_FOUND' })
+      }
     }
 
     const [session] = await db
       .insert(sessions)
       .values({
-        programId: result.data.programId,
+        programId: result.data.programId || null,
         title: result.data.title,
         description: result.data.description || null,
         sessionType: result.data.sessionType,

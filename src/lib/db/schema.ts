@@ -33,6 +33,7 @@ export * from '../../../drizzle/schema/program-activities'
 export * from '../../../drizzle/schema/session-activities'
 export * from '../../../drizzle/schema/program-enrollments'
 export * from '../../../drizzle/schema/attendance'
+export * from '../../../drizzle/schema/activity-relationships-view'
 
 // ============================================================
 // RE-EXPORT TYPES FOR CONVENIENCE

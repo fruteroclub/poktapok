@@ -6,6 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchPendingUsers,
+  fetchAllUsers,
   approveUser,
   rejectUser,
   approveApplication,
@@ -54,6 +55,17 @@ export function usePendingUsers() {
     queryKey: ['admin', 'pending-users'],
     queryFn: fetchPendingUsers,
     staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+/**
+ * Hook to fetch all users (for admin operations)
+ */
+export function useAllUsers() {
+  return useQuery({
+    queryKey: ['admin', 'users'],
+    queryFn: fetchAllUsers,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 

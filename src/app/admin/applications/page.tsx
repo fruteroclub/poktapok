@@ -32,11 +32,13 @@ export default function ApplicationsQueuePage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="header-section">
-        <h1 className="text-3xl font-bold">Applications Queue</h1>
-        <p className="text-muted-foreground">
-          Review and process program applications
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold">Applications Queue</h1>
+          <p className="text-muted-foreground">
+            Review and process program applications
+          </p>
+        </div>
       </div>
 
       {/* Stats Cards */}

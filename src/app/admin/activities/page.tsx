@@ -60,7 +60,7 @@ function AdminActivitiesPageContent() {
 
   return (
     <div className="page-content">
-      <div className="flex w-full items-center justify-between">
+      <div className="admin-header-section">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Activities Management

@@ -49,15 +49,17 @@ export default function AdminHomePage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="header-section">
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage users, activities, and platform content
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+          <p className="text-muted-foreground">
+            Manage users, activities, and platform content
+          </p>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Users</CardTitle>
@@ -102,7 +104,7 @@ export default function AdminHomePage() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="mt-6">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>

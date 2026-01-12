@@ -1247,3 +1247,120 @@ export interface GetSessionActivitiesResponse {
 export interface UnlinkSessionActivityResponse {
   link: SessionActivityLink
 }
+
+// ============================================================================
+// Public Programs (Phase 1)
+// ============================================================================
+
+export interface PublicProgramResponse {
+  program: {
+    id: string
+    name: string
+    description: string
+    type: 'cohort' | 'evergreen'
+    isActive: boolean
+    createdAt: string
+    metadata: Record<string, unknown>
+  }
+  stats: {
+    totalEnrollments: number
+    totalSessions: number
+    totalActivities: number
+  }
+  sessions: Array<{
+    id: string
+    title: string
+    description: string | null
+    scheduledAt: string
+    activityCount: number
+  }>
+  activities: Array<{
+    id: string
+    title: string
+    description: string
+    rewardPulpaAmount: string
+    difficulty: 'beginner' | 'intermediate' | 'advanced'
+    activityType: string
+  }>
+}
+
+// ============================================================================
+// Public Sessions (Phase 1)
+// ============================================================================
+
+export interface SessionFilters {
+  upcoming?: boolean
+  programId?: string
+  standalone?: boolean
+  page?: number
+  limit?: number
+}
+
+export interface PublicSession {
+  id: string
+  title: string
+  description: string | null
+  scheduledAt: string
+  programId: string | null
+  programName: string | null
+  activityCount: number
+  createdAt: string
+}
+
+export interface PublicSessionsResponse {
+  sessions: PublicSession[]
+}
+
+export interface SessionDetailResponse {
+  session: {
+    id: string
+    title: string
+    description: string | null
+    scheduledAt: string
+    meetingUrl: string | null
+    programId: string | null
+    programName: string | null
+    createdAt: string
+  }
+  activities: Array<{
+    id: string
+    title: string
+    description: string
+    rewardPulpaAmount: string
+    difficulty: 'beginner' | 'intermediate' | 'advanced'
+    activityType: string
+  }>
+  userCanAccess: boolean
+}
+
+// ============================================================================
+// Public Projects (Phase 1)
+// ============================================================================
+
+export interface ProjectFilters {
+  learningTrack?: 'ai' | 'crypto' | 'privacy'
+  skills?: string[]
+  search?: string
+  page?: number
+  limit?: number
+}
+
+export interface PublicProject {
+  id: string
+  title: string
+  description: string
+  imageUrl: string | null
+  userId: string
+  username: string
+  avatarUrl: string | null
+  skills: Array<{
+    id: string
+    name: string
+    category: string
+  }>
+  createdAt: string
+}
+
+export interface PublicProjectsResponse {
+  projects: PublicProject[]
+}

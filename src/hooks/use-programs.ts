@@ -4,7 +4,11 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { fetchProgramDashboard, fetchProgramSessions } from '@/services/programs'
+import {
+  fetchProgramDashboard,
+  fetchProgramSessions,
+  fetchPublicProgram,
+} from '@/services/programs'
 
 /**
  * Hook to fetch program dashboard data
@@ -27,5 +31,18 @@ export function useProgramSessions(programId: string, upcoming = false) {
     queryFn: () => fetchProgramSessions(programId, upcoming),
     enabled: !!programId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
+/**
+ * Hook to fetch public program detail
+ * No authentication required
+ */
+export function usePublicProgram(programId: string) {
+  return useQuery({
+    queryKey: ['programs', programId, 'public'],
+    queryFn: () => fetchPublicProgram(programId),
+    enabled: !!programId,
+    staleTime: 10 * 60 * 1000, // 10 minutes (public data, less volatile)
   })
 }

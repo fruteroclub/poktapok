@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api/fetch'
 import type {
   ProgramDashboardResponse,
   ProgramSessionsResponse,
+  PublicProgramResponse,
 } from '@/types/api-v1'
 
 /**
@@ -34,4 +35,14 @@ export async function fetchProgramSessions(
   const url = `/api/programs/${programId}/sessions${queryString ? `?${queryString}` : ''}`
 
   return apiFetch<ProgramSessionsResponse>(url)
+}
+
+/**
+ * Fetch public program detail
+ * No authentication required
+ */
+export async function fetchPublicProgram(
+  programId: string,
+): Promise<PublicProgramResponse> {
+  return apiFetch<PublicProgramResponse>(`/api/programs/${programId}`)
 }

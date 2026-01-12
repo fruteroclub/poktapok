@@ -508,7 +508,10 @@ interface SessionCardProps {
 ### Data Fetching
 
 ```typescript
+import { useRouter } from 'next/navigation'
+
 export default function SessionsPage() {
+  const router = useRouter()
   const [filters, setFilters] = useState({
     upcoming: true,
     programId: undefined,

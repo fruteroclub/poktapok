@@ -270,7 +270,10 @@ interface ProjectCardProps {
 ### Data Fetching
 
 ```typescript
+import { useRouter } from 'next/navigation'
+
 export default function ProjectsPage() {
+  const router = useRouter()
   const [filters, setFilters] = useState<ProjectFilters>({
     learningTrack: undefined,
     skills: [],
@@ -469,7 +472,10 @@ interface EventCardProps {
 ### Data Fetching
 
 ```typescript
+import { useRouter } from 'next/navigation'
+
 export default function CalendarPage() {
+  const router = useRouter()
   const [view, setView] = useState<'month' | 'week' | 'list'>('list')
   const [filters, setFilters] = useState({
     type: 'all',

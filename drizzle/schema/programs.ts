@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, boolean, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, text, timestamp, boolean } from 'drizzle-orm/pg-core'
 import { timestamps, metadata } from './utils'
 
 export const programs = pgTable('programs', {

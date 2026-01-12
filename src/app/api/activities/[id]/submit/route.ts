@@ -101,7 +101,11 @@ export async function POST(
     const validated = submitActivitySchema.parse(body)
 
     // Validate against evidence requirements
-    const requirements = activity.evidenceRequirements as any
+    const requirements = activity.evidenceRequirements as {
+      url_required: boolean
+      screenshot_required: boolean
+      text_required: boolean
+    }
 
     if (requirements.url_required && !validated.submission_url) {
       return new Response(

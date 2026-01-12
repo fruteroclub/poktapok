@@ -1,4 +1,4 @@
-import { pgView, uuid, varchar, text, decimal, timestamp, integer, boolean } from 'drizzle-orm/pg-core'
+import { pgView } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 
 /**

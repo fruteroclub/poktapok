@@ -26,17 +26,27 @@ async function checkActivities() {
     if (result.rows.length === 0) {
       console.log('⚠️  No activities found in database')
     } else {
-      result.rows.forEach((row: any) => {
-        console.log(`✅ ${row.title}`)
-        console.log(`   ID: ${row.id}`)
-        console.log(`   Type: ${row.activity_type}`)
-        console.log(`   Status: ${row.status}`)
-        console.log(`   Reward: ${row.reward_pulpa_amount} $PULPA`)
-        const slots = row.total_available_slots
-          ? ` / ${row.total_available_slots}`
+      result.rows.forEach((row) => {
+        const activity = row as {
+          id: string
+          title: string
+          activity_type: string
+          status: string
+          reward_pulpa_amount: string
+          current_submissions_count: number
+          total_available_slots: number | null
+          created_at: Date
+        }
+        console.log(`✅ ${activity.title}`)
+        console.log(`   ID: ${activity.id}`)
+        console.log(`   Type: ${activity.activity_type}`)
+        console.log(`   Status: ${activity.status}`)
+        console.log(`   Reward: ${activity.reward_pulpa_amount} $PULPA`)
+        const slots = activity.total_available_slots
+          ? ` / ${activity.total_available_slots}`
           : ''
-        console.log(`   Submissions: ${row.current_submissions_count}${slots}`)
-        console.log(`   Created: ${row.created_at}`)
+        console.log(`   Submissions: ${activity.current_submissions_count}${slots}`)
+        console.log(`   Created: ${activity.created_at}`)
         console.log('')
       })
     }
@@ -49,8 +59,9 @@ async function checkActivities() {
     `)
 
     console.log('📈 Activities by status:')
-    statusCounts.rows.forEach((row: any) => {
-      console.log(`   ${row.status}: ${row.count}`)
+    statusCounts.rows.forEach((row) => {
+      const statusRow = row as { status: string; count: string }
+      console.log(`   ${statusRow.status}: ${statusRow.count}`)
     })
   } catch (error) {
     console.error('❌ Error:', error)

@@ -49,8 +49,9 @@ async function checkPulpaTables() {
       ORDER BY tablename
     `)
     console.log('\n📋 All tables in database:')
-    allTables.rows.forEach((row: any) => {
-      console.log(`  - ${row.tablename}`)
+    allTables.rows.forEach((row) => {
+      const table = row as { tablename: string }
+      console.log(`  - ${table.tablename}`)
     })
 
     // Check migrations journal
@@ -68,8 +69,9 @@ async function checkPulpaTables() {
         ORDER BY created_at DESC
       `)
       console.log('\n📝 Applied migrations:')
-      migrations.rows.forEach((row: any) => {
-        console.log(`  - ${row.created_at}: ${row.hash}`)
+      migrations.rows.forEach((row) => {
+        const migration = row as { created_at: Date; hash: string }
+        console.log(`  - ${migration.created_at}: ${migration.hash}`)
       })
     } else {
       console.log('\n⚠️  No migration journal found')

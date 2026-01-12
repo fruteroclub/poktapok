@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
@@ -22,7 +27,11 @@ interface ProgramSelectorProps {
   error?: string
 }
 
-export function ProgramSelector({ value, onChange, error }: ProgramSelectorProps) {
+export function ProgramSelector({
+  value,
+  onChange,
+  error,
+}: ProgramSelectorProps) {
   const [programs, setPrograms] = useState<Program[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -40,7 +49,9 @@ export function ProgramSelector({ value, onChange, error }: ProgramSelectorProps
         setPrograms(data.data.programs)
       } catch (err) {
         console.error('Error fetching programs:', err)
-        setFetchError(err instanceof Error ? err.message : 'Failed to load programs')
+        setFetchError(
+          err instanceof Error ? err.message : 'Failed to load programs',
+        )
       } finally {
         setIsLoading(false)
       }
@@ -53,7 +64,9 @@ export function ProgramSelector({ value, onChange, error }: ProgramSelectorProps
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-sm text-muted-foreground">Cargando programas...</span>
+        <span className="ml-2 text-sm text-muted-foreground">
+          Cargando programas...
+        </span>
       </div>
     )
   }
@@ -72,7 +85,7 @@ export function ProgramSelector({ value, onChange, error }: ProgramSelectorProps
         <Label className="text-base font-semibold">
           Selecciona un programa <span className="text-destructive">*</span>
         </Label>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Elige el programa que mejor se alinee con tus objetivos de aprendizaje
         </p>
       </div>
@@ -92,58 +105,71 @@ export function ProgramSelector({ value, onChange, error }: ProgramSelectorProps
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value={program.id} id={program.id} />
-                  <Label htmlFor={program.id} className="text-base font-semibold cursor-pointer">
+                  <Label
+                    htmlFor={program.id}
+                    className="cursor-pointer text-base font-semibold"
+                  >
                     {program.name}
                   </Label>
                 </div>
-                <Badge variant={program.programType === 'cohort' ? 'default' : 'secondary'}>
+                <Badge
+                  variant={
+                    program.programType === 'cohort' ? 'default' : 'secondary'
+                  }
+                >
                   {program.programType === 'cohort' ? (
                     <>
-                      <Calendar className="h-3 w-3 mr-1" />
+                      <Calendar className="mr-1 h-3 w-3" />
                       Cohorte
                     </>
                   ) : (
                     <>
-                      <Infinity className="h-3 w-3 mr-1" />
+                      <Infinity className="mr-1 h-3 w-3" />
                       Continuo
                     </>
                   )}
                 </Badge>
               </div>
-              <CardDescription className="text-sm">{program.description}</CardDescription>
+              <CardDescription className="text-sm">
+                {program.description}
+              </CardDescription>
             </CardHeader>
 
-            {program.programType === 'cohort' && (program.startDate || program.endDate) && (
-              <CardContent className="pt-0 pb-4">
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  {program.startDate && (
-                    <div>
-                      <span className="font-medium">Inicio:</span>{' '}
-                      {new Date(program.startDate).toLocaleDateString('es-MX', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </div>
-                  )}
-                  {program.endDate && (
-                    <div>
-                      <span className="font-medium">Fin:</span>{' '}
-                      {new Date(program.endDate).toLocaleDateString('es-MX', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            )}
+            {program.programType === 'cohort' &&
+              (program.startDate || program.endDate) && (
+                <CardContent className="pt-0 pb-4">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    {program.startDate && (
+                      <div>
+                        <span className="font-medium">Inicio:</span>{' '}
+                        {new Date(program.startDate).toLocaleDateString(
+                          'es-MX',
+                          {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          },
+                        )}
+                      </div>
+                    )}
+                    {program.endDate && (
+                      <div>
+                        <span className="font-medium">Fin:</span>{' '}
+                        {new Date(program.endDate).toLocaleDateString('es-MX', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              )}
           </Card>
         ))}
       </RadioGroup>
 
-      {error && <p className="text-sm text-destructive mt-2">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )
 }

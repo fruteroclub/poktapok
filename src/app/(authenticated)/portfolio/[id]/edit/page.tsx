@@ -67,7 +67,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
                 been deleted.
               </AlertDescription>
             </Alert>
-            <Button onClick={() => router.push('/portfolio')} className="mt-4">
+            <Button onClick={() => router.push('/portfolio')}>
               Back to Portfolio
             </Button>
           </div>
@@ -89,7 +89,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
                 You don&apos;t have permission to edit this project.
               </AlertDescription>
             </Alert>
-            <Button onClick={() => router.push('/portfolio')} className="mt-4">
+            <Button onClick={() => router.push('/portfolio')}>
               Back to Portfolio
             </Button>
           </div>
@@ -104,7 +104,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         <div className="page-content">
           <div className="header-section">
             <h1 className="text-3xl font-bold">Edit Project</h1>
-            <p className="mt-1 text-muted-foreground">
+            <p className="text-muted-foreground">
               Edit your project to showcase your work
             </p>
           </div>

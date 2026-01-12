@@ -89,7 +89,7 @@ export default function BenefitsSection() {
         </div>
 
         {/* CTA adicional */}
-        <div className="mt-16 text-center">
+        <div className="text-center">
           <div className="mx-auto max-w-4xl rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 p-8">
             <h3 className="mb-4 text-2xl font-bold text-foreground md:text-3xl">
               ¿Listo para acceder a todos estos beneficios?

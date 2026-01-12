@@ -80,7 +80,7 @@ export function ProjectCard({
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-1 items-start gap-3">
               {logoUrl && (
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                   <Image
                     src={logoUrl}
                     alt={`${title} logo`}
@@ -98,7 +98,7 @@ export function ProjectCard({
                     </Badge>
                   )}
                 </div>
-                <div className="mt-1 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">
                     {typeLabel}
                   </Badge>

@@ -112,9 +112,9 @@ export function PromotionProgressCard({ stats }: PromotionProgressCardProps) {
         {isEligible && (
           <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
             <p className="font-medium">🎉 Congratulations!</p>
-            <p className="mt-1 text-xs">
-              You've met all requirements for full membership. An admin will
-              review your progress soon.
+            <p className="text-xs">
+              You&apos;ve met all requirements for full membership. An admin
+              will review your progress soon.
             </p>
           </div>
         )}

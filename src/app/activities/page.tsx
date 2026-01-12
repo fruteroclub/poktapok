@@ -73,7 +73,7 @@ export default function ActivitiesPage() {
             <h1 className="text-3xl font-bold tracking-tight">
               Educational Activities
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400">
               Complete activities and earn $PULPA tokens while learning and
               building
             </p>
@@ -236,7 +236,7 @@ export default function ActivitiesPage() {
                       {activity.description}
                     </CardDescription>
 
-                    <div className="mt-4 border-t pt-4">
+                    <div className="border-t pt-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
                           {activity.currentSubmissionsCount} submissions
@@ -249,7 +249,7 @@ export default function ActivitiesPage() {
                       </div>
                     </div>
 
-                    <Button className="mt-4 w-full" disabled={isFull(activity)}>
+                    <Button className="w-full" disabled={isFull(activity)}>
                       {isFull(activity) ? 'Full' : 'View Details'}
                     </Button>
                   </CardContent>

@@ -48,7 +48,7 @@ export default function EventsSection() {
 
         {/* Featured Event */}
         <div className="mb-16">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-purple-900 to-teal-800 p-8 text-white md:p-12">
+          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-900 via-purple-900 to-teal-800 p-8 text-white md:p-12">
             <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
               {/* Título y co-hosts */}
               <div className="flex flex-1 flex-col justify-center">

@@ -58,7 +58,7 @@ export default function ProgramsManagementPage() {
       <div className="admin-header-section">
         <div>
           <h1 className="text-3xl font-bold">Programs Management</h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground">
             Create and manage programs for your platform
           </p>
         </div>

@@ -96,7 +96,7 @@ export function ProfilePreviewModal({
               </h3>
               <p className="text-muted-foreground">@{userInfo.username}</p>
               {data.city && data.country && (
-                <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
+                <p className="flex items-center gap-1 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   {data.city}, {data.country}
                 </p>

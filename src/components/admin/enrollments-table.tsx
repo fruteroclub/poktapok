@@ -32,7 +32,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
-import { useUpdateEnrollment, useDeleteEnrollment } from '@/hooks/use-program-enrollments'
+import {
+  useUpdateEnrollment,
+  useDeleteEnrollment,
+} from '@/hooks/use-program-enrollments'
 import { EnrollmentFormDialog } from './enrollment-form-dialog'
 import type { ProgramEnrollmentWithUser } from '@/types/api-v1'
 
@@ -41,13 +44,17 @@ interface EnrollmentsTableProps {
   enrollments: ProgramEnrollmentWithUser[]
 }
 
-export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTableProps) {
-  const [selectedEnrollment, setSelectedEnrollment] = useState<ProgramEnrollmentWithUser | null>(
-    null
-  )
+export function EnrollmentsTable({
+  programId,
+  enrollments,
+}: EnrollmentsTableProps) {
+  const [selectedEnrollment, setSelectedEnrollment] =
+    useState<ProgramEnrollmentWithUser | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [enrollmentToDelete, setEnrollmentToDelete] = useState<string | null>(null)
+  const [enrollmentToDelete, setEnrollmentToDelete] = useState<string | null>(
+    null,
+  )
 
   const updateMutation = useUpdateEnrollment(programId)
   const deleteMutation = useDeleteEnrollment(programId)
@@ -75,7 +82,9 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
       case 'enrolled':
         return <Badge variant="default">Enrolled</Badge>
       case 'completed':
-        return <Badge className="bg-green-600 hover:bg-green-700">Completed</Badge>
+        return (
+          <Badge className="bg-green-600 hover:bg-green-700">Completed</Badge>
+        )
       case 'dropped':
         return <Badge variant="destructive">Dropped</Badge>
       default:
@@ -96,10 +105,10 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
 
   if (enrollments.length === 0) {
     return (
-      <div className="text-center py-12 border rounded-lg">
+      <div className="rounded-lg border py-12 text-center">
         <p className="text-muted-foreground">No enrollments yet</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Click "Enroll Student" to add your first student
+        <p className="text-sm text-muted-foreground">
+          Click &quot;Enroll Student&quot; to add your first student
         </p>
       </div>
     )
@@ -107,7 +116,7 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
 
   return (
     <>
-      <div className="border rounded-lg">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -124,12 +133,20 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={enrollment.user.avatarUrl || undefined} />
-                      <AvatarFallback>{getUserInitials(enrollment)}</AvatarFallback>
+                      <AvatarImage
+                        src={enrollment.user.avatarUrl || undefined}
+                      />
+                      <AvatarFallback>
+                        {getUserInitials(enrollment)}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{getUserDisplayName(enrollment)}</p>
-                      <p className="text-xs text-muted-foreground">@{enrollment.user.username}</p>
+                      <p className="font-medium">
+                        {getUserDisplayName(enrollment)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        @{enrollment.user.username}
+                      </p>
                     </div>
                   </div>
                 </TableCell>
@@ -138,7 +155,9 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
                 </TableCell>
                 <TableCell>{getStatusBadge(enrollment.status)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatDistanceToNow(new Date(enrollment.enrolledAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(enrollment.enrolledAt), {
+                    addSuffix: true,
+                  })}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -182,17 +201,24 @@ export function EnrollmentsTable({ programId, enrollments }: EnrollmentsTablePro
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this enrollment. This action cannot be undone.
+              This will permanently delete this enrollment. This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

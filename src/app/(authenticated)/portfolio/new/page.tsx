@@ -15,7 +15,7 @@ export default function NewProjectPage() {
         <div className="page-content">
           <div className="header-section">
             <h1 className="text-3xl font-bold">New Project</h1>
-            <p className="mt-1 text-muted-foreground">
+            <p className="text-muted-foreground">
               Create a new project to showcase your work
             </p>
           </div>

@@ -74,7 +74,7 @@ export default function ApplicationSection() {
               <div className="space-y-6">
                 {eligibilityRequirements.map((requirement, index) => (
                   <div key={index} className="flex items-start gap-4">
-                    <div className="mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/20">
                       <span className="text-lg">{requirement.icon}</span>
                     </div>
                     <div>
@@ -86,8 +86,8 @@ export default function ApplicationSection() {
                 ))}
               </div>
 
-              <div className="mt-8 rounded-xl bg-accent/10 p-6">
-                <div className="mb-3 flex items-center gap-3">
+              <div className="rounded-xl bg-accent/10 p-6">
+                <div className="flex items-center gap-3">
                   <span className="text-2xl">💡</span>
                   <h4 className="font-bold text-accent">Tip importante</h4>
                 </div>
@@ -108,7 +108,7 @@ export default function ApplicationSection() {
                 {applicationSteps.map((step, index) => (
                   <div key={index} className="flex items-start gap-4">
                     <div
-                      className={`mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
+                      className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
                         step.color === 'orange'
                           ? 'bg-primary/20'
                           : step.color === 'green'
@@ -123,7 +123,7 @@ export default function ApplicationSection() {
                         {step.title}
                       </p>
                       {step.description && (
-                        <p className="mt-1 text-sm font-medium text-primary">
+                        <p className="text-sm font-medium text-primary">
                           {step.description}
                         </p>
                       )}
@@ -132,7 +132,7 @@ export default function ApplicationSection() {
                 ))}
               </div>
 
-              <div className="mt-8 rounded-xl bg-primary/10 p-6">
+              <div className="rounded-xl bg-primary/10 p-6">
                 <div className="mb-3 flex items-center gap-3">
                   <span className="text-2xl">⚡</span>
                   <h4 className="font-bold text-primary">Proceso rápido</h4>
@@ -147,8 +147,8 @@ export default function ApplicationSection() {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
-          <div className="mx-auto max-w-4xl rounded-2xl bg-gradient-to-r from-primary to-secondary p-8 text-white md:p-12">
+        <div className="text-center">
+          <div className="mx-auto max-w-4xl rounded-2xl bg-linear-to-r from-primary via-secondary to-secondary p-8 text-white md:p-12">
             <h3 className="mb-4 text-2xl font-bold md:text-3xl">
               ¿Cumples con el perfil? ¡Aplica ahora!
             </h3>
@@ -167,7 +167,7 @@ export default function ApplicationSection() {
         </div>
 
         {/* Stats */}
-        <div className="mt-16">
+        <div>
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent">

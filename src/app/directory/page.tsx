@@ -155,7 +155,7 @@ export default function DirectoryPage() {
                     <SheetHeader>
                       <SheetTitle>Filters</SheetTitle>
                     </SheetHeader>
-                    <div className="mt-6">
+                    <div>
                       <Filters
                         filters={currentFilters}
                         countries={countries}
@@ -198,7 +198,6 @@ export default function DirectoryPage() {
                   <Button
                     variant="outline"
                     onClick={() => window.location.reload()}
-                    className="mt-4"
                   >
                     Retry
                   </Button>
@@ -215,7 +214,7 @@ export default function DirectoryPage() {
                   />
 
                   {pagination && pagination.hasMore && !isLoading && (
-                    <div className="mt-8 flex justify-center">
+                    <div className="flex justify-center">
                       <Button onClick={handleLoadMore} size="lg">
                         Load More
                       </Button>
@@ -223,7 +222,7 @@ export default function DirectoryPage() {
                   )}
 
                   {pagination && !pagination.hasMore && profiles.length > 0 && (
-                    <div className="mt-8 text-center">
+                    <div className="text-center">
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         You&apos;ve reached the end of the directory
                       </p>

@@ -77,7 +77,7 @@ export default function PortfolioPage() {
           <div className="header-section flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div>
               <h1 className="text-3xl font-bold">My Portfolio</h1>
-              <p className="mt-1 text-muted-foreground">
+              <p className="text-muted-foreground">
                 Manage your projects and showcase your work
               </p>
             </div>
@@ -139,10 +139,7 @@ export default function PortfolioPage() {
                     project. Showcase your work to potential employers and
                     clients.
                   </p>
-                  <Button
-                    onClick={() => router.push('/portfolio/new')}
-                    className="mt-4"
-                  >
+                  <Button onClick={() => router.push('/portfolio/new')}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create Your First Project
                   </Button>

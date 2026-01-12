@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
-import { Mail, User, AtSign } from 'lucide-react'
+import { Mail, User } from 'lucide-react'
 
 interface UserInfoDisplayProps {
   username: string

@@ -104,7 +104,7 @@ export default function DashboardPage() {
                         {user.displayName || user.username}
                       </h3>
                       <p className="text-muted-foreground">@{user.username}</p>
-                      {user.bio && <p className="mt-2 text-sm">{user.bio}</p>}
+                      {user.bio && <p className="text-sm">{user.bio}</p>}
                     </div>
                   </div>
 
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     <div className="text-2xl font-bold text-green-600">
                       100%
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Todos los campos requeridos completados
                     </p>
                   </CardContent>
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                     <div className="text-2xl font-bold capitalize">
                       {user.accountStatus}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Tu cuenta está activa
                     </p>
                   </CardContent>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">Público</div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Visible en el directorio de talento
                     </p>
                   </CardContent>

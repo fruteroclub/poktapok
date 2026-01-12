@@ -71,43 +71,46 @@ function SortableActivityCard({ link, onRemove }: SortableActivityCardProps) {
 
   const activityTypeColors: Record<string, string> = {
     lecture: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    workshop: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    assignment: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    workshop:
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    assignment:
+      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     quiz: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     project: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    discussion: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    discussion:
+      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-4 border rounded-lg bg-card"
+      className="flex items-center gap-3 rounded-lg border bg-card p-4"
     >
       {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+        className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
         <GripVertical className="h-5 w-5" />
       </button>
 
       {/* Order Number */}
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
         {link.orderIndex}
       </div>
 
       {/* Activity Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h4 className="font-medium truncate">{link.activity.title}</h4>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center gap-2">
+          <h4 className="truncate font-medium">{link.activity.title}</h4>
           <Badge className={activityTypeColors[link.activity.activityType]}>
             {link.activity.activityType}
           </Badge>
         </div>
         {link.activity.description && (
-          <p className="text-sm text-muted-foreground line-clamp-1">
+          <p className="line-clamp-1 text-sm text-muted-foreground">
             {link.activity.description}
           </p>
         )}
@@ -131,28 +134,34 @@ interface AvailableActivityCardProps {
   onAdd: () => void
 }
 
-function AvailableActivityCard({ activity, onAdd }: AvailableActivityCardProps) {
+function AvailableActivityCard({
+  activity,
+  onAdd,
+}: AvailableActivityCardProps) {
   const activityTypeColors: Record<string, string> = {
     lecture: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    workshop: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    assignment: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    workshop:
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    assignment:
+      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     quiz: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     project: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    discussion: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    discussion:
+      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   }
 
   return (
-    <div className="flex items-center gap-3 p-4 border rounded-lg bg-card hover:border-primary/50 transition-colors">
+    <div className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary/50">
       {/* Activity Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h4 className="font-medium truncate">{activity.title}</h4>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center gap-2">
+          <h4 className="truncate font-medium">{activity.title}</h4>
           <Badge className={activityTypeColors[activity.activityType]}>
             {activity.activityType}
           </Badge>
         </div>
         {activity.description && (
-          <p className="text-sm text-muted-foreground line-clamp-1">
+          <p className="line-clamp-1 text-sm text-muted-foreground">
             {activity.description}
           </p>
         )}
@@ -160,7 +169,7 @@ function AvailableActivityCard({ activity, onAdd }: AvailableActivityCardProps) 
 
       {/* Add Button */}
       <Button onClick={onAdd} size="sm">
-        <Plus className="h-4 w-4 mr-1" />
+        <Plus className="mr-1 h-4 w-4" />
         Add
       </Button>
     </div>
@@ -185,7 +194,7 @@ export function SessionActivitiesManager({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
   const linkedActivities = linkedData?.activities || []
@@ -193,15 +202,15 @@ export function SessionActivitiesManager({
 
   // Filter available activities (exclude already linked)
   const linkedActivityIds = new Set(
-    linkedActivities.map((link) => link.activity.id)
+    linkedActivities.map((link) => link.activity.id),
   )
   const availableActivities = allActivities.filter(
-    (activity) => !linkedActivityIds.has(activity.id)
+    (activity) => !linkedActivityIds.has(activity.id),
   )
 
   // Filter by search query
   const filteredAvailableActivities = availableActivities.filter((activity) =>
-    activity.title.toLowerCase().includes(searchQuery.toLowerCase())
+    activity.title.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -282,9 +291,7 @@ export function SessionActivitiesManager({
       {/* Linked Activities Section */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Session Activities ({linkedActivities.length})
-          </CardTitle>
+          <CardTitle>Session Activities ({linkedActivities.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoadingLinked ? (
@@ -294,7 +301,7 @@ export function SessionActivitiesManager({
               ))}
             </div>
           ) : linkedActivities.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
                 No activities linked yet. Add activities from the list below.
               </p>
@@ -328,8 +335,8 @@ export function SessionActivitiesManager({
       <Card>
         <CardHeader>
           <CardTitle>Add Activities</CardTitle>
-          <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative">
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search activities..."
               value={searchQuery}
@@ -346,7 +353,7 @@ export function SessionActivitiesManager({
               ))}
             </div>
           ) : filteredAvailableActivities.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
                 {searchQuery
                   ? 'No activities match your search.'
@@ -381,7 +388,7 @@ export function SessionActivitiesManager({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRemoveConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
             >
               Remove
             </AlertDialogAction>

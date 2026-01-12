@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { useApproveUser, useRejectUser } from '@/hooks/use-admin'
 import { toast } from 'sonner'
-import { Section } from '@/components/layout/section'
+import { Badge } from '@/components/ui/badge'
 
 /**
  * Admin Pending Users Page
@@ -99,20 +99,22 @@ export default function PendingUsersPage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="header-section">
-        <h1 className="text-3xl font-bold tracking-tight">Pending Users</h1>
-        <p className="text-muted-foreground">
-          Review and approve user applications
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Pending Users</h1>
+          <p className="text-muted-foreground">
+            Review and approve user applications
+          </p>
+        </div>
+        <div>
+          <Badge variant="secondary">
+            {pendingUsers.length} {pendingUsers.length === 1 ? 'user' : 'users'}{' '}
+            awaiting review
+          </Badge>
+        </div>
       </div>
 
       {/* Stats */}
-      <div>
-        <p className="text-sm text-muted-foreground">
-          {pendingUsers.length} {pendingUsers.length === 1 ? 'user' : 'users'}{' '}
-          awaiting review
-        </p>
-      </div>
 
       {/* User Cards */}
       {pendingUsers.length === 0 ? (
@@ -122,7 +124,7 @@ export default function PendingUsersPage() {
           </CardContent>
         </Card>
       ) : (
-        <Section className="grid gap-4 md:grid-cols-2">
+        <div className="grid w-full gap-4 md:grid-cols-2">
           {pendingUsers.map(({ user, profile }) => {
             const isProcessing =
               approveMutation.isPending || rejectMutation.isPending
@@ -261,7 +263,7 @@ export default function PendingUsersPage() {
               </Card>
             )
           })}
-        </Section>
+        </div>
       )}
     </div>
   )

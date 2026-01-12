@@ -6,6 +6,7 @@
 import { apiFetch } from '@/lib/api/fetch'
 import type {
   ListPendingUsersResponse,
+  ListUsersResponse,
   ApproveUserResponse,
   RejectUserResponse,
   ApproveApplicationRequest,
@@ -49,6 +50,13 @@ import type {
  */
 export async function fetchPendingUsers(): Promise<ListPendingUsersResponse> {
   return apiFetch<ListPendingUsersResponse>('/api/admin/pending-users')
+}
+
+/**
+ * Fetch all users (for admin operations)
+ */
+export async function fetchAllUsers(): Promise<ListUsersResponse> {
+  return apiFetch<ListUsersResponse>('/api/admin/users')
 }
 
 /**

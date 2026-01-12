@@ -50,9 +50,9 @@ export default function SessionDetailPage({ params }: PageProps) {
   if (!session) {
     return (
       <PageWrapper>
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <p className="text-lg text-muted-foreground">Session not found</p>
-          <Button onClick={() => router.push('/admin/sessions')} className="mt-4">
+          <Button onClick={() => router.push('/admin/sessions')}>
             Back to Sessions
           </Button>
         </div>
@@ -61,9 +61,12 @@ export default function SessionDetailPage({ params }: PageProps) {
   }
 
   const sessionTypeColors = {
-    'in-person': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    virtual: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    hybrid: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    'in-person':
+      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    virtual:
+      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    hybrid:
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   }
 
   return (
@@ -101,7 +104,9 @@ export default function SessionDetailPage({ params }: PageProps) {
           </div>
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => router.push(`/admin/sessions/${sessionId}/attendance`)}
+              onClick={() =>
+                router.push(`/admin/sessions/${sessionId}/attendance`)
+              }
             >
               <Users className="mr-2 h-4 w-4" />
               Mark Attendance
@@ -121,22 +126,30 @@ export default function SessionDetailPage({ params }: PageProps) {
             <div className="grid gap-6 md:grid-cols-2">
               {/* Program */}
               <div className="flex items-start gap-3">
-                <BookOpen className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <BookOpen className="mt-0.5 h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
                     Program
                   </p>
                   <p className="text-base font-medium">
-                    {session.program ? session.program.name : <span className="text-muted-foreground">Standalone Session</span>}
+                    {session.program ? (
+                      session.program.name
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Standalone Session
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
 
               {/* Date */}
               <div className="flex items-start gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <Calendar className="mt-0.5 h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Date</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Date
+                  </p>
                   <p className="text-base font-medium">
                     {format(new Date(session.sessionDate), 'PPP')}
                   </p>
@@ -149,7 +162,7 @@ export default function SessionDetailPage({ params }: PageProps) {
               {/* Duration */}
               {session.duration && (
                 <div className="flex items-start gap-3">
-                  <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <Clock className="mt-0.5 h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
                       Duration
@@ -161,7 +174,7 @@ export default function SessionDetailPage({ params }: PageProps) {
 
               {/* Location */}
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <MapPin className="mt-0.5 h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
                     Location
@@ -173,7 +186,7 @@ export default function SessionDetailPage({ params }: PageProps) {
               {/* Description */}
               {session.description && (
                 <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                  <p className="mb-2 text-sm font-medium text-muted-foreground">
                     Description
                   </p>
                   <p className="text-base">{session.description}</p>

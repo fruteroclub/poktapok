@@ -115,11 +115,15 @@ function AdminSubmissionsPageContent() {
 
   return (
     <div className="page-content">
-      <div className="w-full">
-        <h1 className="text-3xl font-bold tracking-tight">Submission Review</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Review and approve user submissions for $PULPA token rewards
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Submission Review
+          </h1>
+          <p className="text-muted-foreground">
+            Review and approve user submissions for $PULPA token rewards
+          </p>
+        </div>
       </div>
 
       {/* Filter */}

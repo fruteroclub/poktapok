@@ -52,7 +52,7 @@ export function SessionFormDialog({
   const isEditing = !!sessionId
 
   const [formData, setFormData] = useState<FormData>({
-    programId: '',
+    programId: '__STANDALONE__',
     title: '',
     description: '',
     sessionType: 'in-person',
@@ -78,7 +78,7 @@ export function SessionFormDialog({
     if (sessionData?.session) {
       const session = sessionData.session
       setFormData({
-        programId: session.programId,
+        programId: session.programId || '__STANDALONE__',
         title: session.title,
         description: session.description || '',
         sessionType: session.sessionType,
@@ -95,7 +95,7 @@ export function SessionFormDialog({
   useEffect(() => {
     if (!open) {
       setFormData({
-        programId: '',
+        programId: '__STANDALONE__',
         title: '',
         description: '',
         sessionType: 'in-person',
@@ -110,11 +110,6 @@ export function SessionFormDialog({
     e.preventDefault()
 
     // Validation
-    if (!formData.programId) {
-      toast.error('Please select a program')
-      return
-    }
-
     if (!formData.title.trim()) {
       toast.error('Please enter a session title')
       return
@@ -136,6 +131,7 @@ export function SessionFormDialog({
           sessionId,
           data: {
             ...formData,
+            programId: formData.programId && formData.programId !== '__STANDALONE__' ? formData.programId : null,
             sessionDate: new Date(formData.sessionDate).toISOString(),
             description: formData.description || null,
             duration: formData.duration || null,
@@ -145,6 +141,7 @@ export function SessionFormDialog({
       } else {
         await createMutation.mutateAsync({
           ...formData,
+          programId: formData.programId && formData.programId !== '__STANDALONE__' ? formData.programId : undefined,
           sessionDate: new Date(formData.sessionDate).toISOString(),
           description: formData.description || undefined,
           duration: formData.duration || undefined,
@@ -191,11 +188,9 @@ export function SessionFormDialog({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-6">
-            {/* Program Selection */}
+            {/* Program Selection (Optional) */}
             <div className="space-y-2">
-              <Label htmlFor="program">
-                Program <span className="text-destructive">*</span>
-              </Label>
+              <Label htmlFor="program">Program</Label>
               <Select
                 value={formData.programId}
                 onValueChange={(value) =>
@@ -204,9 +199,10 @@ export function SessionFormDialog({
                 disabled={isPending}
               >
                 <SelectTrigger id="program">
-                  <SelectValue placeholder="Select a program" />
+                  <SelectValue placeholder="Standalone session (no program)" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="__STANDALONE__">Standalone Session</SelectItem>
                   {programsData?.programs.map((program) => (
                     <SelectItem key={program.id} value={program.id}>
                       {program.name}
@@ -214,6 +210,9 @@ export function SessionFormDialog({
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                Optional: Link this session to a specific program, or leave as standalone
+              </p>
             </div>
 
             {/* Title */}

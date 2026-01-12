@@ -53,7 +53,7 @@ import {
   X,
   Eye,
 } from 'lucide-react'
-import { Section } from '@/components/layout/section'
+import { AdminRoute } from '@/components/layout/admin-route-wrapper'
 import type { User } from '@/services/user-management'
 
 /**
@@ -310,7 +310,7 @@ function FilterControls({
  *
  * Lists all users with filters, stats, and actions
  */
-export default function UsersPage() {
+function UsersPageContent() {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [role, setRole] = useState('all')
@@ -349,14 +349,18 @@ export default function UsersPage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="header-section">
-        <h1 className="text-3xl font-bold tracking-tight">Users Management</h1>
-        <p className="text-muted-foreground">
-          Manage user accounts, roles, and permissions
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Users Management
+          </h1>
+          <p className="text-muted-foreground">
+            Manage user accounts, roles, and permissions
+          </p>
+        </div>
       </div>
 
-      <Section className="gap-2">
+      <div className="w-full space-y-2">
         {/* Mobile: Filter Button + Inline Stats */}
         <div className="w-full space-y-2 md:hidden">
           <div className="flex items-center justify-center gap-2">
@@ -707,7 +711,15 @@ export default function UsersPage() {
             )}
           </>
         )}
-      </Section>
+      </div>
     </div>
+  )
+}
+
+export default function UsersPage() {
+  return (
+    <AdminRoute>
+      <UsersPageContent />
+    </AdminRoute>
   )
 }

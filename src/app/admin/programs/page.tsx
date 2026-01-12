@@ -55,11 +55,13 @@ export default function ProgramsManagementPage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="header-section">
-        <h1 className="text-3xl font-bold">Programs Management</h1>
-        <p className="mt-1 text-muted-foreground">
-          Create and manage programs for your platform
-        </p>
+      <div className="admin-header-section">
+        <div>
+          <h1 className="text-3xl font-bold">Programs Management</h1>
+          <p className="mt-1 text-muted-foreground">
+            Create and manage programs for your platform
+          </p>
+        </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Program

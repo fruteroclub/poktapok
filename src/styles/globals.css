@@ -164,16 +164,20 @@
     @apply w-full space-y-2 md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl;
   }
 
+  .admin-header-section {
+    @apply flex w-full items-center justify-between;
+  }
+
   .section {
     @apply w-full md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl;
   }
 
   h1 {
-    @apply font-funnel text-5xl !leading-[1.2] font-medium tracking-tight;
+    @apply font-funnel text-5xl leading-[1.2]! font-medium tracking-tight;
   }
 
   h2 {
-    @apply font-funnel text-4xl !leading-[1.2] font-medium tracking-tight;
+    @apply font-funnel text-4xl leading-[1.2]! font-medium tracking-tight;
   }
 
   h3 {
@@ -189,7 +193,7 @@
   }
 
   .subrayado {
-    @apply underline decoration-primary decoration-2 underline-offset-[6px] hover:!text-foreground;
+    @apply underline decoration-primary decoration-2 underline-offset-[6px] hover:text-foreground!;
   }
 }
 

@@ -333,6 +333,20 @@ export interface Program {
 }
 
 /**
+ * Program enrollment type
+ */
+export interface ProgramEnrollment {
+  id: string
+  userId: string
+  programId: string
+  status: 'enrolled' | 'completed' | 'dropped'
+  enrolledAt: string
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+/**
  * Response for GET /api/programs/active
  */
 export interface ActiveProgramsResponse {
@@ -398,6 +412,13 @@ export interface PendingUserWithProfile {
  */
 export interface ListPendingUsersResponse {
   pendingUsers: PendingUserWithProfile[]
+}
+
+/**
+ * Response for GET /api/admin/users
+ */
+export interface ListUsersResponse {
+  users: User[]
 }
 
 /**
@@ -827,10 +848,10 @@ export interface GetAllProgramsResponse {
 }
 
 /**
- * Response for GET /api/admin/programs/:id
+ * Response for GET /api/admin/programs/:id (includes statistics)
  */
 export interface GetProgramResponse {
-  program: ProgramDetail
+  program: ProgramWithStats
 }
 
 /**
@@ -1020,7 +1041,7 @@ export interface ProgramWithStats extends ProgramDetail {
  * Request body for POST /api/admin/sessions
  */
 export interface CreateSessionRequest {
-  programId: string
+  programId?: string // Optional - allows standalone sessions
   title: string
   description?: string
   sessionType: 'in-person' | 'virtual' | 'hybrid'
@@ -1048,6 +1069,7 @@ export interface CreateSessionResponse {
  * Request body for PATCH /api/admin/sessions/:id
  */
 export interface UpdateSessionRequest {
+  programId?: string | null // Can update or remove program link
   title?: string
   description?: string | null
   sessionType?: 'in-person' | 'virtual' | 'hybrid'
@@ -1083,6 +1105,77 @@ export interface DeleteSessionResponse {
  */
 export interface GetAllSessionsResponse {
   sessions: SessionWithActivityCount[]
+}
+
+// ============================================================================
+// Program Enrollment Types
+// ============================================================================
+
+/**
+ * Program enrollment with user and profile data
+ */
+export interface ProgramEnrollmentWithUser {
+  id: string
+  userId: string
+  programId: string
+  status: 'enrolled' | 'completed' | 'dropped'
+  enrolledAt: string
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
+  user: {
+    id: string
+    username: string | null
+    email: string | null
+    displayName: string | null
+    avatarUrl: string | null
+  }
+}
+
+/**
+ * Response for GET /api/admin/programs/:id/enrollments
+ */
+export interface GetProgramEnrollmentsResponse {
+  enrollments: ProgramEnrollmentWithUser[]
+}
+
+/**
+ * Request body for POST /api/admin/programs/:id/enrollments
+ */
+export interface CreateEnrollmentRequest {
+  userId: string
+  status?: 'enrolled' | 'completed' | 'dropped'
+  enrolledAt?: string
+  completedAt?: string | null
+}
+
+/**
+ * Response for POST /api/admin/programs/:id/enrollments
+ */
+export interface CreateEnrollmentResponse {
+  enrollment: ProgramEnrollment
+}
+
+/**
+ * Request body for PATCH /api/admin/programs/:id/enrollments/:enrollmentId
+ */
+export interface UpdateEnrollmentRequest {
+  status?: 'enrolled' | 'completed' | 'dropped'
+  completedAt?: string | null
+}
+
+/**
+ * Response for PATCH /api/admin/programs/:id/enrollments/:enrollmentId
+ */
+export interface UpdateEnrollmentResponse {
+  enrollment: ProgramEnrollment
+}
+
+/**
+ * Response for DELETE /api/admin/programs/:id/enrollments/:enrollmentId
+ */
+export interface DeleteEnrollmentResponse {
+  enrollment: ProgramEnrollment
 }
 
 /**

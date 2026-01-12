@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middleware'
 
 const updateSessionSchema = z.object({
+  programId: z.string().uuid('Invalid program ID').nullable().optional(), // Can update or remove program link
   title: z.string().min(1).max(200).optional(),
   description: z.string().nullable().optional(),
   sessionType: z.enum(['in-person', 'virtual', 'hybrid']).optional(),
@@ -49,7 +50,7 @@ export async function GET(
         },
       })
       .from(sessions)
-      .innerJoin(programs, eq(sessions.programId, programs.id))
+      .leftJoin(programs, eq(sessions.programId, programs.id)) // leftJoin to support standalone sessions
       .where(eq(sessions.id, id))
       .limit(1)
 
@@ -60,7 +61,7 @@ export async function GET(
     return successResponse({
       session: {
         ...sessionWithProgram.session,
-        program: sessionWithProgram.program,
+        program: sessionWithProgram.program || null, // null for standalone sessions
       },
     })
   } catch (error) {
@@ -98,8 +99,22 @@ export async function PATCH(
       return handleApiError({ message: 'Session not found', code: 'NOT_FOUND' })
     }
 
+    // Verify program exists if programId is being updated to a non-null value
+    if (result.data.programId !== undefined && result.data.programId !== null) {
+      const [program] = await db
+        .select()
+        .from(programs)
+        .where(eq(programs.id, result.data.programId))
+        .limit(1)
+
+      if (!program) {
+        return handleApiError({ message: 'Program not found', code: 'NOT_FOUND' })
+      }
+    }
+
     const updateData: Record<string, unknown> = {}
 
+    if (result.data.programId !== undefined) updateData.programId = result.data.programId
     if (result.data.title !== undefined) updateData.title = result.data.title
     if (result.data.description !== undefined) updateData.description = result.data.description
     if (result.data.sessionType !== undefined) updateData.sessionType = result.data.sessionType

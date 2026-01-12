@@ -45,7 +45,7 @@ export default function CommunitySection() {
   ]
 
   return (
-    <section className="bg-gradient-to-br from-background to-accent/10 py-20">
+    <section className="bg-linear-to-br from-background to-accent/10 py-20">
       <div className="page-content mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">

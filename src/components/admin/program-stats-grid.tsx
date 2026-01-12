@@ -1,5 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, UserCheck, UserX, Calendar, CalendarCheck, Activity, TrendingUp } from 'lucide-react'
+import {
+  Users,
+  UserCheck,
+  UserX,
+  Calendar,
+  CalendarCheck,
+  Activity,
+  TrendingUp,
+} from 'lucide-react'
 import type { ProgramWithStats } from '@/types/api-v1'
 
 interface ProgramStatsGridProps {
@@ -12,13 +20,16 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
       {/* Total Enrollments */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Total Enrollments
+          </CardTitle>
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalEnrollments}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {stats.activeEnrollments} active, {stats.completedEnrollments} completed
+          <p className="text-xs text-muted-foreground">
+            {stats.activeEnrollments} active, {stats.completedEnrollments}{' '}
+            completed
           </p>
         </CardContent>
       </Card>
@@ -30,8 +41,10 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.averageCompletionRate}%</div>
-          <p className="text-xs text-muted-foreground mt-1">
+          <div className="text-2xl font-bold">
+            {stats.averageCompletionRate}%
+          </div>
+          <p className="text-xs text-muted-foreground">
             {stats.completedEnrollments} of {stats.totalEnrollments} students
           </p>
         </CardContent>
@@ -45,8 +58,9 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalSessions}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {stats.completedSessions} completed, {stats.upcomingSessions} upcoming
+          <p className="text-xs text-muted-foreground">
+            {stats.completedSessions} completed, {stats.upcomingSessions}{' '}
+            upcoming
           </p>
         </CardContent>
       </Card>
@@ -59,8 +73,9 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalActivities}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {stats.directActivities} direct, {stats.transitiveActivities} via sessions
+          <p className="text-xs text-muted-foreground">
+            {stats.directActivities} direct, {stats.transitiveActivities} via
+            sessions
           </p>
         </CardContent>
       </Card>
@@ -73,21 +88,21 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.activeEnrollments}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Currently enrolled
-          </p>
+          <p className="text-xs text-muted-foreground">Currently enrolled</p>
         </CardContent>
       </Card>
 
       {/* Completed Enrollments */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Graduated Students</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Graduated Students
+          </CardTitle>
           <UserCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.completedEnrollments}</div>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground">
             Successfully completed
           </p>
         </CardContent>
@@ -96,14 +111,14 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
       {/* Dropped Enrollments */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Dropped Students</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Dropped Students
+          </CardTitle>
           <UserX className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.droppedEnrollments}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Left the program
-          </p>
+          <p className="text-xs text-muted-foreground">Left the program</p>
         </CardContent>
       </Card>
 
@@ -115,9 +130,7 @@ export function ProgramStatsGrid({ stats }: ProgramStatsGridProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.completedSessions}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Already conducted
-          </p>
+          <p className="text-xs text-muted-foreground">Already conducted</p>
         </CardContent>
       </Card>
     </div>

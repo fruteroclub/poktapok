@@ -147,7 +147,7 @@ export function ProjectHeader({
       <div className="flex flex-col gap-6 md:flex-row">
         {/* Logo */}
         {logoUrl && (
-          <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-xl border bg-gray-100">
+          <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl border bg-gray-100">
             <Image
               src={logoUrl}
               alt={`${title} logo`}
@@ -165,11 +165,7 @@ export function ProjectHeader({
               <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
                 {title}
               </h1>
-              {featured && (
-                <Badge variant="secondary" className="mt-1">
-                  Featured
-                </Badge>
-              )}
+              {featured && <Badge variant="secondary">Featured</Badge>}
             </div>
 
             <div className="flex flex-wrap items-center gap-2">

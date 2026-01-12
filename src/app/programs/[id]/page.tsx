@@ -58,9 +58,9 @@ export default function ProgramDashboardPage() {
         <div>
           <h1 className="text-3xl font-bold">{program.name}</h1>
           {program.description && (
-            <p className="mt-2 text-muted-foreground">{program.description}</p>
+            <p className="text-muted-foreground">{program.description}</p>
           )}
-          <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
               <span className="capitalize">{program.programType}</span>
@@ -90,7 +90,7 @@ export default function ProgramDashboardPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed">{application.goal}</p>
-              <div className="mt-4 flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Badge variant="outline">
                   Enrolled{' '}
                   {formatDistanceToNow(new Date(enrollment.enrolledAt), {
@@ -127,11 +127,11 @@ export default function ProgramDashboardPage() {
                     <div className="flex-1">
                       <h4 className="font-medium">{session.title}</h4>
                       {session.description && (
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                           {session.description}
                         </p>
                       )}
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" />
                           <span>

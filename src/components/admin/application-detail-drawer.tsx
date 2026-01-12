@@ -159,8 +159,7 @@ export function ApplicationDetailDrawer({
           </div>
 
           {/* Social Accounts */}
-          {(application.githubUsername ||
-            application.twitterUsername) && (
+          {(application.githubUsername || application.twitterUsername) && (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Social Accounts</h3>
               <div className="space-y-2">
@@ -274,7 +273,7 @@ export function ApplicationDetailDrawer({
 
           {/* Already Reviewed */}
           {!isPending && (
-            <div className="rounded-lg border bg-muted p-4 space-y-2">
+            <div className="space-y-2 rounded-lg border bg-muted p-4">
               <p className="text-sm font-medium">Application Processed</p>
               <p className="text-sm text-muted-foreground">
                 This application was reviewed on{' '}
@@ -282,7 +281,7 @@ export function ApplicationDetailDrawer({
                 {reviewer && ` by ${reviewer.displayName || reviewer.username}`}
               </p>
               {application.reviewNotes && (
-                <div className="mt-2">
+                <div>
                   <p className="text-sm font-medium">Review Notes:</p>
                   <p className="text-sm text-muted-foreground">
                     {application.reviewNotes}

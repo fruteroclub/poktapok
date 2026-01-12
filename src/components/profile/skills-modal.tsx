@@ -57,7 +57,7 @@ export function SkillsModal({ skills, isOpen, onClose }: SkillsModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4 space-y-6">
+        <div className="space-y-6">
           {Object.entries(skillsByCategory).map(
             ([category, categorySkills]) => (
               <div key={category}>

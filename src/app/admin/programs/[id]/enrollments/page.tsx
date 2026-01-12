@@ -33,7 +33,8 @@ export default function ProgramEnrollmentsPage({ params }: PageProps) {
   const programId = resolvedParams.id
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-  const { data: programData, isLoading: isProgramLoading } = useProgram(programId)
+  const { data: programData, isLoading: isProgramLoading } =
+    useProgram(programId)
   const { data: enrollmentsData, isLoading: isEnrollmentsLoading } =
     useProgramEnrollments(programId)
 
@@ -54,7 +55,7 @@ export default function ProgramEnrollmentsPage({ params }: PageProps) {
   if (!program) {
     return (
       <PageWrapper>
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <p className="text-muted-foreground">Program not found</p>
         </div>
       </PageWrapper>
@@ -75,7 +76,9 @@ export default function ProgramEnrollmentsPage({ params }: PageProps) {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={`/admin/programs/${programId}`}>{program.name}</Link>
+                <Link href={`/admin/programs/${programId}`}>
+                  {program.name}
+                </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -89,12 +92,15 @@ export default function ProgramEnrollmentsPage({ params }: PageProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Program Enrollments</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground">
               Manage student enrollments for {program.name}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => router.push(`/admin/programs/${programId}`)}>
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/admin/programs/${programId}`)}
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Program
             </Button>

@@ -15,7 +15,13 @@ import {
 } from '@/components/ui/breadcrumb'
 import { ProgramOverviewCard } from '@/components/admin/program-overview-card'
 import { ProgramStatsGrid } from '@/components/admin/program-stats-grid'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Users, Calendar, Activity } from 'lucide-react'
 import Link from 'next/link'
@@ -62,7 +68,6 @@ export default function ProgramDetailPage({ params }: PageProps) {
           <p className="text-lg text-muted-foreground">Program not found</p>
           <Button
             variant="outline"
-            className="mt-4"
             onClick={() => router.push('/admin/programs')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -95,7 +100,7 @@ export default function ProgramDetailPage({ params }: PageProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{program.name}</h1>
-            <p className="text-muted-foreground mt-1">{program.description}</p>
+            <p className="text-muted-foreground">{program.description}</p>
           </div>
           <Button
             variant="outline"
@@ -115,7 +120,12 @@ export default function ProgramDetailPage({ params }: PageProps) {
         {/* Quick Navigation Cards */}
         <div className="grid gap-6 md:grid-cols-3">
           {/* Enrollments Card */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(`/admin/programs/${programId}/enrollments`)}>
+          <Card
+            className="cursor-pointer transition-shadow hover:shadow-lg"
+            onClick={() =>
+              router.push(`/admin/programs/${programId}/enrollments`)
+            }
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Enrollments</CardTitle>
@@ -124,15 +134,20 @@ export default function ProgramDetailPage({ params }: PageProps) {
               <CardDescription>Manage student enrollments</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{program.stats.totalEnrollments}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-2xl font-bold">
+                {program.stats.totalEnrollments}
+              </div>
+              <p className="text-xs text-muted-foreground">
                 {program.stats.activeEnrollments} active
               </p>
             </CardContent>
           </Card>
 
           {/* Sessions Card */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(`/admin/programs/${programId}/sessions`)}>
+          <Card
+            className="cursor-pointer transition-shadow hover:shadow-lg"
+            onClick={() => router.push(`/admin/programs/${programId}/sessions`)}
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Sessions</CardTitle>
@@ -141,15 +156,22 @@ export default function ProgramDetailPage({ params }: PageProps) {
               <CardDescription>View program sessions</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{program.stats.totalSessions}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-2xl font-bold">
+                {program.stats.totalSessions}
+              </div>
+              <p className="text-xs text-muted-foreground">
                 {program.stats.upcomingSessions} upcoming
               </p>
             </CardContent>
           </Card>
 
           {/* Activities Card */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(`/admin/programs/${programId}/activities`)}>
+          <Card
+            className="cursor-pointer transition-shadow hover:shadow-lg"
+            onClick={() =>
+              router.push(`/admin/programs/${programId}/activities`)
+            }
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Activities</CardTitle>
@@ -158,9 +180,12 @@ export default function ProgramDetailPage({ params }: PageProps) {
               <CardDescription>Manage program activities</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{program.stats.totalActivities}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {program.stats.directActivities} direct, {program.stats.transitiveActivities} via sessions
+              <div className="text-2xl font-bold">
+                {program.stats.totalActivities}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {program.stats.directActivities} direct,{' '}
+                {program.stats.transitiveActivities} via sessions
               </p>
             </CardContent>
           </Card>

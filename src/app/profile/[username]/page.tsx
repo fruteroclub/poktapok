@@ -148,7 +148,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               {profile.profileVisibility === 'private' &&
                 !isOwner &&
                 !currentUser && (
-                  <div className="mt-6 rounded-lg bg-muted p-4 text-center">
+                  <div className="rounded-lg bg-muted p-4 text-center">
                     <p className="text-sm text-muted-foreground">
                       This is a private profile. Sign in to view more details.
                     </p>

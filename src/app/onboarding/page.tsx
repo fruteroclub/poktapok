@@ -38,7 +38,7 @@ export default function OnboardingPage() {
           <div className="page-content">
             <div className="header-section">
               <h1 className="text-3xl font-bold">Completa tu perfil</h1>
-              <p className="mt-2 text-muted-foreground">
+              <p className="text-muted-foreground">
                 Completa tu información para empezar a usar la plataforma
               </p>
             </div>

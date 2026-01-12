@@ -290,7 +290,7 @@ function AdminSubmissionsPageContent() {
                 {selectedSubmission.submission.submissionText && (
                   <div>
                     <span className="text-sm font-medium">Description: </span>
-                    <p className="mt-1 text-sm">
+                    <p className="text-sm">
                       {selectedSubmission.submission.submissionText}
                     </p>
                   </div>
@@ -311,7 +311,6 @@ function AdminSubmissionsPageContent() {
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Add notes about this submission..."
                   rows={4}
-                  className="mt-2"
                 />
               </div>
             </div>

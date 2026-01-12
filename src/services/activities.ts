@@ -125,3 +125,64 @@ export async function fetchPublicActivities(
 
   return apiFetch<PublicActivitiesResponse>(url);
 }
+
+export interface ActivityDetail {
+  id: string;
+  title: string;
+  description: string;
+  instructions: string | null;
+  activityType: string;
+  category: string | null;
+  difficulty: string;
+  rewardPulpaAmount: string;
+  evidenceRequirements: {
+    url_required: boolean;
+    screenshot_required: boolean;
+    text_required: boolean;
+  };
+  maxSubmissionsPerUser: number | null;
+  totalAvailableSlots: number | null;
+  currentSubmissionsCount: number;
+  startsAt: string | null;
+  expiresAt: string | null;
+  status: string;
+}
+
+export interface ActivityDetailResponse {
+  activity: ActivityDetail;
+}
+
+/**
+ * Fetch activity detail by ID
+ */
+export async function fetchActivityDetail(
+  activityId: string
+): Promise<ActivityDetailResponse> {
+  return apiFetch<ActivityDetailResponse>(`/api/activities/${activityId}`);
+}
+
+export interface SubmitActivityRequest {
+  submission_url?: string;
+  submission_text?: string;
+}
+
+export interface SubmitActivityResponse {
+  submission: {
+    id: string;
+    status: string;
+  };
+}
+
+/**
+ * Submit activity completion
+ */
+export async function submitActivity(
+  activityId: string,
+  data: SubmitActivityRequest
+): Promise<SubmitActivityResponse> {
+  return apiFetch<SubmitActivityResponse>(`/api/activities/${activityId}/submit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+}

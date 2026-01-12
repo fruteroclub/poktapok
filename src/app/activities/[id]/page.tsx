@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,61 +16,23 @@ import {
 } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import PageWrapper from '@/components/layout/page-wrapper'
-
-interface Activity {
-  id: string
-  title: string
-  description: string
-  instructions: string | null
-  activityType: string
-  category: string | null
-  difficulty: string
-  rewardPulpaAmount: string
-  evidenceRequirements: {
-    url_required: boolean
-    screenshot_required: boolean
-    text_required: boolean
-  }
-  maxSubmissionsPerUser: number | null
-  totalAvailableSlots: number | null
-  currentSubmissionsCount: number
-  startsAt: string | null
-  expiresAt: string | null
-  status: string
-}
+import { useActivityDetail, useSubmitActivity } from '@/hooks/use-activities'
+import { toast } from 'sonner'
+import type { ActivityDetail } from '@/services/activities'
 
 export default function ActivityDetailPage() {
   const router = useRouter()
   const params = useParams()
   const activityId = params.id as string
 
-  const [activity, setActivity] = useState<Activity | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
+  const { data, isLoading, isError } = useActivityDetail(activityId)
+  const submitMutation = useSubmitActivity()
+  const activity = data?.activity
+
   const [formData, setFormData] = useState({
     submission_url: '',
     submission_text: '',
   })
-
-  useEffect(() => {
-    fetchActivity()
-  }, [activityId])
-
-  const fetchActivity = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/activities/${activityId}`)
-
-      if (!response.ok) throw new Error('Failed to fetch activity')
-
-      const result = await response.json()
-      setActivity(result.data)
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to fetch activity')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,7 +44,7 @@ export default function ActivityDetailPage() {
       activity.evidenceRequirements.url_required &&
       !formData.submission_url
     ) {
-      alert('URL is required for this activity')
+      toast.error('URL is required for this activity')
       return
     }
 
@@ -90,37 +52,28 @@ export default function ActivityDetailPage() {
       activity.evidenceRequirements.text_required &&
       !formData.submission_text
     ) {
-      alert('Description is required for this activity')
+      toast.error('Description is required for this activity')
       return
     }
 
-    setSubmitting(true)
-
-    try {
-      const response = await fetch(`/api/activities/${activityId}/submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': 'USER_ID', // TODO: Replace with actual Privy auth
-        },
-        body: JSON.stringify({
+    submitMutation.mutate(
+      {
+        activityId,
+        data: {
           submission_url: formData.submission_url || undefined,
           submission_text: formData.submission_text || undefined,
-        }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to submit')
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success('Submission successful! Your submission is pending review.')
+          router.push('/activities')
+        },
+        onError: (error) => {
+          toast.error(error.message || 'Failed to submit')
+        },
       }
-
-      alert('Submission successful! Your submission is pending review.')
-      router.push('/activities')
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to submit')
-    } finally {
-      setSubmitting(false)
-    }
+    )
   }
 
   const getDifficultyColor = (difficulty: string) => {
@@ -141,24 +94,24 @@ export default function ActivityDetailPage() {
       .join(' ')
   }
 
-  const isFull = (activity: Activity) => {
+  const isFull = (activity: ActivityDetail) => {
     return (
       activity.totalAvailableSlots !== null &&
       activity.currentSubmissionsCount >= activity.totalAvailableSlots
     )
   }
 
-  const isExpired = (activity: Activity) => {
+  const isExpired = (activity: ActivityDetail) => {
     return activity.expiresAt && new Date(activity.expiresAt) < new Date()
   }
 
-  const canSubmit = (activity: Activity) => {
+  const canSubmit = (activity: ActivityDetail) => {
     return (
       activity.status === 'active' && !isFull(activity) && !isExpired(activity)
     )
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageWrapper>
         <div className="page">
@@ -170,12 +123,14 @@ export default function ActivityDetailPage() {
     )
   }
 
-  if (!activity) {
+  if (isError || !activity) {
     return (
       <PageWrapper>
         <div className="page">
           <div className="page-content">
-            <div className="py-12 text-center">Activity not found</div>
+            <div className="py-12 text-center">
+              {isError ? 'Failed to load activity' : 'Activity not found'}
+            </div>
           </div>
         </div>
       </PageWrapper>
@@ -373,16 +328,16 @@ export default function ActivityDetailPage() {
                   <div className="flex gap-4">
                     <Button
                       type="submit"
-                      disabled={submitting}
+                      disabled={submitMutation.isPending}
                       className="flex-1"
                     >
-                      {submitting ? 'Submitting...' : 'Submit for Review'}
+                      {submitMutation.isPending ? 'Submitting...' : 'Submit for Review'}
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => router.back()}
-                      disabled={submitting}
+                      disabled={submitMutation.isPending}
                     >
                       Cancel
                     </Button>

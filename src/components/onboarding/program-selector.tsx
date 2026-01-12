@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -11,15 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Calendar, Infinity } from 'lucide-react'
-
-interface Program {
-  id: string
-  name: string
-  description: string
-  programType: 'cohort' | 'evergreen'
-  startDate?: string | null
-  endDate?: string | null
-}
+import { useActivePrograms } from '@/hooks/use-onboarding'
 
 interface ProgramSelectorProps {
   value: string
@@ -32,33 +23,8 @@ export function ProgramSelector({
   onChange,
   error,
 }: ProgramSelectorProps) {
-  const [programs, setPrograms] = useState<Program[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [fetchError, setFetchError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function fetchPrograms() {
-      try {
-        const response = await fetch('/api/programs/active')
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error?.message || 'Failed to fetch programs')
-        }
-
-        setPrograms(data.data.programs)
-      } catch (err) {
-        console.error('Error fetching programs:', err)
-        setFetchError(
-          err instanceof Error ? err.message : 'Failed to load programs',
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchPrograms()
-  }, [])
+  const { data, isLoading, error: fetchError } = useActivePrograms()
+  const programs = data?.programs || []
 
   if (isLoading) {
     return (
@@ -74,7 +40,9 @@ export function ProgramSelector({
   if (fetchError) {
     return (
       <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-        <p className="text-sm text-destructive">{fetchError}</p>
+        <p className="text-sm text-destructive">
+          {fetchError instanceof Error ? fetchError.message : 'Failed to load programs'}
+        </p>
       </div>
     )
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useProgram, useCreateProgram, useUpdateProgram } from '@/hooks/use-admin'
 import {
   Dialog,
@@ -39,17 +39,17 @@ interface FormData {
   isActive: boolean
 }
 
+const defaultFormData: FormData = {
+  name: '',
+  description: '',
+  programType: 'cohort',
+  startDate: '',
+  endDate: '',
+  isActive: true,
+}
+
 export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialogProps) {
   const isEditing = !!programId
-
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    description: '',
-    programType: 'cohort',
-    startDate: '',
-    endDate: '',
-    isActive: true,
-  })
 
   // Fetch program data if editing
   const { data: programData, isLoading: isLoadingProgram } = useProgram(programId || null)
@@ -58,36 +58,23 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
   const createMutation = useCreateProgram()
   const updateMutation = useUpdateProgram()
 
-  // Load program data when editing
-  useEffect(() => {
-    if (programData?.program) {
-      const program = programData.program
-      setFormData({
-        name: program.name,
-        description: program.description || '',
-        programType: program.programType,
-        startDate: program.startDate
-          ? new Date(program.startDate).toISOString().split('T')[0]
+  // Initialize form data - derived from programData or defaults
+  const initialFormData: FormData = programData?.program
+    ? {
+        name: programData.program.name,
+        description: programData.program.description || '',
+        programType: programData.program.programType,
+        startDate: programData.program.startDate
+          ? new Date(programData.program.startDate).toISOString().split('T')[0]
           : '',
-        endDate: program.endDate ? new Date(program.endDate).toISOString().split('T')[0] : '',
-        isActive: program.isActive,
-      })
-    }
-  }, [programData])
+        endDate: programData.program.endDate
+          ? new Date(programData.program.endDate).toISOString().split('T')[0]
+          : '',
+        isActive: programData.program.isActive,
+      }
+    : defaultFormData
 
-  // Reset form when dialog closes
-  useEffect(() => {
-    if (!open) {
-      setFormData({
-        name: '',
-        description: '',
-        programType: 'cohort',
-        startDate: '',
-        endDate: '',
-        isActive: true,
-      })
-    }
-  }, [open])
+  const [formData, setFormData] = useState<FormData>(initialFormData)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -176,7 +163,11 @@ export function ProgramFormDialog({ open, onClose, programId }: ProgramFormDialo
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            key={programId || 'new'}
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
             <div className="space-y-4">
               {/* Name */}
               <div className="space-y-2">

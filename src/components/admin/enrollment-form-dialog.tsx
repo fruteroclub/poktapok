@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -28,10 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
-import { useCreateEnrollment, useUpdateEnrollment } from '@/hooks/use-program-enrollments'
+import {
+  useCreateEnrollment,
+  useUpdateEnrollment,
+} from '@/hooks/use-program-enrollments'
 import { useAllUsers } from '@/hooks/use-admin'
 import type { ProgramEnrollmentWithUser, User } from '@/types/api-v1'
 
@@ -92,7 +94,7 @@ export function EnrollmentFormDialog({
             onOpenChange(false)
             form.reset()
           },
-        }
+        },
       )
     } else {
       createMutation.mutate(data, {
@@ -110,7 +112,9 @@ export function EnrollmentFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Enrollment' : 'Enroll Student'}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? 'Edit Enrollment' : 'Enroll Student'}
+          </DialogTitle>
           <DialogDescription>
             {isEditing
               ? 'Update enrollment status and progress'
@@ -140,7 +144,9 @@ export function EnrollmentFormDialog({
                       </FormControl>
                       <SelectContent>
                         {usersData?.users
-                          .filter((user: User) => user.accountStatus === 'approved')
+                          .filter(
+                            (user: User) => user.accountStatus === 'approved',
+                          )
                           .map((user: User) => (
                             <SelectItem key={user.id} value={user.id}>
                               {user.displayName || user.username || user.email}
@@ -148,7 +154,9 @@ export function EnrollmentFormDialog({
                           ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>Select the student to enroll</FormDescription>
+                    <FormDescription>
+                      Select the student to enroll
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -162,7 +170,10 @@ export function EnrollmentFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
@@ -181,11 +192,17 @@ export function EnrollmentFormDialog({
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {isEditing ? 'Update' : 'Enroll'}
               </Button>
             </DialogFooter>

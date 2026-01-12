@@ -112,9 +112,10 @@ export function handleApiError(error: unknown) {
 
   // Validation errors (from Zod)
   if (error && typeof error === 'object' && 'issues' in error) {
+    const zodError = error as { issues: unknown[] }
     console.error(
       '❌ Validation error:',
-      JSON.stringify((error as any).issues, null, 2),
+      JSON.stringify(zodError.issues, null, 2),
     )
     return NextResponse.json(
       {
@@ -122,7 +123,7 @@ export function handleApiError(error: unknown) {
         error: {
           message: 'Validation error',
           code: 'VALIDATION_ERROR',
-          issues: (error as any).issues,
+          issues: zodError.issues,
         },
       },
       { status: 400 },

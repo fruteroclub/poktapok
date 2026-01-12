@@ -752,7 +752,7 @@ export interface ProgramDashboardData {
 /**
  * Response for GET /api/programs/:id/dashboard
  */
-export interface ProgramDashboardResponse extends ProgramDashboardData {}
+export type ProgramDashboardResponse = ProgramDashboardData
 
 /**
  * Session item for program sessions list

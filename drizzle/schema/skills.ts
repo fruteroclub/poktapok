@@ -17,7 +17,6 @@ import {
   primaryKey,
   unique,
 } from 'drizzle-orm/pg-core'
-import { sql } from 'drizzle-orm'
 import { timestamps, metadata } from './utils'
 import { users } from './users'
 import { projects } from './projects'

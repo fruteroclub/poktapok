@@ -22,7 +22,43 @@ import {
   gte,
   lte,
   ilike,
+  SQL,
 } from 'drizzle-orm'
+
+// ============================================================
+// TYPE GUARDS
+// ============================================================
+
+type ActivityType = 'github_commit' | 'x_post' | 'photo' | 'video' | 'blog_post' | 'workshop_completion' | 'build_in_public' | 'code_review' | 'custom'
+type Difficulty = 'beginner' | 'intermediate' | 'advanced'
+type ActivityStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled'
+type SubmissionStatus = 'pending' | 'under_review' | 'approved' | 'rejected' | 'revision_requested' | 'distributed'
+type DistributionStatus = 'pending' | 'completed' | 'failed'
+type DistributionMethod = 'manual' | 'smart_contract' | 'claim_portal'
+
+function isActivityType(value: string): value is ActivityType {
+  return ['github_commit', 'x_post', 'photo', 'video', 'blog_post', 'workshop_completion', 'build_in_public', 'code_review', 'custom'].includes(value)
+}
+
+function isDifficulty(value: string): value is Difficulty {
+  return ['beginner', 'intermediate', 'advanced'].includes(value)
+}
+
+function isActivityStatus(value: string): value is ActivityStatus {
+  return ['draft', 'active', 'paused', 'completed', 'cancelled'].includes(value)
+}
+
+function isSubmissionStatus(value: string): value is SubmissionStatus {
+  return ['pending', 'under_review', 'approved', 'rejected', 'revision_requested', 'distributed'].includes(value)
+}
+
+function isDistributionStatus(value: string): value is DistributionStatus {
+  return ['pending', 'completed', 'failed'].includes(value)
+}
+
+function isDistributionMethod(value: string): value is DistributionMethod {
+  return ['manual', 'smart_contract', 'claim_portal'].includes(value)
+}
 
 // ============================================================
 // ACTIVITY QUERIES
@@ -52,19 +88,19 @@ export async function getActivities(filters: {
 
   const offset = (page - 1) * limit
 
-  let query = db
+  const whereConditions: (SQL | undefined)[] = [
+    isNull(activities.deletedAt),
+    type && isActivityType(type) ? eq(activities.activityType, type) : undefined,
+    category ? eq(activities.category, category) : undefined,
+    difficulty && isDifficulty(difficulty) ? eq(activities.difficulty, difficulty) : undefined,
+    status && isActivityStatus(status) ? eq(activities.status, status) : undefined,
+    search ? ilike(activities.title, `%${search}%`) : undefined,
+  ]
+
+  const query = db
     .select()
     .from(activities)
-    .where(
-      and(
-        isNull(activities.deletedAt),
-        type ? eq(activities.activityType, type as any) : undefined,
-        category ? eq(activities.category, category) : undefined,
-        difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
-        status ? eq(activities.status, status as any) : undefined,
-        search ? ilike(activities.title, `%${search}%`) : undefined,
-      ),
-    )
+    .where(and(...whereConditions))
     .limit(limit)
     .offset(offset)
     .orderBy(desc(activities.createdAt))
@@ -75,16 +111,7 @@ export async function getActivities(filters: {
   const totalQuery = await db
     .select({ count: count() })
     .from(activities)
-    .where(
-      and(
-        isNull(activities.deletedAt),
-        type ? eq(activities.activityType, type as any) : undefined,
-        category ? eq(activities.category, category) : undefined,
-        difficulty ? eq(activities.difficulty, difficulty as any) : undefined,
-        status ? eq(activities.status, status as any) : undefined,
-        search ? ilike(activities.title, `%${search}%`) : undefined,
-      ),
-    )
+    .where(and(...whereConditions))
 
   const total = totalQuery[0]?.count || 0
 
@@ -216,7 +243,7 @@ export async function getSubmissions(filters: {
     .leftJoin(profiles, eq(users.id, profiles.userId))
     .where(
       and(
-        status ? eq(activitySubmissions.status, status as any) : undefined,
+        status && isSubmissionStatus(status) ? eq(activitySubmissions.status, status) : undefined,
         activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
         userId ? eq(activitySubmissions.userId, userId) : undefined,
       ),
@@ -231,7 +258,7 @@ export async function getSubmissions(filters: {
     .from(activitySubmissions)
     .where(
       and(
-        status ? eq(activitySubmissions.status, status as any) : undefined,
+        status && isSubmissionStatus(status) ? eq(activitySubmissions.status, status) : undefined,
         activityId ? eq(activitySubmissions.activityId, activityId) : undefined,
         userId ? eq(activitySubmissions.userId, userId) : undefined,
       ),
@@ -398,9 +425,9 @@ export async function getDistributions(filters: {
     .innerJoin(activities, eq(pulpaDistributions.activityId, activities.id))
     .where(
       and(
-        status ? eq(pulpaDistributions.status, status as any) : undefined,
-        method
-          ? eq(pulpaDistributions.distributionMethod, method as any)
+        status && isDistributionStatus(status) ? eq(pulpaDistributions.status, status) : undefined,
+        method && isDistributionMethod(method)
+          ? eq(pulpaDistributions.distributionMethod, method)
           : undefined,
         startDate
           ? gte(pulpaDistributions.distributedAt, new Date(startDate))
@@ -424,9 +451,9 @@ export async function getDistributions(filters: {
     .from(pulpaDistributions)
     .where(
       and(
-        status ? eq(pulpaDistributions.status, status as any) : undefined,
-        method
-          ? eq(pulpaDistributions.distributionMethod, method as any)
+        status && isDistributionStatus(status) ? eq(pulpaDistributions.status, status) : undefined,
+        method && isDistributionMethod(method)
+          ? eq(pulpaDistributions.distributionMethod, method)
           : undefined,
         startDate
           ? gte(pulpaDistributions.distributedAt, new Date(startDate))
@@ -458,9 +485,9 @@ export async function getDistributions(filters: {
     .from(pulpaDistributions)
     .where(
       and(
-        status ? eq(pulpaDistributions.status, status as any) : undefined,
-        method
-          ? eq(pulpaDistributions.distributionMethod, method as any)
+        status && isDistributionStatus(status) ? eq(pulpaDistributions.status, status) : undefined,
+        method && isDistributionMethod(method)
+          ? eq(pulpaDistributions.distributionMethod, method)
           : undefined,
         startDate
           ? gte(pulpaDistributions.distributedAt, new Date(startDate))

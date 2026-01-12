@@ -8,9 +8,12 @@ import {
   fetchActivities,
   createActivity,
   fetchPublicActivities,
+  fetchActivityDetail,
+  submitActivity,
   type ListActivitiesFilters,
   type CreateActivityRequest,
-  type PublicActivitiesFilters
+  type PublicActivitiesFilters,
+  type SubmitActivityRequest
 } from "@/services/activities";
 
 /**
@@ -48,5 +51,35 @@ export function usePublicActivities(filters?: PublicActivitiesFilters) {
     queryKey: ["public", "activities", filters],
     queryFn: () => fetchPublicActivities(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+}
+
+/**
+ * Hook to fetch activity detail by ID
+ */
+export function useActivityDetail(activityId: string) {
+  return useQuery({
+    queryKey: ["activities", "detail", activityId],
+    queryFn: () => fetchActivityDetail(activityId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!activityId,
+  });
+}
+
+/**
+ * Hook to submit activity completion
+ */
+export function useSubmitActivity() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ activityId, data }: { activityId: string; data: SubmitActivityRequest }) =>
+      submitActivity(activityId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate activity detail to refresh submission count
+      queryClient.invalidateQueries({ queryKey: ["activities", "detail", variables.activityId] });
+      // Invalidate activities list to refresh counts
+      queryClient.invalidateQueries({ queryKey: ["public", "activities"] });
+    },
   });
 }

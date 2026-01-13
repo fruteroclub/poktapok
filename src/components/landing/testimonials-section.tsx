@@ -1,5 +1,6 @@
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Marquee } from '@/components/ui/marquee'
+import { Star } from 'lucide-react'
 
 export default function TestimonialsSection() {
   const testimonials = [
@@ -61,50 +62,78 @@ export default function TestimonialsSection() {
             Historias reales de{' '}
             <span className="text-secondary">transformación</span>
           </h2>
-          <p className="max-w-2xl text-xl text-muted">
-            De hackers con potencial a profesionales exitosos
+          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+            Lo que dicen los builders de nuestra comunidad
           </p>
         </div>
 
-        <div className="section grid gap-6 lg:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index}>
-              <CardContent>
-                <div className="mb-6">
-                  <blockquote className="text-lg leading-relaxed text-foreground">
-                    &quot;{testimonial.quote}&quot;
-                  </blockquote>
-                </div>
+        {/* Marquee Carousel */}
+        <div className="relative mx-auto w-full">
+          {/* Left fade overlay */}
+          <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-gradient-to-r from-background to-transparent md:w-32" />
 
-                <div className="mb-4 flex items-center space-x-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <span className="text-xl font-bold text-primary">
-                      {testimonial.initials}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </div>
+          {/* Right fade overlay */}
+          <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-gradient-to-l from-background to-transparent md:w-32" />
 
-                <div className="rounded-lg border-2 border-foreground bg-background p-3">
-                  <p className="text-center font-semibold text-primary">
-                    {testimonial.achievement}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <Marquee pauseOnHover className="[--duration:60s] [--gap:1rem]">
+            {testimonials.map((testimonial, index) => (
+              <Card
+                key={index}
+                className="w-80 flex-shrink-0 transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
+              >
+                <CardContent className="pt-6">
+                  {/* Rating stars */}
+                  <div className="mb-4 flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-4 w-4 fill-primary text-primary"
+                      />
+                    ))}
+                  </div>
+
+                  {/* Quote */}
+                  <div className="mb-6">
+                    <blockquote className="line-clamp-4 text-base leading-relaxed text-foreground">
+                      &quot;{testimonial.quote}&quot;
+                    </blockquote>
+                  </div>
+
+                  {/* Author info */}
+                  <div className="mb-4 flex items-center gap-3 border-t border-border pt-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-xl font-bold text-primary">
+                        {testimonial.initials}
+                      </span>
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="truncate font-bold text-foreground">
+                        {testimonial.name}
+                      </p>
+                      <p className="truncate text-sm text-muted-foreground">
+                        {testimonial.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Achievement badge */}
+                  <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-3">
+                    <p className="text-center text-sm font-semibold text-primary">
+                      {testimonial.achievement}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </Marquee>
         </div>
-        <div className="flex justify-center pt-6">
-          <Button variant="outline" size="lg">
-            Leer más testimonios
-          </Button>
+
+        {/* Bottom text */}
+        <div className="pt-4 text-center">
+          <p className="text-lg font-medium text-foreground">
+            Únete a más de <span className="text-primary">100+ builders</span>{' '}
+            que ya están transformando su carrera
+          </p>
         </div>
       </div>
     </section>

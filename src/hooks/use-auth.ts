@@ -1,10 +1,11 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { usePrivy } from '@privy-io/react-auth'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/store/auth-store'
-import type { Profile } from '@/types/api-v1'
+import { updateUser } from '@/services/auth'
+import type { Profile, UpdateUserRequest } from '@/types/api-v1'
 
 export type AuthUser = {
   isAuthenticated: boolean
@@ -100,4 +101,35 @@ export function useAuth() {
   ])
 
   return query
+}
+
+/**
+ * Hook to update user information (onboarding completion)
+ * Invalidates the "me" query on success to refetch user data
+ *
+ * @example
+ * ```typescript
+ * const updateUserMutation = useUpdateUser()
+ *
+ * const handleSubmit = async (data) => {
+ *   try {
+ *     await updateUserMutation.mutateAsync(data)
+ *     toast.success('Profile updated')
+ *     router.push('/profile')
+ *   } catch (error) {
+ *     toast.error('Failed to update profile')
+ *   }
+ * }
+ * ```
+ */
+export function useUpdateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: UpdateUserRequest) => updateUser(data),
+    onSuccess: () => {
+      // Invalidate and refetch user data to get updated status
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+    },
+  })
 }

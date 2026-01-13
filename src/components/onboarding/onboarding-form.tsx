@@ -3,22 +3,19 @@
 import { useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
-import { uploadAvatar } from '@/services/profile'
-import { updateUser } from '@/services/auth'
+import { useUploadAvatar } from '@/hooks/use-profile'
+import { useUpdateUser } from '@/hooks/use-auth'
 import { ApiError } from '@/lib/api/fetch'
 
 export default function OnboardingForm() {
   const { user } = usePrivy()
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Extract email from Privy user (email, Google, GitHub, Discord)
   const privyEmail =
@@ -35,79 +32,62 @@ export default function OnboardingForm() {
     username: '',
     displayName: '',
     bio: '',
+    avatarUrl: '',
+    email: privyEmail, // Allow user to edit email if not provided by Privy
   })
 
-  // Track selected avatar file (not uploaded yet)
-  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
-    null,
-  )
+  // Mutations
+  const uploadAvatarMutation = useUploadAvatar()
+  const updateUserMutation = useUpdateUser()
 
-  // Handle avatar file selection (UI component returns File object)
-  const handleAvatarFileSelect = (file: File | null) => {
-    setSelectedAvatarFile(file)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  // Avatar upload handler
+  const handleAvatarFileSelect = async (file: File | null) => {
+    if (!file) return
 
     try {
-      if (!user?.id) {
-        throw new Error('User not authenticated')
+      const avatarUrl = await uploadAvatarMutation.mutateAsync(file)
+      setFormData({ ...formData, avatarUrl })
+      toast.success('Avatar uploaded successfully')
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      } else {
+        toast.error('Failed to upload avatar')
       }
+    }
+  }
 
-      // Step 1: Upload avatar if selected (service handles FormData and API call)
-      let avatarUrl = null
-      if (selectedAvatarFile) {
-        try {
-          avatarUrl = await uploadAvatar(selectedAvatarFile)
-        } catch (error) {
-          // Avatar upload failed - warn user but allow profile completion
-          if (error instanceof ApiError) {
-            toast.error(`Avatar upload failed: ${error.message}`)
-          } else {
-            toast.error('Avatar upload failed')
-          }
-          // Continue without avatar
-        }
-      }
+  // Form submission handler
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-      // Step 2: Update user with all form data + avatar URL (service handles API call)
-      await updateUser({
-        ...formData,
-        email: privyEmail, // Use email from Privy (read-only)
-        avatarUrl, // Include uploaded avatar URL (or null)
-      })
-
-      // Invalidate auth query to refetch user with updated status
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-
+    try {
+      await updateUserMutation.mutateAsync(formData)
       toast.success('¡Perfil completado exitosamente!')
       router.push('/profile')
     } catch (error) {
-      console.error('Error updating profile:', error)
-      // Structured error handling from ApiError
       if (error instanceof ApiError) {
         toast.error(error.message)
       } else {
         toast.error('Error al actualizar perfil. Intenta de nuevo')
       }
-    } finally {
-      setIsSubmitting(false)
     }
   }
+
+  const isSubmitting = updateUserMutation.isPending
+  const isUploadingAvatar = uploadAvatarMutation.isPending
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Avatar Upload Section - TOP OF FORM */}
       <div className="flex flex-col items-center gap-2">
         <AvatarUpload
-          currentAvatarUrl={null}
+          currentAvatarUrl={formData.avatarUrl || null}
           username={formData.username || undefined}
           displayName={formData.displayName || undefined}
           ethAddress={ethAddress}
           onFileSelect={handleAvatarFileSelect}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isUploadingAvatar}
         />
         <p className="text-center text-sm text-muted-foreground">
           Sube una foto de perfil (opcional)
@@ -122,10 +102,9 @@ export default function OnboardingForm() {
           id="email"
           type="email"
           required
-          disabled
           placeholder="tu@email.com"
-          value={privyEmail}
-          className="cursor-not-allowed"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
       </div>
 
@@ -182,8 +161,16 @@ export default function OnboardingForm() {
         </p>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Guardando...' : 'Completar perfil'}
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isSubmitting || isUploadingAvatar}
+      >
+        {isSubmitting
+          ? 'Guardando...'
+          : isUploadingAvatar
+            ? 'Subiendo avatar...'
+            : 'Completar perfil'}
       </Button>
     </form>
   )

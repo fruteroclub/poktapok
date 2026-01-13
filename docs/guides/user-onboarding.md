@@ -515,7 +515,7 @@ Use this structure:
 
 - [Admin Application Review Guide](admin-application-review.md) - How admins evaluate applications
 - [Feature Documentation](../features/program-management.md) - System architecture and workflows
-- [API Reference](../api-reference.md) - Technical API documentation
+- [API Reference](../dev/api-reference.md) - Technical API documentation
 
 ---
 

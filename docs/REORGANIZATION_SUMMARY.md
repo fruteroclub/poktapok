@@ -1,6 +1,6 @@
 # Documentation Reorganization Summary
 
-**Date**: January 5, 2025
+**Date**: January 13, 2026 (Updated)
 **Status**: ✅ Complete
 
 ## 📊 What Changed
@@ -78,6 +78,17 @@ docs/
 ### To `database/`
 - ✅ `database-migrations.md` → `database/migrations.md`
 - ✅ `migration-quick-reference.md` → `database/migration-quick-reference.md`
+- ✅ `DATABASE-MIGRATION-FIX.md` → `database/migration-fix-guide.md`
+
+### To `dev/`
+- ✅ `api-reference.md` → `dev/api-reference.md`
+- ✅ `testing-guide.md` → `dev/testing-guide.md`
+
+### To `design/landing-page/`
+- ✅ `frutero-landing-page-update-scope.md` → `design/landing-page/frutero-landing-page-update-scope.md`
+
+### To `features/`
+- ✅ `E4-PROGRAMS-SESSIONS-ACTIVITIES-RELATIONSHIPS.md` → `features/programs-sessions-activities-relationships.md`
 
 ## 📚 New Documentation Created
 

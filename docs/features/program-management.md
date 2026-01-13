@@ -361,8 +361,8 @@ try {
 
 ## Related Documentation
 
-- [Database Setup Guide](../database-setup.md)
+- [Database Setup Guide](../dev/database-setup.md)
 - [Admin Application Review Guide](../guides/admin-application-review.md)
-- [API Reference](../api-reference.md)
+- [API Reference](../dev/api-reference.md)
 - [User Onboarding Guide](../guides/user-onboarding.md)
-- [Testing Guide](../testing-guide.md)
+- [Testing Guide](../dev/testing-guide.md)

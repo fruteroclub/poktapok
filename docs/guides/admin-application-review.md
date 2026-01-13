@@ -388,5 +388,5 @@ Watch for:
 ## Related Documentation
 
 - [Feature Documentation](../features/program-management.md)
-- [API Reference](../api-reference.md)
+- [API Reference](../dev/api-reference.md)
 - [User Onboarding Guide](./user-onboarding.md)

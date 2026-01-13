@@ -42,7 +42,7 @@ The database migration system became corrupted due to mixing `db:push` (direct s
 **Files Created:**
 - `drizzle/migrations/0005_make_sessions_programid_nullable.sql`
 - `scripts/check-applied-migrations.ts` (diagnostic tool)
-- `docs/DATABASE-MIGRATION-FIX.md` (this file)
+- `docs/database/migration-fix-guide.md` (this file)
 
 **Migration Applied:**
 ```sql
@@ -342,8 +342,8 @@ CREATE TABLE drizzle_migrations (
 
 - **Drizzle Kit Docs:** https://orm.drizzle.team/kit-docs/overview
 - **Migration Best Practices:** https://orm.drizzle.team/docs/migrations
-- **This Issue:** E4-PROGRAMS-SESSIONS-ACTIVITIES-RELATIONSHIPS.md
-- **Related:** docs/database-setup.md
+- **This Issue:** ../features/programs-sessions-activities-relationships.md
+- **Related:** ../dev/database-setup.md
 
 ---
 

@@ -382,8 +382,8 @@ Comprehensive testing strategies and documentation:
 - [Feature Documentation](docs/features/program-management.md) - Complete system architecture and workflows
 - [Admin Application Review Guide](docs/guides/admin-application-review.md) - Application review process with examples
 - [User Onboarding Guide](docs/guides/user-onboarding.md) - User-facing onboarding instructions
-- [API Reference](docs/api-reference.md) - Complete API endpoint documentation
-- [Testing Guide](docs/testing-guide.md) - Manual and automated testing strategies
+- [API Reference](docs/dev/api-reference.md) - Complete API endpoint documentation
+- [Testing Guide](docs/dev/testing-guide.md) - Manual and automated testing strategies
 
 ### File Storage
 
@@ -610,13 +610,13 @@ const { data, isLoading, isError } = useMe()
 1. **Check current state**: `bun run scripts/check-applied-migrations.ts`
 2. **Edit schema files** in `drizzle/schema/` (users.ts, profiles.ts, applications.ts, invitations.ts, activities.ts, sessions.ts, etc.)
 3. **Generate migration**: `bun run db:generate`
-   - If this fails with "data is malformed", see [docs/DATABASE-MIGRATION-FIX.md](docs/DATABASE-MIGRATION-FIX.md)
+   - If this fails with "data is malformed", see [docs/database/migration-fix-guide.md](docs/database/migration-fix-guide.md)
 4. **Review migration**: Check `drizzle/migrations/XXXX_*.sql` for correctness
 5. **Apply migration**: `bun run db:migrate`
 6. **Verify**: `bun run scripts/check-applied-migrations.ts`
 
 **Emergency procedure if migration system is corrupted:**
-- See [docs/DATABASE-MIGRATION-FIX.md](docs/DATABASE-MIGRATION-FIX.md) for recovery steps
+- See [docs/database/migration-fix-guide.md](docs/database/migration-fix-guide.md) for recovery steps
 - Key diagnostic: `bun run scripts/check-applied-migrations.ts`
 
 **Important constraints to follow:**

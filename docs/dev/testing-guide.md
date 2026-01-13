@@ -863,8 +863,8 @@ LIMIT 5;
 
 ## Related Documentation
 
-- [Feature Documentation](features/program-management.md) - System architecture and workflows
+- [Feature Documentation](../features/program-management.md) - System architecture and workflows
 - [API Reference](api-reference.md) - Complete API endpoint documentation
-- [Admin Application Review Guide](guides/admin-application-review.md) - Application review process
-- [User Onboarding Guide](guides/user-onboarding.md) - User-facing onboarding instructions
+- [Admin Application Review Guide](../guides/admin-application-review.md) - Application review process
+- [User Onboarding Guide](../guides/user-onboarding.md) - User-facing onboarding instructions
 - [Database Setup](database-setup.md) - Database schema and relationships

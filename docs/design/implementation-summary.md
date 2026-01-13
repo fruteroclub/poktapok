@@ -335,7 +335,7 @@ src/components/club/
 ### Documentation Requirements
 - JSDoc comments for all public functions
 - Component props documented with TypeScript
-- API endpoints documented in `docs/api-reference.md`
+- API endpoints documented in `docs/dev/api-reference.md`
 - Update `CLAUDE.md` with new routes and features
 
 ---

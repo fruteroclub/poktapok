@@ -358,7 +358,7 @@ The Program Management system enables structured learning programs with applicat
 
 ## API Endpoints
 
-See [API Reference](../api-reference.md) for complete documentation.
+See [API Reference](../../dev/api-reference.md) for complete documentation.
 ```
 
 ### Admin Guide

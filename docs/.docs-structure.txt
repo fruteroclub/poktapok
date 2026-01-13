@@ -1,0 +1,77 @@
+# Documentation Structure (Updated: Jan 13, 2026)
+
+## Root Level (Only Meta Files)
+- README.md - Main documentation index
+- DOCUMENTATION_GUIDE.md - How to use the docs system
+- REORGANIZATION_SUMMARY.md - History of documentation changes
+
+## Organized Subfolders
+
+### /database - Database-specific documentation
+- README.md
+- migrations.md
+- migration-quick-reference.md
+- migration-fix-guide.md
+
+### /design - UI/UX and design documentation
+- README.md
+- admin-dashboard.md
+- admin-navigation-design.md
+- admin-navigation-implementation.md
+- users-management.md
+- phase-1-api-specifications.md
+- phase-2-jam-section-design.md
+- phase-3-club-section-design.md
+- program-discovery-questions.md
+- implementation-summary.md
+- landing-page/
+  └── frutero-landing-page-update-scope.md
+
+### /dev - Developer guides and references
+- database-setup.md
+- api-reference.md
+- testing-guide.md
+- privy/
+  ├── auth-tokens-privy.txt
+  └── llms-privy.txt
+
+### /features - Feature specifications
+- README.md
+- FEATURE_TEMPLATE.md
+- program-management.md
+- avatar-upload.md
+- programs-sessions-activities-relationships.md
+
+### /guides - User and admin guides
+- admin-application-review.md
+- user-onboarding.md
+
+### /product - Product requirements and strategy
+- prd.md
+- prd-implementation.md
+- database-design.md
+
+### /specs - Complex system specifications
+- README.md
+- pulpa-workshop-system-spec.md
+- pulpa-implementation-complete.md
+
+### /tickets - Implementation tracking (Epic-based)
+- TICKET_TEMPLATE.md
+- epic-0/ - Database setup
+- epic-1/ - Authentication & profiles
+- epic-2/ - Portfolio & projects
+- epic-3-program-management/ - Programs & onboarding
+- deferred/ - Postponed tickets
+
+### /workflows - Process documentation
+- README.md
+- users-management.md
+
+## Quick Navigation
+
+Landing Page Updates: docs/design/landing-page/frutero-landing-page-update-scope.md
+API Reference: docs/dev/api-reference.md
+Testing: docs/dev/testing-guide.md
+Database: docs/database/README.md
+Features: docs/features/README.md

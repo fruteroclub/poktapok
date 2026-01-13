@@ -100,17 +100,17 @@ This workflow outlines the implementation plan for updating the Poktapok landing
 
    **Pattern from Scope Document** (Section 4.1):
    ```tsx
-   {/* Add after subheadline, before CTAs */}
-   <div className="flex flex-wrap justify-center gap-4 text-sm">
-     <span className="rounded-full bg-accent/10 px-4 py-2 text-accent font-medium">
+   {/* Add after subheadline, before CTAs - use Badge component */}
+   <div className="flex flex-wrap justify-center gap-4">
+     <Badge variant="secondary" className="bg-accent/10 text-accent">
        32.7% tasa de completación (6x promedio)
-     </span>
-     <span className="rounded-full bg-primary/10 px-4 py-2 text-primary font-medium">
+     </Badge>
+     <Badge variant="secondary" className="bg-primary/10 text-primary">
        25+ victorias en hackathones
-     </span>
-     <span className="rounded-full bg-secondary/10 px-4 py-2 text-secondary font-medium">
+     </Badge>
+     <Badge variant="secondary" className="bg-secondary/10 text-secondary">
        6 ganadores ETHDenver 2025
-     </span>
+     </Badge>
    </div>
    ```
 
@@ -128,40 +128,40 @@ This workflow outlines the implementation plan for updating the Poktapok landing
      <Button
        variant="outline"
        size="lg"
-       className="text-2xl font-medium lg:px-14 lg:py-6 border-primary text-primary hover:bg-primary/5"
+       className="text-2xl font-medium lg:px-14 lg:py-6"
        asChild
      >
-       <a href="#programs-section">Explora Programas</a>
+       <Link href="#programs-section">Explora Programas</Link>
      </Button>
    </div>
    ```
 
-4. **Add subtle gradient background** (0.5 hour)
+4. **Import required components** (0.5 hour)
 
-   **Pattern from Scope Document** (Section 4.1):
    ```tsx
-   // Add as first child inside page-content:
-   <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
+   // Add to imports:
+   import { Badge } from '@/components/ui/badge'
+   import Link from 'next/link'
    ```
 
 5. **Test responsive behavior** (0.5 hour)
-   - Mobile (375px): Proof pills stack, CTAs stack vertically
-   - Tablet (768px): Proof pills wrap, CTAs side-by-side
+   - Mobile (375px): Badge components stack, CTAs stack vertically
+   - Tablet (768px): Badges wrap naturally, CTAs side-by-side
    - Desktop (1024px+): All elements in optimal layout
 
 6. **Dark mode testing** (0.5 hour)
-   - Verify gradient visibility
-   - Check proof pill contrast
+   - Check Badge component contrast
    - Test CTA button visibility
+   - Verify rotated spans remain readable
 
 #### Acceptance Criteria
-- [ ] Trust indicators display correctly on all screen sizes
-- [ ] Gradient background does not interfere with text readability
-- [ ] **CRITICAL**: Existing hero title with rotated spans remains unchanged (Scope: Section 2.5)
-  - "Crecimiento" uses `bg-accent`
-  - "IA y Cripto" uses `bg-secondary`
-  - Both use `transform`, `rounded-lg`, `px-4 py-2` classes
-- [ ] BuildersShowcaseMarquee still renders below trust indicators
+- [ ] Badge components display correctly on all screen sizes
+- [ ] Secondary CTA button uses Link component properly
+- [ ] **CRITICAL**: Hero title with rotated span updated to new copy (Scope: Section 2.5)
+  - "ganar más" uses `bg-accent` with same styling
+  - Single rotated span only (removed second span)
+  - Uses `transform`, `rounded-lg`, `px-4 py-2` classes
+- [ ] BuildersShowcaseMarquee still renders below CTAs
 - [ ] Dark mode displays correctly
 - [ ] No `bg-muted` variants used anywhere (Scope: Section 2.1 critical rule)
 
@@ -182,14 +182,14 @@ This workflow outlines the implementation plan for updating the Poktapok landing
 
    **Pattern from Scope Document** (Section 4.2):
    ```tsx
-   // Add before stats grid:
-   <div className="mx-auto max-w-md mb-8">
-     <Card className="border-2 border-primary bg-primary/5 hover:shadow-lg transition-shadow">
-       <CardContent className="pt-6 text-center">
-         <Coins className="h-12 w-12 text-primary mx-auto mb-4" />
-         <div className="text-6xl font-bold text-primary mb-2">$100k+</div>
+   // Add before stats grid - use Card component:
+   <div className="mx-auto max-w-md">
+     <Card className="border-2 border-primary transition-shadow hover:shadow-lg">
+       <CardContent className="pt-6 text-center space-y-2">
+         <Coins className="h-12 w-12 text-primary mx-auto" />
+         <div className="text-6xl font-bold text-primary">$100k+</div>
          <p className="text-xl text-foreground">USD distribuidos a la comunidad</p>
-         <p className="text-sm text-muted-foreground mt-2">
+         <p className="text-sm text-muted-foreground">
            En los últimos 12 meses
          </p>
        </CardContent>
@@ -216,7 +216,8 @@ This workflow outlines the implementation plan for updating the Poktapok landing
    - Desktop: Featured stat centered, grid 3 columns with adjusted spacing
 
 #### Acceptance Criteria
-- [ ] Featured stat card displays prominently (Scope: Section 4.2)
+- [ ] Featured stat uses Card component (Scope: Section 4.2)
+- [ ] No gradient backgrounds used on Card (removed `bg-primary/5`)
 - [ ] Remaining 5 stats display in responsive grid using `StatCard` component (Scope: Section 3)
 - [ ] Hover animations work smoothly (subtle, consistent with current styling)
 - [ ] All icons from `lucide-react` (Scope: Section 2.3)
@@ -249,9 +250,9 @@ This workflow outlines the implementation plan for updating the Poktapok landing
    </p>
    ```
 
-2. **Add next steps indicators** (1.5 hours)
+2. **Add next steps indicators using Card components** (1.5 hours)
    ```tsx
-   // Add before trust badges:
+   // Add before trust badges - use Card component:
    <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
      {[
        { step: '1', title: 'Regístrate', desc: 'Crea tu cuenta en 30 segundos', icon: UserPlus },
@@ -260,40 +261,44 @@ This workflow outlines the implementation plan for updating the Poktapok landing
      ].map((item) => {
        const Icon = item.icon
        return (
-         <div key={item.step} className="flex flex-col gap-2 items-center">
-           <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-primary/20">
-             <Icon className="h-6 w-6 text-primary" />
-           </div>
-           <h3 className="font-bold text-lg text-foreground">{item.title}</h3>
-           <p className="text-sm text-muted-foreground text-center">{item.desc}</p>
-         </div>
+         <Card key={item.step}>
+           <CardContent className="pt-6 text-center space-y-2">
+             <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+               <Icon className="h-6 w-6 text-primary" />
+             </div>
+             <h3 className="font-bold text-lg text-foreground">{item.title}</h3>
+             <p className="text-sm text-muted-foreground">{item.desc}</p>
+           </CardContent>
+         </Card>
        )
      })}
    </div>
    ```
 
-3. **Add trust badges** (0.5 hour)
+3. **Add trust badges using Badge component** (0.5 hour)
    ```tsx
-   // Add at bottom:
-   <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-     <span className="flex items-center gap-2">
-       <Shield className="h-4 w-4 text-accent" /> 100% Gratis
-     </span>
-     <span className="flex items-center gap-2">
-       <Lock className="h-4 w-4 text-accent" /> Datos seguros
-     </span>
-     <span className="flex items-center gap-2">
-       <Heart className="h-4 w-4 text-accent" /> Comunidad inclusiva
-     </span>
+   // Add at bottom - use Badge component:
+   <div className="flex flex-wrap justify-center gap-4">
+     <Badge variant="secondary" className="flex items-center gap-2">
+       <Shield className="h-4 w-4" /> 100% Gratis
+     </Badge>
+     <Badge variant="secondary" className="flex items-center gap-2">
+       <Lock className="h-4 w-4" /> Datos seguros
+     </Badge>
+     <Badge variant="secondary" className="flex items-center gap-2">
+       <Heart className="h-4 w-4" /> Comunidad inclusiva
+     </Badge>
    </div>
    ```
 
 #### Acceptance Criteria
 - [ ] Urgency message displays clearly (Scope: Section 4.6)
+- [ ] Next steps use Card components (Scope: Section 3)
 - [ ] Next steps show in 1 column (mobile), 3 columns (desktop) per responsive guidelines (Scope: Section 7)
+- [ ] Trust badges use Badge component (Scope: Section 3)
 - [ ] Trust badges wrap appropriately on narrow screens
 - [ ] All icons from `lucide-react` (Scope: Section 2.3)
-- [ ] Section maintains existing gradient background
+- [ ] No gradient backgrounds used
 - [ ] Uses `primary`, `secondary`, `accent`, `foreground` color tokens only (Scope: Section 2.1)
 - [ ] No `bg-muted` variants used (Scope: Section 2.1 critical rule)
 
@@ -305,12 +310,12 @@ This workflow outlines the implementation plan for updating the Poktapok landing
 ### Phase 1 Testing Checklist
 
 **Visual QA**:
-- [ ] Hero gradient visible but subtle
-- [ ] Trust indicators legible on all backgrounds
-- [ ] Featured stat stands out visually
+- [ ] Hero section clean without gradients
+- [ ] Badge components legible on all backgrounds
+- [ ] Featured stat Card stands out visually
 - [ ] Stats grid balanced and aligned
-- [ ] CTA section urgency message prominent
-- [ ] Next steps icons and text aligned
+- [ ] CTA section Card components display properly
+- [ ] Next steps Cards aligned and consistent
 
 **Responsive QA**:
 - [ ] Mobile (375px): All elements stack correctly
@@ -320,9 +325,9 @@ This workflow outlines the implementation plan for updating the Poktapok landing
 
 **Dark Mode QA**:
 - [ ] All text readable in dark mode
-- [ ] Gradients visible but not overwhelming
+- [ ] Badge components maintain proper contrast
 - [ ] Icons maintain proper contrast
-- [ ] Card backgrounds appropriate
+- [ ] Card components use appropriate backgrounds
 
 **Functional QA**:
 - [ ] All CTAs link to auth flow
@@ -408,9 +413,9 @@ interface SuccessStory {
 
 #### Implementation Steps
 
-1. **Create component file** (3 hours)
+1. **Create component file using Card components** (3 hours)
 
-   **Pattern from Scope Document** (Section 4.4 - alternating layout):
+   **Pattern from Scope Document** (Section 4.4 - alternating layout using Card):
    ```bash
    touch src/components/landing/success-stories-section.tsx
    ```
@@ -432,48 +437,49 @@ interface SuccessStory {
 
    export default function SuccessStoriesSection() {
      return (
-       <section className="page py-12 bg-primary/5">
-         <div className="page-content gap-y-8">
+       <section className="page py-12">
+         <div className="page-content space-y-8">
            {/* Section header */}
-           <div className="text-center">
+           <div className="text-center space-y-4">
              <h2 className="text-3xl font-bold md:text-4xl">
                Historias de <span className="text-primary">éxito</span>
              </h2>
-             <p className="text-xl text-muted-foreground mt-4">
+             <p className="text-xl text-muted-foreground">
                Miembros que transformaron su carrera
              </p>
            </div>
 
-           {/* Success story cards - alternating layout */}
+           {/* Success story cards - alternating layout using Card */}
            <div className="mx-auto max-w-4xl space-y-12">
              {successStories.map((story, index) => (
-               <div
-                 key={index}
-                 className={`grid gap-8 md:grid-cols-2 md:gap-12 ${
-                   index % 2 === 1 ? 'md:grid-flow-dense' : ''
-                 }`}
-               >
-                 {/* Image side */}
-                 <div className={`${index % 2 === 1 ? 'md:col-start-2' : ''}`}>
-                   {story.visual ? (
-                     <div className="aspect-square rounded-2xl overflow-hidden">
-                       <Image
-                         src={story.visual.imageUrl}
-                         alt={story.visual.alt}
-                         width={400}
-                         height={400}
-                         className="object-cover w-full h-full"
-                       />
+               <Card key={index}>
+                 <CardContent className="pt-6">
+                   <div
+                     className={`grid gap-8 md:grid-cols-2 md:gap-12 ${
+                       index % 2 === 1 ? 'md:grid-flow-dense' : ''
+                     }`}
+                   >
+                     {/* Image side */}
+                     <div className={`${index % 2 === 1 ? 'md:col-start-2' : ''}`}>
+                       {story.visual ? (
+                         <div className="aspect-square rounded-2xl overflow-hidden">
+                           <Image
+                             src={story.visual.imageUrl}
+                             alt={story.visual.alt}
+                             width={400}
+                             height={400}
+                             className="object-cover w-full h-full"
+                           />
+                         </div>
+                       ) : (
+                         <div className="aspect-square rounded-2xl bg-card border-2 border-border flex items-center justify-center">
+                           <p className="text-6xl">🚀</p>
+                         </div>
+                       )}
                      </div>
-                   ) : (
-                     <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                       <p className="text-6xl">🚀</p>
-                     </div>
-                   )}
-                 </div>
 
-                 {/* Content side */}
-                 <div className="flex flex-col justify-center gap-4">
+                     {/* Content side */}
+                     <div className="flex flex-col justify-center space-y-4">
                    <h3 className="text-2xl font-bold text-foreground">
                      {story.achievement.title}
                    </h3>
@@ -504,33 +510,35 @@ interface SuccessStory {
                      </div>
                    </div>
 
-                   {/* Metrics */}
-                   <div className="flex gap-6 text-sm">
-                     <div>
-                       <p className="font-bold text-primary text-2xl">
-                         {story.achievement.earnings}
-                       </p>
-                       <p className="text-muted-foreground">Ganado</p>
+                     {/* Metrics */}
+                     <div className="flex gap-6">
+                       <div>
+                         <p className="font-bold text-primary text-2xl">
+                           {story.achievement.earnings}
+                         </p>
+                         <p className="text-sm text-muted-foreground">Ganado</p>
+                       </div>
+                       <div>
+                         <p className="font-bold text-secondary text-2xl">
+                           {story.achievement.projects}
+                         </p>
+                         <p className="text-sm text-muted-foreground">Proyectos</p>
+                       </div>
                      </div>
-                     <div>
-                       <p className="font-bold text-secondary text-2xl">
-                         {story.achievement.projects}
-                       </p>
-                       <p className="text-muted-foreground">Proyectos</p>
-                     </div>
-                   </div>
 
-                   {/* Link to profile */}
-                   {story.member.profileUrl && (
-                     <Link
-                       href={story.member.profileUrl}
-                       className="flex items-center gap-2 text-primary hover:underline"
-                     >
-                       Ver perfil completo <ArrowRightIcon className="h-4 w-4" />
-                     </Link>
-                   )}
+                     {/* Link to profile */}
+                     {story.member.profileUrl && (
+                       <Link
+                         href={story.member.profileUrl}
+                         className="flex items-center gap-2 text-primary hover:underline"
+                       >
+                         Ver perfil completo <ArrowRightIcon className="h-4 w-4" />
+                       </Link>
+                     )}
+                   </div>
                  </div>
-               </div>
+               </CardContent>
+             </Card>
              ))}
            </div>
          </div>
@@ -560,12 +568,14 @@ interface SuccessStory {
    - Compress images to < 200KB each
 
 #### Acceptance Criteria
+- [ ] Card components used for success stories (Scope: Section 3)
 - [ ] 3-5 success stories display correctly (Scope: Section 4.4)
 - [ ] Alternating layout works on desktop (Scope: Section 4.4 layout pattern)
 - [ ] Cards stack on mobile per responsive guidelines (Scope: Section 7)
 - [ ] Member avatars display (or fallback initials using `bg-primary/10`)
 - [ ] Links to profiles work using `text-primary hover:underline` (Scope: Section 2.6)
 - [ ] Images load efficiently using Next.js Image component
+- [ ] No gradient backgrounds used (removed `bg-primary/5`)
 - [ ] Section structure follows `page` → `page-content` pattern (Scope: Section 2.4)
 - [ ] Color usage: `primary`, `secondary`, `accent`, `foreground` only (Scope: Section 2.1)
 - [ ] No `bg-muted` variants used (Scope: Section 2.1 critical rule)
@@ -595,6 +605,7 @@ interface SuccessStory {
        role: string
        avatarUrl?: string
        initials: string
+       profileUrl?: string
      }
    }
    ```
@@ -603,8 +614,8 @@ interface SuccessStory {
 
    **Pattern from Scope Document** (Section 4.3):
    ```tsx
-   // Update testimonial card:
-   <Card className="group border-2 border-border bg-background hover:border-primary/30 transition-all">
+   // Update testimonial card - use Card component:
+   <Card className="group transition-all hover:border-primary/30">
      <CardContent className="pt-6 space-y-4">
        {/* Avatar */}
        <div className="flex items-center gap-4">
@@ -631,6 +642,13 @@ interface SuccessStory {
 
        {/* Quote */}
        <p className="text-foreground/80 italic">"{testimonial.quote}"</p>
+
+       {/* Optional: Profile link */}
+       {testimonial.author.profileUrl && (
+         <Link href={testimonial.author.profileUrl} className="flex items-center gap-2 text-sm text-primary hover:underline">
+           Ver perfil <ArrowRightIcon className="h-3 w-3" />
+         </Link>
+       )}
      </CardContent>
    </Card>
    ```
@@ -646,13 +664,14 @@ interface SuccessStory {
    - Desktop: 3 columns
 
 #### Acceptance Criteria
+- [ ] Card component used for testimonials (Scope: Section 3)
 - [ ] Avatars display for all testimonials (Scope: Section 4.3)
 - [ ] Fallback initials show when no avatar using `bg-primary/10` (Scope: Section 4.3)
 - [ ] Roles display below names with `text-muted-foreground` (Scope: Section 2.1)
 - [ ] Card hover uses `border-primary/30` transition (Scope: Section 2.6)
 - [ ] Grid responsive: 1 col (mobile), 2 cols (tablet), 3 cols (desktop) per Section 7
 - [ ] No `bg-muted` variants used (Scope: Section 2.1 critical rule)
-- [ ] Grid layout responsive
+- [ ] Profile links work when available
 - [ ] Hover effects work smoothly
 
 #### Files Changed

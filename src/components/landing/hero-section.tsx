@@ -1,15 +1,13 @@
 import { SparklesIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import AuthButtonPrivy from '../buttons/auth-button-privy'
 import BuildersShowcaseMarquee from './builders-showcase-marquee'
 
 export default function HeroSection() {
   return (
-    <div className="relative min-h-[70svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
-      {/* Gradient Background Accent */}
-      <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
-
+    <div className="min-h-[70svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
       <div className="page-content mx-auto space-y-8 px-4 text-center">
         {/* Título Principal */}
         <div className="mx-auto max-w-4xl">
@@ -27,17 +25,17 @@ export default function HeroSection() {
           conectas con mentores activos, y ganas mientras aprendes.
         </p>
 
-        {/* Proof Metrics as Pill Badges */}
-        <div className="flex flex-wrap justify-center gap-4 text-sm">
-          <span className="rounded-full bg-accent/10 px-4 py-2 text-accent font-medium">
+        {/* Proof Metrics using Badge component */}
+        <div className="flex flex-wrap justify-center gap-4">
+          <Badge variant="secondary" className="bg-accent/10 text-accent">
             32.7% tasa de completación (6x promedio)
-          </span>
-          <span className="rounded-full bg-primary/10 px-4 py-2 text-primary font-medium">
+          </Badge>
+          <Badge variant="secondary" className="bg-primary/10 text-primary">
             25+ victorias en hackathones
-          </span>
-          <span className="rounded-full bg-secondary/10 px-4 py-2 text-secondary font-medium">
+          </Badge>
+          <Badge variant="secondary" className="bg-secondary/10 text-secondary">
             6 ganadores ETHDenver 2025
-          </span>
+          </Badge>
         </div>
 
         {/* CTA Buttons */}
@@ -53,7 +51,7 @@ export default function HeroSection() {
           <Button
             variant="outline"
             size="lg"
-            className="text-2xl font-medium lg:px-14 lg:py-6 border-primary text-primary hover:bg-primary/5"
+            className="text-2xl font-medium lg:px-14 lg:py-6"
             asChild
           >
             <Link href="#programs-section">Explora Programas</Link>

@@ -227,9 +227,6 @@ This document outlines the design and technical specifications for updating the 
 ```tsx
 <section className="page min-h-[70svh] w-full pt-12 pb-8 md:pt-20">
   <div className="page-content space-y-8 text-center">
-    {/* Gradient background */}
-    <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
-
     {/* Hero title - PRESERVE rotated spans structure */}
     <div className="mx-auto max-w-4xl">
       <h1 className="text-4xl leading-tight font-semibold text-foreground md:text-5xl">
@@ -247,17 +244,17 @@ This document outlines the design and technical specifications for updating the 
       conectas con mentores activos, y ganas mientras aprendes.
     </p>
 
-    {/* Proof metrics as pill badges */}
-    <div className="flex flex-wrap justify-center gap-4 text-sm">
-      <span className="rounded-full bg-accent/10 px-4 py-2 text-accent font-medium">
+    {/* Proof metrics as pill badges using Badge component */}
+    <div className="flex flex-wrap justify-center gap-4">
+      <Badge variant="secondary" className="bg-accent/10 text-accent">
         32.7% tasa de completación (6x promedio)
-      </span>
-      <span className="rounded-full bg-primary/10 px-4 py-2 text-primary font-medium">
+      </Badge>
+      <Badge variant="secondary" className="bg-primary/10 text-primary">
         25+ victorias en hackathones
-      </span>
-      <span className="rounded-full bg-secondary/10 px-4 py-2 text-secondary font-medium">
+      </Badge>
+      <Badge variant="secondary" className="bg-secondary/10 text-secondary">
         6 ganadores ETHDenver 2025
-      </span>
+      </Badge>
     </div>
 
     {/* Primary CTA */}
@@ -270,10 +267,10 @@ This document outlines the design and technical specifications for updating the 
       <Button
         variant="outline"
         size="lg"
-        className="text-2xl font-medium lg:px-14 lg:py-6 border-primary text-primary hover:bg-primary/5"
+        className="text-2xl font-medium lg:px-14 lg:py-6"
         asChild
       >
-        <a href="#programs-section">Explora Programas</a>
+        <Link href="#programs-section">Explora Programas</Link>
       </Button>
     </div>
 
@@ -298,25 +295,25 @@ This document outlines the design and technical specifications for updating the 
 **Implementation Pattern**:
 ```tsx
 <section className="page py-12">
-  <div className="page-content gap-y-8">
+  <div className="page-content space-y-8">
     {/* Section header */}
-    <div className="flex flex-col gap-y-4 text-center">
+    <div className="text-center">
       <h2 className="text-3xl font-bold md:text-4xl">
         Nuestro <span className="text-primary">impacto</span> en números
       </h2>
     </div>
 
-    {/* Featured stat - large */}
+    {/* Featured stat using Card component */}
     <div className="mx-auto max-w-md">
-      <Card className="border-2 border-primary bg-primary/5">
-        <CardContent className="pt-6 text-center">
+      <Card className="border-2 border-primary">
+        <CardContent className="pt-6 text-center space-y-2">
           <div className="text-6xl font-bold text-primary">$100k+</div>
           <p className="text-xl text-foreground">USD distribuidos</p>
         </CardContent>
       </Card>
     </div>
 
-    {/* Regular stats grid */}
+    {/* Regular stats grid using StatCard component */}
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
       {stats.map((stat) => (
         <StatCard {...stat} key={stat.description} />
@@ -339,10 +336,10 @@ This document outlines the design and technical specifications for updating the 
 
 **Implementation Pattern**:
 ```tsx
-<Card className="group border-2 border-border bg-background hover:border-primary/30 transition-all">
-  <CardContent className="pt-6">
+<Card className="group transition-all hover:border-primary/30">
+  <CardContent className="pt-6 space-y-4">
     {/* Avatar */}
-    <div className="flex items-center gap-4 mb-4">
+    <div className="flex items-center gap-4">
       <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
         <span className="text-xl font-bold text-primary">{initials}</span>
       </div>
@@ -357,7 +354,7 @@ This document outlines the design and technical specifications for updating the 
 
     {/* Optional: Link to profile */}
     {profileUrl && (
-      <Link href={profileUrl} className="mt-4 flex items-center gap-2 text-sm text-primary hover:underline">
+      <Link href={profileUrl} className="flex items-center gap-2 text-sm text-primary hover:underline">
         Ver perfil <ArrowRightIcon className="h-3 w-3" />
       </Link>
     )}
@@ -373,14 +370,14 @@ This document outlines the design and technical specifications for updating the 
 
 **Implementation Pattern**:
 ```tsx
-<section className="page py-12 bg-primary/5">
-  <div className="page-content gap-y-8">
+<section className="page py-12">
+  <div className="page-content space-y-8">
     {/* Section header */}
-    <div className="text-center">
+    <div className="text-center space-y-4">
       <h2 className="text-3xl font-bold md:text-4xl">
         Historias de <span className="text-primary">éxito</span>
       </h2>
-      <p className="text-xl text-muted-foreground mt-4">
+      <p className="text-xl text-muted-foreground">
         Miembros que transformaron su carrera
       </p>
     </div>
@@ -388,46 +385,52 @@ This document outlines the design and technical specifications for updating the 
     {/* Success story cards - alternating layout */}
     <div className="mx-auto max-w-4xl space-y-12">
       {successStories.map((story, index) => (
-        <div
-          key={index}
-          className={`grid gap-8 md:grid-cols-2 md:gap-12 ${
-            index % 2 === 1 ? 'md:grid-flow-dense' : ''
-          }`}
-        >
-          {/* Image side */}
-          <div className={`${index % 2 === 1 ? 'md:col-start-2' : ''}`}>
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 p-8">
-              {/* Project screenshot or member photo */}
-            </div>
-          </div>
+        <Card key={index}>
+          <CardContent className="pt-6">
+            <div
+              className={`grid gap-8 md:grid-cols-2 md:gap-12 ${
+                index % 2 === 1 ? 'md:grid-flow-dense' : ''
+              }`}
+            >
+              {/* Image side */}
+              <div className={`${index % 2 === 1 ? 'md:col-start-2' : ''}`}>
+                <div className="aspect-square rounded-2xl bg-card border-2 border-border flex items-center justify-center">
+                  {/* Project screenshot or member photo */}
+                  <p className="text-6xl">🚀</p>
+                </div>
+              </div>
 
-          {/* Content side */}
-          <div className="flex flex-col justify-center gap-4">
-            <h3 className="text-2xl font-bold text-foreground">{story.title}</h3>
-            <p className="text-lg text-foreground/80">{story.description}</p>
+              {/* Content side */}
+              <div className="flex flex-col justify-center space-y-4">
+                <h3 className="text-2xl font-bold text-foreground">{story.title}</h3>
+                <p className="text-lg text-foreground/80">{story.description}</p>
 
-            {/* Member info */}
-            <div className="flex items-center gap-3 pt-4 border-t border-border">
-              <div className="h-10 w-10 rounded-full bg-primary/10" />
-              <div>
-                <p className="font-semibold">{story.member}</p>
-                <p className="text-sm text-muted-foreground">{story.role}</p>
+                {/* Member info */}
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="font-bold text-primary">{story.member[0]}</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold">{story.member}</p>
+                    <p className="text-sm text-muted-foreground">{story.role}</p>
+                  </div>
+                </div>
+
+                {/* Metrics */}
+                <div className="flex gap-6">
+                  <div>
+                    <p className="font-bold text-primary text-2xl">{story.earnings}</p>
+                    <p className="text-sm text-muted-foreground">Ganado</p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-secondary text-2xl">{story.projects}</p>
+                    <p className="text-sm text-muted-foreground">Proyectos</p>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* Metrics */}
-            <div className="flex gap-6 text-sm">
-              <div>
-                <p className="font-bold text-primary text-2xl">{story.earnings}</p>
-                <p className="text-muted-foreground">Ganado</p>
-              </div>
-              <div>
-                <p className="font-bold text-secondary text-2xl">{story.projects}</p>
-                <p className="text-muted-foreground">Proyectos</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   </div>
@@ -446,8 +449,8 @@ This document outlines the design and technical specifications for updating the 
 
 **Implementation Pattern**:
 ```tsx
-<section className="page py-16 bg-linear-to-br from-primary/10 via-transparent to-accent/10">
-  <div className="page-content gap-y-12 text-center">
+<section className="page py-16">
+  <div className="page-content space-y-12 text-center">
     {/* Main CTA */}
     <div className="mx-auto max-w-3xl space-y-6">
       <h2 className="text-4xl font-bold md:text-5xl">
@@ -467,34 +470,36 @@ This document outlines the design and technical specifications for updating the 
       </p>
     </div>
 
-    {/* Next steps */}
+    {/* Next steps using Card components */}
     <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
       {[
         { step: '1', title: 'Regístrate', desc: 'Crea tu cuenta en 30 segundos' },
         { step: '2', title: 'Aplica', desc: 'Cuéntanos sobre tus intereses' },
         { step: '3', title: 'Comienza', desc: 'Empieza a ganar y aprender' },
       ].map((item) => (
-        <div key={item.step} className="flex flex-col gap-2">
-          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary">{item.step}</span>
-          </div>
-          <h3 className="font-bold text-lg">{item.title}</h3>
-          <p className="text-sm text-muted-foreground">{item.desc}</p>
-        </div>
+        <Card key={item.step}>
+          <CardContent className="pt-6 text-center space-y-2">
+            <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-2xl font-bold text-primary">{item.step}</span>
+            </div>
+            <h3 className="font-bold text-lg">{item.title}</h3>
+            <p className="text-sm text-muted-foreground">{item.desc}</p>
+          </CardContent>
+        </Card>
       ))}
     </div>
 
-    {/* Trust badges */}
-    <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-      <span className="flex items-center gap-2">
-        <Shield className="h-4 w-4 text-accent" /> 100% Gratis
-      </span>
-      <span className="flex items-center gap-2">
-        <Lock className="h-4 w-4 text-accent" /> Datos seguros
-      </span>
-      <span className="flex items-center gap-2">
-        <Heart className="h-4 w-4 text-accent" /> Comunidad inclusiva
-      </span>
+    {/* Trust badges using Badge component */}
+    <div className="flex flex-wrap justify-center gap-4">
+      <Badge variant="secondary" className="flex items-center gap-2">
+        <Shield className="h-4 w-4" /> 100% Gratis
+      </Badge>
+      <Badge variant="secondary" className="flex items-center gap-2">
+        <Lock className="h-4 w-4" /> Datos seguros
+      </Badge>
+      <Badge variant="secondary" className="flex items-center gap-2">
+        <Heart className="h-4 w-4" /> Comunidad inclusiva
+      </Badge>
     </div>
   </div>
 </section>

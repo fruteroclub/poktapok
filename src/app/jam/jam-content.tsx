@@ -17,15 +17,14 @@ import { usePublicActivities } from '@/hooks/use-activities'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Program } from '@/types/api-v1'
 import type { Activity } from '@/services/activities'
+import { Section } from '@/components/layout/section'
 
 export function JamContent() {
-  const { data: programsData, isLoading: programsLoading } =
-    useActivePrograms()
-  const { data: sessionsData, isLoading: sessionsLoading } =
-    usePublicSessions({
-      upcoming: true,
-      limit: 6,
-    })
+  const { data: programsData, isLoading: programsLoading } = useActivePrograms()
+  const { data: sessionsData, isLoading: sessionsLoading } = usePublicSessions({
+    upcoming: true,
+    limit: 6,
+  })
   const { data: activitiesData, isLoading: activitiesLoading } =
     usePublicActivities({
       status: 'active',
@@ -40,57 +39,62 @@ export function JamContent() {
 
   return (
     <PageWrapper>
-      <JamHero stats={stats} />
+      <div className="page">
+        <div className="page-content space-y-6">
+          <Section>
+            <JamHero stats={stats} />
+          </Section>
 
-      {programsLoading ? (
-        <section className="py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold">Programas activos</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-64 w-full" />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : (
-        <ProgramsGrid programs={(programsData?.programs || []) as Program[]} />
-      )}
+          {programsLoading ? (
+            <Section>
+              <h2 className="text-3xl font-bold">Programas activos</h2>
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-64 w-full" />
+                ))}
+              </div>
+            </Section>
+          ) : (
+            <ProgramsGrid
+              programs={(programsData?.programs || []) as Program[]}
+            />
+          )}
 
-      {sessionsLoading ? (
-        <section className="py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold">Próximas sesiones</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-64 w-full" />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : (
-        <SessionsPreview sessions={sessionsData?.sessions || []} limit={6} />
-      )}
+          {sessionsLoading ? (
+            <Section>
+              <h2 className="text-3xl font-bold">Próximas sesiones</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="h-64 w-full" />
+                ))}
+              </div>
+            </Section>
+          ) : (
+            <SessionsPreview
+              sessions={sessionsData?.sessions || []}
+              limit={6}
+            />
+          )}
 
-      {activitiesLoading ? (
-        <section className="py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold">Actividades destacadas</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-64 w-full" />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : (
-        <ActivitiesPreview
-          activities={(activitiesData?.activities || []) as Activity[]}
-          limit={6}
-        />
-      )}
+          {activitiesLoading ? (
+            <Section>
+              <h2 className="text-3xl font-bold">Actividades destacadas</h2>
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="h-64 w-full" />
+                ))}
+              </div>
+            </Section>
+          ) : (
+            <ActivitiesPreview
+              activities={(activitiesData?.activities || []) as Activity[]}
+              limit={6}
+            />
+          )}
 
-      <MentorshipCTA />
+          <MentorshipCTA />
+        </div>
+      </div>
     </PageWrapper>
   )
 }

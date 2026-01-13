@@ -16,7 +16,6 @@ import { Card, CardFooter } from '@/components/ui/card'
 import { useDirectoryProfiles } from '@/hooks/use-directory'
 import { usePublicActivities } from '@/hooks/use-activities'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Section } from '@/components/layout/section'
 
 export function ClubContent() {
@@ -87,7 +86,9 @@ export function ClubContent() {
       <div className="page">
         <div className="page-content space-y-6">
           {/* Hero */}
-          <ClubHero stats={stats} />
+          <Section>
+            <ClubHero stats={stats} />
+          </Section>
 
           {/* Member Directory Preview */}
           <Section className="gap-y-4">
@@ -102,7 +103,7 @@ export function ClubContent() {
             </div>
 
             {members.length > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {members.slice(0, 12).map((member) => (
                   <Link key={member.id} href={`/profile/${member.username}`}>
                     <Card className="flex h-full flex-col gap-y-4 px-4 py-6 transition-colors hover:bg-accent">
@@ -175,7 +176,7 @@ export function ClubContent() {
             </div>
 
             {activities.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {activities.slice(0, 6).map((activity) => (
                   <ActivityCard key={activity.id} activity={activity} />
                 ))}

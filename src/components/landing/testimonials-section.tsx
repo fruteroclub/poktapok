@@ -5,30 +5,51 @@ export default function TestimonialsSection() {
   const testimonials = [
     {
       quote:
-        'Pasé de ser estudiante a CTO en 8 meses. Frutero Club no solo me enseñó a programar, me enseñó a liderar.',
-      name: 'Ana Rodríguez',
-      role: 'CTO @ TechStartup',
-      achievement: 'Levantó $500K en funding',
-      avatar: '🌱',
-      color: 'green',
+        'La combinación perfecta entre teoría y práctica. Me encantó poder aplicar inmediatamente los conceptos de Web3 en un proyecto real que resuelve un problema genuino. La comunidad de builders y el acceso a mentores fue invaluable para validar mi arquitectura técnica y estrategia de go-to-market.',
+      name: 'Moises Cisneros',
+      role: 'Builder @ Verano en Cadena',
+      achievement: 'Construyó Know the Score en Farcaster',
+      initials: 'MC',
     },
     {
       quote:
-        'Mi startup generó $100K en revenue en el primer año. Todo comenzó con un hackathon en Frutero Club.',
-      name: 'Carlos Mendoza',
-      role: 'Founder @ InnovateLab',
-      achievement: '40 empleados y creciendo',
-      avatar: '🚗',
-      color: 'blue',
+        'Las herramientas y el espacio de networking que permitieron, es muy necesario este tipo de espacios. Trabajar con Frutero fue una excelente experiencia, el equipo es muy profesional y tienen conocimiento técnico muy avanzado.',
+      name: 'Soxavisual',
+      role: 'Fundador @ La Blocka',
+      achievement: 'Socio de la comunidad Frutero',
+      initials: 'SV',
     },
     {
       quote:
-        'Gané mi primer hackathon siguiendo la metodología Frutero. Ahora lidero el equipo de IA en una unicornio.',
-      name: 'María González',
-      role: 'AI Lead @ UnicornCorp',
-      achievement: 'Ex-Googler, MIT graduate',
-      avatar: '🍉',
-      color: 'pink',
+        'Aparte de las vibras que fueron geniales, la explicación muy clara y el poder mirar en acción levantar código, especialmente el vibecode fue genial. Aprender en comunidad es divertido y genial.',
+      name: 'Rocio',
+      role: 'Builder @ Frutero Club',
+      achievement: 'Miembro activo de la comunidad',
+      initials: 'R',
+    },
+    {
+      quote:
+        'Los mensajes de Jazz haha. Soy Juan y participé en verano en cadena con base, llegué a la última fase y la app que construí fue LID, se trata de una app de donaciones, la experiencia fue muy bien gracias.',
+      name: 'Juan',
+      role: 'Builder @ Verano en Cadena',
+      achievement: 'Construyó LID - App de donaciones',
+      initials: 'J',
+    },
+    {
+      quote:
+        'Claude code, fue un despertar jajja, el onboarding de normies q sacaron app (hermana y primo), y la atención en los últimos momentos del submit top jajaja.',
+      name: 'Roman Scarf',
+      role: 'Builder @ Frutero Club',
+      achievement: 'Onboarding exitoso con Claude Code',
+      initials: 'RS',
+    },
+    {
+      quote:
+        'La confianza, el acompañamiento, la amabilidad y los conocimientos que generé. Mi proyecto se llama nitedcrypto, mi meta es poder hacer una web o app cryptofriendly para todos y que se puedan comunicar entre todos.',
+      name: 'Diego Fernando Mancera Gomez',
+      role: 'Builder @ Frutero Club',
+      achievement: 'Fundador de nitedcrypto',
+      initials: 'DM',
     },
   ]
 
@@ -56,27 +77,18 @@ export default function TestimonialsSection() {
                 </div>
 
                 <div className="mb-4 flex items-center space-x-4">
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                      testimonial.color === 'green'
-                        ? 'bg-accent'
-                        : testimonial.color === 'blue'
-                          ? 'bg-blue-500'
-                          : 'bg-secondary'
-                    }`}
-                  >
-                    <span className="text-sm font-bold text-white">
-                      {testimonial.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <span className="text-xl font-bold text-primary">
+                      {testimonial.initials}
                     </span>
                   </div>
                   <div>
                     <p className="font-bold text-foreground">
                       {testimonial.name}
                     </p>
-                    <p className="text-sm text-muted">{testimonial.role}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {testimonial.role}
+                    </p>
                   </div>
                 </div>
 

@@ -18,10 +18,16 @@ export function ProgramOverviewCard({ program }: ProgramOverviewCardProps) {
         <div className="grid gap-6 md:grid-cols-2">
           {/* Program Type */}
           <div className="flex items-start gap-3">
-            <Tag className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <Tag className="mt-0.5 h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Program Type</p>
-              <Badge variant={program.programType === 'cohort' ? 'default' : 'secondary'} className="mt-1">
+              <p className="text-sm font-medium text-muted-foreground">
+                Program Type
+              </p>
+              <Badge
+                variant={
+                  program.programType === 'cohort' ? 'default' : 'secondary'
+                }
+              >
                 {program.programType === 'cohort' ? 'Cohort' : 'Evergreen'}
               </Badge>
             </div>
@@ -29,10 +35,12 @@ export function ProgramOverviewCard({ program }: ProgramOverviewCardProps) {
 
           {/* Status */}
           <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+            <Clock className="mt-0.5 h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Status</p>
-              <Badge variant={program.isActive ? 'default' : 'destructive'} className="mt-1">
+              <p className="text-sm font-medium text-muted-foreground">
+                Status
+              </p>
+              <Badge variant={program.isActive ? 'default' : 'destructive'}>
                 {program.isActive ? 'Active' : 'Inactive'}
               </Badge>
             </div>
@@ -41,9 +49,11 @@ export function ProgramOverviewCard({ program }: ProgramOverviewCardProps) {
           {/* Start Date */}
           {program.startDate && (
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <Calendar className="mt-0.5 h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Start Date</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Start Date
+                </p>
                 <p className="text-base font-medium">
                   {format(new Date(program.startDate), 'PPP')}
                 </p>
@@ -54,9 +64,11 @@ export function ProgramOverviewCard({ program }: ProgramOverviewCardProps) {
           {/* End Date */}
           {program.endDate && (
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <Calendar className="mt-0.5 h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">End Date</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  End Date
+                </p>
                 <p className="text-base font-medium">
                   {format(new Date(program.endDate), 'PPP')}
                 </p>

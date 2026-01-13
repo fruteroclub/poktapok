@@ -30,12 +30,12 @@ export function SessionCard({ session }: SessionCardProps) {
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
-      <div className="p-6">
+      <div className="px-6 py-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold">{session.title}</h3>
             {session.description && (
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                 {session.description}
               </p>
             )}
@@ -64,7 +64,7 @@ export function SessionCard({ session }: SessionCardProps) {
         </div>
       </div>
 
-      <div className="border-t p-4">
+      <div className="border-t px-6 py-4">
         <Button className="w-full" variant="outline" asChild>
           <Link href={`/jam/sessions/${session.id}`}>Ver detalles</Link>
         </Button>

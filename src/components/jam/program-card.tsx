@@ -18,37 +18,26 @@ interface ProgramCardProps {
       activities: number
     }
   }
-  onClick?: (id: string) => void
 }
 
-export function ProgramCard({ program, onClick }: ProgramCardProps) {
-  const handleClick = () => {
-    if (onClick) {
-      onClick(program.id)
-    }
-  }
-
+export function ProgramCard({ program }: ProgramCardProps) {
   return (
     <Card
-      className="flex flex-col overflow-hidden transition-all hover:shadow-lg"
+      className="flex flex-col overflow-hidden py-4 transition-all hover:shadow-lg"
       role="button"
       tabIndex={0}
-      onClick={() => window.location.href = `/jam/programs/${program.id}`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          window.location.href = `/jam/programs/${program.id}`
-        }
-      }}
     >
-      <div className="p-6">
+      <div className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold">{program.name}</h3>
-            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
               {program.description}
             </p>
           </div>
-          <Badge variant={program.programType === 'cohort' ? 'default' : 'secondary'}>
+          <Badge
+            variant={program.programType === 'cohort' ? 'default' : 'secondary'}
+          >
             {program.programType === 'cohort' ? 'Cohort' : 'Abierto'}
           </Badge>
         </div>

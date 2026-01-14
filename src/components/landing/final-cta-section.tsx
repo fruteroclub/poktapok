@@ -49,6 +49,7 @@ export default function FooterSection() {
             className="w-full md:w-3/4"
             width={100}
             height={100}
+            loading="lazy"
           />
         </div>
 

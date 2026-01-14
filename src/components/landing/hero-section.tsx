@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import AuthButtonPrivy from '../buttons/auth-button-privy'
-import BuildersShowcaseMarquee from './builders-showcase-marquee'
 
 export default function HeroSection() {
   return (
@@ -57,9 +56,6 @@ export default function HeroSection() {
             <Link href="#programs-section">Explora Programas</Link>
           </Button>
         </div>
-
-        {/* Builders Showcase */}
-        <BuildersShowcaseMarquee />
       </div>
     </div>
   )

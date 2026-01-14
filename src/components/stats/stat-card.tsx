@@ -12,15 +12,13 @@ interface StatCardProps {
 
 export default function StatCard({ icon, number, description }: StatCardProps) {
   return (
-    <Card className={`w-full rounded-2xl border-2 px-2 py-6 text-center`}>
+    <Card className="group w-full rounded-2xl border-2 px-2 py-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <CardHeader className="px-4">
         <div className="h-10 w-10 rounded-full bg-background p-2 ring-2 ring-muted">
           {icon({ className: 'w-6 h-6' })}
         </div>
       </CardHeader>
-      <div
-        className={`font-funnel text-4xl font-bold text-primary md:text-5xl lg:text-6xl`}
-      >
+      <div className="font-funnel text-4xl font-bold text-primary md:text-5xl lg:text-6xl">
         {number}
       </div>
       <p className="font-medium text-foreground">{description}</p>

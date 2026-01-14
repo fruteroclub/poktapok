@@ -1,5 +1,6 @@
 import { JSX, SVGProps } from 'react'
 import StatCard from '@/components/stats/stat-card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   CoinsIcon,
   GlobeIcon,
@@ -17,7 +18,7 @@ export default function StatsSection() {
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             Nuestro <span className="text-primary">impacto</span> en números
           </h2>
-          <p className="mx-auto max-w-2xl text-xl text-muted">
+          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
             No son promesas, son{' '}
             <span className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-2">
               resultados
@@ -26,7 +27,24 @@ export default function StatsSection() {
           </p>
         </div>
 
-        <div className="mx-auto grid grid-cols-2 gap-4 md:max-w-xl md:grid-cols-3 lg:max-w-screen-md lg:gap-6">
+        {/* Featured Stat - $100k+ */}
+        <div className="mx-auto max-w-md">
+          <Card className="border-2 border-primary transition-shadow hover:shadow-lg">
+            <CardContent className="space-y-2 pt-6 text-center">
+              <CoinsIcon className="mx-auto h-12 w-12 text-primary" />
+              <div className="text-6xl font-bold text-primary">$100k+</div>
+              <p className="text-xl text-foreground">
+                USD distribuidos a la comunidad
+              </p>
+              <p className="text-sm text-muted-foreground">
+                En los últimos 12 meses
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Stats Grid - Remaining 5 stats */}
+        <div className="mx-auto grid grid-cols-2 gap-4 md:max-w-xl md:grid-cols-2 lg:max-w-screen-md lg:grid-cols-3 lg:gap-6">
           {stats.map((stat, index) => (
             <StatCard
               key={index}
@@ -55,13 +73,6 @@ const stats = [
     ),
     number: '100+',
     description: 'Profesionales conectados',
-  },
-  {
-    icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-      <CoinsIcon {...props} />
-    ),
-    number: '$100k+',
-    description: 'USD en premios y grants',
   },
   {
     icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (

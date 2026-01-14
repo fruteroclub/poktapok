@@ -6,7 +6,7 @@ import AuthButtonPrivy from '../buttons/auth-button-privy'
 
 export default function HeroSection() {
   return (
-    <div className="min-h-[70svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
+    <div className="min-h-[60svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
       <div className="page-content mx-auto space-y-8 px-4 text-center">
         {/* Título Principal */}
         <div className="mx-auto max-w-4xl">

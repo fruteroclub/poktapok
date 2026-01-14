@@ -11,39 +11,44 @@ import { useState } from 'react'
 
 const faqs = [
   {
-    question: '¿Es gratis unirse a Frutero Club?',
+    question: '¿Es realmente gratis?',
     answer:
-      'Sí, el acceso a Frutero Club es completamente gratuito. Creemos que el talento no debe limitarse por barreras económicas. Sin embargo, el valor está en la exclusividad y calidad de la comunidad.',
+      'Sí, el acceso a Frutero Club es 100% gratuito. No hay cuotas de membresía, tarifas ocultas ni pagos requeridos. Ganas tokens $PULPA por tus contribuciones que puedes canjear por beneficios exclusivos.',
+  },
+  {
+    question: '¿Cuánto puedo ganar?',
+    answer:
+      'Los miembros activos ganan entre $500 y $5,000 USD en sus primeros 3 meses a través de bounties, hackathons y proyectos. Tus ganancias dependen de tu nivel de participación y calidad de trabajo.',
   },
   {
     question: '¿Qué nivel técnico necesito?',
     answer:
-      'No necesitas ser un experto, pero sí tener interés genuino en tecnología. Aceptamos desde estudiantes motivados hasta developers senior. Lo importante es tu mentalidad de builder y ganas de contribuir.',
+      'No necesitas ser experto. Aceptamos desde estudiantes motivados hasta developers senior. Si sabes programación básica y tienes ganas de aprender IA, crypto o privacidad, eres bienvenido.',
   },
   {
-    question: '¿Cuánto tiempo requiere?',
+    question: '¿Cuánto tiempo toma la aplicación?',
     answer:
-      'La participación es flexible. Puedes contribuir desde 2-3 horas semanales. Lo importante es la consistencia y calidad de tus aportes, no la cantidad de tiempo.',
+      'El formulario toma 5-10 minutos. Después revisamos tu perfil en 24-48 horas. Si eres aceptado, el onboarding inicial es de 30 minutos y puedes empezar a participar de inmediato.',
   },
   {
     question: '¿Cómo funciona la selección?',
     answer:
-      'Nuestro proceso incluye: formulario inicial, review de perfil, entrevista de 30 minutos y onboarding. Evaluamos fit cultural, potencial técnico y compromiso con la comunidad.',
+      'Evaluamos tu aplicación basándonos en motivación, interés genuino en tecnología y fit cultural. No necesitas experiencia previa en Web3. Buscamos builders con mentalidad de crecimiento.',
   },
   {
     question: '¿Puedo aplicar si no vivo en México?',
     answer:
-      '¡Absolutamente! Somos una comunidad global con miembros en 15+ países. Los eventos presenciales son en México, pero la mayoría de actividades son remotas y accesibles desde cualquier lugar.',
+      '¡Absolutamente! Somos una comunidad global con miembros en 15+ países. La mayoría de actividades son remotas. Los eventos presenciales en México son opcionales.',
   },
   {
     question: '¿Qué es el token $PULPA?',
     answer:
-      'Es nuestro sistema de reputación que convierte tus contribuciones en oportunidades. Ganas $PULPA ayudando a otros, participando en eventos y construyendo proyectos. Con más $PULPA desbloqueas beneficios exclusivos.',
+      'Es nuestro sistema de reputación on-chain. Ganas $PULPA completando bounties, participando en eventos y ayudando a otros. Con más $PULPA desbloqueas beneficios como acceso prioritario a hackathons y oportunidades laborales.',
   },
   {
-    question: '¿Hay límite de edad para aplicar?',
+    question: '¿Cuánto tiempo requiere participar?',
     answer:
-      'No hay límites estrictos de edad. Hemos tenido miembros exitosos desde los 16 hasta los 50+ años. Lo que importa es tu pasión por la tecnología y mentalidad de crecimiento.',
+      'Es flexible. Puedes empezar con 2-3 horas semanales. Los miembros más activos dedican 10-15 horas. Lo importante es la consistencia y calidad, no la cantidad de tiempo.',
   },
 ]
 

@@ -3,7 +3,7 @@
 import { usePrivy } from '@privy-io/react-auth'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import OnboardingForm from '@/components/onboarding/onboarding-form'
+import MultiStepOnboardingFormEnhanced from '@/components/onboarding/multi-step-onboarding-form-enhanced'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { ProtectedRoute } from '@/components/layout/protected-route-wrapper'
 import { Section } from '@/components/layout/section'
@@ -43,7 +43,7 @@ export default function OnboardingPage() {
               </p>
             </div>
             <Section className="gap-y-4 pt-0!">
-              <OnboardingForm />
+              <MultiStepOnboardingFormEnhanced />
             </Section>
           </div>
         </div>

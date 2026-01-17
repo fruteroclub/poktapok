@@ -24,12 +24,15 @@ Feature specifications and technical documentation
 ### 🔧 [Developer Guides](./dev/)
 Technical guides and development resources
 - **[Database Setup](./dev/database-setup.md)** - Complete database setup and configuration guide
+- **[API Reference](./dev/api-reference.md)** - Complete API endpoint documentation
+- **[Testing Guide](./dev/testing-guide.md)** - Testing strategies and implementation guide
 - **[Privy Integration](./dev/privy/)** - Privy authentication setup and configuration
 
 ### 🎨 [Design Documents](./design/)
 UI/UX specifications and design systems
 - **[Admin Dashboard](./design/admin-dashboard.md)** - Admin dashboard design and workflows
 - **[Users Management](./design/users-management.md)** - User management UI and workflows
+- **[Landing Page V2 Update](./design/landing-page-v2-update.md)** - Landing page version 2 design specifications
 
 ### 🔄 [Workflows](./workflows/)
 Process documentation and operational workflows
@@ -37,13 +40,15 @@ Process documentation and operational workflows
 
 ### 📋 [Specifications](./specs/)
 Detailed technical specifications for complex features
-- **[Pulpa Workshop System](./specs/pulpa-workshop-system.md)** - Workshop and activity system specification
+- **[Pulpa Workshop System](./specs/pulpa-workshop-system-spec.md)** - Workshop and activity system specification
 - **[Pulpa Implementation](./specs/pulpa-implementation-complete.md)** - Complete implementation details
+- **[Epic 4: Program System](./specs/epic-4-program-system.md)** - Programs, sessions, and activities relationships
 
 ### 🗄️ [Database](./database/)
 Database-specific documentation
 - **[Migrations Guide](./database/migrations.md)** - Database migration workflows and best practices
 - **[Migration Quick Reference](./database/migration-quick-reference.md)** - Quick commands and patterns
+- **[Migration Troubleshooting](./database/migration-troubleshooting.md)** - Emergency procedures and fixes
 
 ## 🚀 Quick Start
 

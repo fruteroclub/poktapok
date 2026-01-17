@@ -7,13 +7,7 @@
 
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
-import {
-  projects,
-  projectSkills,
-  skills,
-  userSkills,
-  users,
-} from '@/lib/db/schema'
+import { projects, projectSkills, skills, users } from '@/lib/db/schema'
 import {
   apiSuccess,
   apiError,

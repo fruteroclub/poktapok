@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { programs, programEnrollments, sessions as sessionsTable, sessionActivities, activities, programActivities } from '@/lib/db/schema'
-import { eq, count, asc, desc, and, isNull } from 'drizzle-orm'
+import { eq, count, asc, desc } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import type { PublicProgramResponse } from '@/types/api-v1'
 

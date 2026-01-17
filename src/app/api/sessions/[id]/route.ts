@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { sessions, programs, activities, sessionActivities, users, programEnrollments } from '@/lib/db/schema'
-import { eq, and, inArray, desc, isNull } from 'drizzle-orm'
+import { eq, and, inArray, desc } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import type { SessionDetailResponse } from '@/types/api-v1'

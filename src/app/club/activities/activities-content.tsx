@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card } from '@/components/ui/card'
 import { usePublicActivities } from '@/hooks/use-activities'
-import type { Activity } from '@/services/activities'
 
 type DifficultyFilter = 'all' | 'beginner' | 'intermediate' | 'advanced'
 

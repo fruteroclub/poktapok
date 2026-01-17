@@ -15,13 +15,7 @@ import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { ProjectFormFields } from './project-form-fields'
 import { useUpdateProject, useDeleteProject } from '@/hooks/use-projects'
 import {

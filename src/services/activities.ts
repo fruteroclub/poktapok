@@ -152,13 +152,18 @@ export interface ActivityDetailResponse {
   activity: ActivityDetail;
 }
 
+// The API returns the activity directly with userHasSubmitted field
+type ActivityDetailApiResponse = ActivityDetail & { userHasSubmitted: boolean };
+
 /**
  * Fetch activity detail by ID
+ * Note: API returns the activity object directly, we wrap it for consistency
  */
 export async function fetchActivityDetail(
   activityId: string
 ): Promise<ActivityDetailResponse> {
-  return apiFetch<ActivityDetailResponse>(`/api/activities/${activityId}`);
+  const activity = await apiFetch<ActivityDetailApiResponse>(`/api/activities/${activityId}`);
+  return { activity };
 }
 
 export interface SubmitActivityRequest {

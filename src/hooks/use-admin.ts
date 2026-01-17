@@ -42,7 +42,6 @@ import type {
   UpdateProgramRequest,
   LinkActivityRequest,
   UpdateActivityLinkRequest,
-  CreateSessionRequest,
   UpdateSessionRequest,
   LinkSessionActivityRequest,
 } from '@/types/api-v1'

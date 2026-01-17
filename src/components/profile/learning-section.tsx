@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import { Cpu, Wallet, Lock } from 'lucide-react'

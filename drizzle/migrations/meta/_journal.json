@@ -50,6 +50,13 @@
       "when": 1736473200000,
       "tag": "0006_create_activity_relationships_view",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1737158400000,
+      "tag": "0007_create_events_table",
+      "breakpoints": true
     }
   ]
 }

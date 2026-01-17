@@ -14,7 +14,7 @@ import { ProjectSkills } from '@/components/portfolio/project-skills'
 import { ProjectImages } from '@/components/portfolio/project-images'
 import { ViewCountTracker } from '@/components/portfolio/view-count-tracker'
 import { db } from '@/lib/db'
-import { projects, projectSkills, skills, users } from '@/lib/db/schema'
+import { projects, projectSkills, skills } from '@/lib/db/schema'
 import { eq, and, isNull } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/auth/helpers'
 

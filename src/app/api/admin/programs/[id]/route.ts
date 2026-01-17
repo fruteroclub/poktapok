@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { programs, programEnrollments, sessions, activityRelationshipsView } from '@/lib/db/schema'
-import { eq, and, sql, count } from 'drizzle-orm'
+import { eq, sql, count } from 'drizzle-orm'
 import { requireAdmin, handleApiError, successResponse } from '@/lib/auth/middleware'
 
 const updateProgramSchema = z

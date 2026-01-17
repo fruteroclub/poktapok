@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { sessions, programs, sessionActivities } from '@/lib/db/schema'
-import { eq, gte, isNull, count, and, asc, sql } from 'drizzle-orm'
+import { eq, gte, isNull, count, and, asc } from 'drizzle-orm'
 import { apiSuccess, apiErrors, apiValidationError } from '@/lib/api/response'
 import type { PublicSessionsResponse } from '@/types/api-v1'
 import { z } from 'zod'

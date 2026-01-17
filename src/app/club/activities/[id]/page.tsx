@@ -10,9 +10,7 @@ interface PageProps {
   params: Promise<{ id: string }>
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params
-
+export async function generateMetadata({ params: _params }: PageProps): Promise<Metadata> {
   return {
     title: `Actividad - Club | Frutero Club`,
     description: 'Detalles de la actividad, requisitos de evidencia y formulario de entrega.',

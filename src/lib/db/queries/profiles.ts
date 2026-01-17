@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { profiles, users, userSkills } from '@/lib/db/schema'
-import { and, or, like, eq, desc, isNull, sql, inArray } from 'drizzle-orm'
+import { and, or, eq, desc, isNull, sql, inArray } from 'drizzle-orm'
 
 /**
  * Directory Filters Type

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -85,6 +85,19 @@ export default function MultiStepOnboardingForm() {
     return Object.keys(newErrors).length === 0
   }
 
+  // Memoized handlers to prevent re-renders
+  const handleFieldChange = useCallback((field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }, [])
+
+  const handleProgramChange = useCallback((programId: string) => {
+    setFormData((prev) => ({ ...prev, programId }))
+  }, [])
+
+  const handleGoalChange = useCallback((goal: string) => {
+    setFormData((prev) => ({ ...prev, goal }))
+  }, [])
+
   // Navigation handlers
   const handleNext = () => {
     let isValid = false
@@ -150,7 +163,7 @@ export default function MultiStepOnboardingForm() {
         return (
           <ProgramSelector
             value={formData.programId}
-            onChange={(programId) => setFormData({ ...formData, programId })}
+            onChange={handleProgramChange}
             error={errors.programId}
           />
         )
@@ -159,7 +172,7 @@ export default function MultiStepOnboardingForm() {
         return (
           <GoalInput
             value={formData.goal}
-            onChange={(goal) => setFormData({ ...formData, goal })}
+            onChange={handleGoalChange}
             error={errors.goal}
           />
         )
@@ -173,7 +186,7 @@ export default function MultiStepOnboardingForm() {
               linkedinUrl: formData.linkedinUrl,
               telegramUsername: formData.telegramUsername,
             }}
-            onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+            onChange={handleFieldChange}
             errors={errors}
           />
         )

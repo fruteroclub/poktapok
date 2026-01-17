@@ -28,6 +28,10 @@ UI/UX specifications, design systems, and interface documentation.
 - Directory display
 - User profile views
 
+### [Landing Page V2 Update](./landing-page-v2-update.md)
+**Status**: 📋 Design Document
+**Description**: Design specifications for landing page version 2 update
+
 ### Legacy: [Admin Dashboard (Original)](./admin-dashboard-design.md)
 **Status**: 🗄️ Archived
 **Note**: Superseded by `admin-dashboard.md`

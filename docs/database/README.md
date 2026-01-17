@@ -28,6 +28,14 @@ Database-specific documentation including migrations, schema reference, and data
 - Common patterns
 - Quick troubleshooting
 
+### [Migration Troubleshooting](./migration-troubleshooting.md)
+**Purpose**: Emergency procedures and fixes for migration system issues
+**Contents**:
+- Common migration errors
+- Recovery procedures
+- System corruption fixes
+- Diagnostic commands
+
 ---
 
 ## 🗄️ Database Architecture

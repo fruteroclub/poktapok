@@ -20,6 +20,18 @@ Detailed technical specifications for complex multi-feature systems and subsyste
 **Status**: ✅ Complete
 **Description**: Complete implementation documentation for the Pulpa workshop system including database schema, API endpoints, and UI components
 
+### [Epic 4: Program System](./epic-4-program-system.md)
+**Status**: 📋 Specification
+**Epic**: E4 (Programs, Sessions, Activities)
+**Description**: Comprehensive specification for the relationship between programs, sessions, and activities
+
+**Scope**:
+- Program-Session relationships
+- Session-Activity relationships
+- Attendance tracking
+- Enrollment management
+- Multi-program support
+
 ---
 
 ## 📝 Creating New Specifications

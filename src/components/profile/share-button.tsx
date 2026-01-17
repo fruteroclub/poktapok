@@ -27,7 +27,7 @@ export function ShareButton({ username, displayName }: ShareButtonProps) {
           url,
         })
         return
-      } catch (err) {
+      } catch {
         // User cancelled or share API failed - fallback to clipboard
       }
     }

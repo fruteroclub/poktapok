@@ -6,7 +6,6 @@
  */
 
 import { ArrowLeft, Calendar, Users, Trophy, ExternalLink, Lock, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
@@ -93,8 +92,6 @@ export function SessionDetailContent({ sessionId }: SessionDetailContentProps) {
   const { session, activities, userCanAccess } = data
 
   const sessionDate = new Date(session.scheduledAt)
-  const formattedDate = format(sessionDate, "d 'de' MMMM, yyyy", { locale: es })
-  const formattedTime = format(sessionDate, 'HH:mm', { locale: es })
   const formattedDateTime = format(sessionDate, "EEEE, d 'de' MMMM 'a las' HH:mm", { locale: es })
 
   const isSessionPast = isPast(sessionDate)

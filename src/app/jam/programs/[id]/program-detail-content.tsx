@@ -5,7 +5,7 @@
  * Fetches and displays comprehensive program information
  */
 
-import { ArrowLeft, Calendar, Users, Trophy, Loader2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Users, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PageWrapper from '@/components/layout/page-wrapper'

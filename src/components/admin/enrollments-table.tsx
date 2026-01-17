@@ -32,10 +32,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
-import {
-  useUpdateEnrollment,
-  useDeleteEnrollment,
-} from '@/hooks/use-program-enrollments'
+import { useDeleteEnrollment } from '@/hooks/use-program-enrollments'
 import { EnrollmentFormDialog } from './enrollment-form-dialog'
 import type { ProgramEnrollmentWithUser } from '@/types/api-v1'
 
@@ -56,7 +53,6 @@ export function EnrollmentsTable({
     null,
   )
 
-  const updateMutation = useUpdateEnrollment(programId)
   const deleteMutation = useDeleteEnrollment(programId)
 
   const handleEdit = (enrollment: ProgramEnrollmentWithUser) => {

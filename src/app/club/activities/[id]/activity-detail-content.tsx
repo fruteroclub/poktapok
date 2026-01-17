@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react'
-import { ArrowLeft, Trophy, Users, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Trophy, Users, CheckCircle2, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
@@ -19,8 +19,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useActivityDetail, useSubmitActivity } from '@/hooks/use-activities'
 import { usePrivy } from '@privy-io/react-auth'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
 
 interface ActivityDetailContentProps {
   activityId: string

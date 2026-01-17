@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { getProfileByUsername } from '@/lib/db/queries/profiles'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { apiSuccess, apiError, apiErrors } from '@/lib/api/response'
+import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { canViewField, isProfileOwner } from '@/lib/utils/visibility'
 
 /**

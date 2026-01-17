@@ -1,10 +1,9 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { users, profiles } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { requireAuth } from '@/lib/privy/middleware'
 import { apiSuccess, apiErrors, apiError } from '@/lib/api/response'
-import { API_ERROR_CODES } from '@/types/api-response'
 
 export const GET = requireAuth(async (_request: NextRequest, authUser) => {
   try {

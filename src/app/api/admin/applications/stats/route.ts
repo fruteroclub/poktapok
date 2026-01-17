@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { applications } from '@/lib/db/schema'
-import { eq, count, sql } from 'drizzle-orm'
+import { count, sql } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { requireAdmin } from '@/lib/auth/middleware'
 

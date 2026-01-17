@@ -8,13 +8,7 @@
 
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
-import {
-  projects,
-  projectSkills,
-  skills,
-  userSkills,
-  users,
-} from '@/lib/db/schema'
+import { projects, projectSkills, skills, users } from '@/lib/db/schema'
 import {
   apiSuccess,
   apiError,
@@ -22,8 +16,8 @@ import {
   apiValidationError,
 } from '@/lib/api/response'
 import { updateProjectSchema } from '@/lib/validators/project'
-import { requireAuth, getAuthUser } from '@/lib/privy/middleware'
-import { eq, and, inArray, isNull, sql } from 'drizzle-orm'
+import { getAuthUser } from '@/lib/privy/middleware'
+import { eq, and, inArray, isNull } from 'drizzle-orm'
 import { syncUserSkills } from '@/lib/skills/sync-user-skills'
 import type {
   GetProjectResponse,
@@ -269,12 +263,6 @@ export async function DELETE(
     if (existingProject.userId !== userId) {
       return apiErrors.unauthorized()
     }
-
-    // Get project skills to decrement user skill counts
-    const projectSkillsList = await db
-      .select()
-      .from(projectSkills)
-      .where(eq(projectSkills.projectId, projectId))
 
     // Soft delete project
     await db

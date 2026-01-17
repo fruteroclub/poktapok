@@ -12,10 +12,7 @@ import { db } from '@/lib/db'
 import { projects } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { apiSuccess, apiError, apiErrors } from '@/lib/api/response'
-import {
-  validateUploadedFile,
-  IMAGE_CONFIG,
-} from '@/lib/upload/image-validation'
+import { validateUploadedFile } from '@/lib/upload/image-validation'
 
 /**
  * POST /api/projects/[id]/logo

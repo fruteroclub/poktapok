@@ -7,7 +7,7 @@ import {
   profiles,
   sessions,
 } from '@/lib/db/schema'
-import { eq, and, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { apiSuccess, apiErrors } from '@/lib/api/response'
 import { requireAdmin } from '@/lib/auth/middleware'
 

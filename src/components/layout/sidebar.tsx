@@ -82,6 +82,13 @@ const MENU_ITEMS: MenuItemType[] = [
     adminOnly: true,
     category: 'content management',
   },
+  {
+    displayText: 'events',
+    href: '/admin/events',
+    isMobileOnly: false,
+    adminOnly: true,
+    category: 'content management',
+  },
 ]
 
 const visiblePathnames = ['/profile']

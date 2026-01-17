@@ -17,6 +17,7 @@ import { useDirectoryProfiles } from '@/hooks/use-directory'
 import { usePublicActivities } from '@/hooks/use-activities'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Section } from '@/components/layout/section'
+import EventsCarousel from '@/components/events/events-carousel'
 
 export function ClubContent() {
   const { data: directoryData, isLoading: directoryLoading } =
@@ -187,6 +188,17 @@ export function ClubContent() {
               </p>
             )}
           </Section>
+
+          {/* Events Carousel */}
+          <EventsCarousel
+            title="Eventos de la Comunidad"
+            subtitle="Únete a nuestros eventos y conecta con otros builders"
+            showTabs={true}
+            defaultTab="upcoming"
+            limit={10}
+            showViewAll={true}
+            viewAllHref="/club/eventos"
+          />
 
           {/* CTA Section */}
           <Section>

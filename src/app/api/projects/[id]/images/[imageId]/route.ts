@@ -35,7 +35,7 @@ export async function DELETE(
       imageUrl = Buffer.from(decodeURIComponent(imageId), 'base64').toString(
         'utf-8',
       )
-    } catch (error) {
+    } catch {
       return apiError('Invalid image ID', {
         status: 400,
         code: 'INVALID_IMAGE_ID',

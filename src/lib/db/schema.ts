@@ -34,6 +34,7 @@ export * from '../../../drizzle/schema/session-activities'
 export * from '../../../drizzle/schema/program-enrollments'
 export * from '../../../drizzle/schema/attendance'
 export * from '../../../drizzle/schema/activity-relationships-view'
+export * from '../../../drizzle/schema/events'
 
 // ============================================================
 // RE-EXPORT TYPES FOR CONVENIENCE
@@ -68,6 +69,7 @@ import type {
   EvidenceRequirements,
   EvidenceFile,
 } from '../../../drizzle/schema/activities'
+import type { Event, NewEvent } from '../../../drizzle/schema/events'
 
 export type {
   User,
@@ -94,4 +96,6 @@ export type {
   NewPulpaDistribution,
   EvidenceRequirements,
   EvidenceFile,
+  Event,
+  NewEvent,
 }

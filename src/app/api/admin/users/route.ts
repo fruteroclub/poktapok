@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { listUsers } from '@/lib/db/queries/users'
-import { apiSuccess, apiError, apiErrors } from '@/lib/api/response'
+import { apiSuccess, apiError } from '@/lib/api/response'
 import { requireAdmin, handleApiError } from '@/lib/auth/middleware'
 
 /**

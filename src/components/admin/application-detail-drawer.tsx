@@ -11,9 +11,7 @@ import {
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Loader2,
   CheckCircle,
@@ -21,8 +19,6 @@ import {
   UserCheck,
   Github,
   Twitter,
-  Linkedin,
-  MessageSquare,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AccountStatusBadge } from '@/components/common/account-status-badge'

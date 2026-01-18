@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -45,9 +45,7 @@ interface FormData {
   telegramUsername: string
 }
 
-interface FormErrors {
-  [key: string]: string
-}
+type FormErrors = Partial<Record<keyof FormData | 'programId', string>>
 
 export default function MultiStepOnboardingFormEnhanced() {
   const router = useRouter()
@@ -78,15 +76,18 @@ export default function MultiStepOnboardingFormEnhanced() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
 
-  // Step configuration
-  const steps: OnboardingStep[] = ['userInfo', 'program', 'goal', 'social', 'review']
-  const stepTitles: Record<OnboardingStep, string> = {
+  // Step configuration - memoized to prevent recreation
+  const steps = useMemo<OnboardingStep[]>(() =>
+    ['userInfo', 'program', 'goal', 'social', 'review'], []
+  )
+
+  const stepTitles = useMemo<Record<OnboardingStep, string>>(() => ({
     userInfo: 'Tu Información',
     program: 'Elige tu Programa',
     goal: 'Define tu Meta',
     social: 'Conecta tus Cuentas',
     review: 'Revisa y Envía',
-  }
+  }), [])
 
   const currentStepIndex = steps.indexOf(currentStep)
   const progress = ((currentStepIndex + 1) / steps.length) * 100
@@ -150,10 +151,10 @@ export default function MultiStepOnboardingFormEnhanced() {
     return true
   }
 
-  // Check username availability
-  const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+  // Check username availability - memoized
+  const checkUsernameAvailability = useCallback(async (username: string): Promise<boolean> => {
     try {
-      const response = await fetch(`/api/auth/check-username?username=${username}`)
+      const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`)
       if (!response.ok) return false
       const { available } = await response.json()
       return available
@@ -161,7 +162,7 @@ export default function MultiStepOnboardingFormEnhanced() {
       console.error('Error checking username availability:', error)
       return false
     }
-  }
+  }, [])
 
   // Navigation handlers
   const handleNext = () => {
@@ -269,8 +270,8 @@ export default function MultiStepOnboardingFormEnhanced() {
     return name.charAt(0).toUpperCase()
   }
 
-  // Handle form data changes
-  const handleFormDataChange = (field: string, value: string | File | null) => {
+  // Handle form data changes - memoized
+  const handleFormDataChange = useCallback((field: string, value: string | File | null) => {
     if (field === 'avatarFile' && value instanceof File) {
       // Create preview for avatar
       const reader = new FileReader()
@@ -280,8 +281,21 @@ export default function MultiStepOnboardingFormEnhanced() {
       reader.readAsDataURL(value)
     }
 
-    setFormData({ ...formData, [field]: value as any })
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }, [])
+
+  // Memoized handlers for child components
+  const handleProgramChange = useCallback((programId: string) => {
+    setFormData((prev) => ({ ...prev, programId }))
+  }, [])
+
+  const handleGoalChange = useCallback((goal: string) => {
+    setFormData((prev) => ({ ...prev, goal }))
+  }, [])
+
+  const handleSocialChange = useCallback((field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }, [])
 
   // Render step content
   const renderStepContent = () => {
@@ -310,7 +324,7 @@ export default function MultiStepOnboardingFormEnhanced() {
         return (
           <ProgramSelector
             value={formData.programId}
-            onChange={(programId) => setFormData({ ...formData, programId })}
+            onChange={handleProgramChange}
             error={errors.programId}
           />
         )
@@ -319,7 +333,7 @@ export default function MultiStepOnboardingFormEnhanced() {
         return (
           <GoalInput
             value={formData.goal}
-            onChange={(goal) => setFormData({ ...formData, goal })}
+            onChange={handleGoalChange}
             error={errors.goal}
           />
         )
@@ -333,7 +347,7 @@ export default function MultiStepOnboardingFormEnhanced() {
               linkedinUsername: formData.linkedinUsername,
               telegramUsername: formData.telegramUsername,
             }}
-            onChange={(field, value) => setFormData({ ...formData, [field]: value })}
+            onChange={handleSocialChange}
             errors={errors}
           />
         )

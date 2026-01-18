@@ -39,8 +39,8 @@ export function ProgramSelector({
 
   if (fetchError) {
     return (
-      <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-        <p className="text-sm text-destructive">
+      <div className="rounded-lg border border-orange-400 bg-orange-100 p-4">
+        <p className="text-sm text-orange-500">
           {fetchError instanceof Error ? fetchError.message : 'Failed to load programs'}
         </p>
       </div>
@@ -51,7 +51,7 @@ export function ProgramSelector({
     <div className="space-y-4">
       <div>
         <Label className="text-base font-semibold">
-          Selecciona un programa <span className="text-destructive">*</span>
+          Selecciona un programa <span className="text-orange-500">*</span>
         </Label>
         <p className="text-sm text-muted-foreground">
           Elige el programa que mejor se alinee con tus objetivos de aprendizaje
@@ -137,7 +137,7 @@ export function ProgramSelector({
         ))}
       </RadioGroup>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-sm text-orange-500">{error}</p>}
     </div>
   )
 }

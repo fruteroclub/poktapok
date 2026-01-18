@@ -96,7 +96,7 @@ export default function OnboardingForm() {
 
       <div className="space-y-2">
         <Label htmlFor="email">
-          Email <span className="text-destructive">*</span>
+          Email <span className="text-orange-500">*</span>
         </Label>
         <Input
           id="email"
@@ -110,7 +110,7 @@ export default function OnboardingForm() {
 
       <div className="space-y-2">
         <Label htmlFor="username">
-          Nombre de usuario <span className="text-destructive">*</span>
+          Nombre de usuario <span className="text-orange-500">*</span>
         </Label>
         <Input
           id="username"
@@ -131,7 +131,7 @@ export default function OnboardingForm() {
 
       <div className="space-y-2">
         <Label htmlFor="displayName">
-          Nombre para mostrar <span className="text-destructive">*</span>
+          Nombre para mostrar <span className="text-orange-500">*</span>
         </Label>
         <Input
           id="displayName"

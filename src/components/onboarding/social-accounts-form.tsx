@@ -1,6 +1,5 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Github, Twitter, Linkedin, MessageCircle } from 'lucide-react'
 
@@ -14,6 +13,9 @@ interface SocialAccountsFormProps {
   onChange: (field: string, value: string) => void
   errors?: Partial<Record<keyof SocialAccountsFormProps['values'], string>>
 }
+
+// Static class - never changes
+const INPUT_CLASS = 'h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-base outline-none placeholder:text-gray-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
 
 export function SocialAccountsForm({
   values,
@@ -34,23 +36,25 @@ export function SocialAccountsForm({
 
       {/* GitHub */}
       <div className="space-y-2">
-        <Label htmlFor="githubUsername" className="flex items-center gap-2">
+        <Label htmlFor="github-input" className="flex items-center gap-2">
           <Github className="h-4 w-4" />
           Usuario de GitHub
           <span className="text-xs font-normal text-muted-foreground">
             (recomendado)
           </span>
         </Label>
-        <Input
-          id="githubUsername"
+        <input
+          id="github-input"
+          name="githubUsername"
           type="text"
+          autoComplete="off"
           placeholder="tu-usuario"
-          value={values.githubUsername || ''}
+          defaultValue={values.githubUsername || ''}
           onChange={(e) => onChange('githubUsername', e.target.value)}
-          className={errors?.githubUsername ? 'border-destructive' : ''}
+          className={INPUT_CLASS}
         />
         {errors?.githubUsername && (
-          <p className="text-sm text-destructive">{errors.githubUsername}</p>
+          <p className="text-sm text-orange-600">{errors.githubUsername}</p>
         )}
         <p className="text-xs text-muted-foreground">
           Tu nombre de usuario de GitHub (sin el @)
@@ -59,23 +63,25 @@ export function SocialAccountsForm({
 
       {/* Twitter/X */}
       <div className="space-y-2">
-        <Label htmlFor="twitterUsername" className="flex items-center gap-2">
+        <Label htmlFor="twitter-input" className="flex items-center gap-2">
           <Twitter className="h-4 w-4" />
           Usuario de X (Twitter)
           <span className="text-xs font-normal text-muted-foreground">
             (opcional)
           </span>
         </Label>
-        <Input
-          id="twitterUsername"
+        <input
+          id="twitter-input"
+          name="twitterUsername"
           type="text"
+          autoComplete="off"
           placeholder="tu_usuario"
-          value={values.twitterUsername || ''}
+          defaultValue={values.twitterUsername || ''}
           onChange={(e) => onChange('twitterUsername', e.target.value)}
-          className={errors?.twitterUsername ? 'border-destructive' : ''}
+          className={INPUT_CLASS}
         />
         {errors?.twitterUsername && (
-          <p className="text-sm text-destructive">{errors.twitterUsername}</p>
+          <p className="text-sm text-orange-600">{errors.twitterUsername}</p>
         )}
         <p className="text-xs text-muted-foreground">
           Tu nombre de usuario de X/Twitter (sin el @)
@@ -84,23 +90,25 @@ export function SocialAccountsForm({
 
       {/* LinkedIn */}
       <div className="space-y-2">
-        <Label htmlFor="linkedinUrl" className="flex items-center gap-2">
+        <Label htmlFor="linkedin-input" className="flex items-center gap-2">
           <Linkedin className="h-4 w-4" />
           URL de LinkedIn
           <span className="text-xs font-normal text-muted-foreground">
             (opcional)
           </span>
         </Label>
-        <Input
-          id="linkedinUrl"
-          type="url"
+        <input
+          id="linkedin-input"
+          name="linkedinUrl"
+          type="text"
+          autoComplete="off"
           placeholder="https://linkedin.com/in/tu-perfil"
-          value={values.linkedinUrl || ''}
+          defaultValue={values.linkedinUrl || ''}
           onChange={(e) => onChange('linkedinUrl', e.target.value)}
-          className={errors?.linkedinUrl ? 'border-destructive' : ''}
+          className={INPUT_CLASS}
         />
         {errors?.linkedinUrl && (
-          <p className="text-sm text-destructive">{errors.linkedinUrl}</p>
+          <p className="text-sm text-orange-600">{errors.linkedinUrl}</p>
         )}
         <p className="text-xs text-muted-foreground">
           La URL completa de tu perfil de LinkedIn
@@ -109,23 +117,25 @@ export function SocialAccountsForm({
 
       {/* Telegram */}
       <div className="space-y-2">
-        <Label htmlFor="telegramUsername" className="flex items-center gap-2">
+        <Label htmlFor="telegram-input" className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4" />
           Usuario de Telegram
           <span className="text-xs font-normal text-muted-foreground">
             (opcional)
           </span>
         </Label>
-        <Input
-          id="telegramUsername"
+        <input
+          id="telegram-input"
+          name="telegramUsername"
           type="text"
+          autoComplete="off"
           placeholder="tu_usuario"
-          value={values.telegramUsername || ''}
+          defaultValue={values.telegramUsername || ''}
           onChange={(e) => onChange('telegramUsername', e.target.value)}
-          className={errors?.telegramUsername ? 'border-destructive' : ''}
+          className={INPUT_CLASS}
         />
         {errors?.telegramUsername && (
-          <p className="text-sm text-destructive">{errors.telegramUsername}</p>
+          <p className="text-sm text-orange-600">{errors.telegramUsername}</p>
         )}
         <p className="text-xs text-muted-foreground">
           Tu nombre de usuario de Telegram (sin el @)

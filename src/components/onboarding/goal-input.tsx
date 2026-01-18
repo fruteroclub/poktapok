@@ -21,7 +21,7 @@ export function GoalInput({ value, onChange, error }: GoalInputProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor="goal" className="text-base font-semibold">
-        Tu meta para el próximo mes <span className="text-destructive">*</span>
+        Tu meta para el próximo mes <span className="text-orange-500">*</span>
       </Label>
       <p className="text-sm text-muted-foreground">
         Describe qué quieres lograr en el próximo mes. Debe ser específico, medible y alcanzable.
@@ -35,7 +35,7 @@ export function GoalInput({ value, onChange, error }: GoalInputProps) {
         onChange={(e) => onChange(e.target.value)}
         placeholder="Escribe tu meta aquí..."
         className={`min-h-[120px] resize-none ${
-          error || isTooShort || isTooLong ? 'border-destructive' : ''
+          error || isTooShort || isTooLong ? 'border-orange-400' : ''
         } ${isValid && currentLength > 0 ? 'border-green-500' : ''}`}
         maxLength={maxLength}
       />
@@ -43,13 +43,13 @@ export function GoalInput({ value, onChange, error }: GoalInputProps) {
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-2">
           {isTooShort && (
-            <span className="flex items-center gap-1 text-destructive">
+            <span className="flex items-center gap-1 text-orange-500">
               <AlertCircle className="h-4 w-4" />
               Mínimo {minLength} caracteres
             </span>
           )}
           {isTooLong && (
-            <span className="flex items-center gap-1 text-destructive">
+            <span className="flex items-center gap-1 text-orange-500">
               <AlertCircle className="h-4 w-4" />
               Máximo {maxLength} caracteres
             </span>
@@ -61,7 +61,7 @@ export function GoalInput({ value, onChange, error }: GoalInputProps) {
 
         <span
           className={`font-mono ${
-            isTooLong ? 'text-destructive' : 'text-muted-foreground'
+            isTooLong ? 'text-orange-500' : 'text-muted-foreground'
           }`}
         >
           {currentLength}/{maxLength}
@@ -69,7 +69,7 @@ export function GoalInput({ value, onChange, error }: GoalInputProps) {
       </div>
 
       {error && (
-        <p className="text-sm text-destructive flex items-center gap-1">
+        <p className="text-sm text-orange-500 flex items-center gap-1">
           <AlertCircle className="h-4 w-4" />
           {error}
         </p>

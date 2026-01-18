@@ -113,7 +113,7 @@ export function UserInfoForm({
         <Label htmlFor="username" className="flex items-center gap-2">
           <AtSign className="h-4 w-4" />
           Nombre de usuario
-          <span className="text-destructive">*</span>
+          <span className="text-orange-500">*</span>
         </Label>
         <div className="relative">
           <Input
@@ -126,7 +126,7 @@ export function UserInfoForm({
               onChange('username', value)
             }}
             className={cn(
-              errors?.username ? 'border-destructive' : '',
+              errors?.username ? 'border-orange-400' : '',
               values.username && !errors?.username && 'pr-10'
             )}
           />
@@ -138,16 +138,16 @@ export function UserInfoForm({
               ) : usernameAvailable === true ? (
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
               ) : usernameAvailable === false ? (
-                <AlertCircle className="h-4 w-4 text-destructive" />
+                <AlertCircle className="h-4 w-4 text-orange-500" />
               ) : null}
             </div>
           )}
         </div>
         {errors?.username && (
-          <p className="text-sm text-destructive">{errors.username}</p>
+          <p className="text-sm text-orange-500">{errors.username}</p>
         )}
         {!errors?.username && usernameAvailable === false && (
-          <p className="text-sm text-destructive">Este nombre de usuario ya está en uso</p>
+          <p className="text-sm text-orange-500">Este nombre de usuario ya está en uso</p>
         )}
         <p className="text-xs text-muted-foreground">
           3-50 caracteres, solo minúsculas, números y guiones bajos
@@ -159,7 +159,7 @@ export function UserInfoForm({
         <Label htmlFor="email" className="flex items-center gap-2">
           <Mail className="h-4 w-4" />
           Correo electrónico
-          <span className="text-destructive">*</span>
+          <span className="text-orange-500">*</span>
         </Label>
         <Input
           id="email"
@@ -167,11 +167,11 @@ export function UserInfoForm({
           placeholder="tu@correo.com"
           value={values.email}
           onChange={(e) => onChange('email', e.target.value)}
-          className={errors?.email ? 'border-destructive' : ''}
+          className={errors?.email ? 'border-orange-400' : ''}
           disabled={!!currentUser?.email}
         />
         {errors?.email && (
-          <p className="text-sm text-destructive">{errors.email}</p>
+          <p className="text-sm text-orange-500">{errors.email}</p>
         )}
         {currentUser?.email && (
           <p className="text-xs text-muted-foreground">
@@ -193,11 +193,11 @@ export function UserInfoForm({
           placeholder="Tu Nombre Completo"
           value={values.displayName}
           onChange={(e) => onChange('displayName', e.target.value)}
-          className={errors?.displayName ? 'border-destructive' : ''}
+          className={errors?.displayName ? 'border-orange-400' : ''}
           maxLength={100}
         />
         {errors?.displayName && (
-          <p className="text-sm text-destructive">{errors.displayName}</p>
+          <p className="text-sm text-orange-500">{errors.displayName}</p>
         )}
         <p className="text-xs text-muted-foreground">
           Tu nombre real o el nombre que prefieres usar
@@ -219,7 +219,7 @@ export function UserInfoForm({
             onChange={(e) => onChange('bio', e.target.value)}
             className={cn(
               'min-h-[100px] resize-none',
-              errors?.bio ? 'border-destructive' : ''
+              errors?.bio ? 'border-orange-400' : ''
             )}
             maxLength={280}
           />
@@ -228,7 +228,7 @@ export function UserInfoForm({
           </div>
         </div>
         {errors?.bio && (
-          <p className="text-sm text-destructive">{errors.bio}</p>
+          <p className="text-sm text-orange-500">{errors.bio}</p>
         )}
       </div>
     </div>

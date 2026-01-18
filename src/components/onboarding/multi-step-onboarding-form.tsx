@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -85,19 +85,6 @@ export default function MultiStepOnboardingForm() {
     return Object.keys(newErrors).length === 0
   }
 
-  // Memoized handlers to prevent re-renders
-  const handleFieldChange = useCallback((field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }, [])
-
-  const handleProgramChange = useCallback((programId: string) => {
-    setFormData((prev) => ({ ...prev, programId }))
-  }, [])
-
-  const handleGoalChange = useCallback((goal: string) => {
-    setFormData((prev) => ({ ...prev, goal }))
-  }, [])
-
   // Navigation handlers
   const handleNext = () => {
     let isValid = false
@@ -156,29 +143,41 @@ export default function MultiStepOnboardingForm() {
     )
   }
 
-  // Render step content
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 'program':
-        return (
+  return (
+    <div className="space-y-8">
+      {/* Progress indicator */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-medium">{stepTitles[currentStep]}</span>
+          <span className="text-muted-foreground">
+            Paso {currentStepIndex + 1} de {steps.length}
+          </span>
+        </div>
+        <Progress value={progress} className="h-2" />
+      </div>
+
+      {/* Step content - render all, show/hide with CSS to preserve input state */}
+      <div className="min-h-[400px]">
+        {/* Program Step */}
+        <div className={currentStep === 'program' ? 'block' : 'hidden'}>
           <ProgramSelector
             value={formData.programId}
-            onChange={handleProgramChange}
+            onChange={(programId) => setFormData((prev) => ({ ...prev, programId }))}
             error={errors.programId}
           />
-        )
+        </div>
 
-      case 'goal':
-        return (
+        {/* Goal Step */}
+        <div className={currentStep === 'goal' ? 'block' : 'hidden'}>
           <GoalInput
             value={formData.goal}
-            onChange={handleGoalChange}
+            onChange={(goal) => setFormData((prev) => ({ ...prev, goal }))}
             error={errors.goal}
           />
-        )
+        </div>
 
-      case 'social':
-        return (
+        {/* Social Step */}
+        <div className={currentStep === 'social' ? 'block' : 'hidden'}>
           <SocialAccountsForm
             values={{
               githubUsername: formData.githubUsername,
@@ -186,13 +185,13 @@ export default function MultiStepOnboardingForm() {
               linkedinUrl: formData.linkedinUrl,
               telegramUsername: formData.telegramUsername,
             }}
-            onChange={handleFieldChange}
+            onChange={(field, value) => setFormData((prev) => ({ ...prev, [field]: value }))}
             errors={errors}
           />
-        )
+        </div>
 
-      case 'review':
-        return (
+        {/* Review Step */}
+        <div className={currentStep === 'review' ? 'block' : 'hidden'}>
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-4">Revisa tu información</h3>
@@ -244,28 +243,8 @@ export default function MultiStepOnboardingForm() {
               </div>
             )}
           </div>
-        )
-
-      default:
-        return null
-    }
-  }
-
-  return (
-    <div className="space-y-8">
-      {/* Progress indicator */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">{stepTitles[currentStep]}</span>
-          <span className="text-muted-foreground">
-            Paso {currentStepIndex + 1} de {steps.length}
-          </span>
         </div>
-        <Progress value={progress} className="h-2" />
       </div>
-
-      {/* Step content */}
-      <div className="min-h-[400px]">{renderStepContent()}</div>
 
       {/* Navigation buttons */}
       <div className="flex items-center justify-between pt-6 border-t">

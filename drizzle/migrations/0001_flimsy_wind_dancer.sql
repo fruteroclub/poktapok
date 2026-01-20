@@ -2,7 +2,11 @@ CREATE TYPE "public"."project_status" AS ENUM('draft', 'wip', 'completed', 'arch
 CREATE TYPE "public"."project_type" AS ENUM('personal', 'bootcamp', 'hackathon', 'work-related', 'freelance', 'bounty');--> statement-breakpoint
 CREATE TYPE "public"."proficiency_level" AS ENUM('beginner', 'intermediate', 'advanced');--> statement-breakpoint
 CREATE TYPE "public"."skill_category" AS ENUM('language', 'framework', 'tool', 'blockchain', 'other');--> statement-breakpoint
-ALTER TYPE "public"."account_status" ADD VALUE 'incomplete' BEFORE 'pending';--> statement-breakpoint
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'incomplete' AND enumtypid = 'public.account_status'::regtype) THEN
+    ALTER TYPE "public"."account_status" ADD VALUE 'incomplete' BEFORE 'pending';
+  END IF;
+END $$;--> statement-breakpoint
 CREATE TABLE "projects" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,

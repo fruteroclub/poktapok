@@ -79,7 +79,7 @@ export default function PulpaSection() {
         </div>
 
         {/* md+ viewport */}
-        <div className="hidden w-full max-w-6xl flex-col gap-2 md:flex lg:max-w-screen-lg">
+        <div className="hidden w-full max-w-6xl flex-col gap-2 md:flex lg:max-w-5xl">
           <div className="-mb-4 flex w-full items-center justify-center lg:-mb-6">
             <div className="w-1/4">
               <h3 className="text-xl font-bold text-primary">Gana $PULPA</h3>

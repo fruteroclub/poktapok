@@ -68,11 +68,10 @@ export default function NetworkSection() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full px-6 py-3 font-medium transition-all duration-200 ${
-                activeTab === tab.id
+              className={`rounded-full px-6 py-3 font-medium transition-all duration-200 ${activeTab === tab.id
                   ? `${tab.color} text-white shadow-lg`
                   : 'bg-white text-foreground hover:bg-gray-50'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -98,7 +97,7 @@ export default function NetworkSection() {
                     key={index}
                     className="rounded-2xl bg-white p-6 text-center"
                   >
-                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary">
+                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-primary to-secondary">
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white">
                         <span className="text-2xl">👤</span>
                       </div>
@@ -126,15 +125,14 @@ export default function NetworkSection() {
                   className="flex items-center space-x-4 rounded-2xl bg-white p-8"
                 >
                   <div
-                    className={`flex h-16 w-16 items-center justify-center rounded-full ${
-                      community.color === 'orange'
+                    className={`flex h-16 w-16 items-center justify-center rounded-full ${community.color === 'orange'
                         ? 'bg-primary'
                         : community.color === 'blue'
                           ? 'bg-blue-500'
                           : community.color === 'green'
                             ? 'bg-accent'
                             : 'bg-secondary'
-                    }`}
+                      }`}
                   >
                     <span className="text-xl font-bold text-white">
                       {community.name[0]}

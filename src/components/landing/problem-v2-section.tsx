@@ -1,6 +1,8 @@
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { CheckCircle2, ArrowRight } from 'lucide-react'
+import { Section } from '../layout/section'
+import { Card, CardContent } from '../ui/card'
 
 export default function ProblemV2Section() {
   const needs = [
@@ -11,72 +13,73 @@ export default function ProblemV2Section() {
   ]
 
   return (
-    <section id="problem-section" className="page bg-card/50 py-20 md:py-28">
+
+    <section id="problem-section" className="page py-8 md:pt-12">
+
       <div className="page-content">
-        <div className="mx-auto max-w-5xl space-y-16">
-          {/* Headline */}
-          <div className="space-y-6 text-center">
-            <h2 className="text-3xl font-black text-foreground md:text-4xl lg:text-5xl">
-              Ya viste el potencial. <span className="text-primary">¿Y ahora qué?</span>
-            </h2>
-          </div>
+        <Section className="space-y-8 text-center">
+          <h2 className="text-3xl text-foreground md:text-4xl">
+            Ya viste el potencial de la IA<br /> ¿<span className="subrayado underline-offset-8">Y ahora qué</span>?
+          </h2>
 
           {/* Problem Description - Muted card with white text */}
-          <div className="space-y-6 rounded-2xl bg-muted p-8 md:p-10 shadow-xl">
-            <p className="text-lg text-background md:text-xl">
-              Usas ChatGPT. Has visto los videos. Sabes que la IA puede cambiar todo.
-            </p>
-            <p className="text-lg font-bold text-primary md:text-xl">
-              Pero hay un gap entre "esto es increíble" y "estoy ganando dinero con esto."
-            </p>
-            <p className="text-xl font-black text-background md:text-2xl">
-              El problema no es la herramienta. <span className="text-accent">Es el contexto.</span>
-            </p>
-          </div>
-
-          {/* Pain Points - Orange card */}
-          <div className="rounded-2xl bg-primary p-8 md:p-10 shadow-xl">
-            <p className="text-lg leading-relaxed text-white md:text-xl">
-              Solo no llegas lejos. No sabes qué construir. No tienes quién te diga si vas bien. Te atoras y no hay nadie que te desatore. Empiezas proyectos que nunca terminas.
-            </p>
-          </div>
+          <Card className="bg-muted w-full md:max-w-md lg:max-w-2xl">
+            <CardContent className="space-y-4">
+              <p className="text-2xl text-white">
+                Sabes que la tecnología puede cambiar todo.
+              </p>
+              <p className="text-2xl text-white">
+                Pero hay una brecha entre
+                <br />"esto es increíble" y
+              </p>
+              <p className="text-3xl text-white leading-snug font-medium">
+                estoy <br /><span className='underline decoration-primary decoration-2 underline-offset-10'>ganando dinero</span><br />con esto
+              </p>
+            </CardContent>
+          </Card>
+          <p className="text-3xl text-foreground md:text-2xl font-medium">
+            El secreto no es la herramienta.  <br />Es el  <br /><span className="inline-block -rotate-2 transform rounded-lg bg-accent px-4 py-2 text-foreground font-semibold text-4xl">contexto</span>
+          </p>
 
           {/* What You Need */}
-          <div className="space-y-6">
-            <h3 className="text-center text-2xl font-black text-foreground md:text-3xl">
+          <div className="space-y-6 md:max-w-2xl">
+            <h3 className="text-center text-foreground">
               Lo que necesitas:
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
               {needs.map((need, index) => (
-                <div key={index} className="group flex items-start gap-4 rounded-xl border-2 border-border bg-background p-5 transition-all hover:scale-105 hover:bg-muted hover:shadow-xl">
-                  <CheckCircle2 className="h-6 w-6 shrink-0 text-accent" />
-                  <p className="text-base font-semibold leading-relaxed text-foreground md:text-lg">{need}</p>
+                <div key={index} className="group flex items-center gap-3 rounded-xl border-2 border-border bg-background p-4 transition-all hover:bg-muted hover:shadow-xl hover:text-white">
+                  <CheckCircle2 className="h-8 w-8 shrink-0 text-primary" />
+                  <p className="text-xl font-semibold leading-relaxed text-left">{need}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* CTA - Muted background */}
-          <div className="space-y-6 rounded-2xl bg-muted p-8 text-center md:p-10">
-            <p className="text-2xl font-black text-background md:text-3xl">
-              Eso es <span className="text-primary">Frutero.</span>
-            </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" className="bg-secondary text-white hover:bg-secondary/80 font-bold" asChild>
-                <Link href="/programs">
-                  Explora los programas
-                  <ArrowRight className="ml-2 h-6 w-6" />
-                </Link>
-              </Button>
-              <Button size="lg" className="bg-accent text-foreground hover:bg-accent/80 text-xl font-bold px-10 py-7" asChild>
-                <Link href="#hub-section">
-                  Ven al coworking gratis
-                  <ArrowRight className="ml-2 h-6 w-6" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+          <Card className="bg-muted w-full md:max-w-md lg:max-w-2xl">
+            <CardContent className="space-y-8">
+              <h2 className="font-black text-background">
+                Eso es <br />
+                <span className="text-primary">Frutero Club</span>
+              </h2>
+              <div className="flex flex-col items-center justify-center gap-4 lg:flex-row px-4">
+                <Button size="lg" variant="secondary" className="w-full" asChild>
+                  <Link href="/programs">
+                    Explora los programas
+                    <ArrowRight className="ml-2 h-6 w-6" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="text-white w-full" asChild>
+                  <Link href="#hub-section">
+                    Ven al coworking gratis
+                    <ArrowRight className="ml-2 h-6 w-6" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </Section>
       </div>
     </section>
   )

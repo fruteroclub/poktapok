@@ -5,63 +5,59 @@ import Link from 'next/link'
 export default function ProjectsV2Section() {
   const projects = [
     {
-      name: 'EVVM / ROLL-A-MATE',
-      description: 'ETHGlobal Waterloo Finalist → Top Sponsor',
-      category: 'Hackathon Winner',
+      name: 'EVVM',
+      description: 'Despliega blockchains virtuales en cualquier red',
+      category: 'Infraestructura',
     },
     {
-      name: 'CHIPIPAY',
-      description: 'Pagos crypto simplificados',
-      category: 'Fintech',
+      name: 'ChipiPay',
+      description: 'Infraestructura financiera en minutos',
+      category: 'Infraestructura',
     },
     {
-      name: 'REGEN TIPS',
+      name: 'Regen Tips',
       description: 'Reputación onchain',
-      category: 'Web3 Identity',
+      category: 'Identidad',
     },
     {
-      name: 'TROOPS',
-      description: 'Community infra',
-      category: 'DAO Tooling',
+      name: 'Pistachio',
+      description: 'Ingresos pasivos hechos fácil',
+      category: 'Finanzas',
     },
     {
       name: 'LaDAO',
-      description: 'Creadores de $XOC (stablecoin mexicana)',
-      category: 'DeFi',
+      description: 'Creadores de $XOC - Moneda Estable Mexicana)',
+      category: 'Finanzas',
     },
     {
-      name: 'KAIROS RESEARCH',
-      description: 'Crypto research',
-      category: 'Analytics',
+      name: 'Kairos Research',
+      description: 'Investigación en Finanzas Descentralizadas',
+      category: 'Consultoría',
     },
   ]
 
   return (
-    <section id="projects-section" className="page bg-gradient-to-b from-card/30 to-card/50 py-16 md:py-24">
+    <section id="projects-section" className="page bg-muted py-16">
       <div className="page-content">
         <div className="mx-auto max-w-6xl space-y-12">
           {/* Headline */}
           <div className="space-y-4 text-center">
-            <h2 className="text-4xl font-bold text-foreground md:text-5xl">
+            <h2 className="text-4xl font-medium text-primary md:text-5xl">
               Startups que salieron de aquí
             </h2>
           </div>
 
           {/* Projects Grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
               <Card
                 key={index}
-                className="border-2 border-border transition-all hover:scale-105 hover:border-primary/50 hover:shadow-lg"
               >
                 <CardHeader>
+                  <CardTitle className="text-xl">{project.name}</CardTitle>
                   <div className="mb-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                     {project.category}
                   </div>
-                  <CardTitle className="text-xl">{project.name}</CardTitle>
-                  <CardDescription className="text-base">
-                    {project.description}
-                  </CardDescription>
                 </CardHeader>
               </Card>
             ))}
@@ -69,7 +65,7 @@ export default function ProjectsV2Section() {
 
           {/* CTA */}
           <div className="flex justify-center">
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" className="text-white" asChild>
               <Link href="/directory">Ver todos los proyectos →</Link>
             </Button>
           </div>

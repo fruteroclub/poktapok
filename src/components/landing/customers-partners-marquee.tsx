@@ -59,7 +59,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
@@ -74,18 +74,18 @@ export default function CustomersPartnersMarquee() {
   return (
     <div className="page-content space-y-8">
       <div className="flex flex-col gap-y-2 text-center">
-        <h3 className="text-xl text-foreground md:text-2xl">
-          Respaldados por los mejores del ecosistema
-        </h3>
+        <h2 className="text-3xl text-foreground md:text-4xl">
+          Con quiénes construimos
+        </h2>
       </div>
 
       {/* Marquee container with fade edges */}
       <div className="relative">
         {/* Left fade overlay */}
-        <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-gradient-to-r from-background to-transparent md:w-32" />
+        <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-linear-to-r from-background to-transparent md:w-32" />
 
         {/* Right fade overlay */}
-        <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-gradient-to-l from-background to-transparent md:w-32" />
+        <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-linear-to-l from-background to-transparent md:w-32" />
 
         <Marquee pauseOnHover className="[--duration:40s] [--gap:2rem]">
           {shuffledPartners.map((partner) => (
@@ -109,12 +109,13 @@ export default function CustomersPartnersMarquee() {
         </Marquee>
       </div>
 
-      <div className="pt-4 text-center md:pt-8">
+      <div className="text-center space-y-4">
         <p className="mx-auto max-w-2xl text-xl text-foreground md:text-2xl">
-          Líderes de tecnología que respaldan nuestra garantía:{' '}
-          <span className="font-bold text-primary">Frescura Certificada</span>,{' '}
-          <span className="font-bold text-accent">Calidad Orgánica</span>
+          Líderes de tecnología que respaldan nuestra garantía:
         </p>
+        <h3 className="text-3xl text-foreground md:text-4xl leading-tight">
+          <span className="font-bold text-primary">Frescura Certificada</span><br />
+          <span className="font-bold text-accent">Calidad Orgánica</span></h3>
       </div>
     </div>
   )

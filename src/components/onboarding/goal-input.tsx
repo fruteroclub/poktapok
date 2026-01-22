@@ -4,6 +4,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+// Constants
+const GOAL_MIN_LENGTH = 1
+const GOAL_MAX_LENGTH = 280
+const MOTIVATION_MAX_LENGTH = 500
+const EXISTING_MEMBER_TEXT = 'Ya soy parte de la comunidad Frutero'
 
 interface GoalInputProps {
   goal: string
@@ -14,8 +21,6 @@ interface GoalInputProps {
   motivationError?: string
 }
 
-const EXISTING_MEMBER_TEXT = 'Ya soy parte de la comunidad Frutero'
-
 export function GoalInput({
   goal,
   onGoalChange,
@@ -24,17 +29,14 @@ export function GoalInput({
   onMotivationChange,
   motivationError,
 }: GoalInputProps) {
-  const goalMinLength = 1
-  const goalMaxLength = 280
   const goalCurrentLength = goal.length
-  const isGoalValid = goalCurrentLength >= goalMinLength && goalCurrentLength <= goalMaxLength
-  const isGoalTooShort = goalCurrentLength > 0 && goalCurrentLength < goalMinLength
-  const isGoalTooLong = goalCurrentLength > goalMaxLength
+  const isGoalValid = goalCurrentLength >= GOAL_MIN_LENGTH && goalCurrentLength <= GOAL_MAX_LENGTH
+  const isGoalTooLong = goalCurrentLength > GOAL_MAX_LENGTH
 
-  const motivationMaxLength = 500
   const motivationCurrentLength = motivationText.length
-  const isMotivationValid = motivationCurrentLength >= 1 && motivationCurrentLength <= motivationMaxLength
-  const isMotivationTooLong = motivationCurrentLength > motivationMaxLength
+  const isMotivationValid =
+    motivationCurrentLength >= 1 && motivationCurrentLength <= MOTIVATION_MAX_LENGTH
+  const isMotivationTooLong = motivationCurrentLength > MOTIVATION_MAX_LENGTH
 
   const handleExistingMemberClick = () => {
     onMotivationChange(EXISTING_MEMBER_TEXT)
@@ -58,24 +60,20 @@ export function GoalInput({
           value={goal}
           onChange={(e) => onGoalChange(e.target.value)}
           placeholder="Escribe tu meta aquí..."
-          className={`min-h-[120px] resize-none ${
-            goalError || isGoalTooShort || isGoalTooLong ? 'border-orange-400' : ''
-          } ${isGoalValid && goalCurrentLength > 0 ? 'border-green-500' : ''}`}
-          maxLength={goalMaxLength}
+          className={cn(
+            'min-h-[120px] resize-none',
+            (goalError || isGoalTooLong) && 'border-orange-400',
+            isGoalValid && goalCurrentLength > 0 && 'border-green-500'
+          )}
+          maxLength={GOAL_MAX_LENGTH}
         />
 
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            {isGoalTooShort && (
-              <span className="flex items-center gap-1 text-orange-500">
-                <AlertCircle className="h-4 w-4" />
-                Mínimo {goalMinLength} caracteres
-              </span>
-            )}
             {isGoalTooLong && (
               <span className="flex items-center gap-1 text-orange-500">
                 <AlertCircle className="h-4 w-4" />
-                Máximo {goalMaxLength} caracteres
+                Máximo {GOAL_MAX_LENGTH} caracteres
               </span>
             )}
             {isGoalValid && (
@@ -84,16 +82,14 @@ export function GoalInput({
           </div>
 
           <span
-            className={`font-mono ${
-              isGoalTooLong ? 'text-orange-500' : 'text-muted-foreground'
-            }`}
+            className={cn('font-mono', isGoalTooLong ? 'text-orange-500' : 'text-muted-foreground')}
           >
-            {goalCurrentLength}/{goalMaxLength}
+            {goalCurrentLength}/{GOAL_MAX_LENGTH}
           </span>
         </div>
 
         {goalError && (
-          <p className="text-sm text-orange-500 flex items-center gap-1">
+          <p className="flex items-center gap-1 text-sm text-orange-500">
             <AlertCircle className="h-4 w-4" />
             {goalError}
           </p>
@@ -115,11 +111,11 @@ export function GoalInput({
             variant="outline"
             size="sm"
             onClick={handleExistingMemberClick}
-            className={`text-xs ${
-              motivationText === EXISTING_MEMBER_TEXT
-                ? 'border-green-500 bg-green-50 dark:bg-green-950'
-                : ''
-            }`}
+            className={cn(
+              'text-xs',
+              motivationText === EXISTING_MEMBER_TEXT &&
+                'border-green-500 bg-green-50 dark:bg-green-950'
+            )}
           >
             {motivationText === EXISTING_MEMBER_TEXT ? '✓ ' : ''}
             Ya soy parte de la comunidad
@@ -131,10 +127,12 @@ export function GoalInput({
           value={motivationText}
           onChange={(e) => onMotivationChange(e.target.value)}
           placeholder="Cuéntanos tu motivación..."
-          className={`min-h-[100px] resize-none ${
-            motivationError || isMotivationTooLong ? 'border-orange-400' : ''
-          } ${isMotivationValid ? 'border-green-500' : ''}`}
-          maxLength={motivationMaxLength}
+          className={cn(
+            'min-h-[100px] resize-none',
+            (motivationError || isMotivationTooLong) && 'border-orange-400',
+            isMotivationValid && 'border-green-500'
+          )}
+          maxLength={MOTIVATION_MAX_LENGTH}
         />
 
         <div className="flex items-center justify-between text-sm">
@@ -142,7 +140,7 @@ export function GoalInput({
             {isMotivationTooLong && (
               <span className="flex items-center gap-1 text-orange-500">
                 <AlertCircle className="h-4 w-4" />
-                Máximo {motivationMaxLength} caracteres
+                Máximo {MOTIVATION_MAX_LENGTH} caracteres
               </span>
             )}
             {isMotivationValid && (
@@ -151,16 +149,17 @@ export function GoalInput({
           </div>
 
           <span
-            className={`font-mono ${
+            className={cn(
+              'font-mono',
               isMotivationTooLong ? 'text-orange-500' : 'text-muted-foreground'
-            }`}
+            )}
           >
-            {motivationCurrentLength}/{motivationMaxLength}
+            {motivationCurrentLength}/{MOTIVATION_MAX_LENGTH}
           </span>
         </div>
 
         {motivationError && (
-          <p className="text-sm text-orange-500 flex items-center gap-1">
+          <p className="flex items-center gap-1 text-sm text-orange-500">
             <AlertCircle className="h-4 w-4" />
             {motivationError}
           </p>

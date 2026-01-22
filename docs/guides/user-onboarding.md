@@ -12,7 +12,7 @@ This guide walks you through the application process to join our talent platform
 - **Basic Information**: Username, display name, bio, avatar
 - **Location**: City and country (helps us understand our community)
 - **Program Choice**: Select which learning track interests you (AI, Crypto/DeFi, or Privacy)
-- **1-Month Goal**: A clear, specific goal you'll achieve in 30 days (140-280 characters)
+- **1-Month Goal**: A clear, specific goal you'll achieve in 30 days (1-280 characters)
 - **Social Accounts** (at least one recommended):
   - GitHub username (strongly recommended for technical profiles)
   - X/Twitter handle
@@ -133,7 +133,7 @@ Focus on privacy-preserving technologies:
 - Bad (AI Track): "Learn graphic design fundamentals"
 
 #### Character Limit
-- **Minimum**: 140 characters (about 1-2 sentences)
+- **Minimum**: 1 character
 - **Maximum**: 280 characters (Twitter-length)
 - **Counter**: Real-time character count shown as you type
 
@@ -415,7 +415,7 @@ Most users go through guest tier - it's not a negative, it's the standard path.
 
 3. **Draft your goal offline first**
    - Write it in a text editor
-   - Check character count (140-280)
+   - Check character count (max 280)
    - Get feedback from friends or mentors
    - Revise for clarity and specificity
 
@@ -455,7 +455,7 @@ Use this structure:
 
 **Check**:
 - All required fields are filled out (red asterisks)
-- Goal is between 140-280 characters
+- Goal is between 1-280 characters
 - Username meets format requirements (3-20 chars, lowercase)
 - You've selected a program
 - You're connected to the internet

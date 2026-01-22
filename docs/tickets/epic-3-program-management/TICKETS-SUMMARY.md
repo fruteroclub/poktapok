@@ -50,7 +50,7 @@
 interface UpdateUserRequest {
   // existing fields...
   programId?: string
-  goal?: string // 140-280 chars
+  goal?: string // 1-280 chars
   githubUsername?: string
   twitterUsername?: string
 }
@@ -102,7 +102,7 @@ export async function applyToProgram(data: ApplicationData) {
 <GoalCommitment
   value={formData.goal}
   onChange={(value) => setFormData({...formData, goal: value})}
-  minChars={140}
+  minChars={1}
   maxChars={280}
 />
 
@@ -117,7 +117,7 @@ const steps = [
 
 **Acceptance Criteria**:
 - [ ] Programs load from API and display
-- [ ] Goal validation enforces 140-280 character count
+- [ ] Goal validation enforces 1-280 character count
 - [ ] Social accounts marked required
 - [ ] Form submission creates application with status 'pending'
 - [ ] User redirected to profile after submission

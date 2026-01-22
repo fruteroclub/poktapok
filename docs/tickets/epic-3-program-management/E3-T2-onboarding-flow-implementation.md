@@ -26,7 +26,7 @@ Email → Username → Display Name → Bio → Avatar
 
 1. Extend onboarding form to capture program selection and goal commitment
 2. Implement program selection UI with program details display
-3. Create goal input component with validation (140-280 characters)
+3. Create goal input component with validation (1-280 characters)
 4. Add social account linking (GitHub, Twitter/X)
 5. Update applications table with new fields
 6. Create application submission endpoint
@@ -83,7 +83,7 @@ export const applications = pgTable('applications', {
     .references(() => programs.id, { onDelete: 'restrict' }),
 
   // Goal commitment
-  goal: text('goal').notNull(), // 140-280 characters, validated at API level
+  goal: text('goal').notNull(), // 1-280 characters, validated at API level
 
   // Status tracking
   status: varchar('status', { length: 50 })
@@ -183,7 +183,7 @@ import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/r
 const applicationSchema = z.object({
   programId: z.string().uuid('Invalid program ID'),
   goal: z.string()
-    .min(140, 'Goal must be at least 140 characters')
+    .min(1, 'Goal is required')
     .max(280, 'Goal must not exceed 280 characters'),
   githubUsername: z.string().optional(),
   twitterUsername: z.string().optional(),
@@ -483,7 +483,7 @@ interface GoalInputProps {
 }
 
 export function GoalInput({ value, onChange, error }: GoalInputProps) {
-  const minLength = 140
+  const minLength = 1
   const maxLength = 280
   const currentLength = value.length
   const isValid = currentLength >= minLength && currentLength <= maxLength
@@ -806,8 +806,8 @@ export default function MultiStepOnboardingForm() {
 
     if (!formData.goal.trim()) {
       newErrors.goal = 'La meta es requerida'
-    } else if (formData.goal.length < 140) {
-      newErrors.goal = 'La meta debe tener al menos 140 caracteres'
+    } else if (formData.goal.length < 1) {
+      newErrors.goal = 'La meta es requerida'
     } else if (formData.goal.length > 280) {
       newErrors.goal = 'La meta no puede exceder 280 caracteres'
     }
@@ -1204,7 +1204,7 @@ export default function MultiStepOnboardingForm() {
 
 ### Functional Requirements
 - [ ] User can select from available programs with clear descriptions
-- [ ] User can write and validate goal (140-280 characters)
+- [ ] User can write and validate goal (1-280 characters)
 - [ ] User can link social accounts (GitHub, X, LinkedIn, Telegram)
 - [ ] Multi-step form maintains state across navigation
 - [ ] Form validates each step before allowing progression
@@ -1426,7 +1426,7 @@ test.describe('Onboarding Flow', () => {
 ### Manual Testing Checklist
 - [ ] Happy path: Complete full onboarding flow successfully
 - [ ] Error case: Submit with invalid username format
-- [ ] Error case: Submit goal with <140 characters
+- [ ] Error case: Submit goal with empty value
 - [ ] Error case: Submit goal with >280 characters
 - [ ] Error case: Submit without selecting program
 - [ ] Error case: Submit with invalid LinkedIn URL
@@ -1533,7 +1533,7 @@ User selects from available programs:
 
 ### Step 3: Goal Commitment
 User writes their 1-month goal:
-- Required: 140-280 characters
+- Required: 1-280 characters
 - Real-time character count
 - Validation feedback (too short, too long, valid)
 - Placeholder provides example format

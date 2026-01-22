@@ -60,7 +60,7 @@ The application uses **PostgreSQL** (Neon DB via Vercel) with **Drizzle ORM** an
 - **profiles** - Extended user data (location, social links as usernames, learning tracks, stats)
   - E3-T2: Updated to store `github_username`, `twitter_username`, `telegram_username` (usernames without @), `linkedin_url` (full URL)
 - **applications** - Onboarding queue (pending/approved/rejected signup applications)
-  - E3-T1: Added `program_id` (foreign key to programs), `goal` (140-280 chars), `github_username`, `twitter_username`
+  - E3-T1: Added `program_id` (foreign key to programs), `goal` (1-280 chars), `github_username`, `twitter_username`
 - **invitations** - Referral system (invite codes with expiration tracking)
 
 **Program Management (E3-T1):**
@@ -277,7 +277,7 @@ Multi-step application process with program selection and goal commitment:
 
 **Onboarding Steps:**
 1. **Program Selection** - User chooses from active programs (cohort or evergreen)
-2. **Goal Commitment** - User writes 1-month goal (140-280 characters)
+2. **Goal Commitment** - User writes 1-month goal (1-280 characters)
 3. **Social Accounts** - User links GitHub, Twitter/X, LinkedIn, Telegram (optional)
 4. **Review & Submit** - User reviews and submits application
 

@@ -16,7 +16,7 @@ Transform Frutero's onboarding into a **program-based application system** where
 ### Primary Objectives
 1. **Application-Based Onboarding**: Replace direct signup with application review process
 2. **Program Selection**: Enable users to choose learning programs during onboarding
-3. **Goal Commitment**: Capture measurable 1-month goals (140-280 characters)
+3. **Goal Commitment**: Capture measurable 1-month goals (1-280 characters)
 4. **Club Guest Status**: Allow platform access before formal approval
 5. **Social Verification**: Require GitHub and Twitter account linking
 
@@ -50,7 +50,7 @@ Transform Frutero's onboarding into a **program-based application system** where
 ```sql
 -- New columns for applications table
 ALTER TABLE applications ADD COLUMN program_id UUID REFERENCES programs(id);
-ALTER TABLE applications ADD COLUMN goal TEXT CHECK (char_length(goal) BETWEEN 140 AND 280);
+ALTER TABLE applications ADD COLUMN goal TEXT CHECK (char_length(goal) BETWEEN 1 AND 280);
 ALTER TABLE applications ADD COLUMN github_username VARCHAR(100);
 ALTER TABLE applications ADD COLUMN twitter_username VARCHAR(100);
 ```
@@ -297,7 +297,7 @@ CREATE TABLE attendance_records (
    - "De Cero a Chamba" | "DeFi-esta" | "Open"
    - View program description and duration
 
-4. [User] Set Goal (140-280 chars)
+4. [User] Set Goal (1-280 chars)
    - Free-form text
    - Example: "Build and deploy a portfolio website with 3 client projects,
      demonstrating HTML/CSS/JS skills and freelance readiness"
@@ -461,7 +461,7 @@ interface UpdateUserRequest {
 
   // New fields for MVP
   programId?: string // UUID of selected program
-  goal?: string // 140-280 characters
+  goal?: string // 1-280 characters
   githubUsername?: string
   twitterUsername?: string
 }
@@ -772,7 +772,7 @@ export async function getSessionAttendance(activityId: string): Promise<Attendan
 - Highlight "Open" as default option
 
 **`src/components/onboarding/goal-commitment.tsx`** (New)
-- Textarea with character counter (140-280)
+- Textarea with character counter (1-280)
 - Real-time validation
 - Examples/tips for writing measurable goals
 - Preview of commitment text
@@ -860,7 +860,7 @@ export async function getSessionAttendance(activityId: string): Promise<Attendan
 #### Onboarding Flow
 - [ ] User sees program selection step after profile completion
 - [ ] User can view program descriptions before selection
-- [ ] Goal commitment field validates 140-280 characters
+- [ ] Goal commitment field validates 1-280 characters
 - [ ] GitHub and Twitter username fields are required
 - [ ] Application submission updates accountStatus to 'pending'
 - [ ] User redirected to profile with "Application Pending" banner

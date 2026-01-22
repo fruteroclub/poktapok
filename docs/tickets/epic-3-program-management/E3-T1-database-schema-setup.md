@@ -156,7 +156,7 @@ export const applications = pgTable('applications', {
 
   // NEW FIELDS
   programId: uuid('program_id').references(() => programs.id),
-  goal: text('goal'), // 140-280 characters, validated at application layer
+  goal: text('goal'), // 1-280 characters, validated at application layer
   githubUsername: varchar('github_username', { length: 100 }),
   twitterUsername: varchar('twitter_username', { length: 100 }),
 
@@ -164,7 +164,7 @@ export const applications = pgTable('applications', {
 })
 ```
 
-**Note**: CHECK constraints for goal length (140-280 characters) should be added in migration SQL directly, as Drizzle doesn't support inlined CHECK constraints well.
+**Note**: CHECK constraints for goal length (1-280 characters) should be added in migration SQL directly, as Drizzle doesn't support inlined CHECK constraints well.
 
 #### 6. Update Schema Index (`drizzle/schema/index.ts`)
 
@@ -198,7 +198,7 @@ Add to migration file after applications ALTER statements:
 ```sql
 ALTER TABLE applications
 ADD CONSTRAINT goal_length_check
-CHECK (goal IS NULL OR (char_length(goal) BETWEEN 140 AND 280));
+CHECK (goal IS NULL OR (char_length(goal) BETWEEN 1 AND 280));
 ```
 
 **Step 4: Test Migration**
@@ -357,7 +357,7 @@ bun run scripts/verify-program-schema.ts
 - [ ] `program_enrollments` table created with unique constraint
 - [ ] `attendance_records` table created with unique constraint
 - [ ] `applications` table extended with 4 new columns
-- [ ] Goal length CHECK constraint applied (140-280 chars)
+- [ ] Goal length CHECK constraint applied (1-280 chars)
 - [ ] All foreign key relationships working correctly
 - [ ] Cascade deletes configured properly
 
@@ -439,7 +439,7 @@ describe('Program Schema', () => {
     await expect(async () => {
       await db.insert(applications).values({
         userId: 'test-user',
-        goal: 'too short', // < 140 chars
+        goal: '', // empty string, < 1 char
       })
     }).rejects.toThrow()
   })

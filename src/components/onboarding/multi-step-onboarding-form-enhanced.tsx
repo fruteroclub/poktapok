@@ -31,8 +31,9 @@ interface FormData {
   displayName: string
   bio: string
 
-  // Goal
+  // Goal & Motivation
   goal: string
+  motivationText: string
 
   // Social Accounts (all usernames only)
   githubUsername: string
@@ -57,8 +58,9 @@ export default function MultiStepOnboardingFormEnhanced() {
     displayName: '',
     bio: '',
 
-    // Goal
+    // Goal & Motivation
     goal: '',
+    motivationText: '',
 
     // Social Accounts
     githubUsername: '',
@@ -122,6 +124,11 @@ export default function MultiStepOnboardingFormEnhanced() {
       newErrors.goal = 'La meta es requerida'
     } else if (formData.goal.length > 280) {
       newErrors.goal = 'La meta no puede exceder 280 caracteres'
+    }
+    if (!formData.motivationText.trim()) {
+      newErrors.motivationText = 'Este campo es requerido'
+    } else if (formData.motivationText.length > 500) {
+      newErrors.motivationText = 'No puede exceder 500 caracteres'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -216,6 +223,7 @@ export default function MultiStepOnboardingFormEnhanced() {
       submitMutation.mutate(
         {
           goal: formData.goal,
+          motivationText: formData.motivationText,
           githubUsername: formData.githubUsername || undefined,
           twitterUsername: formData.twitterUsername || undefined,
           // Convert LinkedIn username back to URL for backwards compatibility
@@ -266,6 +274,10 @@ export default function MultiStepOnboardingFormEnhanced() {
     setFormData((prev) => ({ ...prev, goal }))
   }, [])
 
+  const handleMotivationChange = useCallback((motivationText: string) => {
+    setFormData((prev) => ({ ...prev, motivationText }))
+  }, [])
+
   const handleSocialChange = useCallback((field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }, [])
@@ -296,9 +308,12 @@ export default function MultiStepOnboardingFormEnhanced() {
       case 'goal':
         return (
           <GoalInput
-            value={formData.goal}
-            onChange={handleGoalChange}
-            error={errors.goal}
+            goal={formData.goal}
+            onGoalChange={handleGoalChange}
+            goalError={errors.goal}
+            motivationText={formData.motivationText}
+            onMotivationChange={handleMotivationChange}
+            motivationError={errors.motivationText}
           />
         )
 
@@ -354,6 +369,12 @@ export default function MultiStepOnboardingFormEnhanced() {
             <div className="space-y-3 rounded-lg border p-4">
               <h4 className="font-semibold">Meta</h4>
               <p className="text-sm">{formData.goal}</p>
+            </div>
+
+            {/* Motivation summary */}
+            <div className="space-y-3 rounded-lg border p-4">
+              <h4 className="font-semibold">¿Por qué quieres unirte?</h4>
+              <p className="text-sm">{formData.motivationText}</p>
             </div>
 
             {/* Social accounts summary */}

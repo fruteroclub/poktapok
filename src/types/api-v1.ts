@@ -361,6 +361,7 @@ export interface Application {
   userId: string
   programId: string
   goal: string
+  motivationText: string
   githubUsername?: string | null
   twitterUsername?: string | null
   status: 'pending' | 'approved' | 'rejected'
@@ -377,6 +378,7 @@ export interface Application {
 export interface SubmitApplicationRequest {
   programId?: string
   goal: string
+  motivationText: string
   githubUsername?: string
   twitterUsername?: string
   linkedinUrl?: string

@@ -67,8 +67,6 @@ export default function MultiStepOnboardingForm() {
     const newErrors: FormErrors = {}
     if (!formData.goal.trim()) {
       newErrors.goal = 'La meta es requerida'
-    } else if (formData.goal.length < 140) {
-      newErrors.goal = 'La meta debe tener al menos 140 caracteres'
     } else if (formData.goal.length > 280) {
       newErrors.goal = 'La meta no puede exceder 280 caracteres'
     }

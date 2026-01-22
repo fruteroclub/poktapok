@@ -309,7 +309,7 @@ The Program Management system enables structured learning programs with applicat
 1. User logs in with Privy
 2. Completes profile (username, display name, bio, avatar)
 3. Selects program
-4. Sets 1-month goal (140-280 characters)
+4. Sets 1-month goal (1-280 characters)
 5. Links social accounts (GitHub, X, LinkedIn, Telegram)
 6. Submits application
 7. Status changes to "pending"
@@ -377,7 +377,7 @@ See [API Reference](../api-reference.md) for complete documentation.
 ## Reviewing Applications
 
 ### What to Look For
-- Clear, specific goals (140-280 characters)
+- Clear, specific goals (1-280 characters)
 - Connected social accounts (GitHub strongly recommended)
 - Profile completeness and quality
 - Goal alignment with program objectives

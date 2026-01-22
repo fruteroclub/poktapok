@@ -101,14 +101,14 @@ SELECT id, name, slug, is_active FROM programs WHERE is_active = true;
 **Steps**:
 1. Type goal: "Complete ML fundamentals course, build 3 AI projects (chatbot, image classifier, sentiment analyzer), deploy to Hugging Face, write technical blog documenting learnings"
 2. Verify character counter updates in real-time
-3. Try submitting with < 140 characters (should fail)
+3. Try submitting with empty goal (should fail)
 4. Try submitting with > 280 characters (should fail)
-5. Submit valid goal (140-280 chars)
+5. Submit valid goal (1-280 chars)
 6. Click "Next" button
 
 **Expected Results**:
 - ✅ Character counter accurate
-- ✅ Validation prevents < 140 or > 280 characters
+- ✅ Validation prevents empty or > 280 characters
 - ✅ Error messages clear and helpful
 - ✅ Progress to social accounts step
 
@@ -209,7 +209,7 @@ SELECT id, name, slug, is_active FROM programs WHERE is_active = true;
    - Applicant (avatar, name, username, email, account status)
    - Location (city, country)
    - Program (name, description)
-   - Goal (140-280 char commitment)
+   - Goal (1-280 char commitment)
    - Social Accounts (with links)
    - Application metadata (submission timestamp)
 

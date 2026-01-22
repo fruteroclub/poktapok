@@ -42,7 +42,7 @@ All endpoints follow the standardized envelope pattern:
 1. User authenticates with Privy (wallet or social)
 2. Fills profile form (username, display name, bio, avatar)
 3. Selects program from active programs list
-4. Sets 1-month goal (140-280 characters)
+4. Sets 1-month goal (1-280 characters)
 5. Links social accounts (GitHub, X, LinkedIn, Telegram)
 6. Reviews and submits application
 7. Status changes to `pending`

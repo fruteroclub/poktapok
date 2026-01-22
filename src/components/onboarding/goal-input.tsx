@@ -11,7 +11,7 @@ interface GoalInputProps {
 }
 
 export function GoalInput({ value, onChange, error }: GoalInputProps) {
-  const minLength = 140
+  const minLength = 1
   const maxLength = 280
   const currentLength = value.length
   const isValid = currentLength >= minLength && currentLength <= maxLength

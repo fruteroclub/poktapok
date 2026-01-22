@@ -12,7 +12,7 @@ No, they must choose one. We also need to add a "Open" program for users to appl
 Q2: Goal Commitment Details
 Is the 1-month goal free-form text, or should we provide structured options?
 Free-form text, users can write anything they want to achieve. We do require a project to be built to be accepted as member of the club. This can be an app, content creation, etc. Anything that demonstrates alignment with our ethos: GTFOL aka Get The Fuck Out Of Localhost ie shipping and putting our work in the hands of users.
-Examples of goals: "Complete 10 activities", "Get first freelance client", "Deploy DeFi app"? Yes, but with a little more of information. A minimum of words is required, let's say 140 as if it was a tweet. Maximum of 280 characters.
+Examples of goals: "Complete 10 activities", "Get first freelance client", "Deploy DeFi app"? Yes, but with a little more of information. A minimum of 1 character is required. Maximum of 280 characters.
 Do goals need to be validated/approved by admins, or auto-accepted?
 Goals are not validated/approved by admins, they are just a commitment from the user to themselves and the community. Admins and moderators will review the applications and approve or reject them.
 Should goals be measurable/trackable, or just motivational statements?

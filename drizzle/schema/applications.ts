@@ -56,7 +56,7 @@ export const applications = pgTable(
     // Program Selection (NEW)
     programId: uuid('program_id').references(() => programs.id),
 
-    // Goal Commitment (NEW - 140-280 characters)
+    // Goal Commitment (1-280 characters)
     goal: text('goal'),
 
     // Social Accounts (NEW)

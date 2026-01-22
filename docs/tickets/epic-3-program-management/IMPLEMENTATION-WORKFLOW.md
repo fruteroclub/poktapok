@@ -86,7 +86,7 @@ bun run db:generate
 export const applications = pgTable('applications', {
   // ... existing fields
   programId: uuid('program_id').references(() => programs.id),
-  goal: text('goal'), // CHECK constraint: length 140-280
+  goal: text('goal'), // CHECK constraint: length 1-280
   githubUsername: varchar('github_username', { length: 100 }),
   twitterUsername: varchar('twitter_username', { length: 100 }),
 })
@@ -394,7 +394,7 @@ interface GoalCommitmentProps {
 
 export function GoalCommitment({ value, onChange, disabled }: GoalCommitmentProps) {
   const charCount = value.length
-  const isValid = charCount >= 140 && charCount <= 280
+  const isValid = charCount >= 1 && charCount <= 280
 
   return (
     <div className="space-y-2">
@@ -407,11 +407,9 @@ export function GoalCommitment({ value, onChange, disabled }: GoalCommitmentProp
         className="min-h-32"
       />
       <div className="flex justify-between text-sm">
-        <span>Character count: {charCount}/280 (min: 140)</span>
-        {!isValid && charCount > 0 && (
-          <span className="text-destructive">
-            {charCount < 140 ? 'Too short' : 'Too long'}
-          </span>
+        <span>Character count: {charCount}/280</span>
+        {charCount > 280 && (
+          <span className="text-destructive">Too long</span>
         )}
       </div>
     </div>
@@ -513,7 +511,7 @@ export function OnboardingForm() {
 
 **Acceptance Criteria**:
 - [ ] Programs load and display in selector
-- [ ] Goal textarea validates character count (140-280)
+- [ ] Goal textarea validates character count (1-280)
 - [ ] Social accounts require valid usernames
 - [ ] Form submission creates application with status 'pending'
 - [ ] User redirected to profile after submission

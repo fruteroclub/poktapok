@@ -55,7 +55,7 @@ Click any row in the table to open the application detail drawer on the right si
 - Program description
 
 **Goal:**
-- User's 1-month goal (140-280 characters)
+- User's 1-month goal (1-280 characters)
 - This is the most important review criterion
 
 **Social Accounts:**
@@ -312,7 +312,7 @@ The queue shows all pending applications in one view, making it easy to:
 ### Application Review Checklist
 
 Before making a decision, verify:
-- [ ] Goal is 140-280 characters (system-enforced)
+- [ ] Goal is 1-280 characters (system-enforced)
 - [ ] Goal is specific and measurable
 - [ ] Timeline is realistic (1 month)
 - [ ] Profile is complete (at minimum username + display name)

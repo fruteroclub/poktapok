@@ -11,7 +11,7 @@ const applicationSchema = z.object({
   programId: z.string().uuid('Invalid program ID').optional(),
   goal: z
     .string()
-    .min(140, 'Goal must be at least 140 characters')
+    .min(1, 'Goal is required')
     .max(280, 'Goal must not exceed 280 characters'),
   githubUsername: z.string().optional(),
   twitterUsername: z.string().optional(),
@@ -28,7 +28,7 @@ const applicationSchema = z.object({
  * - User must be authenticated
  * - User must be in 'incomplete' status (onboarding not yet submitted)
  * - Program must exist and be active
- * - Goal must be 140-280 characters
+ * - Goal must be 1-280 characters
  *
  * Transaction flow:
  * 1. Create application record

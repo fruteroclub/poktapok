@@ -16,7 +16,7 @@ Transform Frutero's onboarding into a program-based application system where use
 **Key Features:**
 - Application-based onboarding with admin review
 - Program selection during signup (3 programs)
-- Goal commitment (140-280 characters)
+- Goal commitment (1-280 characters)
 - Club Guest status for platform access before approval
 - Social account linking (GitHub, Twitter)
 - Attendance tracking (admin-marked)

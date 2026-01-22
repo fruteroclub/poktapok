@@ -16,13 +16,12 @@ import {
   MessageCircle
 } from 'lucide-react'
 import { UserInfoForm } from './user-info-form'
-import { ProgramSelector } from './program-selector'
 import { GoalInput } from './goal-input'
 import { SocialAccountsFormEnhanced } from './social-accounts-form-enhanced'
 import { useSubmitApplication } from '@/hooks/use-onboarding'
 import { usePrivy } from '@privy-io/react-auth'
 
-type OnboardingStep = 'userInfo' | 'program' | 'goal' | 'social' | 'review'
+type OnboardingStep = 'userInfo' | 'goal' | 'social' | 'review'
 
 interface FormData {
   // User Info
@@ -31,9 +30,6 @@ interface FormData {
   email: string
   displayName: string
   bio: string
-
-  // Program
-  programId: string
 
   // Goal
   goal: string
@@ -45,7 +41,7 @@ interface FormData {
   telegramUsername: string
 }
 
-type FormErrors = Partial<Record<keyof FormData | 'programId', string>>
+type FormErrors = Partial<Record<keyof FormData, string>>
 
 export default function MultiStepOnboardingFormEnhanced() {
   const router = useRouter()
@@ -61,9 +57,6 @@ export default function MultiStepOnboardingFormEnhanced() {
     displayName: '',
     bio: '',
 
-    // Program
-    programId: '',
-
     // Goal
     goal: '',
 
@@ -78,12 +71,11 @@ export default function MultiStepOnboardingFormEnhanced() {
 
   // Step configuration - memoized to prevent recreation
   const steps = useMemo<OnboardingStep[]>(() =>
-    ['userInfo', 'program', 'goal', 'social', 'review'], []
+    ['userInfo', 'goal', 'social', 'review'], []
   )
 
   const stepTitles = useMemo<Record<OnboardingStep, string>>(() => ({
     userInfo: 'Tu Información',
-    program: 'Elige tu Programa',
     goal: 'Define tu Meta',
     social: 'Conecta tus Cuentas',
     review: 'Revisa y Envía',
@@ -120,15 +112,6 @@ export default function MultiStepOnboardingFormEnhanced() {
       newErrors.bio = 'La biografía no puede exceder 280 caracteres'
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const validateProgramStep = (): boolean => {
-    const newErrors: FormErrors = {}
-    if (!formData.programId) {
-      newErrors.programId = 'Debes seleccionar un programa'
-    }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -171,9 +154,6 @@ export default function MultiStepOnboardingFormEnhanced() {
     switch (currentStep) {
       case 'userInfo':
         isValid = validateUserInfoStep()
-        break
-      case 'program':
-        isValid = validateProgramStep()
         break
       case 'goal':
         isValid = validateGoalStep()
@@ -237,7 +217,6 @@ export default function MultiStepOnboardingFormEnhanced() {
       // Step 3: Submit application
       submitMutation.mutate(
         {
-          programId: formData.programId,
           goal: formData.goal,
           githubUsername: formData.githubUsername || undefined,
           twitterUsername: formData.twitterUsername || undefined,
@@ -285,10 +264,6 @@ export default function MultiStepOnboardingFormEnhanced() {
   }, [])
 
   // Memoized handlers for child components
-  const handleProgramChange = useCallback((programId: string) => {
-    setFormData((prev) => ({ ...prev, programId }))
-  }, [])
-
   const handleGoalChange = useCallback((goal: string) => {
     setFormData((prev) => ({ ...prev, goal }))
   }, [])
@@ -317,15 +292,6 @@ export default function MultiStepOnboardingFormEnhanced() {
               email: user?.email?.address,
               ethAddress: user?.wallet?.address as `0x${string}` | undefined,
             }}
-          />
-        )
-
-      case 'program':
-        return (
-          <ProgramSelector
-            value={formData.programId}
-            onChange={handleProgramChange}
-            error={errors.programId}
           />
         )
 

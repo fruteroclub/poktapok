@@ -8,7 +8,7 @@ import { apiSuccess, apiError, apiValidationError, apiErrors } from '@/lib/api/r
 
 // Validation schema for application submission
 const applicationSchema = z.object({
-  programId: z.string().uuid('Invalid program ID'),
+  programId: z.string().uuid('Invalid program ID').optional(),
   goal: z
     .string()
     .min(140, 'Goal must be at least 140 characters')
@@ -78,15 +78,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Verify program exists and is active
-    const [program] = await db
-      .select()
-      .from(programs)
-      .where(and(eq(programs.id, programId), eq(programs.isActive, true)))
-      .limit(1)
+    // Verify program exists and is active (only if programId is provided)
+    if (programId) {
+      const [program] = await db
+        .select()
+        .from(programs)
+        .where(and(eq(programs.id, programId), eq(programs.isActive, true)))
+        .limit(1)
 
-    if (!program) {
-      return apiErrors.notFound('Program')
+      if (!program) {
+        return apiErrors.notFound('Program')
+      }
     }
 
     // Check for existing application (shouldn't happen, but safety check)
@@ -110,7 +112,7 @@ export async function POST(request: NextRequest) {
         .insert(applications)
         .values({
           userId: authUser.userId,
-          programId,
+          programId: programId || null,
           goal,
           githubUsername: githubUsername || null,
           twitterUsername: twitterUsername || null,

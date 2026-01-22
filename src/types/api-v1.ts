@@ -375,7 +375,7 @@ export interface Application {
  * Request for POST /api/applications
  */
 export interface SubmitApplicationRequest {
-  programId: string
+  programId?: string
   goal: string
   githubUsername?: string
   twitterUsername?: string

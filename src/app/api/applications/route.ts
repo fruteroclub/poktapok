@@ -13,6 +13,10 @@ const applicationSchema = z.object({
     .string()
     .min(1, 'Goal is required')
     .max(280, 'Goal must not exceed 280 characters'),
+  motivationText: z
+    .string()
+    .min(1, 'Motivation is required')
+    .max(500, 'Motivation must not exceed 500 characters'),
   githubUsername: z.string().optional(),
   twitterUsername: z.string().optional(),
   linkedinUrl: z.string().url('Invalid LinkedIn URL').optional().or(z.literal('')),
@@ -55,8 +59,15 @@ export async function POST(request: NextRequest) {
       return apiValidationError(result.error)
     }
 
-    const { programId, goal, githubUsername, twitterUsername, linkedinUrl, telegramUsername } =
-      result.data
+    const {
+      programId,
+      goal,
+      motivationText,
+      githubUsername,
+      twitterUsername,
+      linkedinUrl,
+      telegramUsername,
+    } = result.data
 
     // Fetch full user record to check status
     const [user] = await db
@@ -114,10 +125,10 @@ export async function POST(request: NextRequest) {
           userId: authUser.userId,
           programId: programId || null,
           goal,
+          motivationText,
           githubUsername: githubUsername || null,
           twitterUsername: twitterUsername || null,
           status: 'pending',
-          motivationText: goal, // Use goal as motivation text for now
         })
         .returning()
 

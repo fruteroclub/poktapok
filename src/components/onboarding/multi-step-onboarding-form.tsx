@@ -16,6 +16,7 @@ type OnboardingStep = 'program' | 'goal' | 'social' | 'review'
 interface FormData {
   programId: string
   goal: string
+  motivationText: string
   githubUsername: string
   twitterUsername: string
   linkedinUrl: string
@@ -34,6 +35,7 @@ export default function MultiStepOnboardingForm() {
   const [formData, setFormData] = useState<FormData>({
     programId: '',
     goal: '',
+    motivationText: '',
     githubUsername: '',
     twitterUsername: '',
     linkedinUrl: '',
@@ -69,6 +71,11 @@ export default function MultiStepOnboardingForm() {
       newErrors.goal = 'La meta es requerida'
     } else if (formData.goal.length > 280) {
       newErrors.goal = 'La meta no puede exceder 280 caracteres'
+    }
+    if (!formData.motivationText.trim()) {
+      newErrors.motivationText = 'Este campo es requerido'
+    } else if (formData.motivationText.length > 500) {
+      newErrors.motivationText = 'No puede exceder 500 caracteres'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -123,6 +130,7 @@ export default function MultiStepOnboardingForm() {
       {
         programId: formData.programId,
         goal: formData.goal,
+        motivationText: formData.motivationText,
         githubUsername: formData.githubUsername || undefined,
         twitterUsername: formData.twitterUsername || undefined,
         linkedinUrl: formData.linkedinUrl || undefined,
@@ -168,9 +176,14 @@ export default function MultiStepOnboardingForm() {
         {/* Goal Step */}
         <div className={currentStep === 'goal' ? 'block' : 'hidden'}>
           <GoalInput
-            value={formData.goal}
-            onChange={(goal) => setFormData((prev) => ({ ...prev, goal }))}
-            error={errors.goal}
+            goal={formData.goal}
+            onGoalChange={(goal) => setFormData((prev) => ({ ...prev, goal }))}
+            goalError={errors.goal}
+            motivationText={formData.motivationText}
+            onMotivationChange={(motivationText) =>
+              setFormData((prev) => ({ ...prev, motivationText }))
+            }
+            motivationError={errors.motivationText}
           />
         </div>
 
@@ -203,6 +216,12 @@ export default function MultiStepOnboardingForm() {
             <div className="space-y-3 rounded-lg border p-4">
               <h4 className="font-semibold">Meta</h4>
               <p className="text-sm">{formData.goal}</p>
+            </div>
+
+            {/* Motivation summary */}
+            <div className="space-y-3 rounded-lg border p-4">
+              <h4 className="font-semibold">¿Por qué quieres unirte?</h4>
+              <p className="text-sm">{formData.motivationText}</p>
             </div>
 
             {/* Social accounts summary */}

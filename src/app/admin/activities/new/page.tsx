@@ -25,6 +25,7 @@ function NewActivityPageContent() {
     title: '',
     description: '',
     instructions: '',
+    external_url: '',
     activity_type: 'github_commit',
     category: '',
     difficulty: 'beginner',
@@ -47,6 +48,7 @@ function NewActivityPageContent() {
       title: formData.title,
       description: formData.description,
       instructions: formData.instructions || undefined,
+      external_url: formData.external_url || undefined,
       activity_type: formData.activity_type,
       category: formData.category || undefined,
       difficulty: formData.difficulty,
@@ -145,6 +147,23 @@ function NewActivityPageContent() {
               rows={6}
               maxLength={5000}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="external_url">External Link (Optional)</Label>
+            <Input
+              id="external_url"
+              type="url"
+              value={formData.external_url}
+              onChange={(e) =>
+                setFormData({ ...formData, external_url: e.target.value })
+              }
+              placeholder="https://example.com/workshop-link"
+              maxLength={500}
+            />
+            <p className="text-sm text-muted-foreground">
+              Link to external resource, workshop, or tutorial
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -122,6 +122,7 @@ export const activities = pgTable(
     title: varchar('title', { length: 200 }).notNull(),
     description: text('description').notNull(),
     instructions: text('instructions'),
+    externalUrl: varchar('external_url', { length: 500 }), // Optional link to external resource
 
     // Categorization
     activityType: activityTypeEnum('activity_type').notNull(),

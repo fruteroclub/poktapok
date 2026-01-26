@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
       title: validated.title,
       description: validated.description,
       instructions: validated.instructions || null,
+      externalUrl: validated.external_url || null,
       activityType: validated.activity_type,
       category: validated.category || null,
       difficulty: validated.difficulty,

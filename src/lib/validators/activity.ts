@@ -32,6 +32,12 @@ export const createActivitySchema = z.object({
     .max(5000, 'Instructions must be at most 5000 characters')
     .optional(),
 
+  external_url: z
+    .string()
+    .url('Invalid URL format')
+    .max(500, 'URL must be at most 500 characters')
+    .optional(),
+
   activity_type: z.enum([
     'github_commit',
     'x_post',

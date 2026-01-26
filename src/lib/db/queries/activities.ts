@@ -75,6 +75,7 @@ export async function getActivities(filters: {
   search?: string
   page?: number
   limit?: number
+  includeExpired?: boolean
 }) {
   const {
     type,
@@ -84,6 +85,7 @@ export async function getActivities(filters: {
     search,
     page = 1,
     limit = 24,
+    includeExpired = false,
   } = filters
 
   const offset = (page - 1) * limit
@@ -95,6 +97,10 @@ export async function getActivities(filters: {
     difficulty && isDifficulty(difficulty) ? eq(activities.difficulty, difficulty) : undefined,
     status && isActivityStatus(status) ? eq(activities.status, status) : undefined,
     search ? ilike(activities.title, `%${search}%`) : undefined,
+    // Filter out expired activities unless includeExpired is true
+    !includeExpired
+      ? or(isNull(activities.expiresAt), gte(activities.expiresAt, new Date()))
+      : undefined,
   ]
 
   const query = db

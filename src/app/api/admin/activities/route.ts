@@ -38,10 +38,11 @@ export async function GET(req: NextRequest) {
       search: params.search,
       page: params.page,
       limit: params.limit,
+      includeExpired: true, // Admin can see expired activities
     })
 
-    // Get stats
-    const allActivities = await getActivities({ limit: 1000 })
+    // Get stats (also include expired for admin)
+    const allActivities = await getActivities({ limit: 1000, includeExpired: true })
     const stats = {
       total: allActivities.total,
       active: allActivities.activities.filter((a) => a.status === 'active')

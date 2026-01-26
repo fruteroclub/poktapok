@@ -131,7 +131,7 @@ function NewActivityPageContent() {
               required
               minLength={20}
               maxLength={2000}
-              rows={4}
+              className="h-[120px] resize-none overflow-y-auto"
             />
           </div>
 
@@ -144,8 +144,8 @@ function NewActivityPageContent() {
                 setFormData({ ...formData, instructions: e.target.value })
               }
               placeholder="1. Create a GitHub account&#10;2. Create a new repository&#10;3. Make your first commit..."
-              rows={6}
               maxLength={5000}
+              className="h-[180px] resize-none overflow-y-auto"
             />
           </div>
 

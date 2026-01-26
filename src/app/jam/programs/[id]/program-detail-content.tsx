@@ -243,7 +243,7 @@ export function ProgramDetailContent({ programId }: ProgramDetailContentProps) {
                       </div>
                       <div className="mt-3 flex items-center gap-2">
                         <Trophy className="size-4 text-amber-500" />
-                        <span className="text-sm font-medium">{activity.rewardPulpaAmount} $PULPA</span>
+                        <span className="text-sm font-medium">{Math.floor(Number(activity.rewardPulpaAmount))} $PULPA</span>
                       </div>
                     </Card>
                   )

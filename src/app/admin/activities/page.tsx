@@ -190,7 +190,7 @@ function AdminActivitiesPageContent() {
                     <TableCell className="capitalize">
                       {activity.difficulty}
                     </TableCell>
-                    <TableCell>{activity.rewardPulpaAmount} $PULPA</TableCell>
+                    <TableCell>{Math.floor(Number(activity.rewardPulpaAmount))} $PULPA</TableCell>
                     <TableCell>
                       {activity.currentSubmissionsCount}
                       {activity.totalAvailableSlots &&

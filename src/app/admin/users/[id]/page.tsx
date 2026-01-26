@@ -453,7 +453,7 @@ export default function UserDetailPage({
                     <div className="flex items-center gap-2">
                       {submission.rewardPulpaAmount && (
                         <span className="text-sm">
-                          {submission.rewardPulpaAmount} $PULPA
+                          {Math.floor(Number(submission.rewardPulpaAmount))} $PULPA
                         </span>
                       )}
                       <Badge variant={getStatusVariant(submission.status)}>

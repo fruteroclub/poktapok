@@ -46,7 +46,7 @@ export function ActivityCard({ activity, showStats = true }: ActivityCardProps) 
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <Trophy className="size-4 text-amber-500" />
-              <span className="font-medium">{activity.rewardPulpaAmount} $PULPA</span>
+              <span className="font-medium">{Math.floor(Number(activity.rewardPulpaAmount))} $PULPA</span>
             </div>
 
             {showStats && (

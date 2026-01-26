@@ -211,7 +211,7 @@ function AdminSubmissionsPageContent() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {item.submission.rewardPulpaAmount} $PULPA
+                      {Math.floor(Number(item.submission.rewardPulpaAmount))} $PULPA
                     </TableCell>
                     <TableCell>
                       {getStatusBadge(item.submission.status)}
@@ -299,7 +299,7 @@ function AdminSubmissionsPageContent() {
 
               <div>
                 <h3 className="mb-2 font-semibold">Reward Amount</h3>
-                <p>{selectedSubmission.submission.rewardPulpaAmount} $PULPA</p>
+                <p>{Math.floor(Number(selectedSubmission.submission.rewardPulpaAmount))} $PULPA</p>
               </div>
 
               <div>

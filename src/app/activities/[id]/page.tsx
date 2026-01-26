@@ -154,7 +154,7 @@ export default function ActivityDetailPage() {
               <div className="mb-4 flex items-start justify-between gap-4">
                 <CardTitle className="text-3xl">{activity.title}</CardTitle>
                 <Badge className="shrink-0 bg-purple-600 px-4 py-1 text-lg text-white">
-                  {activity.rewardPulpaAmount} $PULPA
+                  {Math.floor(Number(activity.rewardPulpaAmount))} $PULPA
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -263,7 +263,7 @@ export default function ActivityDetailPage() {
                 <CardTitle>Submit Your Work</CardTitle>
                 <CardDescription>
                   Provide evidence of your completion to earn{' '}
-                  {activity.rewardPulpaAmount} $PULPA
+                  {Math.floor(Number(activity.rewardPulpaAmount))} $PULPA
                 </CardDescription>
               </CardHeader>
               <CardContent>

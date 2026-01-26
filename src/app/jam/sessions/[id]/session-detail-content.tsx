@@ -290,7 +290,7 @@ export function SessionDetailContent({ sessionId }: SessionDetailContentProps) {
                         <div className="flex items-center gap-2">
                           <Trophy className="size-4 text-amber-500" />
                           <span className="text-sm font-medium">
-                            {activity.rewardPulpaAmount} $PULPA
+                            {Math.floor(Number(activity.rewardPulpaAmount))} $PULPA
                           </span>
                         </div>
                         <Badge variant="outline" className="text-xs">

@@ -214,7 +214,7 @@ export default function ActivitiesPage() {
                         {activity.title}
                       </CardTitle>
                       <Badge className="shrink-0 bg-purple-600 text-white">
-                        {Number(activity.rewardPulpaAmount)} $PULPA
+                        {Math.floor(Number(activity.rewardPulpaAmount))} $PULPA
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-2">

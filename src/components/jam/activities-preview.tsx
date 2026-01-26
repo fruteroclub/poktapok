@@ -77,7 +77,7 @@ export function ActivitiesPreview({
               {/* Reward */}
               <div className="mt-4 flex items-center gap-2 text-lg font-semibold text-primary">
                 <Coins className="size-5" />
-                <span>{activity.rewardPulpaAmount} $PULPA</span>
+                <span>{Math.floor(Number(activity.rewardPulpaAmount))} $PULPA</span>
               </div>
 
               {/* Type */}

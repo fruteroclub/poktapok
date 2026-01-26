@@ -160,7 +160,7 @@ export function ActivityDetailContent({ activityId }: ActivityDetailContentProps
             <div className="flex items-center gap-3">
               <Trophy className="size-8 text-amber-500" />
               <div>
-                <p className="text-2xl font-bold">{activity.rewardPulpaAmount} $PULPA</p>
+                <p className="text-2xl font-bold">{Math.floor(Number(activity.rewardPulpaAmount))} $PULPA</p>
                 <p className="text-sm text-muted-foreground">Recompensa</p>
               </div>
             </div>

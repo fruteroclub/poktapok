@@ -1,0 +1,332 @@
+{
+  "version": 1,
+  "updated": 1769468559782,
+  "files": {
+    "/home/scarf/frutero/poktapok/src/app/admin/activities/[id]/page.tsx": {
+      "exports": [
+        "default",
+        "async"
+      ],
+      "imports": [
+        "next/navigation"
+      ],
+      "indexed": 1769456161918
+    },
+    "/home/scarf/frutero/poktapok/src/lib/db/queries/activities.ts": {
+      "exports": [
+        "getActivities",
+        "getActivityById",
+        "createActivity",
+        "updateActivity",
+        "deleteActivity",
+        "incrementActivitySubmissionCount",
+        "getSubmissions",
+        "getSubmissionById",
+        "hasUserSubmitted",
+        "createSubmission",
+        "updateSubmission",
+        "getUserSubmissionStats",
+        "getDistributions",
+        "createDistribution",
+        "updateDistribution",
+        "getPendingDistributions",
+        "updateUserPulpaStats"
+      ],
+      "imports": [
+        "@/lib/db",
+        "@/lib/db/schema",
+        "drizzle-orm"
+      ],
+      "indexed": 1769456726186
+    },
+    "/home/scarf/frutero/poktapok/src/app/api/admin/activities/route.ts": {
+      "exports": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/db/queries/activities",
+        "@/lib/validators/activity",
+        "@/lib/auth/middleware"
+      ],
+      "indexed": 1769457514745
+    },
+    "/home/scarf/frutero/poktapok/drizzle/schema/activities.ts": {
+      "exports": [
+        "activityTypeEnum",
+        "difficultyEnum",
+        "verificationEnum",
+        "activityStatusEnum",
+        "submissionStatusEnum",
+        "distributionMethodEnum",
+        "distributionStatusEnum",
+        "activities",
+        "activitySubmissions",
+        "pulpaDistributions",
+        "Activity",
+        "NewActivity",
+        "ActivitySubmission",
+        "NewActivitySubmission",
+        "PulpaDistribution",
+        "NewPulpaDistribution",
+        "EvidenceRequirements",
+        "EvidenceFile"
+      ],
+      "imports": [
+        "drizzle-orm/pg-core",
+        "drizzle-orm",
+        "./utils",
+        "./users"
+      ],
+      "indexed": 1769457204431
+    },
+    "/home/scarf/frutero/poktapok/src/app/admin/activities/new/page.tsx": {
+      "exports": [
+        "default",
+        "NewActivityPage"
+      ],
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/components/ui/button",
+        "@/components/ui/input",
+        "@/components/ui/label",
+        "@/components/ui/textarea",
+        "@/components/ui/select",
+        "@/components/ui/checkbox",
+        "@/components/layout/admin-route-wrapper",
+        "@/hooks/use-activities",
+        "sonner"
+      ],
+      "indexed": 1769458078244
+    },
+    "/home/scarf/frutero/poktapok/src/lib/validators/activity.ts": {
+      "exports": [
+        "evidenceRequirementsSchema",
+        "createActivitySchema",
+        "updateActivitySchema",
+        "updateActivityStatusSchema",
+        "evidenceFileSchema",
+        "submitActivitySchema",
+        "approveSubmissionSchema",
+        "rejectSubmissionSchema",
+        "requestRevisionSchema",
+        "createDistributionSchema",
+        "updateDistributionSchema",
+        "listActivitiesQuerySchema",
+        "listSubmissionsQuerySchema",
+        "listDistributionsQuerySchema",
+        "CreateActivityInput",
+        "UpdateActivityInput",
+        "UpdateActivityStatusInput",
+        "SubmitActivityInput",
+        "ApproveSubmissionInput",
+        "RejectSubmissionInput",
+        "RequestRevisionInput",
+        "CreateDistributionInput",
+        "UpdateDistributionInput",
+        "ListActivitiesQuery",
+        "ListSubmissionsQuery",
+        "ListDistributionsQuery"
+      ],
+      "imports": [
+        "zod"
+      ],
+      "indexed": 1769457482328
+    },
+    "/home/scarf/frutero/poktapok/src/app/admin/submissions/page.tsx": {
+      "exports": [
+        "default",
+        "AdminSubmissionsPage"
+      ],
+      "imports": [
+        "react",
+        "@/components/ui/button",
+        "@/components/ui/badge",
+        "@/components/ui/textarea",
+        "lucide-react",
+        "@/components/ui/select",
+        "@/components/ui/table",
+        "@/components/ui/dialog",
+        "@/components/ui/card",
+        "@/components/layout/admin-route-wrapper",
+        "@/hooks/use-submissions",
+        "sonner"
+      ],
+      "indexed": 1769468559782
+    },
+    "/home/scarf/frutero/poktapok/src/components/club/activity-card.tsx": {
+      "exports": [
+        "ActivityCard"
+      ],
+      "imports": [
+        "next/link",
+        "lucide-react",
+        "@/components/ui/card",
+        "@/components/ui/badge"
+      ],
+      "indexed": 1769464603206
+    },
+    "/home/scarf/frutero/poktapok/src/components/jam/activities-preview.tsx": {
+      "exports": [
+        "ActivitiesPreview"
+      ],
+      "imports": [
+        "next/link",
+        "@/components/ui/button",
+        "@/components/ui/card",
+        "@/components/ui/badge",
+        "lucide-react"
+      ],
+      "indexed": 1769464633152
+    },
+    "/home/scarf/frutero/poktapok/src/app/admin/users/[id]/page.tsx": {
+      "exports": [
+        "default",
+        "UserDetailPage"
+      ],
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/hooks/use-user-management",
+        "@/hooks/use-auth",
+        "@/components/ui/card",
+        "@/components/ui/badge",
+        "@/components/ui/avatar",
+        "@/components/ui/button",
+        "@/components/ui/dialog",
+        "@/components/ui/select",
+        "@/components/ui/label",
+        "@/components/ui/textarea",
+        "lucide-react",
+        "sonner",
+        "@/components/layout/section"
+      ],
+      "indexed": 1769464952927
+    },
+    "/home/scarf/frutero/poktapok/src/app/club/activities/[id]/activity-detail-content.tsx": {
+      "exports": [
+        "ActivityDetailContent"
+      ],
+      "imports": [
+        "react",
+        "lucide-react",
+        "next/navigation",
+        "@/components/layout/page-wrapper",
+        "@/components/ui/button",
+        "@/components/ui/card",
+        "@/components/ui/badge",
+        "@/components/ui/skeleton",
+        "@/components/ui/input",
+        "@/components/ui/textarea",
+        "@/components/ui/alert",
+        "@/hooks/use-activities",
+        "@privy-io/react-auth",
+        "sonner"
+      ],
+      "indexed": 1769464977770
+    },
+    "/home/scarf/frutero/poktapok/src/app/admin/activities/page.tsx": {
+      "exports": [
+        "default",
+        "AdminActivitiesPage"
+      ],
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/components/ui/button",
+        "@/components/ui/input",
+        "@/components/ui/badge",
+        "lucide-react",
+        "@/components/ui/select",
+        "@/components/ui/table",
+        "@/components/ui/card",
+        "@/components/layout/admin-route-wrapper",
+        "@/hooks/use-activities"
+      ],
+      "indexed": 1769465001960
+    },
+    "/home/scarf/frutero/poktapok/src/app/activities/[id]/page.tsx": {
+      "exports": [
+        "default",
+        "ActivityDetailPage"
+      ],
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/components/ui/button",
+        "@/components/ui/input",
+        "@/components/ui/label",
+        "@/components/ui/textarea",
+        "@/components/ui/badge",
+        "@/components/ui/card",
+        "@/components/ui/checkbox",
+        "@/components/layout/page-wrapper",
+        "@/hooks/use-activities",
+        "sonner"
+      ],
+      "indexed": 1769465262931
+    },
+    "/home/scarf/frutero/poktapok/src/app/activities/page.tsx": {
+      "exports": [
+        "default",
+        "ActivitiesPage"
+      ],
+      "imports": [
+        "react",
+        "next/navigation",
+        "@/components/ui/button",
+        "@/components/ui/badge",
+        "@/components/ui/input",
+        "lucide-react",
+        "@/components/ui/select",
+        "@/components/ui/card",
+        "@/hooks",
+        "@/components/layout/page-wrapper",
+        "@/hooks/use-activities"
+      ],
+      "indexed": 1769465350992
+    },
+    "/home/scarf/frutero/poktapok/src/app/jam/sessions/[id]/session-detail-content.tsx": {
+      "exports": [
+        "SessionDetailContent"
+      ],
+      "imports": [
+        "lucide-react",
+        "next/navigation",
+        "@/components/layout/page-wrapper",
+        "@/components/ui/button",
+        "@/components/ui/card",
+        "@/components/ui/badge",
+        "@/components/ui/skeleton",
+        "@/components/ui/alert",
+        "@/hooks/use-sessions",
+        "@privy-io/react-auth",
+        "date-fns",
+        "date-fns/locale"
+      ],
+      "indexed": 1769465491101
+    },
+    "/home/scarf/frutero/poktapok/src/app/jam/programs/[id]/program-detail-content.tsx": {
+      "exports": [
+        "ProgramDetailContent"
+      ],
+      "imports": [
+        "lucide-react",
+        "next/link",
+        "next/navigation",
+        "@/components/layout/page-wrapper",
+        "@/components/ui/button",
+        "@/components/ui/card",
+        "@/components/ui/badge",
+        "@/components/ui/skeleton",
+        "@/hooks/use-programs",
+        "@privy-io/react-auth",
+        "date-fns",
+        "date-fns/locale"
+      ],
+      "indexed": 1769465721515
+    }
+  }
+}

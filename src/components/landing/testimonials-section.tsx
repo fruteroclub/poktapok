@@ -45,7 +45,7 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="section grid gap-6 lg:grid-cols-3">
+        <div className="section grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <Card key={index}>
               <CardContent>
@@ -57,13 +57,12 @@ export default function TestimonialsSection() {
 
                 <div className="mb-4 flex items-center space-x-4">
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                      testimonial.color === 'green'
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${testimonial.color === 'green'
                         ? 'bg-accent'
                         : testimonial.color === 'blue'
                           ? 'bg-blue-500'
                           : 'bg-secondary'
-                    }`}
+                      }`}
                   >
                     <span className="text-sm font-bold text-white">
                       {testimonial.name

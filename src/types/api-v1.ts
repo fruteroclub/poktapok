@@ -569,7 +569,7 @@ export interface GetApplicationDetailResponse {
   application: Application
   user: User
   profile: Profile | null
-  program: Program
+  program: Program | null
   reviewer: {
     id: string
     username: string | null

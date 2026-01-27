@@ -62,6 +62,10 @@ export function ApplicationDetailDrawer({
     return (
       <Sheet open={open} onOpenChange={onClose}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+          <SheetHeader>
+            <SheetTitle>Application Review</SheetTitle>
+            <SheetDescription>Loading application details...</SheetDescription>
+          </SheetHeader>
           <div className="flex h-full items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin" />
           </div>
@@ -138,15 +142,17 @@ export function ApplicationDetailDrawer({
           )}
 
           {/* Program */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold">Program</h3>
-            <p className="text-sm font-medium">{program.name}</p>
-            {program.description && (
-              <p className="text-sm text-muted-foreground">
-                {program.description}
-              </p>
-            )}
-          </div>
+          {program && (
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold">Program</h3>
+              <p className="text-sm font-medium">{program.name}</p>
+              {program.description && (
+                <p className="text-sm text-muted-foreground">
+                  {program.description}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Goal */}
           <div className="space-y-2">

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
 import Image from 'next/image'
@@ -32,8 +33,13 @@ export default function HeroCarousel({ className }: HeroCarouselProps) {
     ],
   )
 
-  // Shuffle images on mount for random order
-  const shuffledImages = [...HERO_IMAGES].sort(() => Math.random() - 0.5)
+  // Use stable order for SSR, shuffle only on client after mount
+  const [images, setImages] = useState(HERO_IMAGES)
+
+  useEffect(() => {
+    // Shuffle images after client-side mount to avoid hydration mismatch
+    setImages([...HERO_IMAGES].sort(() => Math.random() - 0.5))
+  }, [])
 
   return (
     <div className={cn('overflow-hidden', className)}>
@@ -42,7 +48,7 @@ export default function HeroCarousel({ className }: HeroCarouselProps) {
         className="overflow-hidden rounded-xl border-2 bg-card shadow-sm"
       >
         <div className="flex h-full">
-          {shuffledImages.map((image, index) => (
+          {images.map((image, index) => (
             <div
               key={index}
               className="relative min-w-0 shrink-0 grow-0 basis-full"

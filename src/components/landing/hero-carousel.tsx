@@ -42,27 +42,22 @@ export default function HeroCarousel({ className }: HeroCarouselProps) {
   }, [])
 
   return (
-    <div className={cn('overflow-hidden', className)}>
-      <div
-        ref={emblaRef}
-        className="overflow-hidden rounded-xl border-2 bg-card shadow-sm"
-      >
+    <div className={cn('overflow-hidden rounded-xl border-2 bg-card shadow-sm', className)}>
+      <div ref={emblaRef} className="overflow-hidden h-full">
         <div className="flex h-full">
           {images.map((image, index) => (
             <div
               key={index}
-              className="relative min-w-0 shrink-0 grow-0 basis-full"
+              className="relative min-w-0 shrink-0 grow-0 basis-full h-full"
             >
-              <div className="relative h-full w-full">
-                <Image
-                  src={image}
-                  alt={`Community event ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority={index === 0}
-                />
-              </div>
+              <Image
+                src={image}
+                alt={`Community event ${index + 1}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority={index === 0}
+              />
             </div>
           ))}
         </div>

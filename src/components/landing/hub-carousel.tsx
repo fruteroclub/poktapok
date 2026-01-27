@@ -12,9 +12,9 @@ interface HubCarouselProps {
 
 // Casa Frutero images from public/images/landing/casa-frutero/
 const HUB_IMAGES = [
-  '/images/landing/casa-frutero/coworking-office.heif',
-  '/images/landing/casa-frutero/coworking-open-space.HEIC',
-  '/images/landing/casa-frutero/coworking-sala-juntas.heif',
+  '/images/landing/casa-frutero/coworking-office.jpg',
+  '/images/landing/casa-frutero/coworking-open-space.jpg',
+  '/images/landing/casa-frutero/coworking-sala-juntas.jpg',
 ]
 
 export default function HubCarousel({ className }: HubCarouselProps) {

@@ -1,6 +1,7 @@
 import { Button } from '../ui/button'
 import { Calendar, Coffee, MessageSquare, Wrench } from 'lucide-react'
 import Link from 'next/link'
+import HubCarousel from './hub-carousel'
 
 export default function HubV2Section() {
   const activities = [
@@ -14,21 +15,51 @@ export default function HubV2Section() {
     <section id="hub-section" className="page bg-primary py-20 md:py-28">
       <div className="page-content">
         <div className="mx-auto max-w-5xl space-y-16">
-          {/* Headline */}
-          <div className="space-y-6 text-center">
-            <h2 className="text-3xl font-black text-white md:text-4xl lg:text-5xl">
-              El tercer{' '}
-              <span className="inline-block -rotate-2 transform rounded-lg bg-muted px-4 py-2 text-background shadow-lg">
-                espacio
-              </span>
-            </h2>
-            <div className="mx-auto max-w-4xl rounded-2xl bg-white/95 p-6 shadow-lg">
-              <p className="text-lg leading-relaxed text-foreground md:text-xl">
-                No existía un lugar en CDMX para incubar ideas. Un espacio donde pudieras llegar con algo roto, trabajar junto a otros hackers, y salir con algo funcionando.
-              </p>
-              <p className="mt-4 text-xl font-black text-primary md:text-2xl">
-                Lo construimos.
-              </p>
+          {/* Mobile/Tablet: Headline then Carousel */}
+          <div className="flex flex-col gap-8 lg:hidden">
+            {/* Headline */}
+            <div id="hub-headline" className="space-y-6 text-center">
+            <div className="space-y-2">
+              <h2><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-muted px-4 py-2 text-background shadow-lg">Casa Frutero</span></h2>
+              <h3 className="text-3xl font-semibold text-foreground md:text-4xl">
+                Impact Tech Hub
+              </h3>
+            </div>
+              <div className="mx-auto max-w-4xl rounded-2xl bg-white/95 p-6 shadow-lg">
+                <p className="text-lg leading-relaxed text-foreground md:text-xl">
+                  No existía un lugar en CDMX para incubar ideas. Un espacio donde pudieras llegar con algo roto, trabajar junto a otros hackers, y salir con algo funcionando.
+                </p>
+                <p className="mt-4 text-xl font-black text-primary md:text-2xl">
+                  Lo construimos.
+                </p>
+              </div>
+            </div>
+
+            {/* Carousel */}
+            <HubCarousel className="h-64 md:h-96" />
+          </div>
+
+          {/* Desktop (lg+): Two column layout - Carousel left, Headline right */}
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+            {/* Left: Carousel */}
+            <HubCarousel className="h-[500px]" />
+
+            {/* Right: Headline */}
+            <div id="hub-headline" className="space-y-6 text-center">
+              <div className="space-y-2">
+                <h2><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-muted px-4 py-2 text-background shadow-lg">Casa Frutero</span></h2>
+                <h3 className="text-3xl font-semibold text-foreground lg:text-4xl">
+                  Impact Tech Hub
+                </h3>
+              </div>
+              <div className="mx-auto max-w-4xl rounded-2xl bg-white/95 p-6 shadow-lg">
+                <p className="text-lg leading-relaxed text-foreground lg:text-xl">
+                  No existía un lugar en CDMX para incubar ideas. Un espacio donde pudieras llegar con algo roto, trabajar junto a otros hackers, y salir con algo funcionando.
+                </p>
+                <p className="mt-4 text-xl font-black text-primary lg:text-2xl">
+                  Lo construimos.
+                </p>
+              </div>
             </div>
           </div>
 

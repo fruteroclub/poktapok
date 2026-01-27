@@ -2,13 +2,14 @@
 
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { SparkleIcon } from 'lucide-react'
+import { SparkleIcon, SparklesIcon } from 'lucide-react'
+import AuthButtonPrivy from '../buttons/auth-button-privy'
 
 export default function FooterSection() {
   return (
-    <div className="page">
-      <div className="page-content">
-        <div className="w-full space-y-4 rounded-xl bg-primary px-8 py-12 text-center text-white md:max-w-screen-sm md:py-16">
+    <div className="page-content">
+      <div className="page">
+        <div className="w-full space-y-4 rounded-xl bg-primary px-8 py-12 text-center text-white md:max-w-lg lg:max-w-2xl md:py-16">
           {/* Mascotas */}
           <div className="flex justify-center space-x-8">
             <Image
@@ -26,13 +27,13 @@ export default function FooterSection() {
           </div>
 
           <div className="flex justify-center">
-            <Button
+            <AuthButtonPrivy
               size="lg"
-              className="flex w-full items-center gap-x-2 rounded-full bg-white px-8 py-4 text-lg font-bold text-foreground hover:bg-muted hover:text-background md:w-1/2"
+              className="text-2xl font-medium flex w-full items-center gap-x-1 rounded-full bg-white px-8 py-4 text-foreground hover:bg-muted hover:text-background md:w-1/2"
             >
-              <SparkleIcon className="h-5 w-5 fill-primary text-primary" />
-              ¡Únete ya!
-            </Button>
+              Únete
+              <SparklesIcon className="h-5 w-5 fill-primary text-primary" />
+            </AuthButtonPrivy>
           </div>
         </div>
       </div>

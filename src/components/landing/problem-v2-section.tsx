@@ -17,7 +17,7 @@ export default function ProblemV2Section() {
     <section id="problem-section" className="page py-8 md:pt-12">
 
       <div className="page-content">
-        <Section className="space-y-8 text-center">
+        <Section className="space-y-6 text-center">
           <h2 className="text-3xl text-foreground md:text-4xl">
             Ya viste el potencial de la IA<br /> ¿<span className="subrayado underline-offset-8">Y ahora qué</span>?
           </h2>

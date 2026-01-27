@@ -1,9 +1,10 @@
+import { Section } from '../layout/section'
 import HeroCTAButtons from './cta-buttons'
 import HeroCarousel from './hero-carousel'
 
 export default function HeroSection() {
   return (
-    <div className="min-h-[65svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16">
+    <div className="min-h-[65svh] w-full pt-12 pb-8 md:pt-20 lg:pt-16 xl:pt-20">
       <div className="page-content mx-auto px-4">
         {/* Mobile/Tablet: Single column layout */}
         <div className="flex flex-col gap-6 lg:hidden">
@@ -41,7 +42,7 @@ export default function HeroSection() {
         </div>
 
         {/* Desktop (lg+): Two column layout */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+        <Section className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
           {/* Left: Content */}
           <div className="space-y-6 text-center">
             {/* Título Principal */}
@@ -57,10 +58,10 @@ export default function HeroSection() {
               </h1>
             </div>
             <div className="space-y-4">
-              <h3 className="text-3xl text-foreground font-medium">
+              <h3 className="text-2xl text-foreground font-medium">
                 Aprende, construye y <span className="subrayado underline-offset-8">gana</span><br /> con la mejor comunidad tech de LATAM:
               </h3>
-              <p className="text-3xl text-foreground font-medium">
+              <p className="text-2xl text-foreground font-medium">
                 Hackers, builders, founders y creadores
               </p>
             </div>
@@ -73,7 +74,7 @@ export default function HeroSection() {
 
           {/* Right: Carousel */}
           <HeroCarousel className="h-[500px]" />
-        </div>
+        </Section>
       </div>
     </div>
   )

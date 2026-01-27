@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/accordion'
 import { Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { Section } from '../layout/section'
 
 const faqs = [
   {
@@ -57,9 +58,9 @@ export default function FAQSection() {
           </h2>
         </div>
 
-        <div className="section">
+        <Section className="w-full md:max-w-lg lg:max-w-2xl">
           <FaqAccordion />
-        </div>
+        </Section>
       </div>
     </div>
   )

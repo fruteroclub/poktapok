@@ -10,9 +10,12 @@ console.error = (...args: unknown[]) => {
   if (
     (errorString.includes('fill-rule') && errorString.includes('fillRule')) ||
     (errorString.includes('clip-rule') && errorString.includes('clipRule')) ||
-    (errorString.includes('stroke-width') && errorString.includes('strokeWidth')) ||
-    (errorString.includes('stroke-linecap') && errorString.includes('strokeLinecap')) ||
-    (errorString.includes('stroke-linejoin') && errorString.includes('strokeLinejoin'))
+    (errorString.includes('stroke-width') &&
+      errorString.includes('strokeWidth')) ||
+    (errorString.includes('stroke-linecap') &&
+      errorString.includes('strokeLinecap')) ||
+    (errorString.includes('stroke-linejoin') &&
+      errorString.includes('strokeLinejoin'))
   ) {
     return
   }
@@ -32,6 +35,16 @@ console.error = (...args: unknown[]) => {
   if (
     errorString.includes('Cross-Origin-Opener-Policy') &&
     errorString.includes('HTTP error! status: 404')
+  ) {
+    return
+  }
+
+  // Suppress Radix UI hydration mismatch warnings
+  // Radix generates random IDs that differ between SSR and CSR
+  if (
+    errorString.includes('hydration') &&
+    errorString.includes('aria-controls') &&
+    errorString.includes('radix-')
   ) {
     return
   }

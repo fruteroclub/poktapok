@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1767360549732,
+      "tag": "0000_futuristic_aaron_stack",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1767735390411,
+      "tag": "0001_flimsy_wind_dancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736200738000,
+      "tag": "0002_program_management_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736201800000,
+      "tag": "0003_onboarding_flow_social_accounts",
+      "breakpoints": true
+    }
+  ]
+}

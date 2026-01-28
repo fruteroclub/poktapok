@@ -46,7 +46,7 @@ function PainPointItem({ icon: Icon, text, color, bgColor }: PainPoint) {
     <div className="flex w-full max-w-2xl items-start gap-4 rounded-xl border-2 border-border bg-background p-6 shadow-lg">
       <div
         className={cn(
-          'flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg',
+          'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg',
           bgColor,
         )}
       >
@@ -62,7 +62,7 @@ function PainPointItem({ icon: Icon, text, color, bgColor }: PainPoint) {
 function BridgeStatement() {
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4 text-center">
-      <div className="relative rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5 p-6 shadow-lg md:p-8">
+      <div className="relative rounded-2xl border-2 border-primary/30 bg-linear-to-br from-primary/5 to-secondary/5 p-6 shadow-lg md:p-8">
         {/* Decorative corner accent */}
         <div className="absolute top-0 left-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
         <div className="absolute right-0 bottom-0 h-3 w-3 translate-x-1/2 translate-y-1/2 rounded-full bg-secondary" />
@@ -93,9 +93,9 @@ export default function PainPointsSection() {
   return (
     <section
       id="pain-points-section"
-      className="page bg-gradient-to-b from-card/30 to-card/50 py-8 md:pt-12"
+      className="page bg-linear-to-b from-card/30 to-card/50 py-8 md:pt-12"
     >
-      <div className="container space-y-6">
+      <div className="page-content">
         <div className="space-y-4 text-center">
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             ¿Te suena familiar?

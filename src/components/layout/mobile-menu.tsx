@@ -13,6 +13,8 @@ import { MenuIcon, SparkleIcon } from 'lucide-react'
 import { type MenuItemType } from './navbar'
 import AuthButton from '../buttons/auth-button-privy'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/hooks'
+import { usePrivy } from '@privy-io/react-auth'
 
 type MobileMenuProps = {
   menuItems?: MenuItemType[]
@@ -21,6 +23,9 @@ type MobileMenuProps = {
 
 export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { authenticated } = usePrivy()
+  const { data: authData } = useAuth()
+  const isSignedIn = authData?.isAuthenticated && authenticated
 
   return (
     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -37,18 +42,18 @@ export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
         </SheetDescription>
         <div className="grid gap-2 py-6">
           {menuItems?.map((menuItem, index) => (
-            <Link
-              key={`${menuItem.displayText}-menuItem-${index}`}
-              className={cn(
-                'inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none',
-                pathname === menuItem.href &&
-                  'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:!text-secondary-foreground',
-              )}
-              href={menuItem.href}
-            >
-              {menuItem.displayText}
-            </Link>
-          ))}
+              <Link
+                key={`${menuItem.displayText}-menuItem-${index}`}
+                className={cn(
+                  'inline-flex items-center justify-center px-4 py-2 text-lg font-medium text-foreground transition-colors hover:text-primary focus:text-primary focus:outline-none',
+                  pathname === menuItem.href &&
+                    'pointer-events-none underline decoration-primary decoration-[1.5px] underline-offset-[6px] hover:text-secondary-foreground!',
+                )}
+                href={menuItem.href}
+              >
+                {menuItem.displayText}
+              </Link>
+            ))}
           <div className="flex justify-center py-2">
             <AuthButton size="lg" setIsMenuOpen={setIsMenuOpen}>
               <SparkleIcon className="mr-2 -ml-2 h-4 w-4 fill-background" />{' '}

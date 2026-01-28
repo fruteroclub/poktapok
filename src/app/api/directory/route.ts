@@ -1,0 +1,131 @@
+import { NextRequest } from 'next/server'
+import {
+  getDirectoryProfiles,
+  getDirectoryProfilesCount,
+  type DirectoryFilters,
+} from '@/lib/db/queries/profiles'
+import { apiSuccess, apiError } from '@/lib/api/response'
+import { API_ERROR_CODES } from '@/types/api-response'
+
+/**
+ * GET /api/directory
+ *
+ * Public endpoint for fetching directory profiles with filters and pagination
+ *
+ * Query Parameters:
+ * - search: string (min 2 chars) - Search username, displayName, bio
+ * - track: "ai" | "crypto" | "privacy" - Filter by learning track
+ * - status: "available" | "open_to_offers" | "unavailable" - Filter by availability
+ * - country: string - Filter by country name
+ * - skills: string (comma-separated skill IDs) - Filter by skills
+ * - page: number (default: 1) - Page number for pagination
+ * - limit: number (default: 24, max: 100) - Items per page
+ *
+ * Response:
+ * {
+ *   profiles: DirectoryProfile[],
+ *   pagination: {
+ *     page: number,
+ *     limit: number,
+ *     total: number,
+ *     totalPages: number,
+ *     hasMore: boolean
+ *   }
+ * }
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+
+    // Parse and validate filters
+    const search = searchParams.get('search') || undefined
+    const learningTrack = searchParams.get('track') as
+      | 'ai'
+      | 'crypto'
+      | 'privacy'
+      | undefined
+    const availabilityStatus = searchParams.get('status') as
+      | 'available'
+      | 'open_to_offers'
+      | 'unavailable'
+      | undefined
+    const country = searchParams.get('country') || undefined
+    const skillsParam = searchParams.get('skills')
+    const skills = skillsParam
+      ? skillsParam.split(',').filter(Boolean)
+      : undefined
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(searchParams.get('limit') || '24')),
+    )
+
+    // Validate search length
+    if (search && search.length < 2) {
+      return apiError('Search query must be at least 2 characters', {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      })
+    }
+
+    // Validate enum values
+    if (learningTrack && !['ai', 'crypto', 'privacy'].includes(learningTrack)) {
+      return apiError('Invalid learning track', {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      })
+    }
+
+    if (
+      availabilityStatus &&
+      !['available', 'open_to_offers', 'unavailable'].includes(
+        availabilityStatus,
+      )
+    ) {
+      return apiError('Invalid availability status', {
+        code: API_ERROR_CODES.VALIDATION_ERROR,
+        status: 400,
+      })
+    }
+
+    const filters: DirectoryFilters = {
+      search,
+      learningTrack,
+      availabilityStatus,
+      country,
+      skills,
+      page,
+      limit,
+    }
+
+    // Fetch profiles and total count in parallel
+    const [profiles, total] = await Promise.all([
+      getDirectoryProfiles(filters),
+      getDirectoryProfilesCount(filters),
+    ])
+
+    const totalPages = Math.ceil(total / limit)
+    const hasMore = page < totalPages
+
+    return apiSuccess(
+      { profiles },
+      {
+        meta: {
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+            hasMore,
+          },
+        },
+      },
+    )
+  } catch (error) {
+    console.error('Error fetching directory profiles:', error)
+    return apiError('Failed to fetch directory profiles', {
+      code: API_ERROR_CODES.INTERNAL_ERROR,
+      status: 500,
+    })
+  }
+}

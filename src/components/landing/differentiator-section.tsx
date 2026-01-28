@@ -11,7 +11,7 @@ import AuthButtonPrivy from '../buttons/auth-button-privy'
 export default function DifferentiatorSection() {
   return (
     <section className="page bg-card/30 py-12 md:py-16 lg:py-20">
-      <div className="container">
+      <div className="page-content">
         <div className="section">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-12 lg:gap-12">
             {/* Left Column - Why Frutero & Why Now */}
@@ -71,7 +71,7 @@ export default function DifferentiatorSection() {
                   No pierdas más tiempo
                 </h3>
               </div>
-              <Card className="w-full max-w-md bg-muted py-8 text-background shadow-2xl">
+              <Card className="w-full max-w-md bg-muted py-8 text-background">
                 <CardHeader className="text-center">
                   <CardTitle className="font-funnel text-2xl font-normal md:text-3xl">
                     Atrévete a dar el
@@ -106,7 +106,7 @@ export default function DifferentiatorSection() {
                   </h4>
                   <AuthButtonPrivy
                     size="lg"
-                    className="text-2xl font-medium transition duration-300 ease-in-out hover:scale-105 lg:px-14 lg:py-6"
+                    className="text-2xl font-medium lg:px-12 lg:py-4 lg:text-xl"
                   >
                     Únete ahora
                   </AuthButtonPrivy>

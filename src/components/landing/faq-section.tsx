@@ -1,8 +1,14 @@
 'use client'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { Section } from '../layout/section'
 
 const faqs = [
   {
@@ -43,21 +49,20 @@ const faqs = [
 ]
 
 export default function FAQSection() {
-
   return (
     <div className="page">
-      <div className="container gap-y-6 lg:gap-y-8">
-        <div className="text-center space-y-2">
+      <div className="page-content gap-y-6 lg:gap-y-8">
+        <div className="space-y-2 text-center">
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">
             Preguntas frecuentes
           </h2>
         </div>
 
-        <div className="section">
+        <Section className="w-full md:max-w-lg lg:max-w-2xl">
           <FaqAccordion />
-        </div>
+        </Section>
       </div>
-    </div >
+    </div>
   )
 }
 
@@ -80,7 +85,11 @@ function FaqAccordion() {
       onValueChange={(value) => handleItemChange(value)}
     >
       {faqs.map((faq, index) => (
-        <AccordionItem className="px-4 bg-card" key={`faq-question-${index}`} value={index.toString()}>
+        <AccordionItem
+          className="bg-card px-4"
+          key={`faq-question-${index}`}
+          value={index.toString()}
+        >
           <AccordionTrigger className="w-full">
             <h4 className="w-[95%] font-funnel text-lg">{faq.question}</h4>
             <div className="flex w-[5%] justify-end">

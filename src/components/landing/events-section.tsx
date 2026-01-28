@@ -35,7 +35,7 @@ export default function EventsSection() {
 
   return (
     <section className="bg-background/50 py-20">
-      <div className="container mx-auto px-4">
+      <div className="page-content mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
             Eventos que <span className="text-primary">transforman</span>{' '}
@@ -48,7 +48,7 @@ export default function EventsSection() {
 
         {/* Featured Event */}
         <div className="mb-16">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-purple-900 to-teal-800 p-8 text-white md:p-12">
+          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-900 via-purple-900 to-teal-800 p-8 text-white md:p-12">
             <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
               {/* Título y co-hosts */}
               <div className="flex flex-1 flex-col justify-center">
@@ -106,12 +106,13 @@ export default function EventsSection() {
               >
                 <div className="mb-6 text-center">
                   <div
-                    className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${event.color === 'dark'
-                      ? 'bg-foreground'
-                      : event.color === 'blue'
-                        ? 'bg-blue-500'
-                        : 'bg-purple-500'
-                      }`}
+                    className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
+                      event.color === 'dark'
+                        ? 'bg-foreground'
+                        : event.color === 'blue'
+                          ? 'bg-blue-500'
+                          : 'bg-purple-500'
+                    }`}
                   >
                     <span className="text-2xl">{event.icon}</span>
                   </div>
@@ -121,9 +122,7 @@ export default function EventsSection() {
                   <p className="mb-3 text-sm font-bold tracking-wide text-primary uppercase">
                     {event.subtitle}
                   </p>
-                  <p className="mb-4 text-sm text-muted">
-                    {event.description}
-                  </p>
+                  <p className="mb-4 text-sm text-muted">{event.description}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -162,12 +161,13 @@ export default function EventsSection() {
                   )}
 
                   <div
-                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${event.availability === 'Cupo limitado'
-                      ? 'bg-primary/20 text-primary'
-                      : event.availability === 'Registro abierto'
-                        ? 'bg-accent/20 text-accent'
-                        : 'bg-secondary/20 text-secondary'
-                      }`}
+                    className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+                      event.availability === 'Cupo limitado'
+                        ? 'bg-primary/20 text-primary'
+                        : event.availability === 'Registro abierto'
+                          ? 'bg-accent/20 text-accent'
+                          : 'bg-secondary/20 text-secondary'
+                    }`}
                   >
                     {event.availability}
                   </div>

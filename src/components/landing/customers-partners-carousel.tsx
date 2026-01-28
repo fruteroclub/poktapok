@@ -78,7 +78,7 @@ export default function CustomersPartnersCarousel() {
   }, [])
 
   return (
-    <div className="container gap-y-2">
+    <div className="page-content gap-y-2">
       <div className="flex flex-col gap-y-2 text-center">
         <h3 className="text-xl text-foreground md:text-2xl">
           Respaldados por los mejores del ecosistema

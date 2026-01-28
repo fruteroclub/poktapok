@@ -5,21 +5,18 @@ import Link from 'next/link'
 export default function NotFound() {
   return (
     <PageWrapper>
-      <div className="w-5xl flex h-[calc(100vh-64px)] flex-col items-center px-4 text-center">
+      <div className="flex h-[calc(100vh-64px)] w-5xl flex-col items-center space-y-4 px-4 text-center">
         <h2 className="pt-40 text-5xl">
           404 <span className="text-primary">|</span> no encontrada
         </h2>
-        <p className="mt-4 text-xl">
-          no se pudo encontrar la página que buscas
-        </p>
-        <Link href="/">
-          <Button
-            size="lg"
-            className="mt-6 text-lg md:mt-8 md:text-xl lg:mt-8 xl:mt-12"
-          >
-            ir a inicio
-          </Button>
-        </Link>
+        <p className="text-xl">No se pudo encontrar la página que buscas</p>
+        <div className="pt-4">
+          <Link href="/">
+            <Button size="lg" className="text-lgmd:text-xl">
+              Ir a Inicio
+            </Button>
+          </Link>
+        </div>
       </div>
     </PageWrapper>
   )

@@ -45,8 +45,8 @@ export default function CommunitySection() {
   ]
 
   return (
-    <section className="bg-gradient-to-br from-background to-accent/10 py-20">
-      <div className="container mx-auto px-4">
+    <section className="bg-linear-to-br from-background to-accent/10 py-20">
+      <div className="page-content mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl lg:text-5xl">
             ¿Qué hace especial a{' '}
@@ -65,12 +65,13 @@ export default function CommunitySection() {
               className="rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
               <div
-                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${benefit.color === 'green'
-                  ? 'bg-accent/20'
-                  : benefit.color === 'orange'
-                    ? 'bg-primary/20'
-                    : 'bg-secondary/20'
-                  }`}
+                className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${
+                  benefit.color === 'green'
+                    ? 'bg-accent/20'
+                    : benefit.color === 'orange'
+                      ? 'bg-primary/20'
+                      : 'bg-secondary/20'
+                }`}
               >
                 <span className="text-2xl">{benefit.icon}</span>
               </div>

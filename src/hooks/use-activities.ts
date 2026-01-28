@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchActivities,
   createActivity,
+  deleteActivity,
   fetchPublicActivities,
   fetchActivityDetail,
   submitActivity,
@@ -79,6 +80,22 @@ export function useSubmitActivity() {
       // Invalidate activity detail to refresh submission count
       queryClient.invalidateQueries({ queryKey: ["activities", "detail", variables.activityId] });
       // Invalidate activities list to refresh counts
+      queryClient.invalidateQueries({ queryKey: ["public", "activities"] });
+    },
+  });
+}
+
+/**
+ * Hook to delete an activity (soft delete)
+ */
+export function useDeleteActivity() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activityId: string) => deleteActivity(activityId),
+    onSuccess: () => {
+      // Invalidate all activities queries to refetch
+      queryClient.invalidateQueries({ queryKey: ["admin", "activities"] });
       queryClient.invalidateQueries({ queryKey: ["public", "activities"] });
     },
   });

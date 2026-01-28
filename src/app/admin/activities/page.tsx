@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Select,
   SelectContent,
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-import { useActivities } from '@/hooks/use-activities'
+import { useActivities, useDeleteActivity } from '@/hooks/use-activities'
 
 function AdminActivitiesPageContent() {
   const router = useRouter()
@@ -34,10 +35,25 @@ function AdminActivitiesPageContent() {
   })
 
   const { data, isLoading, error } = useActivities(filters)
+  const deleteMutation = useDeleteActivity()
 
   const activities = data?.activities || []
 
-  const getStatusBadge = (status: string) => {
+  const handleDelete = (activityId: string, title: string) => {
+    if (!confirm(`¿Eliminar la actividad "${title}"?`)) return
+
+    deleteMutation.mutate(activityId, {
+      onSuccess: () => {
+        toast.success('Actividad eliminada')
+      },
+      onError: (err) => {
+        toast.error(err.message || 'Error al eliminar')
+      },
+    })
+  }
+
+  const getStatusBadge = (status: string, effectiveStatus?: string) => {
+    const displayStatus = effectiveStatus || status
     const variants: Record<
       string,
       'default' | 'secondary' | 'destructive' | 'outline'
@@ -47,8 +63,9 @@ function AdminActivitiesPageContent() {
       paused: 'secondary',
       completed: 'secondary',
       cancelled: 'destructive',
+      expired: 'destructive',
     }
-    return <Badge variant={variants[status] || 'default'}>{status}</Badge>
+    return <Badge variant={variants[displayStatus] || 'default'}>{displayStatus}</Badge>
   }
 
   const formatActivityType = (type: string) => {
@@ -97,6 +114,7 @@ function AdminActivitiesPageContent() {
                   <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="expired">Expired</SelectItem>
                   <SelectItem value="paused">Paused</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
@@ -196,20 +214,30 @@ function AdminActivitiesPageContent() {
                       {activity.totalAvailableSlots &&
                         ` / ${activity.totalAvailableSlots}`}
                     </TableCell>
-                    <TableCell>{getStatusBadge(activity.status)}</TableCell>
+                    <TableCell>{getStatusBadge(activity.status, activity.effectiveStatus)}</TableCell>
                     <TableCell>
                       {new Date(activity.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(`/admin/activities/${activity.id}`)
-                        }
-                      >
-                        View
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/admin/activities/${activity.id}`)
+                          }
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(activity.id, activity.title)}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -2,11 +2,12 @@
  * Profile Hooks - TanStack Query hooks for profile operations
  */
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createProfile,
   uploadAvatar,
   deleteAvatar,
+  fetchPulpaBalance,
 } from '@/services/profile'
 import type { ProfileFormData } from '@/lib/validators/profile'
 
@@ -83,5 +84,32 @@ export function useDeleteAvatar() {
       // Invalidate auth query to refetch user data
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
     },
+  })
+}
+
+/**
+ * Hook to fetch user's PULPA token balance from blockchain
+ *
+ * Fetches the balance for the authenticated user's wallet.
+ * Caches the result for 30 seconds to avoid excessive RPC calls.
+ *
+ * @returns React Query result with balance data
+ *
+ * @example
+ * ```typescript
+ * const { data, isLoading, error, refetch } = usePulpaBalance()
+ *
+ * if (isLoading) return <Skeleton />
+ * if (!data?.hasWallet) return <span>No wallet connected</span>
+ *
+ * return <span>{data.formattedBalance} PULPA</span>
+ * ```
+ */
+export function usePulpaBalance() {
+  return useQuery({
+    queryKey: ['profile', 'pulpa-balance'],
+    queryFn: fetchPulpaBalance,
+    staleTime: 30 * 1000, // 30 seconds - avoid excessive RPC calls
+    refetchOnWindowFocus: false, // Don't refetch on tab focus to save RPC calls
   })
 }

@@ -82,3 +82,32 @@ export async function deleteAvatar(): Promise<void> {
     method: 'DELETE',
   })
 }
+
+/**
+ * PULPA balance response from API
+ */
+export interface PulpaBalanceResponse {
+  balance: string
+  formattedBalance: string
+  walletAddress: string | null
+  hasWallet: boolean
+}
+
+/**
+ * Fetch user's PULPA token balance from blockchain
+ *
+ * Returns the balance for the user's connected wallet.
+ * If no wallet is connected, returns zero balance with hasWallet: false.
+ *
+ * @returns PULPA balance data
+ * @throws ApiError if request fails
+ *
+ * @example
+ * ```typescript
+ * const { formattedBalance, hasWallet } = await fetchPulpaBalance()
+ * console.log(`Balance: ${formattedBalance} PULPA`)
+ * ```
+ */
+export async function fetchPulpaBalance(): Promise<PulpaBalanceResponse> {
+  return apiFetch<PulpaBalanceResponse>('/api/profile/pulpa-balance')
+}

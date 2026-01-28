@@ -89,17 +89,24 @@ export async function getActivities(filters: {
   } = filters
 
   const offset = (page - 1) * limit
+  const now = new Date()
+
+  // Handle "expired" as a computed status (DB status is still 'active' but expiresAt < now)
+  const isFilteringByExpired = status === 'expired'
+  const dbStatusFilter = isFilteringByExpired ? 'active' : status
 
   const whereConditions: (SQL | undefined)[] = [
     isNull(activities.deletedAt),
     type && isActivityType(type) ? eq(activities.activityType, type) : undefined,
     category ? eq(activities.category, category) : undefined,
     difficulty && isDifficulty(difficulty) ? eq(activities.difficulty, difficulty) : undefined,
-    status && isActivityStatus(status) ? eq(activities.status, status) : undefined,
+    dbStatusFilter && isActivityStatus(dbStatusFilter) ? eq(activities.status, dbStatusFilter) : undefined,
     search ? ilike(activities.title, `%${search}%`) : undefined,
-    // Filter out expired activities unless includeExpired is true
-    !includeExpired
-      ? or(isNull(activities.expiresAt), gte(activities.expiresAt, new Date()))
+    // If filtering by "expired", only get activities that have expired
+    isFilteringByExpired ? lte(activities.expiresAt, now) : undefined,
+    // Filter out expired activities unless includeExpired is true or explicitly filtering by expired
+    !includeExpired && !isFilteringByExpired
+      ? or(isNull(activities.expiresAt), gte(activities.expiresAt, now))
       : undefined,
   ]
 
@@ -121,8 +128,22 @@ export async function getActivities(filters: {
 
   const total = totalQuery[0]?.count || 0
 
+  // Compute effective status based on expiration
+  const activitiesWithComputedStatus = results.map((activity) => {
+    const isExpired = activity.expiresAt ? new Date(activity.expiresAt) < now : false
+    // Compute effective status: if status is 'active' but expired, it's effectively 'expired'
+    const effectiveStatus =
+      activity.status === 'active' && isExpired ? 'expired' : activity.status
+
+    return {
+      ...activity,
+      isExpired,
+      effectiveStatus,
+    }
+  })
+
   return {
-    activities: results,
+    activities: activitiesWithComputedStatus,
     total: Number(total),
     page,
     limit,
@@ -169,12 +190,11 @@ export async function updateActivity(id: string, data: Partial<NewActivity>) {
 }
 
 /**
- * Soft delete activity
+ * Hard delete activity (also deletes related submissions and distributions via CASCADE)
  */
 export async function deleteActivity(id: string) {
   const result = await db
-    .update(activities)
-    .set({ deletedAt: new Date() })
+    .delete(activities)
     .where(eq(activities.id, id))
     .returning()
 

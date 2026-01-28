@@ -158,6 +158,10 @@ export const approveSubmissionSchema = z.object({
     .string()
     .max(1000, 'Review notes must be at most 1000 characters')
     .optional(),
+
+  distribute_tokens: z
+    .boolean()
+    .optional(), // Default true - auto-distribute PULPA on approval
 })
 
 /**

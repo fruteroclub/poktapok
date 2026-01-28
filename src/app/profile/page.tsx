@@ -7,6 +7,7 @@ import { EditableUserCard } from '@/components/profile/editable-user-card'
 import { EditableProfileCard } from '@/components/profile/editable-profile-card'
 import { ProfileSkillsSection } from '@/components/profile/profile-skills-section'
 import { PortfolioProjectsSection } from '@/components/profile/portfolio-projects-section'
+import { PulpaBalanceCard } from '@/components/profile/pulpa-balance-card'
 import { Loader2, Clock } from 'lucide-react'
 import { useEffect } from 'react'
 import PageWrapper from '@/components/layout/page-wrapper'
@@ -119,6 +120,11 @@ export default function ProfilePage() {
                     profile={profile}
                     userId={user.id}
                   />
+                </div>
+
+                {/* PULPA Balance Card */}
+                <div className="col-span-2">
+                  <PulpaBalanceCard />
                 </div>
                 {/* Portfolio Projects Section */}
                 <div className="col-span-2">

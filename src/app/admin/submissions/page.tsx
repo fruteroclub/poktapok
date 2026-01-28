@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { ExternalLinkIcon, Loader2 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ExternalLinkIcon, Loader2, Wallet } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -43,6 +44,7 @@ function AdminSubmissionsPageContent() {
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null)
   const [reviewNotes, setReviewNotes] = useState('')
+  const [customPulpaAmount, setCustomPulpaAmount] = useState('')
 
   const { data, isLoading, error } = useSubmissions(filter)
   const approveMutation = useApproveSubmission()
@@ -53,19 +55,38 @@ function AdminSubmissionsPageContent() {
   const handleApprove = async (submissionId: string) => {
     if (!reviewNotes && !confirm('No review notes provided. Continue?')) return
 
+    const pulpaAmount = customPulpaAmount || selectedSubmission?.submission.rewardPulpaAmount || undefined
+
     approveMutation.mutate(
       {
         submissionId,
-        data: { review_notes: reviewNotes || undefined },
+        data: {
+          review_notes: reviewNotes || undefined,
+          reward_pulpa_amount: pulpaAmount || undefined,
+        },
       },
       {
-        onSuccess: () => {
-          toast.success('Submission approved successfully!')
+        onSuccess: (data) => {
+          if (data.distribution?.success) {
+            toast.success(`Aprobado! ${pulpaAmount} $PULPA enviados.`, {
+              description: `TX: ${data.distribution.transactionHash?.slice(0, 10)}...`,
+            })
+          } else {
+            toast.success('Submission aprobado!')
+          }
           setSelectedSubmission(null)
           setReviewNotes('')
+          setCustomPulpaAmount('')
         },
         onError: (err) => {
-          toast.error(err.message || 'Failed to approve submission')
+          // Check if it's a distribution failure
+          if (err.message?.includes('PULPA distribution failed')) {
+            toast.error('No se pudo enviar PULPA. Submission NO aprobado.', {
+              description: err.message.replace('PULPA distribution failed: ', ''),
+            })
+          } else {
+            toast.error(err.message || 'Failed to approve submission')
+          }
         },
       },
     )
@@ -299,7 +320,26 @@ function AdminSubmissionsPageContent() {
 
               <div>
                 <h3 className="mb-2 font-semibold">Reward Amount</h3>
-                <p>{Math.floor(Number(selectedSubmission.submission.rewardPulpaAmount))} $PULPA</p>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={customPulpaAmount || Math.floor(Number(selectedSubmission.submission.rewardPulpaAmount))}
+                    onChange={(e) => setCustomPulpaAmount(e.target.value)}
+                    className="w-32"
+                  />
+                  <span className="text-sm text-muted-foreground">$PULPA</span>
+                  <span className="text-xs text-muted-foreground">
+                    (default: {Math.floor(Number(selectedSubmission.submission.rewardPulpaAmount))})
+                  </span>
+                </div>
+                {!selectedSubmission.user.appWallet && !selectedSubmission.submission.submissionUrl?.includes('wallet') && (
+                  <p className="mt-2 flex items-center gap-1 text-sm text-amber-600">
+                    <Wallet className="h-4 w-4" />
+                    User has no wallet configured. PULPA cannot be distributed.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -321,6 +361,7 @@ function AdminSubmissionsPageContent() {
                 onClick={() => {
                   setSelectedSubmission(null)
                   setReviewNotes('')
+                  setCustomPulpaAmount('')
                 }}
                 disabled={approveMutation.isPending || rejectMutation.isPending}
               >

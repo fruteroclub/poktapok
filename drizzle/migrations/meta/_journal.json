@@ -57,6 +57,20 @@
       "when": 1737158400000,
       "tag": "0007_create_events_table",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1737990000000,
+      "tag": "0008_add_activities_external_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1737990100000,
+      "tag": "0009_add_pulpa_distributions_columns",
+      "breakpoints": true
     }
   ]
 }

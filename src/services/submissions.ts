@@ -38,6 +38,8 @@ export interface ListSubmissionsResponse {
 
 export interface ApproveSubmissionRequest {
   review_notes?: string;
+  reward_pulpa_amount?: string;
+  distribute_tokens?: boolean;
 }
 
 export interface RejectSubmissionRequest {
@@ -45,8 +47,14 @@ export interface RejectSubmissionRequest {
 }
 
 export interface ApproveSubmissionResponse {
-  submissionId: string;
+  id: string;
   status: string;
+  reward_pulpa_amount: string | null;
+  distribution: {
+    success: boolean;
+    transactionHash?: string;
+    error?: string;
+  } | null;
 }
 
 export interface RejectSubmissionResponse {

@@ -17,6 +17,9 @@ export interface Activity {
   currentSubmissionsCount: number;
   totalAvailableSlots: number | null;
   createdAt: string;
+  expiresAt?: string | null;
+  isExpired?: boolean;
+  effectiveStatus?: string;
 }
 
 export interface ListActivitiesFilters {
@@ -189,5 +192,20 @@ export async function submitActivity(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
+  });
+}
+
+export interface DeleteActivityResponse {
+  message: string;
+}
+
+/**
+ * Delete an activity (soft delete)
+ */
+export async function deleteActivity(
+  activityId: string
+): Promise<DeleteActivityResponse> {
+  return apiFetch<DeleteActivityResponse>(`/api/admin/activities/${activityId}`, {
+    method: 'DELETE',
   });
 }

@@ -25,10 +25,11 @@ export function ActivitiesContent() {
     status: 'active',
   })
 
+  const activities = data?.activities
   const filteredActivities = useMemo(() => {
-    if (!data?.activities) return []
+    if (!activities) return []
 
-    let filtered = data.activities
+    let filtered = activities
 
     // Filter by difficulty
     if (difficultyFilter !== 'all') {
@@ -47,7 +48,7 @@ export function ActivitiesContent() {
     }
 
     return filtered
-  }, [data?.activities, difficultyFilter, searchQuery])
+  }, [activities, difficultyFilter, searchQuery])
 
   if (isError) {
     return (

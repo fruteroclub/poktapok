@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { activities } from '@/lib/db/schema'
-import { eq, and, gte, lte, desc } from 'drizzle-orm'
+import { eq, and, gte, lte } from 'drizzle-orm'
 
 /**
  * Weekly Build in Public Activity Cron Job

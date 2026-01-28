@@ -9,10 +9,19 @@ import {
   successResponse,
   requireAdmin,
 } from '@/lib/auth/middleware'
+import {
+  distributeSubmissionReward,
+  hasExistingDistribution,
+} from '@/lib/blockchain/distribute-reward'
 
 /**
  * PATCH /api/admin/submissions/[id]/approve
- * Approve submission (admin only)
+ * Approve submission and optionally distribute PULPA tokens (admin only)
+ *
+ * Request body:
+ * - reward_pulpa_amount: string (optional, defaults to activity reward)
+ * - review_notes: string (optional)
+ * - distribute_tokens: boolean (optional, default true - auto-distribute PULPA)
  */
 export async function PATCH(
   req: NextRequest,
@@ -57,8 +66,48 @@ export async function PATCH(
     const rewardAmount =
       validated.reward_pulpa_amount || submission.submission.rewardPulpaAmount
 
+    // Default to auto-distribute unless explicitly disabled
+    const shouldDistribute = validated.distribute_tokens !== false
+
+    let distributionResult = null
+
+    // PULPA distribution is required for approval - distribute first, then approve
+    if (shouldDistribute && rewardAmount && parseFloat(rewardAmount) > 0) {
+      // Check if distribution already exists
+      const alreadyDistributed = await hasExistingDistribution(id)
+
+      if (!alreadyDistributed) {
+        distributionResult = await distributeSubmissionReward(
+          id,
+          submission.submission.activityId,
+          submission.submission.userId,
+          rewardAmount,
+          admin.id
+        )
+
+        // If distribution failed, don't approve the submission
+        if (!distributionResult.success) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: {
+                message: `PULPA distribution failed: ${distributionResult.error}`,
+                code: 'DISTRIBUTION_FAILED',
+              },
+              distribution: {
+                success: false,
+                error: distributionResult.error,
+              },
+            }),
+            { status: 400 },
+          )
+        }
+      }
+    }
+
+    // Only update submission status AFTER successful distribution
     const updated = await updateSubmission(id, {
-      status: 'approved',
+      status: distributionResult?.success ? 'distributed' : 'approved',
       reviewedByUserId: admin.id,
       reviewedAt: new Date(),
       reviewNotes: validated.review_notes || null,
@@ -69,6 +118,13 @@ export async function PATCH(
       id: updated!.id,
       status: updated!.status,
       reward_pulpa_amount: updated!.rewardPulpaAmount,
+      distribution: distributionResult
+        ? {
+            success: distributionResult.success,
+            transactionHash: distributionResult.transactionHash,
+            error: distributionResult.error,
+          }
+        : null,
     })
   } catch (error) {
     return handleApiError(error)

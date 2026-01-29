@@ -15,7 +15,16 @@ const HERO_IMAGES = [
   '/images/landing/hero/202401-ethcdm-hackerhouse-meetup.jpeg',
   '/images/landing/hero/202409-workshop-puebla-gvt.jpeg',
   '/images/landing/hero/54947768322_d067c8ed97_o.jpg',
+  '/images/landing/hero/ariutokintumi-frutero-tee.jpg',
+  '/images/landing/hero/ETHCDM Sury CDMX 2.png',
+  '/images/landing/hero/ETHCDM Sury CDMX.png',
+  '/images/landing/hero/ETHCDM Sury GDL.png',
+  '/images/landing/hero/Ethereum_Mty-1-269.jpg',
+  '/images/landing/hero/mexi-20240204_102705.jpg',
+  '/images/landing/hero/mexi-IMG_20240202_124219.jpg',
+  '/images/landing/hero/mexi-IMG_20240202_204348.jpg',
   '/images/landing/hero/photo_2026-01-22_12-24-20.jpg',
+  '/images/landing/hero/photo_2026-01-22_12-24-21.jpg',
   '/images/landing/hero/photo_2026-01-22_12-24-22.jpg',
 ]
 

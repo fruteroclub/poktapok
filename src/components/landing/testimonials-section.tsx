@@ -7,7 +7,7 @@ export default function TestimonialsSection() {
   const testimonials = [
     {
       quote:
-        'La combinación perfecta entre teoría y práctica. Me encantó poder aplicar inmediatamente los conceptos de Web3 en un proyecto real que resuelve un problema genuino. La comunidad de builders y el acceso a mentores fue invaluable para validar mi arquitectura técnica y estrategia de go-to-market.',
+        'La combinación perfecta entre teoría y práctica. Me encantó poder aplicar inmediatamente los conceptos de Web3 en un proyecto real que resuelve un problema genuino. La comunidad de builders y el acceso a mentores fue invaluable para validar mi arquitectura técnica y estrategia de Go-to-Market.',
       name: 'Moises Cisneros',
       role: 'Builder @ Verano en Cadena',
       achievement: 'Construyó Know the Score en Farcaster',
@@ -34,7 +34,7 @@ export default function TestimonialsSection() {
     },
     {
       quote:
-        'Los mensajes de Jazz haha. Soy Juan y participé en verano en cadena con base, llegué a la última fase y la app que construí fue LID, se trata de una app de donaciones, la experiencia fue muy bien gracias.',
+        'Los mensajes de Jazz haha. Soy Juan y participé en Verano en Cadena con Base, llegué a la última fase y la app que construí fue LID, se trata de una app de donaciones, la experiencia fue muy bien gracias.',
       name: 'Juan',
       role: 'Builder @ Verano en Cadena',
       achievement: 'Construyó LID - App de donaciones',
@@ -43,7 +43,7 @@ export default function TestimonialsSection() {
     },
     {
       quote:
-        'Claude code, fue un despertar jajja, el onboarding de normies q sacaron app (hermana y primo), y la atención en los últimos momentos del submit top jajaja.',
+        'Claude code, fue un despertar, el onboarding de normies que sacaron su app (hermana y primo), y la atención en los últimos momentos del submit top jajaja.',
       name: 'Roman Scarf',
       role: 'Builder @ Frutero Club',
       achievement: 'Onboarding exitoso con Claude Code',
@@ -52,7 +52,7 @@ export default function TestimonialsSection() {
     },
     {
       quote:
-        'La confianza, el acompañamiento, la amabilidad y los conocimientos que generé. Mi proyecto se llama nitedcrypto, mi meta es poder hacer una web o app cryptofriendly para todos y que se puedan comunicar entre todos.',
+        'La confianza, el acompañamiento, la amabilidad y los conocimientos que generé. Mi proyecto se llama NitedCrypto, mi meta es poder hacer una web o app cryptofriendly para todos y que se puedan comunicar entre todos.',
       name: 'Diego Fernando Mancera Gomez',
       role: 'Builder @ Frutero Club',
       achievement: 'Fundador de nitedcrypto',
@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
             {testimonials.map((testimonial, index) => (
               <Card
                 key={index}
-                className="w-80 flex-shrink-0 transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
+                className="w-96 flex-shrink-0 transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
               >
                 <CardContent className="pt-6">
                   {/* Rating stars */}
@@ -101,8 +101,10 @@ export default function TestimonialsSection() {
 
                   {/* Quote */}
                   <div className="mb-6">
-                    <blockquote className="line-clamp-4 text-base leading-relaxed text-foreground">
-                      &quot;{testimonial.quote}&quot;
+                    <blockquote className="text-sm leading-relaxed text-foreground">
+                      <span className="text-2xl font-serif text-primary">"</span>
+                      {testimonial.quote}
+                      <span className="text-2xl font-serif text-primary">"</span>
                     </blockquote>
                   </div>
 

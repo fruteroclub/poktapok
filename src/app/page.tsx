@@ -13,6 +13,7 @@ import ProblemV2Section from '@/components/landing/problem-v2-section'
 import WhoWeAreV2Section from '@/components/landing/who-we-are-v2-section'
 import HubV2Section from '@/components/landing/hub-v2-section'
 import ProjectsV2Section from '@/components/landing/projects-v2-section'
+import EventsCarousel from '@/components/events/events-carousel'
 
 export default function Home() {
   return (
@@ -23,6 +24,15 @@ export default function Home() {
       <ProjectsV2Section />
       <CustomersPartnersSection />
       <HubV2Section />
+      <EventsCarousel
+        title="Próximos Eventos"
+        subtitle="Únete a nuestros eventos y conecta con otros builders"
+        showTabs={false}
+        defaultTab="upcoming"
+        limit={6}
+        showViewAll={true}
+        viewAllHref="/club/eventos"
+      />
       <TestimonialsSection />
       <FAQSection />
       <FinalCTASection />

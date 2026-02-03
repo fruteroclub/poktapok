@@ -11,6 +11,7 @@ import {
   deleteEvent,
   updateEvent,
   fetchLumaMetadata,
+  syncLumaCalendar,
   type ListEventsFilters,
   type AdminListEventsFilters,
   type CreateEventRequest,
@@ -110,5 +111,20 @@ export function useUpdateEvent() {
 export function useFetchLumaMetadata() {
   return useMutation({
     mutationFn: (url: string) => fetchLumaMetadata(url),
+  })
+}
+
+/**
+ * Hook to sync events from a Luma calendar
+ */
+export function useSyncLumaCalendar() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (calendarSlug: string) => syncLumaCalendar(calendarSlug),
+    onSuccess: () => {
+      // Invalidate all events queries to refetch with synced data
+      queryClient.invalidateQueries({ queryKey: ['events'] })
+    },
   })
 }

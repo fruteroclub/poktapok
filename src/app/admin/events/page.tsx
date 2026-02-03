@@ -6,7 +6,7 @@ import { EventCard } from '@/components/events/event-card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card } from '@/components/ui/card'
-import { CalendarDays, Trash2 } from 'lucide-react'
+import { CalendarDays, Trash2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
-import { useAdminEvents, useDeleteEvent } from '@/hooks/use-events'
+import { useAdminEvents, useDeleteEvent, useSyncLumaCalendar } from '@/hooks/use-events'
 import { useActivePrograms } from '@/hooks/use-onboarding'
 import { isPastDate } from '@/lib/utils/date-format'
 
@@ -35,6 +35,7 @@ export default function AdminEventsPage() {
 
   const { data: programsData } = useActivePrograms()
   const deleteEventMutation = useDeleteEvent()
+  const syncMutation = useSyncLumaCalendar()
 
   const events = eventsData?.events || []
   const programs = programsData?.programs || []
@@ -55,6 +56,17 @@ export default function AdminEventsPage() {
       },
       onError: () => {
         toast.error('Error al eliminar el evento')
+      },
+    })
+  }
+
+  const handleSyncFromLuma = () => {
+    syncMutation.mutate('fruteroclub', {
+      onSuccess: (data) => {
+        toast.success(data.message)
+      },
+      onError: () => {
+        toast.error('Error al sincronizar eventos desde Luma')
       },
     })
   }
@@ -108,7 +120,19 @@ export default function AdminEventsPage() {
             Manage community events from lu.ma
           </p>
         </div>
-        <EventFormDialog programs={programs} />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleSyncFromLuma}
+            disabled={syncMutation.isPending}
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${syncMutation.isPending ? 'animate-spin' : ''}`}
+            />
+            {syncMutation.isPending ? 'Sincronizando...' : 'Sync from Luma'}
+          </Button>
+          <EventFormDialog programs={programs} />
+        </div>
       </div>
 
       {/* Filter Tabs */}

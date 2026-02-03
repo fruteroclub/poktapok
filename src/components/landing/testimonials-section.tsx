@@ -12,6 +12,7 @@ export default function TestimonialsSection() {
       role: 'Builder @ Verano en Cadena',
       achievement: 'Construyó Know the Score en Farcaster',
       initials: 'MC',
+      image: '/images/fruits/avocado-01.png',
     },
     {
       quote:
@@ -38,6 +39,7 @@ export default function TestimonialsSection() {
       role: 'Builder @ Verano en Cadena',
       achievement: 'Construyó LID - App de donaciones',
       initials: 'J',
+      image: '/images/fruits/limon-01.png',
     },
     {
       quote:
@@ -55,6 +57,7 @@ export default function TestimonialsSection() {
       role: 'Builder @ Frutero Club',
       achievement: 'Fundador de nitedcrypto',
       initials: 'DM',
+      image: '/images/fruits/manzana-01.png',
     },
   ]
 

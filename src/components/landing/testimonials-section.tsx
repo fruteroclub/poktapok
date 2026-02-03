@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Marquee } from '@/components/ui/marquee'
 import { Star } from 'lucide-react'
@@ -19,6 +20,7 @@ export default function TestimonialsSection() {
       role: 'Fundador @ La Blocka',
       achievement: 'Socio de la comunidad Frutero',
       initials: 'SV',
+      image: 'https://pbs.twimg.com/profile_images/1640924898930438145/-lLXtOuS_400x400.jpg',
     },
     {
       quote:
@@ -27,6 +29,7 @@ export default function TestimonialsSection() {
       role: 'Builder @ Frutero Club',
       achievement: 'Miembro activo de la comunidad',
       initials: 'R',
+      image: 'https://pbs.twimg.com/profile_images/1846047337845846016/sX2l1jO5_400x400.jpg',
     },
     {
       quote:
@@ -43,6 +46,7 @@ export default function TestimonialsSection() {
       role: 'Builder @ Frutero Club',
       achievement: 'Onboarding exitoso con Claude Code',
       initials: 'RS',
+      image: 'https://pbs.twimg.com/profile_images/1986348187913719808/GTkYxx1E_400x400.jpg',
     },
     {
       quote:
@@ -101,11 +105,21 @@ export default function TestimonialsSection() {
 
                   {/* Author info */}
                   <div className="mb-4 flex items-center gap-3 border-t border-border pt-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-                      <span className="text-xl font-bold text-primary">
-                        {testimonial.initials}
-                      </span>
-                    </div>
+                    {testimonial.image ? (
+                      <Image
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 flex-shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+                        <span className="text-xl font-bold text-primary">
+                          {testimonial.initials}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex-1 overflow-hidden">
                       <p className="truncate font-bold text-foreground">
                         {testimonial.name}

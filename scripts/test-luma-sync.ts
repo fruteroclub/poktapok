@@ -31,7 +31,7 @@ async function testSync() {
   try {
     console.log("📡 Triggering sync...\n");
     
-    const result = await client.action(api.luma.actions.triggerSync, {
+    const result = await client.action(api["luma/syncAction"].syncCalendar, {
       calendarSlug: "fruteroclub",
     });
 

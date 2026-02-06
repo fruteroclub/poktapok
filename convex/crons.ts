@@ -4,7 +4,10 @@ import { internal } from "./_generated/api";
 /**
  * Scheduled Functions (Cron Jobs)
  * 
- * Convex cron jobs run on the server and can call internal mutations.
+ * Convex cron jobs run on the server and can call internal mutations/actions.
+ * 
+ * Note: We use the internal version to avoid exposing sync logic publicly.
+ * For manual testing, use the public action: api.luma.syncAction.syncCalendar
  */
 
 const crons = cronJobs();

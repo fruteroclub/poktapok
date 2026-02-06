@@ -3,6 +3,7 @@
 import { Suspense, type ReactNode } from 'react'
 import '@/lib/error-filter'
 import PrivyProviderComponent from './auth/privy-provider'
+import ConvexClientProvider from './convex-provider'
 
 function OnchainProviderComponent({ children }: { children: ReactNode }) {
   return <PrivyProviderComponent>{children}</PrivyProviderComponent>
@@ -21,7 +22,9 @@ export default function AppProvider({ children }: { children: ReactNode }) {
         </div>
       }
     >
-      <OnchainProviderComponent>{children}</OnchainProviderComponent>
+      <ConvexClientProvider>
+        <OnchainProviderComponent>{children}</OnchainProviderComponent>
+      </ConvexClientProvider>
     </Suspense>
   )
 }

@@ -4,6 +4,48 @@ import { events } from '@/lib/db/schema'
 import { apiSuccess, apiError } from '@/lib/api/response'
 import { eq, and, desc, asc, gte, lt } from 'drizzle-orm'
 
+// Track last sync time in memory (resets on cold start, which is fine)
+let lastSyncTime: number | null = null
+const SYNC_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
+
+/**
+ * Background sync from Luma calendar (non-blocking)
+ */
+async function syncFromLumaBackground() {
+  try {
+    // Fetch from internal sync endpoint
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+    fetch(`${baseUrl}/api/luma/sync-calendar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ calendarSlug: 'fruteroclub' }),
+    }).catch((err) => {
+      console.error('Background Luma sync failed:', err)
+    })
+
+    lastSyncTime = Date.now()
+  } catch (error) {
+    console.error('Error triggering background sync:', error)
+  }
+}
+
+/**
+ * Check if sync is needed based on time or empty events
+ */
+function shouldSync(eventCount: number): boolean {
+  // Always sync if no events
+  if (eventCount === 0) return true
+
+  // Sync if never synced or interval passed
+  if (!lastSyncTime) return true
+  if (Date.now() - lastSyncTime > SYNC_INTERVAL_MS) return true
+
+  return false
+}
+
 /**
  * GET /api/events
  * List published events (public endpoint)
@@ -11,6 +53,8 @@ import { eq, and, desc, asc, gte, lt } from 'drizzle-orm'
  * - status: 'upcoming' | 'past' | 'all' (default: 'all')
  * - featured: 'true' to only show featured events
  * - limit: number of events to return
+ *
+ * Auto-syncs from Luma calendar in background every hour
  */
 export async function GET(request: NextRequest) {
   try {
@@ -42,6 +86,12 @@ export async function GET(request: NextRequest) {
         status === 'past' ? desc(events.startDate) : asc(events.startDate)
       )
       .limit(limit)
+
+    // Trigger background sync if needed (non-blocking)
+    if (shouldSync(allEvents.length)) {
+      // Don't await - let it run in background
+      syncFromLumaBackground()
+    }
 
     // Compute status for each event based on date
     const eventsWithStatus = allEvents.map((event) => ({

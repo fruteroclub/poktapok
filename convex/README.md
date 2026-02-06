@@ -1,97 +1,90 @@
-# Convex Backend
+# Welcome to your Convex functions directory!
 
-Fresh Convex implementation for Poktapok.
+Write your Convex functions here.
+See https://docs.convex.dev/functions for more.
 
-## Structure
+A query function that takes two arguments looks like:
 
-```
-convex/
-├── schema.ts          # Database schema definition
-├── users.ts           # User queries and mutations
-├── events.ts          # Event queries and mutations
-├── tsconfig.json      # TypeScript config for Convex
-└── _generated/        # Auto-generated (gitignored)
-```
-
-## Development
-
-### Start Dev Server
-
-```bash
-bunx convex dev
-```
-
-This will:
-- Watch for changes in `convex/`
-- Auto-deploy to cloud dev project
-- Generate TypeScript types in `_generated/`
-
-### Schema Changes
-
-Edit `schema.ts` and save - changes deploy automatically.
-
-### Writing Functions
-
-**Query (read-only):**
-```typescript
+```ts
+// convex/myFunctions.ts
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 
-export const list = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
+export const myQueryFunction = query({
+  // Validators for arguments.
+  args: {
+    first: v.number(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Read the database as many times as you need here.
+    // See https://docs.convex.dev/database/reading-data.
+    const documents = await ctx.db.query("tablename").collect();
+
+    // Arguments passed from the client are properties of the args object.
+    console.log(args.first, args.second);
+
+    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
+    // remove non-public properties, or create new objects.
+    return documents;
   },
 });
 ```
 
-**Mutation (write):**
-```typescript
+Using this query function in a React component looks like:
+
+```ts
+const data = useQuery(api.myFunctions.myQueryFunction, {
+  first: 10,
+  second: "hello",
+});
+```
+
+A mutation function looks like:
+
+```ts
+// convex/myFunctions.ts
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
-export const create = mutation({
-  args: { name: v.string() },
+export const myMutationFunction = mutation({
+  // Validators for arguments.
+  args: {
+    first: v.string(),
+    second: v.string(),
+  },
+
+  // Function implementation.
   handler: async (ctx, args) => {
-    const id = await ctx.db.insert("users", { name: args.name });
-    return id;
+    // Insert or modify documents in the database here.
+    // Mutations can also read from the database like queries.
+    // See https://docs.convex.dev/database/writing-data.
+    const message = { body: args.first, author: args.second };
+    const id = await ctx.db.insert("messages", message);
+
+    // Optionally, return a value from your mutation.
+    return await ctx.db.get("messages", id);
   },
 });
 ```
 
-## Frontend Usage
+Using this mutation function in a React component looks like:
 
-```typescript
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-
-function MyComponent() {
-  const users = useQuery(api.users.list);
-  const createUser = useMutation(api.users.create);
-  
-  return <div>{/* ... */}</div>;
+```ts
+const mutation = useMutation(api.myFunctions.myMutationFunction);
+function handleButtonPress() {
+  // fire and forget, the most common way to use mutations
+  mutation({ first: "Hello!", second: "me" });
+  // OR
+  // use the result once the mutation has completed
+  mutation({ first: "Hello!", second: "me" }).then((result) =>
+    console.log(result),
+  );
 }
 ```
 
-## Testing
-
-Use Convex Dashboard to:
-- Browse tables
-- Insert test data
-- Run queries manually
-- View function logs
-
-Dashboard: https://dashboard.convex.dev
-
-## Deployment
-
-```bash
-# Deploy to production
-bunx convex deploy --prod
-```
-
-## Resources
-
-- [Convex Docs](https://docs.convex.dev)
-- [Dev Workflow](../docs/dev/CONVEX_DEV_WORKFLOW.md)
-- [Implementation Plan](../docs/CONVEX_IMPLEMENTATION.md)
+Use the Convex CLI to push your functions to a deployment. See everything
+the Convex CLI can do by running `npx convex -h` in your project root
+directory. To learn more, launch the docs with `npx convex docs`.

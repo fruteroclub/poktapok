@@ -17,7 +17,7 @@ import { useDirectoryProfiles } from '@/hooks/use-directory'
 import { usePublicActivities } from '@/hooks/use-activities'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Section } from '@/components/layout/section'
-import EventsCarousel from '@/components/events/events-carousel'
+import EventsCarousel from '@/components/events/events-carousel-convex'
 
 export function ClubContent() {
   const { data: directoryData, isLoading: directoryLoading } =

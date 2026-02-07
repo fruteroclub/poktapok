@@ -209,3 +209,45 @@ export const updateLastLogin = mutation({
     }
   },
 });
+
+/**
+ * Delete user (for testing/cleanup)
+ */
+export const deleteUser = mutation({
+  args: { privyDid: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.privyDid))
+      .unique();
+
+    if (!user) {
+      return { deleted: false };
+    }
+
+    // Delete profile if exists
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+      .unique();
+    
+    if (profile) {
+      await ctx.db.delete(profile._id);
+    }
+
+    // Delete applications if exist
+    const applications = await ctx.db
+      .query("applications")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+    
+    for (const app of applications) {
+      await ctx.db.delete(app._id);
+    }
+
+    // Delete user
+    await ctx.db.delete(user._id);
+
+    return { deleted: true };
+  },
+});

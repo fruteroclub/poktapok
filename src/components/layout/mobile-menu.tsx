@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/sheet'
 import { MenuIcon, SparkleIcon } from 'lucide-react'
 import { type MenuItemType } from './navbar'
-import AuthButton from '../buttons/auth-button-privy'
+import AuthButton from '../buttons/auth-button-convex'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks'
 import { usePrivy } from '@privy-io/react-auth'

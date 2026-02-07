@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import MobileMenu from './mobile-menu'
-import AuthButton from '../buttons/auth-button-privy'
+import AuthButton from '../buttons/auth-button-convex'
 import { SparkleIcon, SparklesIcon } from 'lucide-react'
 import { useAuth } from '@/hooks'
 import MobileMenuDropdown from './mobile-menu-dropdown'

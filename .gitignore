@@ -42,5 +42,5 @@ next-env.d.ts
 .env*.local
 
 # convex
-convex/_generated/
+# convex/_generated/  # Committed to repo for Vercel builds
 .convex/

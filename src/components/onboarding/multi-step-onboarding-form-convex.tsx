@@ -1,70 +1,156 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
-import { ProgramSelector } from './program-selector'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Github,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+} from 'lucide-react'
+import { UserInfoForm } from './user-info-form'
 import { GoalInput } from './goal-input'
-import { SocialAccountsForm } from './social-accounts-form'
-import { useSubmitApplicationConvex } from '@/hooks/use-onboarding-convex'
+import { SocialAccountsFormEnhanced } from './social-accounts-form-enhanced'
+import { usePrivy } from '@privy-io/react-auth'
 
-type OnboardingStep = 'program' | 'goal' | 'social' | 'review'
+type OnboardingStep = 'userInfo' | 'goal' | 'social' | 'review'
 
 interface FormData {
-  programId: string
+  // User Info
+  avatarFile: File | null
+  username: string
+  email: string
+  displayName: string
+  bio: string
+
+  // Goal & Motivation
   goal: string
   motivationText: string
+
+  // Social Accounts (all usernames only)
   githubUsername: string
   twitterUsername: string
-  linkedinUrl: string
+  linkedinUsername: string
   telegramUsername: string
 }
 
-interface FormErrors {
-  [key: string]: string
-}
+type FormErrors = Partial<Record<keyof FormData, string>>
 
 /**
  * Multi-Step Onboarding Form using Convex
  *
- * Replaces the old form that used TanStack Query + API routes.
+ * Complete onboarding flow with user info, goals, and social accounts.
+ * Uses Convex for all mutations and queries.
  */
 export default function MultiStepOnboardingFormConvex() {
   const router = useRouter()
-  const { submit } = useSubmitApplicationConvex()
+  const { user: privyUser } = usePrivy()
+  const privyDid = privyUser?.id
 
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('program')
+  // Convex mutations
+  const updateCurrentUser = useMutation(api.auth.updateCurrentUser)
+  const submitApplication = useMutation(api.applications.submit)
+
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('userInfo')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<FormData>({
-    programId: '',
+    // User Info
+    avatarFile: null,
+    username: '',
+    email: privyUser?.email?.address || '',
+    displayName: '',
+    bio: '',
+
+    // Goal & Motivation
     goal: '',
     motivationText: '',
+
+    // Social Accounts
     githubUsername: '',
     twitterUsername: '',
-    linkedinUrl: '',
+    linkedinUsername: '',
     telegramUsername: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
 
   // Step configuration
-  const steps: OnboardingStep[] = ['program', 'goal', 'social', 'review']
-  const stepTitles: Record<OnboardingStep, string> = {
-    program: 'Elige tu Programa',
-    goal: 'Define tu Meta',
-    social: 'Conecta tus Cuentas',
-    review: 'Revisa y Envía',
-  }
+  const steps = useMemo<OnboardingStep[]>(
+    () => ['userInfo', 'goal', 'social', 'review'],
+    []
+  )
+
+  const stepTitles = useMemo<Record<OnboardingStep, string>>(
+    () => ({
+      userInfo: 'Tu Información',
+      goal: 'Define tu Meta',
+      social: 'Conecta tus Cuentas',
+      review: 'Revisa y Envía',
+    }),
+    []
+  )
 
   const currentStepIndex = steps.indexOf(currentStep)
   const progress = ((currentStepIndex + 1) / steps.length) * 100
 
+  // Username availability check using Convex
+  const checkUsernameAvailability = useCallback(
+    async (username: string): Promise<boolean> => {
+      try {
+        const response = await fetch(
+          `/api/auth/check-username?username=${encodeURIComponent(username)}`
+        )
+        if (!response.ok) return false
+        const { available } = await response.json()
+        return available
+      } catch (error) {
+        console.error('Error checking username availability:', error)
+        return false
+      }
+    },
+    []
+  )
+
   // Validation functions
-  const validateProgramStep = (): boolean => {
-    // Program is now optional
-    return true
+  const validateUserInfoStep = (): boolean => {
+    const newErrors: FormErrors = {}
+
+    // Username validation
+    if (!formData.username.trim()) {
+      newErrors.username = 'El nombre de usuario es requerido'
+    } else if (!/^[a-z0-9_]{3,50}$/.test(formData.username)) {
+      newErrors.username =
+        'Formato inválido (3-50 caracteres, minúsculas, números y guiones bajos)'
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'El correo electrónico es requerido'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Formato de correo inválido'
+    }
+
+    // Display name validation (optional)
+    if (formData.displayName && formData.displayName.length > 100) {
+      newErrors.displayName = 'El nombre para mostrar no puede exceder 100 caracteres'
+    }
+
+    // Bio validation (optional)
+    if (formData.bio && formData.bio.length > 280) {
+      newErrors.bio = 'La biografía no puede exceder 280 caracteres'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   const validateGoalStep = (): boolean => {
@@ -84,12 +170,8 @@ export default function MultiStepOnboardingFormConvex() {
   }
 
   const validateSocialStep = (): boolean => {
-    const newErrors: FormErrors = {}
-    if (formData.linkedinUrl && !/^https?:\/\/.+/.test(formData.linkedinUrl)) {
-      newErrors.linkedinUrl = 'URL de LinkedIn inválida'
-    }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    // All social accounts are optional
+    return true
   }
 
   // Navigation handlers
@@ -97,8 +179,8 @@ export default function MultiStepOnboardingFormConvex() {
     let isValid = false
 
     switch (currentStep) {
-      case 'program':
-        isValid = validateProgramStep()
+      case 'userInfo':
+        isValid = validateUserInfoStep()
         break
       case 'goal':
         isValid = validateGoalStep()
@@ -128,16 +210,51 @@ export default function MultiStepOnboardingFormConvex() {
   }
 
   const handleSubmit = async () => {
+    if (!privyDid) {
+      toast.error('No estás autenticado')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      await submit({
-        programId: formData.programId || undefined,
+      // Step 1: Upload avatar if provided (using existing API route)
+      let avatarUrl: string | undefined
+      if (formData.avatarFile) {
+        const avatarFormData = new FormData()
+        avatarFormData.append('file', formData.avatarFile)
+
+        const avatarResponse = await fetch('/api/profiles/avatar', {
+          method: 'POST',
+          body: avatarFormData,
+        })
+
+        if (avatarResponse.ok) {
+          const data = await avatarResponse.json()
+          avatarUrl = data.data?.avatarUrl || data.url
+        }
+      }
+
+      // Step 2: Update user profile via Convex
+      await updateCurrentUser({
+        privyDid,
+        username: formData.username,
+        email: formData.email,
+        displayName: formData.displayName || undefined,
+        bio: formData.bio || undefined,
+        avatarUrl,
+      })
+
+      // Step 3: Submit application via Convex
+      await submitApplication({
+        privyDid,
         goal: formData.goal,
         motivationText: formData.motivationText,
         githubUsername: formData.githubUsername || undefined,
         twitterUsername: formData.twitterUsername || undefined,
-        linkedinUrl: formData.linkedinUrl || undefined,
+        linkedinUrl: formData.linkedinUsername
+          ? `https://linkedin.com/in/${formData.linkedinUsername}`
+          : undefined,
         telegramUsername: formData.telegramUsername || undefined,
       })
 
@@ -145,71 +262,104 @@ export default function MultiStepOnboardingFormConvex() {
       toast.info('Tu aplicación está siendo revisada. Te notificaremos pronto.')
       router.push('/profile')
     } catch (error) {
-      console.error('Error submitting application:', error)
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Error al enviar la aplicación'
-      )
+      console.error('Submission error:', error)
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Error al procesar la aplicación')
+      }
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  return (
-    <div className="space-y-8">
-      {/* Progress indicator */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">{stepTitles[currentStep]}</span>
-          <span className="text-muted-foreground">
-            Paso {currentStepIndex + 1} de {steps.length}
-          </span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
+  // Helper function to get initials
+  const getInitials = (name?: string): string => {
+    if (!name) return '?'
+    return name.charAt(0).toUpperCase()
+  }
 
-      {/* Step content */}
-      <div className="min-h-[400px]">
-        {/* Program Step */}
-        <div className={currentStep === 'program' ? 'block' : 'hidden'}>
-          <ProgramSelector
-            value={formData.programId}
-            onChange={(programId) => setFormData((prev) => ({ ...prev, programId }))}
-            error={errors.programId}
+  // Handle form data changes
+  const handleFormDataChange = useCallback(
+    (field: string, value: string | File | null) => {
+      if (field === 'avatarFile' && value instanceof File) {
+        // Create preview for avatar
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setAvatarPreview(reader.result as string)
+        }
+        reader.readAsDataURL(value)
+      }
+
+      setFormData((prev) => ({ ...prev, [field]: value }))
+    },
+    []
+  )
+
+  // Memoized handlers for child components
+  const handleGoalChange = useCallback((goal: string) => {
+    setFormData((prev) => ({ ...prev, goal }))
+  }, [])
+
+  const handleMotivationChange = useCallback((motivationText: string) => {
+    setFormData((prev) => ({ ...prev, motivationText }))
+  }, [])
+
+  const handleSocialChange = useCallback((field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }, [])
+
+  // Render step content
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 'userInfo':
+        return (
+          <UserInfoForm
+            values={{
+              avatarFile: formData.avatarFile,
+              username: formData.username,
+              email: formData.email,
+              displayName: formData.displayName,
+              bio: formData.bio,
+            }}
+            onChange={handleFormDataChange}
+            errors={errors}
+            checkUsernameAvailability={checkUsernameAvailability}
+            currentUser={{
+              email: privyUser?.email?.address,
+              ethAddress: privyUser?.wallet?.address as `0x${string}` | undefined,
+            }}
           />
-        </div>
+        )
 
-        {/* Goal Step */}
-        <div className={currentStep === 'goal' ? 'block' : 'hidden'}>
+      case 'goal':
+        return (
           <GoalInput
             goal={formData.goal}
-            onGoalChange={(goal) => setFormData((prev) => ({ ...prev, goal }))}
+            onGoalChange={handleGoalChange}
             goalError={errors.goal}
             motivationText={formData.motivationText}
-            onMotivationChange={(motivationText) =>
-              setFormData((prev) => ({ ...prev, motivationText }))
-            }
+            onMotivationChange={handleMotivationChange}
             motivationError={errors.motivationText}
           />
-        </div>
+        )
 
-        {/* Social Step */}
-        <div className={currentStep === 'social' ? 'block' : 'hidden'}>
-          <SocialAccountsForm
+      case 'social':
+        return (
+          <SocialAccountsFormEnhanced
             values={{
               githubUsername: formData.githubUsername,
               twitterUsername: formData.twitterUsername,
-              linkedinUrl: formData.linkedinUrl,
+              linkedinUsername: formData.linkedinUsername,
               telegramUsername: formData.telegramUsername,
             }}
-            onChange={(field, value) => setFormData((prev) => ({ ...prev, [field]: value }))}
+            onChange={handleSocialChange}
             errors={errors}
           />
-        </div>
+        )
 
-        {/* Review Step */}
-        <div className={currentStep === 'review' ? 'block' : 'hidden'}>
+      case 'review':
+        return (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-4">Revisa tu información</h3>
@@ -217,6 +367,29 @@ export default function MultiStepOnboardingFormConvex() {
                 Por favor verifica que toda la información sea correcta antes de enviar tu
                 aplicación.
               </p>
+            </div>
+
+            {/* User Info Summary */}
+            <div className="space-y-3 rounded-lg border p-4">
+              <h4 className="font-semibold">Tu Información</h4>
+              <div className="flex items-start gap-4">
+                <Avatar className="h-16 w-16">
+                  {avatarPreview && <AvatarImage src={avatarPreview} alt="Avatar" />}
+                  <AvatarFallback>
+                    {getInitials(formData.displayName || formData.username)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                  <div className="font-medium">
+                    {formData.displayName || formData.username}
+                  </div>
+                  <div className="text-sm text-muted-foreground">@{formData.username}</div>
+                  <div className="text-sm text-muted-foreground">{formData.email}</div>
+                  {formData.bio && (
+                    <div className="text-sm mt-2 text-muted-foreground">{formData.bio}</div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Goal summary */}
@@ -234,41 +407,61 @@ export default function MultiStepOnboardingFormConvex() {
             {/* Social accounts summary */}
             {(formData.githubUsername ||
               formData.twitterUsername ||
-              formData.linkedinUrl ||
+              formData.linkedinUsername ||
               formData.telegramUsername) && (
               <div className="space-y-3 rounded-lg border p-4">
                 <h4 className="font-semibold">Cuentas conectadas</h4>
                 <div className="space-y-2 text-sm">
                   {formData.githubUsername && (
-                    <div>
-                      <span className="text-muted-foreground">GitHub:</span>{' '}
-                      <span className="font-medium">@{formData.githubUsername}</span>
+                    <div className="flex items-center gap-2">
+                      <Github className="h-4 w-4" />
+                      <span>github.com/{formData.githubUsername}</span>
+                    </div>
+                  )}
+                  {formData.linkedinUsername && (
+                    <div className="flex items-center gap-2">
+                      <Linkedin className="h-4 w-4" />
+                      <span>linkedin.com/in/{formData.linkedinUsername}</span>
                     </div>
                   )}
                   {formData.twitterUsername && (
-                    <div>
-                      <span className="text-muted-foreground">X/Twitter:</span>{' '}
-                      <span className="font-medium">@{formData.twitterUsername}</span>
-                    </div>
-                  )}
-                  {formData.linkedinUrl && (
-                    <div>
-                      <span className="text-muted-foreground">LinkedIn:</span>{' '}
-                      <span className="font-medium text-xs break-all">{formData.linkedinUrl}</span>
+                    <div className="flex items-center gap-2">
+                      <Twitter className="h-4 w-4" />
+                      <span>x.com/{formData.twitterUsername}</span>
                     </div>
                   )}
                   {formData.telegramUsername && (
-                    <div>
-                      <span className="text-muted-foreground">Telegram:</span>{' '}
-                      <span className="font-medium">@{formData.telegramUsername}</span>
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      <span>@{formData.telegramUsername}</span>
                     </div>
                   )}
                 </div>
               </div>
             )}
           </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Progress indicator */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-medium">{stepTitles[currentStep]}</span>
+          <span className="text-muted-foreground">
+            Paso {currentStepIndex + 1} de {steps.length}
+          </span>
         </div>
+        <Progress value={progress} className="h-2" />
       </div>
+
+      {/* Step content */}
+      <div className="min-h-[400px]">{renderStepContent()}</div>
 
       {/* Navigation buttons */}
       <div className="flex items-center justify-between pt-6 border-t">

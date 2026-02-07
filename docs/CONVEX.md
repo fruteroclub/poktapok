@@ -336,18 +336,19 @@ async function test() {
 
 - [x] Schema created (11 tables)
 - [x] ConvexProvider integrated
-- [x] Auth functions (getOrCreateUser, getCurrentUser)
+- [x] Auth functions (getOrCreateUser, getCurrentUser, checkUsername)
 - [x] Profile functions (upsert, getByUserId)
 - [x] Application functions (submit, approve, reject)
 - [x] Events query (listPublished)
 - [x] Luma sync action
 - [x] Cron job (daily sync)
 - [x] AuthButtonConvex component
-- [x] Onboarding form with Convex
+- [x] Full onboarding form with Convex (4 steps: userInfo, goal, social, review)
+- [x] Auth store integration (bridge Convex types to API types via convex-transforms.ts)
+- [x] Type transforms (toApiUser, toApiProfile)
 
 ### In Progress 🔄
 
-- [ ] Auth store integration (bridge Convex types to API types)
 - [ ] Test full login → onboarding flow
 - [ ] Migrate remaining components
 

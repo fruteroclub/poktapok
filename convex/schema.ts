@@ -71,11 +71,16 @@ export default defineSchema({
     country: v.optional(v.string()),
     countryCode: v.optional(v.string()),
 
-    // Social Links
+    // Social Links (URLs)
     githubUrl: v.optional(v.string()),
     twitterUrl: v.optional(v.string()),
     linkedinUrl: v.optional(v.string()),
     telegramHandle: v.optional(v.string()),
+
+    // Social Usernames (for onboarding form)
+    githubUsername: v.optional(v.string()),
+    twitterUsername: v.optional(v.string()),
+    telegramUsername: v.optional(v.string()),
 
     // Learning & Interests
     learningTracks: v.array(
@@ -191,10 +196,13 @@ export default defineSchema({
       v.literal("active"),
       v.literal("archived")
     ),
+    isActive: v.optional(v.boolean()), // For quick filtering
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
     metadata: v.optional(v.any()),
-  }).index("by_status", ["status"]),
+  })
+    .index("by_status", ["status"])
+    .index("by_active", ["isActive"]),
 
   // ============================================================
   // SESSIONS - Program sessions
@@ -254,7 +262,11 @@ export default defineSchema({
   // ============================================================
   applications: defineTable({
     userId: v.id("users"),
-    motivationText: v.optional(v.string()),
+    programId: v.optional(v.id("programs")),
+    goal: v.optional(v.string()), // User's goal (max 280 chars)
+    motivationText: v.optional(v.string()), // Why they want to join (max 500 chars)
+    githubUsername: v.optional(v.string()),
+    twitterUsername: v.optional(v.string()),
     status: v.union(
       v.literal("pending"),
       v.literal("approved"),

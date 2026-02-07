@@ -8,10 +8,13 @@
  * @module
  */
 
+import type * as applications from "../applications.js";
+import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as events from "../events.js";
 import type * as luma_sync from "../luma/sync.js";
 import type * as luma_syncAction from "../luma/syncAction.js";
+import type * as profiles from "../profiles.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,10 +24,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  applications: typeof applications;
+  auth: typeof auth;
   crons: typeof crons;
   events: typeof events;
   "luma/sync": typeof luma_sync;
   "luma/syncAction": typeof luma_syncAction;
+  profiles: typeof profiles;
   users: typeof users;
 }>;
 

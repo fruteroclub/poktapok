@@ -1,17 +1,21 @@
 'use client'
 
+import { useEffect } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import { useAuthStore } from '@/store/auth-store'
+import { toApiUser, toApiProfile } from '@/lib/convex-transforms'
 
 /**
  * Unified Auth Hook with Convex + Privy
  *
  * Combines Privy authentication with Convex user management.
- * Returns raw Convex data types - does not transform to API types.
+ * Syncs Convex data to Zustand store using type transforms.
  */
 export function useAuthWithConvex() {
   const { authenticated, ready, user: privyUser } = usePrivy()
+  const { setAuthData, setLoading, clearAuth } = useAuthStore()
 
   // Get privyDid from Privy user
   const privyDid = privyUser?.id
@@ -27,6 +31,41 @@ export function useAuthWithConvex() {
 
   // Update last login
   const updateLastLogin = useMutation(api.auth.updateLastLogin)
+
+  // Sync Convex data to Zustand store
+  useEffect(() => {
+    if (!ready) {
+      setLoading(true)
+      return
+    }
+
+    if (!authenticated || !privyDid) {
+      clearAuth()
+      return
+    }
+
+    if (currentUserData === undefined) {
+      // Still loading from Convex
+      setLoading(true)
+      return
+    }
+
+    if (currentUserData) {
+      // Transform Convex types to API types and sync to store
+      const apiUser = toApiUser(currentUserData.user)
+      const apiProfile = currentUserData.profile
+        ? toApiProfile(currentUserData.profile)
+        : null
+
+      setAuthData({
+        user: apiUser,
+        profile: apiProfile,
+      })
+    } else {
+      // User doesn't exist in Convex yet
+      clearAuth()
+    }
+  }, [ready, authenticated, privyDid, currentUserData, setAuthData, setLoading, clearAuth])
 
   // Create user in Convex after Privy login
   const handleLogin = async () => {
@@ -78,6 +117,19 @@ export function useAuthWithConvex() {
       // Update last login
       await updateLastLogin({ privyDid })
 
+      // Transform and sync to store
+      if (result.user) {
+        const apiUser = toApiUser(result.user)
+        const apiProfile = result.profile
+          ? toApiProfile(result.profile)
+          : null
+
+        setAuthData({
+          user: apiUser,
+          profile: apiProfile,
+        })
+      }
+
       return result
     } catch (error) {
       console.error('Error creating user in Convex:', error)
@@ -91,9 +143,17 @@ export function useAuthWithConvex() {
     isLoading: !ready || currentUserData === undefined,
     isReady: ready,
 
-    // User data (raw Convex types)
-    user: currentUserData?.user ?? null,
-    profile: currentUserData?.profile ?? null,
+    // User data (API types for compatibility)
+    user: currentUserData?.user ? toApiUser(currentUserData.user) : null,
+    profile: currentUserData?.profile
+      ? toApiProfile(currentUserData.profile)
+      : null,
+
+    // Raw Convex data (for components that need it)
+    convexUser: currentUserData?.user ?? null,
+    convexProfile: currentUserData?.profile ?? null,
+
+    // Privy data
     privyDid,
     privyUser,
 
@@ -132,7 +192,7 @@ export function useOnboardingSubmit() {
 }
 
 /**
- * Hook to update current user profile
+ * Hook to update current user
  */
 export function useUpdateCurrentUserConvex() {
   const { privyDid } = useAuthWithConvex()

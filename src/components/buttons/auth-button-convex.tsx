@@ -2,12 +2,14 @@
 
 import { type Dispatch, type SetStateAction } from 'react'
 import { useLogin, useLogout, usePrivy } from '@privy-io/react-auth'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth-store'
+import { toApiUser, toApiProfile } from '@/lib/convex-transforms'
 
 type AuthButtonProps = {
   children?: React.ReactNode
@@ -20,7 +22,7 @@ type AuthButtonProps = {
  * Auth Button using Convex
  *
  * Handles login/logout with Privy and syncs user to Convex.
- * Replaces the old AuthButton that used API routes.
+ * Uses type transforms to sync Convex data to Zustand store.
  */
 export default function AuthButtonConvex({
   children,
@@ -28,18 +30,13 @@ export default function AuthButtonConvex({
   size = 'default',
   setIsMenuOpen,
 }: AuthButtonProps) {
-  const { ready: isPrivyReady, authenticated, user: privyUser } = usePrivy()
+  const { ready: isPrivyReady, authenticated } = usePrivy()
   const router = useRouter()
+  const { setAuthData, clearAuth } = useAuthStore()
 
   // Convex mutations
   const getOrCreateUser = useMutation(api.auth.getOrCreateUser)
   const updateLastLogin = useMutation(api.auth.updateLastLogin)
-
-  // Query current user from Convex (for routing decisions)
-  const currentUser = useQuery(
-    api.auth.getCurrentUser,
-    privyUser?.id ? { privyDid: privyUser.id } : 'skip'
-  )
 
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
@@ -137,6 +134,15 @@ export default function AuthButtonConvex({
           throw new Error('Failed to get user data from Convex')
         }
 
+        // Transform Convex types to API types and sync to store
+        const apiUser = toApiUser(user)
+        const apiProfile = result.profile ? toApiProfile(result.profile) : null
+
+        setAuthData({
+          user: apiUser,
+          profile: apiProfile,
+        })
+
         // Redirect based on account status
         if (user.accountStatus === 'incomplete') {
           router.push('/onboarding')
@@ -194,6 +200,9 @@ export default function AuthButtonConvex({
         sessionStorage.removeItem(key)
       }
     })
+
+    // Clear auth state from store
+    clearAuth()
 
     await logoutWithPrivy()
     router.push('/')

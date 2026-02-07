@@ -41,14 +41,9 @@ const MENU_ITEMS: MenuItemType[] = [
 export default function Navbar() {
   const pathname = usePathname()
   const { ready, authenticated } = usePrivy()
-  const {
-    data: authData,
-    isLoading: isLoadingAuth,
-    isFetching: isFetchingAuth,
-  } = useAuth()
-  const user = authData?.user
-  const isSignedIn = authData?.isAuthenticated && authenticated
-  const isLoading = isLoadingAuth || isFetchingAuth
+  const { user, isAuthenticated, isLoading: isLoadingAuth } = useAuth()
+  const isSignedIn = isAuthenticated && authenticated
+  const isLoading = isLoadingAuth
 
   return (
     <header className="sticky top-0 z-40 h-24 w-full bg-background">

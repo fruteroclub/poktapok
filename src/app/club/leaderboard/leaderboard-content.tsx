@@ -32,7 +32,7 @@ export function LeaderboardContent() {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-destructive">Error al cargar clasificación</h2>
             <p className="mt-2 text-muted-foreground">
-              {error instanceof Error ? error.message : 'Ocurrió un error desconocido'}
+              Ocurrió un error desconocido
             </p>
           </div>
         </div>
@@ -73,7 +73,22 @@ export function LeaderboardContent() {
     )
   }
 
-  const members = data?.profiles || []
+  const rawProfiles = data?.profiles || []
+
+  // Transform Convex profiles to expected format
+  const members = rawProfiles.map((p) => ({
+    id: p._id,
+    username: p.user?.username || 'unknown',
+    displayName: p.user?.displayName,
+    avatarUrl: p.user?.avatarUrl,
+    bio: p.user?.bio,
+    city: p.city,
+    country: p.country,
+    completedBounties: p.completedBounties || 0,
+    totalEarningsUsd: p.totalEarningsUsd || 0,
+    learningTracks: p.learningTracks,
+    availabilityStatus: p.availabilityStatus,
+  }))
 
   // Sort members based on category
   const sortedMembers = [...members].sort((a, b) => {

@@ -19,26 +19,26 @@ import { Section } from '@/components/layout/section'
  */
 export default function DashboardPage() {
   const router = useRouter()
-  const { data, isLoading, isError } = useAuth()
+  const { user, profile, isLoading, isAuthenticated } = useAuth()
 
   // Redirect if user hasn't completed onboarding
   useEffect(() => {
-    if (data?.user) {
-      if (data.user.accountStatus === 'incomplete' || !data.user.username) {
+    if (user) {
+      if (user.accountStatus === 'incomplete' || !user.username) {
         router.push('/onboarding')
-      } else if (!data.profile) {
+      } else if (!profile) {
         // User completed onboarding but not profile
         router.push('/profile')
       }
     }
-  }, [data, router])
+  }, [user, profile, router])
 
-  // Handle error state
+  // Handle unauthenticated state
   useEffect(() => {
-    if (isError) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/')
     }
-  }, [isError, router])
+  }, [isLoading, isAuthenticated, router])
 
   // Loading state
   if (isLoading) {
@@ -56,11 +56,9 @@ export default function DashboardPage() {
   }
 
   // No data state
-  if (!data?.user || !data?.profile) {
+  if (!user || !profile) {
     return null
   }
-
-  const { user, profile } = data
 
   const initials = (user.displayName || user.username || '')
     .split(' ')

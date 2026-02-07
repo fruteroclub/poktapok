@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as activities from "../activities.js";
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
@@ -15,6 +16,9 @@ import type * as events from "../events.js";
 import type * as luma_sync from "../luma/sync.js";
 import type * as luma_syncAction from "../luma/syncAction.js";
 import type * as profiles from "../profiles.js";
+import type * as programs from "../programs.js";
+import type * as projects from "../projects.js";
+import type * as sessions from "../sessions.js";
 import type * as users from "../users.js";
 
 import type {
@@ -24,6 +28,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  activities: typeof activities;
   applications: typeof applications;
   auth: typeof auth;
   crons: typeof crons;
@@ -31,6 +36,9 @@ declare const fullApi: ApiFromModules<{
   "luma/sync": typeof luma_sync;
   "luma/syncAction": typeof luma_syncAction;
   profiles: typeof profiles;
+  programs: typeof programs;
+  projects: typeof projects;
+  sessions: typeof sessions;
   users: typeof users;
 }>;
 

@@ -1,48 +1,109 @@
-/**
- * Program hooks for user-facing operations
- * TanStack Query hooks for program dashboard and activities
- */
+'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import {
-  fetchProgramDashboard,
-  fetchProgramSessions,
-  fetchPublicProgram,
-} from '@/services/programs'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { Id } from '../../convex/_generated/dataModel'
 
 /**
- * Hook to fetch program dashboard data
+ * Hook for active programs
  */
-export function useProgramDashboard(programId: string) {
-  return useQuery({
-    queryKey: ['programs', programId, 'dashboard'],
-    queryFn: () => fetchProgramDashboard(programId),
-    enabled: !!programId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+export function useActivePrograms() {
+  const result = useQuery(api.programs.listActive)
+
+  return {
+    data: result ?? { programs: [] },
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
 }
 
 /**
- * Hook to fetch program sessions
- */
-export function useProgramSessions(programId: string, upcoming = false) {
-  return useQuery({
-    queryKey: ['programs', programId, 'sessions', { upcoming }],
-    queryFn: () => fetchProgramSessions(programId, upcoming),
-    enabled: !!programId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-}
-
-/**
- * Hook to fetch public program detail
- * No authentication required
+ * Hook for public program
  */
 export function usePublicProgram(programId: string) {
-  return useQuery({
-    queryKey: ['programs', programId, 'public'],
-    queryFn: () => fetchPublicProgram(programId),
-    enabled: !!programId,
-    staleTime: 10 * 60 * 1000, // 10 minutes (public data, less volatile)
-  })
+  const result = useQuery(
+    api.programs.getById,
+    programId ? { programId: programId as Id<'programs'> } : 'skip'
+  )
+
+  return {
+    data: result ?? null,
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
+}
+
+/**
+ * Hook for program dashboard
+ */
+export function useProgramDashboard(programId: string) {
+  const result = useQuery(
+    api.programs.getDashboard,
+    programId ? { programId: programId as Id<'programs'> } : 'skip'
+  )
+
+  return {
+    data: result ?? null,
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
+}
+
+/**
+ * Hook for program sessions
+ */
+export function useProgramSessions(programId: string) {
+  const result = useQuery(
+    api.sessions.getByProgram,
+    programId ? { programId: programId as Id<'programs'> } : 'skip'
+  )
+
+  return {
+    data: result ?? { sessions: [] },
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
+}
+
+/**
+ * Hook for creating a program
+ */
+export function useCreateProgram() {
+  const mutation = useMutation(api.programs.create)
+
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
+}
+
+/**
+ * Hook for updating a program
+ */
+export function useUpdateProgram() {
+  const mutation = useMutation(api.programs.update)
+
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
+}
+
+/**
+ * Hook for deleting a program
+ */
+export function useDeleteProgram() {
+  const mutation = useMutation(api.programs.remove)
+
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }

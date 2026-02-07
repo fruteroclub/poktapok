@@ -1,61 +1,41 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchActivePrograms, submitApplication } from '@/services/onboarding'
-import type { SubmitApplicationRequest } from '@/types/api-v1'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 /**
- * Hook to fetch list of active programs for onboarding
- *
- * @returns React Query result with programs list
- *
- * @example
- * const { data, isLoading, error } = useActivePrograms();
- *
- * if (isLoading) return <div>Loading programs...</div>;
- * if (error) return <div>Error: {error.message}</div>;
- *
- * const programs = data?.programs || [];
+ * Hook for active programs (onboarding)
  */
 export function useActivePrograms() {
-  return useQuery({
-    queryKey: ['programs', 'active'],
-    queryFn: fetchActivePrograms,
-    staleTime: 5 * 60 * 1000, // 5 minutes (programs don't change often)
-  })
+  const result = useQuery(api.programs.listActive)
+
+  // Transform to expected format
+  const programs = (result?.programs || []).map((program) => ({
+    id: program._id,
+    name: program.name,
+    description: program.description,
+    programType: program.isActive ? 'continuous' : 'cohort',
+    startDate: program.startDate,
+    endDate: program.endDate,
+    status: program.status,
+  }))
+
+  return {
+    data: { programs },
+    isLoading: result === undefined,
+    error: null,
+  }
 }
 
 /**
- * Hook to submit onboarding application
- *
- * @returns React Query mutation for submitting application
- *
- * @example
- * const submitMutation = useSubmitApplication();
- *
- * const handleSubmit = () => {
- *   submitMutation.mutate({
- *     programId: 'uuid',
- *     goal: 'My 1-month goal...',
- *     githubUsername: 'username',
- *   }, {
- *     onSuccess: () => {
- *       router.push('/profile');
- *     },
- *     onError: (error) => {
- *       toast.error(error.message);
- *     }
- *   });
- * };
+ * Hook for submitting application
  */
 export function useSubmitApplication() {
-  const queryClient = useQueryClient()
+  const mutation = useMutation(api.applications.submit)
 
-  return useMutation({
-    mutationFn: (data: SubmitApplicationRequest) => submitApplication(data),
-    onSuccess: () => {
-      // Invalidate auth query to refetch user with updated status
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-    },
-  })
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }

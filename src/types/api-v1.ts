@@ -158,10 +158,34 @@ export interface DirectoryCountriesData {
 // Project Types (Epic 2: Portfolio Showcase)
 // ============================================================================
 
-import type { Project, Skill, UserSkill, ProjectSkill } from '@/lib/db/schema'
+// Project and Skill types (migrated from Drizzle schema)
+export interface Project {
+  id: string
+  name: string
+  description?: string | null
+  ownerId?: string | null
+  status: 'active' | 'completed' | 'archived'
+}
 
-// Re-export schema types for convenience
-export type { Project, Skill, UserSkill, ProjectSkill }
+export interface Skill {
+  id: string
+  name: string
+  category?: string | null
+  description?: string | null
+}
+
+export interface UserSkill {
+  id: string
+  userId: string
+  skillId: string
+  proficiencyLevel?: number | null
+}
+
+export interface ProjectSkill {
+  id: string
+  projectId: string
+  skillId: string
+}
 
 /**
  * Project with related data (skills, user info, etc.)

@@ -139,6 +139,35 @@ export const getByUser = query({
 });
 
 /**
+ * List pending applications (for admin)
+ */
+export const listPending = query({
+  args: {},
+  handler: async (ctx) => {
+    const applications = await ctx.db
+      .query("applications")
+      .withIndex("by_status", (q) => q.eq("status", "pending"))
+      .collect();
+
+    // Get user info for each application
+    const pendingUsers = await Promise.all(
+      applications.map(async (app) => {
+        const user = await ctx.db.get(app.userId);
+        const profile = user
+          ? await ctx.db
+              .query("profiles")
+              .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+              .unique()
+          : null;
+        return { ...app, user, profile };
+      })
+    );
+
+    return { pendingUsers };
+  },
+});
+
+/**
  * List all applications (for admin)
  */
 export const list = query({

@@ -21,8 +21,7 @@ interface AdminRouteProps {
 export function AdminRoute({ children }: AdminRouteProps) {
   const router = useRouter()
   const { authenticated, ready } = usePrivy()
-  const { data, isLoading } = useAuth()
-  const user = data?.user
+  const { user, isLoading } = useAuth()
   const isAdmin = user?.role === 'admin'
 
   // Redirect if not authenticated

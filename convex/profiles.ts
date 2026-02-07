@@ -8,6 +8,49 @@ import { v } from "convex/values";
  */
 
 /**
+ * List public profiles for directory
+ */
+export const listPublic = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Get public profiles
+    const profiles = await ctx.db
+      .query("profiles")
+      .withIndex("by_visibility", (q) => q.eq("profileVisibility", "public"))
+      .take(args.limit ?? 50);
+
+    // Get associated users
+    const profilesWithUsers = await Promise.all(
+      profiles.map(async (profile) => {
+        const user = await ctx.db.get(profile.userId);
+        return {
+          ...profile,
+          user: user
+            ? {
+                _id: user._id,
+                username: user.username,
+                displayName: user.displayName,
+                avatarUrl: user.avatarUrl,
+                bio: user.bio,
+                accountStatus: user.accountStatus,
+              }
+            : null,
+        };
+      })
+    );
+
+    // Filter out profiles where user is not active
+    const activeProfiles = profilesWithUsers.filter(
+      (p) => p.user && p.user.accountStatus === "active"
+    );
+
+    return { profiles: activeProfiles };
+  },
+});
+
+/**
  * Create or update profile for a user
  */
 export const upsert = mutation({

@@ -24,8 +24,8 @@ type MobileMenuProps = {
 export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { authenticated } = usePrivy()
-  const { data: authData } = useAuth()
-  const isSignedIn = authData?.isAuthenticated && authenticated
+  const { isAuthenticated } = useAuth()
+  const isSignedIn = isAuthenticated && authenticated
 
   return (
     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>

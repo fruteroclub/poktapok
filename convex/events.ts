@@ -10,6 +10,49 @@ import { v } from "convex/values";
 // ============================================================
 
 /**
+ * List events with optional status filter
+ */
+export const list = query({
+  args: {
+    status: v.optional(v.string()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    let events;
+
+    if (args.status === "upcoming") {
+      events = await ctx.db
+        .query("events")
+        .withIndex("by_published", (q) => q.eq("isPublished", true))
+        .filter((q) => q.gte(q.field("startDate"), now))
+        .order("asc")
+        .take(args.limit ?? 50);
+    } else if (args.status === "past") {
+      events = await ctx.db
+        .query("events")
+        .withIndex("by_published", (q) => q.eq("isPublished", true))
+        .filter((q) => q.lt(q.field("startDate"), now))
+        .order("desc")
+        .take(args.limit ?? 50);
+    } else if (args.status === "live") {
+      events = await ctx.db
+        .query("events")
+        .withIndex("by_status", (q) => q.eq("status", "live"))
+        .take(args.limit ?? 50);
+    } else {
+      events = await ctx.db
+        .query("events")
+        .withIndex("by_published", (q) => q.eq("isPublished", true))
+        .order("desc")
+        .take(args.limit ?? 50);
+    }
+
+    return { events };
+  },
+});
+
+/**
  * List all published events
  */
 export const listPublished = query({

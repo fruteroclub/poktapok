@@ -224,11 +224,28 @@ export default defineSchema({
   // ACTIVITIES - Community activities
   // ============================================================
   activities: defineTable({
-    name: v.string(),
+    title: v.string(),
     description: v.optional(v.string()),
     activityType: v.string(),
+    difficulty: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced")
+    ),
+    rewardPulpaAmount: v.number(),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("archived")
+    ),
+    instructions: v.optional(v.string()),
+    totalAvailableSlots: v.optional(v.number()),
+    currentSubmissionsCount: v.number(),
     metadata: v.optional(v.any()),
-  }).index("by_type", ["activityType"]),
+  })
+    .index("by_type", ["activityType"])
+    .index("by_status", ["status"]),
 
   // ============================================================
   // PROJECTS - Member projects

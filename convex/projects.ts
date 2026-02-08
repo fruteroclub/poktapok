@@ -194,7 +194,7 @@ export const create = mutation({
     
     if (profile) {
       await ctx.db.patch(profile._id, {
-        completedBounties: (profile.completedBounties || 0) + 1,
+        projectsCount: (profile.projectsCount || 0) + 1,
       });
     }
 
@@ -292,9 +292,9 @@ export const remove = mutation({
       .withIndex("by_user_id", (q) => q.eq("userId", ownerId))
       .unique();
     
-    if (profile && profile.completedBounties && profile.completedBounties > 0) {
+    if (profile && profile.projectsCount && profile.projectsCount > 0) {
       await ctx.db.patch(profile._id, {
-        completedBounties: profile.completedBounties - 1,
+        projectsCount: profile.projectsCount - 1,
       });
     }
 

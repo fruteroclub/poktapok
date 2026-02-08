@@ -105,8 +105,9 @@ export default defineSchema({
     ),
 
     // Stats
-    completedBounties: v.number(),
-    totalEarningsUsd: v.number(),
+    projectsCount: v.optional(v.number()), // Portfolio projects (Epic 2)
+    completedBounties: v.optional(v.number()), // Bounties completed (Epic 3 - future)
+    totalEarningsUsd: v.optional(v.number()), // Earnings from bounties (Epic 3 - future)
     profileViews: v.number(),
 
     // Metadata

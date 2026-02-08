@@ -38,7 +38,7 @@ export interface Profile {
     telegram?: string // Username only (e.g., "@username" or "username")
   } | null
   // Stats
-  completedBounties?: number
+  projectsCount?: number
   totalEarningsUsd?: number
   profileViews?: number
   // Social usernames
@@ -106,7 +106,7 @@ export interface DirectoryProfile {
   countryCode: string | null
   learningTracks: ('ai' | 'crypto' | 'privacy')[] | null
   availabilityStatus: 'available' | 'open_to_offers' | 'unavailable'
-  completedBounties: number
+  projectsCount: number
   totalEarningsUsd: number
   githubUrl: string | null
   twitterUrl: string | null

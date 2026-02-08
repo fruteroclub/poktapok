@@ -107,8 +107,7 @@ export const upsert = mutation({
       linkedinUrl: args.socialLinks?.linkedin,
       telegramHandle: args.socialLinks?.telegram,
       profileVisibility: "public" as const,
-      completedBounties: 0,
-      totalEarningsUsd: 0,
+      projectsCount: 0,
       profileViews: 0,
     };
 
@@ -179,8 +178,9 @@ export const getByUsername = query({
 export const updateStats = mutation({
   args: {
     profileId: v.id("profiles"),
-    completedBounties: v.optional(v.number()),
-    totalEarningsUsd: v.optional(v.number()),
+    projectsCount: v.optional(v.number()),
+    completedBounties: v.optional(v.number()), // For Epic 3
+    totalEarningsUsd: v.optional(v.number()), // For Epic 3
     profileViews: v.optional(v.number()),
   },
   handler: async (ctx, args) => {

@@ -104,8 +104,7 @@ export const submit = mutation({
         learningTracks: [],
         profileVisibility: "public",
         availabilityStatus: "available",
-        completedBounties: 0,
-        totalEarningsUsd: 0,
+        projectsCount: 0,
         profileViews: 0,
       });
     }

@@ -217,32 +217,21 @@ export default function PublicProfilePage() {
 
           {/* Stats */}
           <Section>
-            <div className="grid w-full gap-4 sm:grid-cols-3">
+            <div className="grid w-full gap-4 sm:grid-cols-2">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Proyectos Completados
+                    Proyectos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
-                    {profile?.completedBounties || 0}
+                    {profile?.projectsCount || 0}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Total Ganado
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">
-                    ${profile?.totalEarningsUsd || 0}
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Earnings card hidden until Epic 3 (Bounty Marketplace) */}
 
               <Card>
                 <CardHeader className="pb-2">

@@ -45,7 +45,7 @@ export function toApiProfile(convexProfile: Doc<'profiles'>): Profile {
       telegram: convexProfile.telegramHandle ?? undefined,
     },
     // Stats
-    completedBounties: convexProfile.completedBounties ?? 0,
+    projectsCount: convexProfile.projectsCount ?? 0,
     totalEarningsUsd: convexProfile.totalEarningsUsd ?? 0,
     profileViews: convexProfile.profileViews ?? 0,
     // Social usernames

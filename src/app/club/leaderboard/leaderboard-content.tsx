@@ -84,7 +84,7 @@ export function LeaderboardContent() {
     bio: p.user?.bio,
     city: p.city,
     country: p.country,
-    completedBounties: p.completedBounties || 0,
+    projectsCount: p.projectsCount || 0,
     totalEarningsUsd: p.totalEarningsUsd || 0,
     learningTracks: p.learningTracks,
     availabilityStatus: p.availabilityStatus,
@@ -95,7 +95,7 @@ export function LeaderboardContent() {
     if (category === 'earnings') {
       return b.totalEarningsUsd - a.totalEarningsUsd
     }
-    return b.completedBounties - a.completedBounties
+    return b.projectsCount - a.projectsCount
   })
 
   const getRankBadge = (rank: number) => {
@@ -143,7 +143,7 @@ export function LeaderboardContent() {
               const value =
                 category === 'earnings'
                   ? `$${member.totalEarningsUsd}`
-                  : `${member.completedBounties} proyectos`
+                  : `${member.projectsCount} proyectos`
 
               return (
                 <Link key={member.id} href={`/profile/${member.username}`}>
@@ -200,12 +200,9 @@ export function LeaderboardContent() {
                       <div className="mt-4 flex gap-8 border-t pt-4">
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Proyectos</p>
-                          <p className="text-lg font-semibold">{member.completedBounties}</p>
+                          <p className="text-lg font-semibold">{member.projectsCount}</p>
                         </div>
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Ganado</p>
-                          <p className="text-lg font-semibold">${member.totalEarningsUsd}</p>
-                        </div>
+                        {/* Earnings hidden until Epic 3 (Bounty Marketplace) */}
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Estado</p>
                           <Badge

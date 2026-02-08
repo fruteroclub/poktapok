@@ -394,23 +394,16 @@ export default function ProfilePage() {
                       </div>
 
                       {/* Stats */}
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                      <div className="grid grid-cols-1 gap-4 pt-4 border-t">
                         <div>
                           <p className="text-2xl font-bold">
-                            {profile.completedBounties || 0}
+                            {profile.projectsCount || 0}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             Proyectos
                           </p>
                         </div>
-                        <div>
-                          <p className="text-2xl font-bold">
-                            ${profile.totalEarningsUsd || 0}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Ganado
-                          </p>
-                        </div>
+                        {/* Earnings hidden until Epic 3 (Bounty Marketplace) */}
                       </div>
 
                       {/* Social Links */}

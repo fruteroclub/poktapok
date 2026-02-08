@@ -37,6 +37,14 @@ export interface Profile {
     linkedin?: string // Username only (e.g., "username" from linkedin.com/in/username)
     telegram?: string // Username only (e.g., "@username" or "username")
   } | null
+  // Stats
+  completedBounties?: number
+  totalEarningsUsd?: number
+  profileViews?: number
+  // Social usernames
+  githubUsername?: string
+  twitterUsername?: string
+  telegramUsername?: string
 }
 
 // ============================================================================

@@ -69,12 +69,15 @@ export default function ProfilePage() {
     }
   }, [user, router])
 
+  // Get privyDid from Privy
+  const privyDid = usePrivy().user?.id
+
   const handleSaveUser = async () => {
-    if (!user) return
+    if (!user || !privyDid) return
     setIsSaving(true)
     try {
       await updateUserMutation({
-        privyDid: user.privyDid,
+        privyDid,
         displayName,
         bio,
       })
@@ -93,7 +96,7 @@ export default function ProfilePage() {
     setIsSaving(true)
     try {
       await updateProfileMutation({
-        profileId: profile._id as any,
+        profileId: profile.id as any,
         city,
         country,
       })
@@ -229,7 +232,14 @@ export default function ProfilePage() {
                           {initials}
                         </AvatarFallback>
                       </Avatar>
-                      <AvatarUpload onUpload={handleAvatarUpload} />
+                      <AvatarUpload
+                        currentAvatarUrl={user.avatarUrl}
+                        username={user.username || undefined}
+                        displayName={user.displayName}
+                        onFileSelect={async (file) => {
+                          if (file) await handleAvatarUpload(file)
+                        }}
+                      />
                     </div>
 
                     {/* Username */}

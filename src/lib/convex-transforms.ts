@@ -44,6 +44,14 @@ export function toApiProfile(convexProfile: Doc<'profiles'>): Profile {
       linkedin: convexProfile.linkedinUrl ?? undefined,
       telegram: convexProfile.telegramHandle ?? undefined,
     },
+    // Stats
+    completedBounties: convexProfile.completedBounties ?? 0,
+    totalEarningsUsd: convexProfile.totalEarningsUsd ?? 0,
+    profileViews: convexProfile.profileViews ?? 0,
+    // Social usernames
+    githubUsername: convexProfile.githubUsername ?? undefined,
+    twitterUsername: convexProfile.twitterUsername ?? undefined,
+    telegramUsername: convexProfile.telegramUsername ?? undefined,
   }
 }
 

@@ -225,13 +225,7 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Avatar */}
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-20 w-20">
-                        <AvatarImage src={user.avatarUrl || undefined} />
-                        <AvatarFallback className="text-xl">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
+                    <div className="flex justify-center">
                       <AvatarUpload
                         currentAvatarUrl={user.avatarUrl}
                         username={user.username || undefined}

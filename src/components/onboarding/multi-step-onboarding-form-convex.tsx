@@ -220,7 +220,7 @@ export default function MultiStepOnboardingFormConvex() {
       let avatarUrl: string | undefined
       if (formData.avatarFile) {
         const avatarFormData = new FormData()
-        avatarFormData.append('file', formData.avatarFile)
+        avatarFormData.append('avatar', formData.avatarFile)
 
         const avatarResponse = await fetch('/api/profiles/avatar', {
           method: 'POST',

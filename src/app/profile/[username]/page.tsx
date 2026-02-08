@@ -18,8 +18,10 @@ export default function PublicProfilePage() {
 
   const data = useQuery(api.profiles.getByUsername, { username })
   const projectsData = useQuery(api.projects.getByUsername, { username })
+  
+  const projects = projectsData?.projects ?? []
 
-  if (data === undefined) {
+  if (data === undefined || projectsData === undefined) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -269,11 +271,11 @@ export default function PublicProfilePage() {
           </Section>
 
           {/* Projects Section */}
-          {projectsData && projectsData.projects.length > 0 && (
+          {projects.length > 0 && (
             <Section>
-              <h2 className="mb-4 text-2xl font-bold">Proyectos</h2>
+              <h2 className="mb-4 text-2xl font-bold">Portfolio</h2>
               <div className="grid w-full gap-4 md:grid-cols-2">
-                {projectsData.projects.map((project) => (
+                {projects.map((project) => (
                   <Card key={project._id}>
                     <CardHeader className="pb-2">
                       <CardTitle className="line-clamp-1">{project.name}</CardTitle>

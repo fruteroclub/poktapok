@@ -186,6 +186,18 @@ export const create = mutation({
       isPublic: args.isPublic ?? true,
     });
 
+    // Update project count in profile
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+      .unique();
+    
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        completedBounties: (profile.completedBounties || 0) + 1,
+      });
+    }
+
     return await ctx.db.get(projectId);
   },
 });
@@ -269,7 +281,23 @@ export const remove = mutation({
       throw new Error("Not authorized to delete this project");
     }
 
+    // Get project owner before deleting
+    const ownerId = project.ownerId;
+    
     await ctx.db.delete(args.projectId);
+
+    // Update project count in profile
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", ownerId))
+      .unique();
+    
+    if (profile && profile.completedBounties && profile.completedBounties > 0) {
+      await ctx.db.patch(profile._id, {
+        completedBounties: profile.completedBounties - 1,
+      });
+    }
+
     return { success: true };
   },
 });

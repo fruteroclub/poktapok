@@ -174,6 +174,31 @@ export const getByUsername = query({
 });
 
 /**
+ * Update profile stats (for admin/system use)
+ */
+export const updateStats = mutation({
+  args: {
+    profileId: v.id("profiles"),
+    completedBounties: v.optional(v.number()),
+    totalEarningsUsd: v.optional(v.number()),
+    profileViews: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const { profileId, ...updates } = args;
+
+    const cleanUpdates: Record<string, any> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) {
+        cleanUpdates[key] = value;
+      }
+    }
+
+    await ctx.db.patch(profileId, cleanUpdates);
+    return await ctx.db.get(profileId);
+  },
+});
+
+/**
  * Update profile
  */
 export const update = mutation({

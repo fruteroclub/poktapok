@@ -367,6 +367,54 @@ export const createSkill = mutation({
 });
 
 /**
+ * Get or create a custom skill (for users to add skills not in preset list)
+ */
+export const getOrCreateCustomSkill = mutation({
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const name = args.name.trim();
+    if (name.length < 2 || name.length > 50) {
+      throw new Error("Skill name must be 2-50 characters");
+    }
+
+    // Create slug from name
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    // Check if exists by slug
+    const existing = await ctx.db
+      .query("skills")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+
+    if (existing) {
+      return existing._id;
+    }
+
+    // Check if exists by name (case-insensitive)
+    const byName = await ctx.db
+      .query("skills")
+      .withIndex("by_name", (q) => q.eq("name", name))
+      .first();
+
+    if (byName) {
+      return byName._id;
+    }
+
+    // Create new skill in "other" category
+    return await ctx.db.insert("skills", {
+      name,
+      slug,
+      category: "other",
+    });
+  },
+});
+
+/**
  * Seed initial skills (run once)
  */
 export const seedSkills = mutation({

@@ -75,6 +75,7 @@ export function useSkillMutations() {
   const endorse = useMutation(api.skills.endorse);
   const removeEndorsement = useMutation(api.skills.removeEndorsement);
   const seedSkills = useMutation(api.skills.seedSkills);
+  const getOrCreateCustomSkill = useMutation(api.skills.getOrCreateCustomSkill);
 
   return {
     addUserSkill,
@@ -83,6 +84,7 @@ export function useSkillMutations() {
     endorse,
     removeEndorsement,
     seedSkills,
+    getOrCreateCustomSkill,
   };
 }
 

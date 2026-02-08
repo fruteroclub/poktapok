@@ -19,6 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Id } from '../../../convex/_generated/dataModel';
 import { Plus, X, Loader2, ThumbsUp } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,12 +33,13 @@ interface SkillsEditorProps {
 export function SkillsEditor({ userId }: SkillsEditorProps) {
   const { skills, isLoading: loadingSkills } = useSkills();
   const { userSkills, isLoading: loadingUserSkills } = useUserSkills(userId);
-  const { addUserSkill, removeUserSkill, updateUserSkillLevel } = useSkillMutations();
+  const { addUserSkill, removeUserSkill, updateUserSkillLevel, getOrCreateCustomSkill } = useSkillMutations();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<SkillCategory | 'all'>('all');
   const [selectedSkillId, setSelectedSkillId] = useState<Id<'skills'> | ''>('');
   const [selectedLevel, setSelectedLevel] = useState<SkillLevel>('beginner');
+  const [customSkillName, setCustomSkillName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [removingId, setRemovingId] = useState<Id<'userSkills'> | null>(null);
 
@@ -78,6 +82,35 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
       });
       toast.success('Skill agregado');
       setSelectedSkillId('');
+      setSelectedLevel('beginner');
+      setIsDialogOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Error agregando skill');
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const handleAddCustomSkill = async () => {
+    if (!customSkillName.trim()) {
+      toast.error('Escribe el nombre del skill');
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      // Get or create the skill
+      const skillId = await getOrCreateCustomSkill({ name: customSkillName.trim() });
+      
+      // Add it to user's skills
+      await addUserSkill({
+        userId,
+        skillId,
+        level: selectedLevel,
+      });
+      
+      toast.success('Skill agregado');
+      setCustomSkillName('');
       setSelectedLevel('beginner');
       setIsDialogOpen(false);
     } catch (error: any) {
@@ -144,95 +177,155 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
             <DialogHeader>
               <DialogTitle>Agregar Skill</DialogTitle>
               <DialogDescription>
-                Selecciona un skill y tu nivel de experiencia
+                Selecciona de la lista o agrega uno personalizado
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              {/* Category Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Categoría</label>
-                <Select
-                  value={selectedCategory}
-                  onValueChange={(v) => {
-                    setSelectedCategory(v as SkillCategory | 'all');
-                    setSelectedSkillId('');
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas las categorías" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {getCategoryDisplayName(cat)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Skill Select */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Skill</label>
-                <Select
-                  value={selectedSkillId}
-                  onValueChange={(v) => setSelectedSkillId(v as Id<'skills'>)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un skill" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableSkills.length === 0 ? (
-                      <div className="p-2 text-sm text-muted-foreground">
-                        No hay más skills disponibles en esta categoría
-                      </div>
-                    ) : (
-                      availableSkills.map((skill) => (
-                        <SelectItem key={skill._id} value={skill._id}>
-                          {skill.name}
+            
+            <Tabs defaultValue="preset" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="preset">Lista</TabsTrigger>
+                <TabsTrigger value="custom">Personalizado</TabsTrigger>
+              </TabsList>
+              
+              {/* Preset Skills Tab */}
+              <TabsContent value="preset" className="space-y-4">
+                {/* Category Filter */}
+                <div className="space-y-2">
+                  <Label>Categoría</Label>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={(v) => {
+                      setSelectedCategory(v as SkillCategory | 'all');
+                      setSelectedSkillId('');
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas las categorías" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {getCategoryDisplayName(cat)}
                         </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Level Select */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Nivel</label>
-                <Select
-                  value={selectedLevel}
-                  onValueChange={(v) => setSelectedLevel(v as SkillLevel)}
+                {/* Skill Select */}
+                <div className="space-y-2">
+                  <Label>Skill</Label>
+                  <Select
+                    value={selectedSkillId}
+                    onValueChange={(v) => setSelectedSkillId(v as Id<'skills'>)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableSkills.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          No hay más skills disponibles en esta categoría
+                        </div>
+                      ) : (
+                        availableSkills.map((skill) => (
+                          <SelectItem key={skill._id} value={skill._id}>
+                            {skill.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Level Select */}
+                <div className="space-y-2">
+                  <Label>Nivel</Label>
+                  <Select
+                    value={selectedLevel}
+                    onValueChange={(v) => setSelectedLevel(v as SkillLevel)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {levels.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {getLevelDisplayName(level)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  className="w-full"
+                  onClick={handleAddSkill}
+                  disabled={!selectedSkillId || isAdding}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {levels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {getLevelDisplayName(level)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  {isAdding ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Agregando...
+                    </>
+                  ) : (
+                    'Agregar'
+                  )}
+                </Button>
+              </TabsContent>
 
-              <Button
-                className="w-full"
-                onClick={handleAddSkill}
-                disabled={!selectedSkillId || isAdding}
-              >
-                {isAdding ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Agregando...
-                  </>
-                ) : (
-                  'Agregar'
-                )}
-              </Button>
-            </div>
+              {/* Custom Skill Tab */}
+              <TabsContent value="custom" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Nombre del skill</Label>
+                  <Input
+                    value={customSkillName}
+                    onChange={(e) => setCustomSkillName(e.target.value)}
+                    placeholder="Ej: Svelte, Deno, Cairo..."
+                    maxLength={50}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Si no encuentras tu skill en la lista, agrégalo aquí
+                  </p>
+                </div>
+
+                {/* Level Select */}
+                <div className="space-y-2">
+                  <Label>Nivel</Label>
+                  <Select
+                    value={selectedLevel}
+                    onValueChange={(v) => setSelectedLevel(v as SkillLevel)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {levels.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {getLevelDisplayName(level)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  className="w-full"
+                  onClick={handleAddCustomSkill}
+                  disabled={!customSkillName.trim() || isAdding}
+                >
+                  {isAdding ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Agregando...
+                    </>
+                  ) : (
+                    'Agregar Skill Personalizado'
+                  )}
+                </Button>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>

@@ -179,6 +179,37 @@ export const updateCurrentUser = mutation({
 });
 
 /**
+ * Update user data
+ */
+export const updateUser = mutation({
+  args: {
+    privyDid: v.string(),
+    displayName: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.privyDid))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updates: Record<string, any> = {};
+    if (args.displayName !== undefined) updates.displayName = args.displayName;
+    if (args.bio !== undefined) updates.bio = args.bio;
+    if (args.avatarUrl !== undefined) updates.avatarUrl = args.avatarUrl;
+
+    await ctx.db.patch(user._id, updates);
+
+    return { success: true };
+  },
+});
+
+/**
  * Check if username is available
  */
 export const checkUsername = query({

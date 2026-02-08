@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation, useQuery, useConvex } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -103,21 +103,19 @@ export default function MultiStepOnboardingFormConvex() {
   const progress = ((currentStepIndex + 1) / steps.length) * 100
 
   // Username availability check using Convex
+  const convex = useConvex()
+  
   const checkUsernameAvailability = useCallback(
     async (username: string): Promise<boolean> => {
       try {
-        const response = await fetch(
-          `/api/auth/check-username?username=${encodeURIComponent(username)}`
-        )
-        if (!response.ok) return false
-        const { available } = await response.json()
-        return available
+        const result = await convex.query(api.auth.checkUsername, { username })
+        return result?.available ?? false
       } catch (error) {
         console.error('Error checking username availability:', error)
         return false
       }
     },
-    []
+    [convex]
   )
 
   // Validation functions

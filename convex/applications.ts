@@ -77,10 +77,9 @@ export const submit = mutation({
       status: "pending",
     });
 
-    // Auto-approve: set user status to active immediately
-    // (No admin approval required for MVP)
+    // Update user status to pending (awaiting admin approval)
     await ctx.db.patch(user._id, {
-      accountStatus: "active",
+      accountStatus: "pending",
     });
 
     // Update or create profile with social accounts

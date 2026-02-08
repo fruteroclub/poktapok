@@ -283,15 +283,24 @@ export default function MultiStepOnboardingFormConvex() {
         telegramUsername: formData.telegramUsername || undefined,
       })
 
-      // Step 4: If valid invite code, redeem it (auto-approves user)
-      if (inviteCode && inviteValid) {
+      // Step 4: If invite code exists, try to redeem it (auto-approves user)
+      if (inviteCode) {
         try {
-          await redeemInvitation({ inviteCode, redeemerPrivyDid: privyDid })
-          toast.success('¡Bienvenido a Frutero Club!')
-          toast.info('Tu cuenta ha sido activada automáticamente.')
+          // Validate and redeem in one step
+          const validation = await convex.query(api.invitations.validate, { inviteCode })
+          if (validation.valid) {
+            await redeemInvitation({ inviteCode, redeemerPrivyDid: privyDid })
+            toast.success('¡Bienvenido a Frutero Club!')
+            toast.info('Tu cuenta ha sido activada automáticamente.')
+          } else {
+            // Invalid code - show normal pending message
+            toast.success('¡Aplicación enviada exitosamente!')
+            toast.info('Tu aplicación está siendo revisada. Te notificaremos pronto.')
+          }
         } catch (error) {
           console.error('Failed to redeem invitation:', error)
-          // Continue anyway - they're already registered
+          toast.success('¡Aplicación enviada exitosamente!')
+          toast.info('Tu aplicación está siendo revisada. Te notificaremos pronto.')
         }
       } else {
         toast.success('¡Aplicación enviada exitosamente!')

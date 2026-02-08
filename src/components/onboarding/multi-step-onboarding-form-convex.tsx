@@ -57,10 +57,23 @@ export default function MultiStepOnboardingFormConvex() {
   const { user: privyUser, getAccessToken } = usePrivy()
   const privyDid = privyUser?.id
 
-  // Invitation code from URL
-  const inviteCode = searchParams.get('invite')
+  // Invitation code from URL or localStorage
+  const urlInviteCode = searchParams.get('invite')
+  const [inviteCode, setInviteCode] = useState<string | null>(urlInviteCode)
   const [inviteValid, setInviteValid] = useState<boolean | null>(null)
   const [inviterName, setInviterName] = useState<string | null>(null)
+
+  // Check localStorage for pending invite code (set by /invite/[code] page)
+  useEffect(() => {
+    if (!inviteCode) {
+      const storedCode = localStorage.getItem('pendingInviteCode')
+      if (storedCode) {
+        setInviteCode(storedCode)
+        // Clear it so it's not used again
+        localStorage.removeItem('pendingInviteCode')
+      }
+    }
+  }, [inviteCode])
 
   // Convex mutations
   const updateCurrentUser = useMutation(api.auth.updateCurrentUser)

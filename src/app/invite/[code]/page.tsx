@@ -103,7 +103,11 @@ export default function InvitePage() {
                   <p className="mb-4 text-sm text-muted-foreground">
                     Crea tu cuenta para continuar
                   </p>
-                  <Button size="lg" onClick={() => login()}>
+                  <Button size="lg" onClick={() => {
+                    // Save invite code before login (Privy may redirect elsewhere)
+                    localStorage.setItem('pendingInviteCode', code)
+                    login()
+                  }}>
                     Crear cuenta
                   </Button>
                 </div>

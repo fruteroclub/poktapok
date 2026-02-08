@@ -60,7 +60,7 @@ export default function DashboardPage() {
   }
 
   const handleCopyCode = (code: string) => {
-    const inviteUrl = `${window.location.origin}/onboarding?invite=${code}`
+    const inviteUrl = `${window.location.origin}/invite/${code}`
     navigator.clipboard.writeText(inviteUrl)
     setCopiedCode(code)
     toast.success('Link copiado al portapapeles')

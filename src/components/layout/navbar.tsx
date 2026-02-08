@@ -25,17 +25,15 @@ const MENU_ITEMS: MenuItemType[] = [
     isMobileOnly: false,
   },
   {
-    displayText: 'ecosistema',
-    href: '/ecosistema',
+    displayText: 'eventos',
+    href: '/club/eventos',
     isMobileOnly: false,
   },
   {
-    displayText: 'jam',
-    href: '/jam',
+    displayText: 'leaderboard',
+    href: '/club/leaderboard',
     isMobileOnly: false,
   },
-  // { displayText: 'recursos', href: '/recursos', isMobileOnly: false },
-  { displayText: '$PULPA', href: '/pulpa', isMobileOnly: false },
 ]
 
 export default function Navbar() {

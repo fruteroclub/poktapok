@@ -20,6 +20,7 @@ import type * as profiles from "../profiles.js";
 import type * as programs from "../programs.js";
 import type * as projects from "../projects.js";
 import type * as sessions from "../sessions.js";
+import type * as skills from "../skills.js";
 import type * as users from "../users.js";
 
 import type {
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   programs: typeof programs;
   projects: typeof projects;
   sessions: typeof sessions;
+  skills: typeof skills;
   users: typeof users;
 }>;
 

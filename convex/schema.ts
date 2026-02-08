@@ -294,10 +294,55 @@ export default defineSchema({
   // ============================================================
   skills: defineTable({
     name: v.string(),
-    category: v.optional(v.string()),
+    slug: v.string(), // URL-safe identifier
+    category: v.union(
+      v.literal("frontend"),
+      v.literal("backend"),
+      v.literal("blockchain"),
+      v.literal("ai"),
+      v.literal("devops"),
+      v.literal("design"),
+      v.literal("other")
+    ),
     description: v.optional(v.string()),
     metadata: v.optional(v.any()),
-  }).index("by_category", ["category"]),
+  })
+    .index("by_category", ["category"])
+    .index("by_slug", ["slug"])
+    .index("by_name", ["name"]),
+
+  // ============================================================
+  // USER_SKILLS - Skills assigned to users with proficiency level
+  // ============================================================
+  userSkills: defineTable({
+    userId: v.id("users"),
+    skillId: v.id("skills"),
+    level: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced")
+    ),
+    endorsementCount: v.number(), // Denormalized count for sorting
+    metadata: v.optional(v.any()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_skill", ["skillId"])
+    .index("by_user_skill", ["userId", "skillId"]),
+
+  // ============================================================
+  // ENDORSEMENTS - Peer skill endorsements
+  // ============================================================
+  endorsements: defineTable({
+    endorserId: v.id("users"), // Who is endorsing
+    endorseeId: v.id("users"), // Who is being endorsed
+    userSkillId: v.id("userSkills"), // The specific user-skill being endorsed
+    message: v.optional(v.string()), // Optional message (max 140 chars)
+    metadata: v.optional(v.any()),
+  })
+    .index("by_endorser", ["endorserId"])
+    .index("by_endorsee", ["endorseeId"])
+    .index("by_user_skill", ["userSkillId"])
+    .index("by_endorser_user_skill", ["endorserId", "userSkillId"]),
 
   // ============================================================
   // APPLICATIONS - Onboarding queue

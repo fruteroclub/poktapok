@@ -19,6 +19,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { SkillsEditor } from '@/components/skills/skills-editor'
+import { useAuth } from '@/hooks'
+import { Id } from '../../../convex/_generated/dataModel'
 import {
   Dialog,
   DialogContent,
@@ -60,6 +63,7 @@ const emptyForm: ProjectForm = {
 export default function ProjectsPage() {
   const router = useRouter()
   const { user: privyUser } = usePrivy()
+  const { user } = useAuth()
   const privyDid = privyUser?.id
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -193,6 +197,17 @@ export default function ProjectsPage() {
                 </Button>
               </div>
             </Section>
+
+            {/* Skills Editor */}
+            {user && (
+              <Section>
+                <Card className="w-full">
+                  <CardContent className="pt-6">
+                    <SkillsEditor userId={user.id as Id<'users'>} />
+                  </CardContent>
+                </Card>
+              </Section>
+            )}
 
             {/* Projects Grid */}
             <Section>

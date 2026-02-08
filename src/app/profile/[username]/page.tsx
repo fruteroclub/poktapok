@@ -11,15 +11,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { SkillsSection } from '@/components/skills/skills-section'
+import { useAuth } from '@/hooks'
 
 export default function PublicProfilePage() {
   const params = useParams()
   const username = params.username as string
+  const { user: currentUser } = useAuth()
 
   const data = useQuery(api.profiles.getByUsername, { username })
   const projectsData = useQuery(api.projects.getByUsername, { username })
   
   const projects = projectsData?.projects ?? []
+  const isOwnProfile = currentUser?.username === username
 
   if (data === undefined || projectsData === undefined) {
     return (
@@ -211,6 +215,15 @@ export default function PublicProfilePage() {
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </Section>
+
+          {/* Skills Section */}
+          <Section>
+            <Card className="w-full">
+              <CardContent className="pt-6">
+                <SkillsSection username={username} isOwnProfile={isOwnProfile} />
               </CardContent>
             </Card>
           </Section>

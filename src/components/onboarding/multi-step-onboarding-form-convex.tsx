@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useMutation, useQuery, useConvex } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
@@ -53,12 +53,19 @@ type FormErrors = Partial<Record<keyof FormData, string>>
  */
 export default function MultiStepOnboardingFormConvex() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user: privyUser, getAccessToken } = usePrivy()
   const privyDid = privyUser?.id
+
+  // Invitation code from URL
+  const inviteCode = searchParams.get('invite')
+  const [inviteValid, setInviteValid] = useState<boolean | null>(null)
+  const [inviterName, setInviterName] = useState<string | null>(null)
 
   // Convex mutations
   const updateCurrentUser = useMutation(api.auth.updateCurrentUser)
   const submitApplication = useMutation(api.applications.submit)
+  const redeemInvitation = useMutation(api.invitations.redeem)
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('userInfo')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -104,6 +111,18 @@ export default function MultiStepOnboardingFormConvex() {
 
   // Username availability check using Convex
   const convex = useConvex()
+
+  // Validate invitation code on mount
+  useEffect(() => {
+    if (inviteCode) {
+      convex.query(api.invitations.validate, { inviteCode }).then((result) => {
+        setInviteValid(result.valid)
+        if (result.valid && result.inviter) {
+          setInviterName(result.inviter.displayName || result.inviter.username || null)
+        }
+      })
+    }
+  }, [inviteCode, convex])
   
   const checkUsernameAvailability = useCallback(
     async (username: string): Promise<boolean> => {
@@ -264,8 +283,21 @@ export default function MultiStepOnboardingFormConvex() {
         telegramUsername: formData.telegramUsername || undefined,
       })
 
-      toast.success('¡Aplicación enviada exitosamente!')
-      toast.info('Tu aplicación está siendo revisada. Te notificaremos pronto.')
+      // Step 4: If valid invite code, redeem it (auto-approves user)
+      if (inviteCode && inviteValid) {
+        try {
+          await redeemInvitation({ inviteCode, redeemerPrivyDid: privyDid })
+          toast.success('¡Bienvenido a Frutero Club!')
+          toast.info('Tu cuenta ha sido activada automáticamente.')
+        } catch (error) {
+          console.error('Failed to redeem invitation:', error)
+          // Continue anyway - they're already registered
+        }
+      } else {
+        toast.success('¡Aplicación enviada exitosamente!')
+        toast.info('Tu aplicación está siendo revisada. Te notificaremos pronto.')
+      }
+      
       router.push('/profile')
     } catch (error) {
       console.error('Submission error:', error)

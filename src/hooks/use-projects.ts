@@ -45,9 +45,8 @@ export function useUserProjects() {
 /**
  * Hook for public projects
  */
-export function usePublicProjects(options?: { status?: string; limit?: number }) {
+export function usePublicProjects(options?: { limit?: number }) {
   const result = useQuery(api.projects.listPublic, {
-    status: options?.status,
     limit: options?.limit,
   })
 

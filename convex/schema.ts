@@ -251,18 +251,39 @@ export default defineSchema({
     .index("by_status", ["status"]),
 
   // ============================================================
-  // PROJECTS - Member projects
+  // PROJECTS - Member portfolio projects
   // ============================================================
   projects: defineTable({
+    // Basic info
     name: v.string(),
     description: v.optional(v.string()),
-    ownerId: v.optional(v.id("users")),
+    ownerId: v.id("users"),
+    
+    // Links
+    githubUrl: v.optional(v.string()),
+    demoUrl: v.optional(v.string()),
+    videoUrl: v.optional(v.string()), // YouTube embed
+    
+    // Tech stack (array of strings)
+    techStack: v.optional(v.array(v.string())),
+    
+    // Images
+    thumbnailUrl: v.optional(v.string()),
+    imageUrls: v.optional(v.array(v.string())),
+    
+    // Status
     status: v.union(
+      v.literal("draft"),
       v.literal("active"),
       v.literal("completed"),
       v.literal("archived")
     ),
-    metadata: v.optional(v.any()),
+    
+    // Visibility
+    isPublic: v.boolean(),
+    
+    // Dates
+    completedAt: v.optional(v.number()),
   })
     .index("by_owner", ["ownerId"])
     .index("by_status", ["status"]),

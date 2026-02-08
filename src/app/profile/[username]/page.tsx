@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
-import { Loader2, MapPin, Github, Twitter, Linkedin, MessageCircle, ArrowLeft } from 'lucide-react'
+import { Loader2, MapPin, Github, Twitter, Linkedin, MessageCircle, ArrowLeft, ExternalLink, Play } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,6 +17,7 @@ export default function PublicProfilePage() {
   const username = params.username as string
 
   const data = useQuery(api.profiles.getByUsername, { username })
+  const projectsData = useQuery(api.projects.getByUsername, { username })
 
   if (data === undefined) {
     return (
@@ -267,17 +268,65 @@ export default function PublicProfilePage() {
             </div>
           </Section>
 
-          {/* Future: Projects/Portfolio section */}
-          {/* 
-          <Section>
-            <h2 className="text-2xl font-bold mb-4">Proyectos</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {projects.map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </div>
-          </Section>
-          */}
+          {/* Projects Section */}
+          {projectsData && projectsData.projects.length > 0 && (
+            <Section>
+              <h2 className="mb-4 text-2xl font-bold">Proyectos</h2>
+              <div className="grid w-full gap-4 md:grid-cols-2">
+                {projectsData.projects.map((project) => (
+                  <Card key={project._id}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="line-clamp-1">{project.name}</CardTitle>
+                      {project.description && (
+                        <p className="line-clamp-2 text-sm text-muted-foreground">
+                          {project.description}
+                        </p>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      {/* Tech Stack */}
+                      {project.techStack && project.techStack.length > 0 && (
+                        <div className="mb-3 flex flex-wrap gap-1">
+                          {project.techStack.map((tech, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      {/* Links */}
+                      <div className="flex flex-wrap gap-2">
+                        {project.githubUrl && (
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                              <Github className="mr-1 h-3 w-3" />
+                              Code
+                            </a>
+                          </Button>
+                        )}
+                        {project.demoUrl && (
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="mr-1 h-3 w-3" />
+                              Demo
+                            </a>
+                          </Button>
+                        )}
+                        {project.videoUrl && (
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={project.videoUrl} target="_blank" rel="noopener noreferrer">
+                              <Play className="mr-1 h-3 w-3" />
+                              Video
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </Section>
+          )}
         </div>
       </div>
     </PageWrapper>

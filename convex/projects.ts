@@ -3,8 +3,8 @@ import { v } from "convex/values";
 
 /**
  * Projects Functions
- *
- * Member projects management.
+ * 
+ * Portfolio projects management for members.
  */
 
 /**
@@ -13,12 +13,24 @@ import { v } from "convex/values";
 export const getById = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.projectId);
+    if (!project) return null;
+
+    const owner = await ctx.db.get(project.ownerId);
+    return {
+      ...project,
+      owner: owner ? {
+        _id: owner._id,
+        username: owner.username,
+        displayName: owner.displayName,
+        avatarUrl: owner.avatarUrl,
+      } : null,
+    };
   },
 });
 
 /**
- * Get projects by user
+ * Get projects by user ID
  */
 export const getByUser = query({
   args: { userId: v.id("users") },
@@ -27,12 +39,45 @@ export const getByUser = query({
       .query("projects")
       .withIndex("by_owner", (q) => q.eq("ownerId", args.userId))
       .collect();
-    return { projects };
+
+    // Sort by creation time (newest first)
+    return {
+      projects: projects.sort((a, b) => b._creationTime - a._creationTime),
+    };
   },
 });
 
 /**
- * Get projects by current user (via privyDid)
+ * Get public projects by username (for public profile)
+ */
+export const getByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (!user) {
+      return { projects: [] };
+    }
+
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+      .collect();
+
+    // Only return public projects, sorted by newest
+    const publicProjects = projects
+      .filter((p) => p.isPublic && p.status !== "draft")
+      .sort((a, b) => b._creationTime - a._creationTime);
+
+    return { projects: publicProjects };
+  },
+});
+
+/**
+ * Get my projects (via privyDid)
  */
 export const getMyProjects = query({
   args: { privyDid: v.string() },
@@ -51,48 +96,42 @@ export const getMyProjects = query({
       .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
       .collect();
 
-    return { projects };
+    return {
+      projects: projects.sort((a, b) => b._creationTime - a._creationTime),
+    };
   },
 });
 
 /**
- * List public projects
+ * List public projects (for explore/discover)
  */
 export const listPublic = query({
   args: {
-    status: v.optional(v.string()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let projects;
+    const projects = await ctx.db
+      .query("projects")
+      .collect();
 
-    if (args.status) {
-      projects = await ctx.db
-        .query("projects")
-        .withIndex("by_status", (q) =>
-          q.eq("status", args.status as "active" | "completed" | "archived")
-        )
-        .take(args.limit ?? 50);
-    } else {
-      projects = await ctx.db.query("projects").take(args.limit ?? 50);
-    }
+    // Filter public and active/completed only
+    const publicProjects = projects
+      .filter((p) => p.isPublic && (p.status === "active" || p.status === "completed"))
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .slice(0, args.limit ?? 50);
 
     // Get owner info
     const projectsWithOwners = await Promise.all(
-      projects.map(async (project) => {
-        const owner = project.ownerId
-          ? await ctx.db.get(project.ownerId)
-          : null;
+      publicProjects.map(async (project) => {
+        const owner = await ctx.db.get(project.ownerId);
         return {
           ...project,
-          owner: owner
-            ? {
-                _id: owner._id,
-                username: owner.username,
-                displayName: owner.displayName,
-                avatarUrl: owner.avatarUrl,
-              }
-            : null,
+          owner: owner ? {
+            _id: owner._id,
+            username: owner.username,
+            displayName: owner.displayName,
+            avatarUrl: owner.avatarUrl,
+          } : null,
         };
       })
     );
@@ -106,13 +145,22 @@ export const listPublic = query({
  */
 export const create = mutation({
   args: {
+    privyDid: v.string(),
     name: v.string(),
     description: v.optional(v.string()),
-    privyDid: v.string(),
-    status: v.optional(
-      v.union(v.literal("active"), v.literal("completed"), v.literal("archived"))
-    ),
-    metadata: v.optional(v.any()),
+    githubUrl: v.optional(v.string()),
+    demoUrl: v.optional(v.string()),
+    videoUrl: v.optional(v.string()),
+    techStack: v.optional(v.array(v.string())),
+    thumbnailUrl: v.optional(v.string()),
+    imageUrls: v.optional(v.array(v.string())),
+    status: v.optional(v.union(
+      v.literal("draft"),
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("archived")
+    )),
+    isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -128,8 +176,14 @@ export const create = mutation({
       name: args.name,
       description: args.description,
       ownerId: user._id,
+      githubUrl: args.githubUrl,
+      demoUrl: args.demoUrl,
+      videoUrl: args.videoUrl,
+      techStack: args.techStack ?? [],
+      thumbnailUrl: args.thumbnailUrl,
+      imageUrls: args.imageUrls ?? [],
       status: args.status ?? "active",
-      metadata: args.metadata,
+      isPublic: args.isPublic ?? true,
     });
 
     return await ctx.db.get(projectId);
@@ -142,16 +196,43 @@ export const create = mutation({
 export const update = mutation({
   args: {
     projectId: v.id("projects"),
+    privyDid: v.string(), // For authorization
     name: v.optional(v.string()),
     description: v.optional(v.string()),
-    status: v.optional(
-      v.union(v.literal("active"), v.literal("completed"), v.literal("archived"))
-    ),
-    metadata: v.optional(v.any()),
+    githubUrl: v.optional(v.string()),
+    demoUrl: v.optional(v.string()),
+    videoUrl: v.optional(v.string()),
+    techStack: v.optional(v.array(v.string())),
+    thumbnailUrl: v.optional(v.string()),
+    imageUrls: v.optional(v.array(v.string())),
+    status: v.optional(v.union(
+      v.literal("draft"),
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("archived")
+    )),
+    isPublic: v.optional(v.boolean()),
+    completedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const { projectId, ...updates } = args;
+    const { projectId, privyDid, ...updates } = args;
 
+    // Verify ownership
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", privyDid))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const project = await ctx.db.get(projectId);
+    if (!project || project.ownerId !== user._id) {
+      throw new Error("Not authorized to edit this project");
+    }
+
+    // Filter undefined values
     const cleanUpdates: Record<string, any> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
@@ -168,8 +249,27 @@ export const update = mutation({
  * Delete project
  */
 export const remove = mutation({
-  args: { projectId: v.id("projects") },
+  args: {
+    projectId: v.id("projects"),
+    privyDid: v.string(),
+  },
   handler: async (ctx, args) => {
+    // Verify ownership
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.privyDid))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project || project.ownerId !== user._id) {
+      throw new Error("Not authorized to delete this project");
+    }
+
     await ctx.db.delete(args.projectId);
+    return { success: true };
   },
 });

@@ -150,9 +150,12 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex w-full justify-center gap-3">
+                  <div className="flex w-full flex-wrap justify-center gap-3">
                     <Button variant="outline" onClick={() => router.push('/profile')}>
                       Editar Perfil
+                    </Button>
+                    <Button variant="outline" onClick={() => router.push('/portfolio')}>
+                      Mi Portfolio
                     </Button>
                     <Button onClick={() => router.push('/directory')}>Ver Directorio</Button>
                   </div>

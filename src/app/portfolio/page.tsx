@@ -182,9 +182,9 @@ export default function ProjectsPage() {
             <Section>
               <div className="flex w-full items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight">Mis Proyectos</h1>
+                  <h1 className="text-3xl font-bold tracking-tight">Mi Portfolio</h1>
                   <p className="text-muted-foreground">
-                    Gestiona tu portfolio de proyectos
+                    Gestiona tu portfolio
                   </p>
                 </div>
                 <Button onClick={handleOpenCreate}>

@@ -18,7 +18,7 @@ export type MenuItemType = {
   isExternal?: boolean
 }
 
-const MENU_ITEMS: MenuItemType[] = [
+const PUBLIC_MENU_ITEMS: MenuItemType[] = [
   {
     displayText: 'club',
     href: '/club',
@@ -32,6 +32,14 @@ const MENU_ITEMS: MenuItemType[] = [
   {
     displayText: 'leaderboard',
     href: '/club/leaderboard',
+    isMobileOnly: false,
+  },
+]
+
+const AUTH_MENU_ITEMS: MenuItemType[] = [
+  {
+    displayText: 'portfolio',
+    href: '/portfolio',
     isMobileOnly: false,
   },
 ]
@@ -61,7 +69,7 @@ export default function Navbar() {
 
         <div className="z-10 col-span-3 flex items-center justify-center">
           <nav className="hidden gap-4 lg:flex">
-            {MENU_ITEMS.filter((menuItem) => {
+            {[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? AUTH_MENU_ITEMS : [])].filter((menuItem) => {
               // Filter out mobile-only items
               if (menuItem.isMobileOnly) return false
               return true
@@ -92,7 +100,7 @@ export default function Navbar() {
               <SparklesIcon className="ml-2 h-4 w-4 fill-background" />
             </AuthButton>
           )}
-          <MobileMenu menuItems={MENU_ITEMS} pathname={pathname} />
+          <MobileMenu menuItems={[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? AUTH_MENU_ITEMS : [])]} pathname={pathname} />
         </div>
       </div>
     </header>

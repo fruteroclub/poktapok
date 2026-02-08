@@ -157,7 +157,19 @@ export const getByUsername = query({
       .withIndex("by_user_id", (q) => q.eq("userId", user._id))
       .unique();
 
-    return { user, profile };
+    // Get inviter info if user was invited
+    let invitedBy = null;
+    if (user.invitedByUserId) {
+      const inviter = await ctx.db.get(user.invitedByUserId);
+      if (inviter) {
+        invitedBy = {
+          username: inviter.username,
+          displayName: inviter.displayName,
+        };
+      }
+    }
+
+    return { user, profile, invitedBy };
   },
 });
 

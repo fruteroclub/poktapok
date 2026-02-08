@@ -218,6 +218,9 @@ export const redeem = mutation({
       throw new Error("Usuario no encontrado");
     }
 
+    // Get inviter info
+    const inviter = await ctx.db.get(invitation.inviterUserId);
+
     // Mark invitation as redeemed
     await ctx.db.patch(invitation._id, {
       status: "redeemed",
@@ -225,12 +228,16 @@ export const redeem = mutation({
       redeemedAt: Date.now(),
     });
 
-    // Auto-approve the user (skip application review)
+    // Auto-approve the user (skip application review) and save who invited them
     await ctx.db.patch(redeemer._id, {
       accountStatus: "active",
+      invitedByUserId: invitation.inviterUserId,
     });
 
-    return { success: true };
+    return { 
+      success: true,
+      inviterUsername: inviter?.username,
+    };
   },
 });
 

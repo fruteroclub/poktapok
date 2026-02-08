@@ -51,7 +51,7 @@ export default function PublicProfilePage() {
     )
   }
 
-  const { user, profile } = data
+  const { user, profile, invitedBy } = data
 
   // Only show active users publicly
   if (user.accountStatus !== 'active') {
@@ -115,6 +115,19 @@ export default function PublicProfilePage() {
                       {user.displayName || user.username}
                     </h1>
                     <p className="text-lg text-muted-foreground">@{user.username}</p>
+
+                    {/* Invited By */}
+                    {invitedBy && (
+                      <p className="text-sm text-muted-foreground">
+                        Invitado por{' '}
+                        <Link 
+                          href={`/profile/${invitedBy.username}`}
+                          className="text-primary hover:underline"
+                        >
+                          @{invitedBy.username}
+                        </Link>
+                      </p>
+                    )}
 
                     {/* Location */}
                     {profile?.city && profile?.country && (

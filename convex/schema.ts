@@ -50,6 +50,9 @@ export default defineSchema({
     lastLoginAt: v.number(),
     deletedAt: v.optional(v.number()), // Soft delete
 
+    // Referral
+    invitedByUserId: v.optional(v.id("users")), // Who invited this user
+
     // Metadata
     privyMetadata: v.optional(v.any()), // Privy SDK data
     metadata: v.optional(v.any()), // Business logic data

@@ -439,15 +439,38 @@ curl http://localhost:3000/api/invite/{code}
 
 ## Epic 2: Portfolio Showcase (Weeks 2-3)
 
-**Coming Soon** - Portfolio builder, project uploads, skills endorsements
+**Status:** ✅ Mostly Complete (via Convex Migration)
 
-**Tickets:**
+**Completed:**
 
-- E2-T1: Portfolio Builder UI
-- E2-T2: Image Upload (Cloudflare R2)
-- E2-T3: GitHub Repository Integration
-- E2-T4: Skills & Tech Stack
-- E2-T5: Portfolio Analytics
+- ✅ E2-T1: Portfolio Builder UI (`/portfolio` page with CRUD)
+- ✅ E2-T3: GitHub/Demo/Video links in projects
+- ✅ E2-T4: Skills & Endorsements system (full implementation)
+- ✅ Profile page shows projects and skills
+
+**Deferred:**
+
+- ⏳ E2-T2: Image Upload - Using Vercel Blob for avatars; project thumbnails TBD
+- ⏳ E2-T5: Portfolio Analytics - **See Decision Log below**
+
+### Decision Log
+
+#### D-001: Portfolio Analytics Deferred (2026-02-08)
+
+**Feature:** E2-T5 Portfolio Analytics (track profile views, most viewed projects, skills distribution)
+
+**Decision:** Defer to post-MVP
+
+**Rationale:**
+1. **Admin-only feature** - No direct user value; doesn't help builders get hired
+2. **Core journey unblocked** - Users can create profiles, add skills, build portfolio, get endorsed without analytics
+3. **Epic 3 is higher priority** - Bounty Marketplace is the actual earning mechanism ("de cero a chamba en 3 meses")
+4. **Data dependency** - Analytics are more valuable once there's real usage data to analyze
+
+**Revisit when:**
+- 100+ active profiles
+- Epic 3 launched and stable
+- Admin dashboard needs expanded
 
 ---
 

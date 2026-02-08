@@ -20,7 +20,7 @@ import {
 import { UserInfoForm } from './user-info-form'
 import { GoalInput } from './goal-input'
 import { SocialAccountsFormEnhanced } from './social-accounts-form-enhanced'
-import { usePrivy } from '@privy-io/react-auth'
+import { usePrivy, useLoginWithEmail } from '@privy-io/react-auth'
 
 type OnboardingStep = 'userInfo' | 'goal' | 'social' | 'review'
 
@@ -53,7 +53,7 @@ type FormErrors = Partial<Record<keyof FormData, string>>
  */
 export default function MultiStepOnboardingFormConvex() {
   const router = useRouter()
-  const { user: privyUser } = usePrivy()
+  const { user: privyUser, getAccessToken } = usePrivy()
   const privyDid = privyUser?.id
 
   // Convex mutations
@@ -222,14 +222,22 @@ export default function MultiStepOnboardingFormConvex() {
         const avatarFormData = new FormData()
         avatarFormData.append('avatar', formData.avatarFile)
 
+        // Get access token for auth
+        const token = await getAccessToken()
+        
         const avatarResponse = await fetch('/api/profiles/avatar', {
           method: 'POST',
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: avatarFormData,
         })
 
         if (avatarResponse.ok) {
           const data = await avatarResponse.json()
-          avatarUrl = data.data?.avatarUrl || data.url
+          avatarUrl = data.avatarUrl || data.data?.avatarUrl || data.url
+        } else {
+          console.error('Avatar upload failed:', await avatarResponse.text())
         }
       }
 

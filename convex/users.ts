@@ -166,6 +166,30 @@ export const update = mutation({
 });
 
 /**
+ * Update user avatar by privyDid
+ */
+export const updateAvatar = mutation({
+  args: {
+    privyDid: v.string(),
+    avatarUrl: v.union(v.string(), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.privyDid))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user._id, { avatarUrl: args.avatarUrl ?? undefined });
+
+    return { success: true, avatarUrl: args.avatarUrl };
+  },
+});
+
+/**
  * Update user role (admin only)
  */
 export const updateRole = mutation({

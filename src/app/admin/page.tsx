@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { Loader2, Users, FileCheck, Settings } from 'lucide-react'
+import { Loader2, Users, FileCheck, Settings, Coins } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -65,6 +65,18 @@ export default function AdminPage() {
                     <CardTitle className="mt-4">Usuarios</CardTitle>
                     <CardDescription>
                       Gestionar miembros existentes
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link href="/admin/bounties">
+                <Card className="cursor-pointer transition-colors hover:bg-accent">
+                  <CardHeader>
+                    <Coins className="h-8 w-8 text-primary" />
+                    <CardTitle className="mt-4">Bounties</CardTitle>
+                    <CardDescription>
+                      Crear y gestionar bounties, revisar entregas
                     </CardDescription>
                   </CardHeader>
                 </Card>

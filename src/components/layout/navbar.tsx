@@ -30,6 +30,11 @@ const PUBLIC_MENU_ITEMS: MenuItemType[] = [
     isMobileOnly: false,
   },
   {
+    displayText: 'bounties',
+    href: '/bounties',
+    isMobileOnly: false,
+  },
+  {
     displayText: 'leaderboard',
     href: '/club/leaderboard',
     isMobileOnly: false,

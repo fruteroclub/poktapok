@@ -386,4 +386,156 @@ export default defineSchema({
     .index("by_inviter", ["inviterUserId"])
     .index("by_code", ["inviteCode"])
     .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOUNTIES - Bounty listings (Epic 3)
+  // ============================================================
+  bounties: defineTable({
+    // Basic info
+    title: v.string(),
+    description: v.string(),
+    requirements: v.optional(v.string()), // Detailed requirements/acceptance criteria
+    
+    // Categorization
+    difficulty: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced")
+    ),
+    techStack: v.array(v.string()), // Skills/technologies required
+    category: v.optional(v.string()), // e.g., "frontend", "smart-contract", "design"
+    
+    // Reward
+    rewardAmount: v.number(), // Amount in USD (or smallest unit)
+    rewardCurrency: v.string(), // "USD", "USDC", "ETH", etc.
+    
+    // Timing
+    deadlineDays: v.optional(v.number()), // Days to complete after claiming
+    expiresAt: v.optional(v.number()), // When bounty expires (Unix ms)
+    
+    // Status
+    status: v.union(
+      v.literal("draft"), // Not yet published
+      v.literal("open"), // Available for claiming
+      v.literal("claimed"), // Someone is working on it
+      v.literal("in_review"), // Submission received, pending review
+      v.literal("completed"), // Approved and paid
+      v.literal("cancelled") // Cancelled by admin
+    ),
+    
+    // Limits
+    maxClaims: v.optional(v.number()), // Max concurrent claims (default 1)
+    currentClaimsCount: v.number(),
+    
+    // Creator
+    createdByUserId: v.id("users"),
+    
+    // Links
+    resourceUrl: v.optional(v.string()), // Figma, GitHub issue, etc.
+    
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_status", ["status"])
+    .index("by_difficulty", ["difficulty"])
+    .index("by_creator", ["createdByUserId"]),
+
+  // ============================================================
+  // BOUNTY_CLAIMS - Track who claimed bounties
+  // ============================================================
+  bountyClaims: defineTable({
+    bountyId: v.id("bounties"),
+    userId: v.id("users"),
+    
+    // Status
+    status: v.union(
+      v.literal("active"), // Currently working
+      v.literal("submitted"), // Submitted for review
+      v.literal("approved"), // Approved by admin
+      v.literal("rejected"), // Rejected by admin
+      v.literal("expired"), // Time ran out
+      v.literal("abandoned") // User gave up
+    ),
+    
+    // Timing
+    claimedAt: v.number(),
+    expiresAt: v.number(), // When claim expires
+    submittedAt: v.optional(v.number()),
+    reviewedAt: v.optional(v.number()),
+    
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_bounty", ["bountyId"])
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_bounty_user", ["bountyId", "userId"]),
+
+  // ============================================================
+  // BOUNTY_SUBMISSIONS - Submissions for bounty claims
+  // ============================================================
+  bountySubmissions: defineTable({
+    claimId: v.id("bountyClaims"),
+    bountyId: v.id("bounties"),
+    userId: v.id("users"),
+    
+    // Submission content
+    submissionUrl: v.string(), // GitHub PR, deployed URL, etc.
+    notes: v.optional(v.string()), // Additional notes from submitter
+    
+    // Review
+    status: v.union(
+      v.literal("pending"), // Awaiting review
+      v.literal("approved"), // Approved
+      v.literal("rejected"), // Rejected
+      v.literal("revision_requested") // Needs changes
+    ),
+    reviewedByUserId: v.optional(v.id("users")),
+    reviewNotes: v.optional(v.string()), // Feedback from reviewer
+    reviewedAt: v.optional(v.number()),
+    
+    // Attempt tracking (for revision requests)
+    attemptNumber: v.number(), // 1, 2, 3...
+    
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_claim", ["claimId"])
+    .index("by_bounty", ["bountyId"])
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOUNTY_PAYMENTS - Payment records (Epic 4 prep)
+  // ============================================================
+  bountyPayments: defineTable({
+    submissionId: v.id("bountySubmissions"),
+    bountyId: v.id("bounties"),
+    userId: v.id("users"),
+    
+    // Payment details
+    amount: v.number(),
+    currency: v.string(),
+    
+    // Transaction info
+    status: v.union(
+      v.literal("pending"), // Payment initiated
+      v.literal("processing"), // Transaction in progress
+      v.literal("completed"), // Successfully paid
+      v.literal("failed") // Payment failed
+    ),
+    txHash: v.optional(v.string()), // Blockchain transaction hash
+    chain: v.optional(v.string()), // "ethereum", "base", "monad", etc.
+    
+    // Timing
+    initiatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_submission", ["submissionId"])
+    .index("by_bounty", ["bountyId"])
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"]),
 });

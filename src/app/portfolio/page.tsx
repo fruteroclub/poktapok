@@ -244,12 +244,12 @@ export default function ProjectsPage() {
                         {project.techStack && project.techStack.length > 0 && (
                           <div className="mb-3 flex flex-wrap gap-1">
                             {project.techStack.slice(0, 4).map((tech, i) => (
-                              <Badge key={i} variant="outline" className="text-xs">
+                              <Badge key={i} variant="outline" className="text-xs border-primary/20 bg-primary/5 text-foreground">
                                 {tech}
                               </Badge>
                             ))}
                             {project.techStack.length > 4 && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs border-primary/20 bg-primary/5 text-foreground">
                                 +{project.techStack.length - 4}
                               </Badge>
                             )}

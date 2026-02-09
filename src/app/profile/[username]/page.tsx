@@ -350,7 +350,7 @@ export default function PublicProfilePage() {
                       {project.techStack && project.techStack.length > 0 && (
                         <div className="mb-3 flex flex-wrap gap-1">
                           {project.techStack.map((tech, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">
+                            <Badge key={i} variant="outline" className="text-xs border-primary/20 bg-primary/5 text-foreground">
                               {tech}
                             </Badge>
                           ))}

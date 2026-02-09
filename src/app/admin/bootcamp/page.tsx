@@ -287,76 +287,102 @@ export default function AdminBootcampPage() {
                         {filteredDeliverables?.map(({ deliverable, user, enrollment }) => (
                           <div
                             key={deliverable._id}
-                            className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                            className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors space-y-3"
                           >
-                            <div className="flex items-center gap-4">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage src={user?.avatarUrl ?? undefined} />
-                                <AvatarFallback>
-                                  {user?.username?.[0]?.toUpperCase() ?? '?'}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium">
-                                  {user?.username ?? user?.email ?? 'Usuario'}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  Sesión {deliverable.sessionNumber} • {new Date(deliverable.submittedAt).toLocaleDateString('es-MX')}
-                                </p>
+                            {/* Header: User + Status */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarImage src={user?.avatarUrl ?? undefined} />
+                                  <AvatarFallback>
+                                    {user?.username?.[0]?.toUpperCase() ?? '?'}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium">
+                                    {user?.username ?? user?.email ?? 'Usuario'}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Sesión {deliverable.sessionNumber} • {new Date(deliverable.submittedAt).toLocaleDateString('es-MX')}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className={statusColors[deliverable.status as DeliverableStatus]}>
+                                  {statusLabels[deliverable.status as DeliverableStatus]}
+                                </Badge>
+                                
+                                {deliverable.level && (
+                                  <Badge variant="outline" className={levelColors[deliverable.level as Level]}>
+                                    {levelLabels[deliverable.level as Level]}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline" className={statusColors[deliverable.status as DeliverableStatus]}>
-                                {statusLabels[deliverable.status as DeliverableStatus]}
-                              </Badge>
-                              
-                              {deliverable.level && (
-                                <Badge variant="outline" className={levelColors[deliverable.level as Level]}>
-                                  {levelLabels[deliverable.level as Level]}
-                                </Badge>
-                              )}
-
+                            {/* Links */}
+                            <div className="flex flex-wrap gap-3 text-sm">
                               <a
                                 href={deliverable.projectUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary hover:underline"
+                                className="flex items-center gap-1 text-primary hover:underline"
                               >
                                 <ExternalLink className="h-4 w-4" />
+                                {deliverable.projectUrl.replace(/^https?:\/\//, '').slice(0, 40)}
+                                {deliverable.projectUrl.length > 50 && '...'}
                               </a>
-
-                              {deliverable.status === 'submitted' && (
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="text-green-600 hover:text-green-700"
-                                    onClick={() => setReviewDialog({
-                                      open: true,
-                                      deliverableId: deliverable._id,
-                                      action: 'approved',
-                                    })}
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                    Aprobar
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="text-red-600 hover:text-red-700"
-                                    onClick={() => setReviewDialog({
-                                      open: true,
-                                      deliverableId: deliverable._id,
-                                      action: 'needs_revision',
-                                    })}
-                                  >
-                                    <XCircle className="h-4 w-4 mr-1" />
-                                    Revisión
-                                  </Button>
-                                </div>
+                              {deliverable.repositoryUrl && (
+                                <a
+                                  href={deliverable.repositoryUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                                >
+                                  📦 Repo
+                                </a>
                               )}
                             </div>
+
+                            {/* Notes */}
+                            {deliverable.notes && (
+                              <div className="text-sm text-muted-foreground bg-muted/50 rounded p-2">
+                                💬 {deliverable.notes}
+                              </div>
+                            )}
+
+                            {/* Actions */}
+                            {deliverable.status === 'submitted' && (
+                              <div className="flex gap-2 pt-2 border-t">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-green-600 hover:text-green-700"
+                                  onClick={() => setReviewDialog({
+                                    open: true,
+                                    deliverableId: deliverable._id,
+                                    action: 'approved',
+                                  })}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Aprobar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-red-600 hover:text-red-700"
+                                  onClick={() => setReviewDialog({
+                                    open: true,
+                                    deliverableId: deliverable._id,
+                                    action: 'needs_revision',
+                                  })}
+                                >
+                                  <XCircle className="h-4 w-4 mr-1" />
+                                  Revisión
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

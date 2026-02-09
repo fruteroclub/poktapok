@@ -38,8 +38,9 @@ export const submit = mutation({
       throw new Error("User not found");
     }
 
-    // Verify user is in 'incomplete' status
-    if (user.accountStatus !== "incomplete") {
+    // Allow submission from "incomplete" users (normal flow) and "active" users
+    // (auto-approved via bootcamp code or invitation who still need to complete onboarding)
+    if (user.accountStatus !== "incomplete" && user.accountStatus !== "active") {
       throw new Error("User has already submitted an application");
     }
 
@@ -53,34 +54,43 @@ export const submit = mutation({
       throw new Error("Motivation must be 1-500 characters");
     }
 
+    const alreadyActive = user.accountStatus === "active";
+
     // Check for existing application
     const existingApplication = await ctx.db
       .query("applications")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .unique();
 
+    let applicationId;
     if (existingApplication) {
-      throw new Error("Application already exists");
+      // Update existing application (e.g. auto-created by bootcamp/invitation flow)
+      await ctx.db.patch(existingApplication._id, {
+        goal: args.goal,
+        motivationText: args.motivationText,
+        githubUsername: args.githubUsername,
+        twitterUsername: args.twitterUsername,
+        ...(alreadyActive ? { status: "approved" } : {}),
+      });
+      applicationId = existingApplication._id;
+    } else {
+      // Create new application
+      applicationId = await ctx.db.insert("applications", {
+        userId: user._id,
+        goal: args.goal,
+        motivationText: args.motivationText,
+        githubUsername: args.githubUsername,
+        twitterUsername: args.twitterUsername,
+        status: alreadyActive ? "approved" : "pending",
+      });
     }
 
-    // Look up program if provided (programs are optional)
-    // Note: programId comes as string from frontend, but we may need to find it
-    // For now, we'll skip program validation as it's optional
-
-    // Create application
-    const applicationId = await ctx.db.insert("applications", {
-      userId: user._id,
-      goal: args.goal,
-      motivationText: args.motivationText,
-      githubUsername: args.githubUsername,
-      twitterUsername: args.twitterUsername,
-      status: "pending",
-    });
-
-    // Update user status to pending (awaiting admin approval)
-    await ctx.db.patch(user._id, {
-      accountStatus: "pending",
-    });
+    // Only change accountStatus for non-active users (don't downgrade active → pending)
+    if (!alreadyActive) {
+      await ctx.db.patch(user._id, {
+        accountStatus: "pending",
+      });
+    }
 
     // Update or create profile with social accounts
     const existingProfile = await ctx.db

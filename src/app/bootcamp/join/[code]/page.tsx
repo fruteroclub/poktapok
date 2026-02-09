@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { useAuthWithConvex } from '@/hooks/use-auth-with-convex'
+import { usePrivy } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, CheckCircle, XCircle, Rocket, AlertCircle } from 'lucide-react'
@@ -15,7 +16,8 @@ export default function JoinBootcampPage() {
   const router = useRouter()
   const code = (params.code as string)?.toUpperCase()
   
-  const { user, convexUser, isLoading: authLoading, handleLogin } = useAuthWithConvex()
+  const { user, convexUser, isLoading: authLoading } = useAuthWithConvex()
+  const { login, ready: privyReady } = usePrivy()
   const enrollmentData = useQuery(
     api.bootcamp.getEnrollmentByCode,
     code ? { code } : 'skip'
@@ -62,7 +64,8 @@ export default function JoinBootcampPage() {
   console.log('🔍 Join page debug:', {
     code,
     authLoading,
-    enrollmentData,
+    privyReady,
+    enrollmentData: enrollmentData ? 'loaded' : 'undefined',
     user: user?.username,
     convexUser: convexUser?._id,
   })
@@ -228,7 +231,7 @@ export default function JoinBootcampPage() {
             <Button 
               className="w-full" 
               size="lg"
-              onClick={() => handleLogin()}
+              onClick={() => login()}
             >
               Iniciar sesión
             </Button>

@@ -58,8 +58,39 @@ export default function JoinBootcampPage() {
     }
   }
 
-  // Loading state
-  if (authLoading || enrollmentData === undefined) {
+  // Debug
+  console.log('🔍 Join page debug:', {
+    code,
+    authLoading,
+    enrollmentData,
+    user: user?.username,
+    convexUser: convexUser?._id,
+  })
+
+  // No code provided
+  if (!code) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <XCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
+            <CardTitle>Código no proporcionado</CardTitle>
+            <CardDescription>
+              Necesitas un código de inscripción para acceder.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline">
+              <Link href="/">Volver al inicio</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Loading state - only show if actually loading
+  if (enrollmentData === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md">
@@ -67,6 +98,7 @@ export default function JoinBootcampPage() {
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-muted-foreground">Verificando código...</p>
+              <p className="text-xs text-muted-foreground">Código: {code}</p>
             </div>
           </CardContent>
         </Card>

@@ -476,31 +476,63 @@ curl http://localhost:3000/api/invite/{code}
 
 ## Epic 3: Bounty Marketplace (Weeks 4-6)
 
-**Coming Soon** - Bounty listings, claim flow, submission review, earnings dashboard
+**Status:** ✅ Core Flow Complete (via Convex Migration)
 
-**Tickets:**
+**Completed:**
 
-- E3-T1: Bounty Listings Page
-- E3-T2: Bounty Detail & Claim Flow
-- E3-T3: Submission System
-- E3-T4: Admin Review Dashboard
-- E3-T5: User Bounty Dashboard
-- E3-T6: Earnings Tracking
+- ✅ E3-T1: Bounty Listings Page (`/bounties` with categories, status filters)
+- ✅ E3-T2: Bounty Detail & Claim Flow (users can claim available bounties)
+- ✅ E3-T3: Submission System (URL submission with review workflow)
+- ✅ E3-T4: Admin Review Dashboard (approve/reject submissions, incrementa stats)
+- ✅ E3-T5: User Bounty Dashboard (`/dashboard` con "Mis Bounties" section)
+- ✅ E3-T6: Earnings Tracking (profile shows `completedBounties` + `totalEarningsUsd`)
+- ✅ Leaderboard: "Por bounties" category filter
+- ✅ Directory: Shows bounties completed + earnings in cards
+
+**Pending:**
+
+- ⏳ **Build fix:** Add `completedBounties` to `Profile` type in `/src/types/api-v1.ts`
+- ⏳ E3-T7: Bounty notifications (email when claimed/reviewed) - Future
 
 ---
 
 ## Epic 4: Onchain Funding (Weeks 7-8)
 
-**Coming Soon** - Smart contract escrow, multi-chain support, crypto payments
+**Status:** 🔜 Pendiente - Next Epic
+
+Smart contract escrow, multi-chain support, crypto payments
 
 **Tickets:**
 
-- E4-T1: Smart Contract Development
-- E4-T2: Testnet Deployment (Sepolia)
-- E4-T3: Payment UI Integration
-- E4-T4: Multi-Chain Support
-- E4-T5: Transaction Monitoring
-- E4-T6: Mainnet Launch
+- ⏳ E4-T1: Smart Contract Development (escrow for bounty payments)
+- ⏳ E4-T2: Testnet Deployment (Sepolia/Base Goerli)
+- ⏳ E4-T3: Payment UI Integration (wallet connect → fund bounty)
+- ⏳ E4-T4: Multi-Chain Support (ETH, USDC, possibly Monad)
+- ⏳ E4-T5: Transaction Monitoring (track payment status)
+- ⏳ E4-T6: Mainnet Launch
+
+**Dependencies:**
+- Epic 3 stable and tested
+- Admin workflow validated with test bounties
+
+---
+
+## Overall Status Summary (2026-02-09)
+
+| Epic | Status | Notes |
+|------|--------|-------|
+| E0: Setup | ✅ Complete | Convex deployed: `brainy-porcupine-595` |
+| E1: Talent Directory | ✅ Complete | Auth, profiles, directory, invitations |
+| E2: Portfolio Showcase | ✅ Complete | Projects CRUD, skills, endorsements |
+| E3: Bounty Marketplace | ✅ Core Complete | Listings, claims, submissions, review, dashboard |
+| E4: Onchain Funding | 🔜 Pending | Next priority after E3 stable |
+
+**Immediate Blockers:**
+1. TypeScript build error: `completedBounties` missing from `Profile` type
+
+**Deferred Features:**
+- Portfolio Analytics (D-001) - revisit at 100+ profiles
+- Bounty email notifications - nice-to-have
 
 ---
 

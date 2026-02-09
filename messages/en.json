@@ -1,0 +1,33 @@
+{
+  "common": {
+    "language": "Language",
+    "switchLanguage": "Switch language",
+    "backToHome": "Back to home",
+    "contact": "Contact",
+    "learnMore": "Learn more"
+  },
+  "decks": {
+    "ethereumDeck": {
+      "title": "The First Permanent Ethereum Community Hub in Mexico",
+      "subtitle": "Casa Frutero — A community space for builders"
+    },
+    "partnerDeck": {
+      "title": "Join as Founding Partner",
+      "subtitle": "Casa Frutero — Sponsorship Opportunity"
+    },
+    "devrelDeck": {
+      "title": "DevRel-as-a-Service for Web3 Protocols",
+      "subtitle": "Frutero — Building Builder Communities"
+    },
+    "placeholder": {
+      "comingSoon": "Coming Soon",
+      "contentInProgress": "The content for this page is under development.",
+      "checkBack": "Check back soon for the full deck."
+    }
+  },
+  "cta": {
+    "contactUs": "Contact Us",
+    "scheduleCall": "Schedule a Call",
+    "downloadPdf": "Download PDF"
+  }
+}

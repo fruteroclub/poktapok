@@ -1,0 +1,33 @@
+{
+  "common": {
+    "language": "Idioma",
+    "switchLanguage": "Cambiar idioma",
+    "backToHome": "Volver al inicio",
+    "contact": "Contacto",
+    "learnMore": "Saber más"
+  },
+  "decks": {
+    "ethereumDeck": {
+      "title": "El Primer Hub Permanente de Ethereum en México",
+      "subtitle": "Casa Frutero — Un espacio comunitario para builders"
+    },
+    "partnerDeck": {
+      "title": "Únete como Socio Fundador",
+      "subtitle": "Casa Frutero — Oportunidad de Patrocinio"
+    },
+    "devrelDeck": {
+      "title": "DevRel-as-a-Service para Protocolos Web3",
+      "subtitle": "Frutero — Construyendo Comunidades de Builders"
+    },
+    "placeholder": {
+      "comingSoon": "Próximamente",
+      "contentInProgress": "El contenido de esta página está en desarrollo.",
+      "checkBack": "Vuelve pronto para ver el deck completo."
+    }
+  },
+  "cta": {
+    "contactUs": "Contáctanos",
+    "scheduleCall": "Agendar Llamada",
+    "downloadPdf": "Descargar PDF"
+  }
+}

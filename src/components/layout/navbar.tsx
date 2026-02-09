@@ -6,11 +6,12 @@ import { usePathname } from 'next/navigation'
 
 import MobileMenu from './mobile-menu'
 import AuthButton from '../buttons/auth-button-convex'
-import { SparkleIcon, SparklesIcon } from 'lucide-react'
-import { useAuth } from '@/hooks'
+import { SparkleIcon, SparklesIcon, Rocket } from 'lucide-react'
+import { useAuthWithConvex } from '@/hooks/use-auth-with-convex'
 import MobileMenuDropdown from './mobile-menu-dropdown'
 import { usePrivy } from '@privy-io/react-auth'
 import { useOpenBounties } from '@/hooks/use-bounties'
+import { useBootcampStatus } from '@/hooks/use-bootcamp'
 
 export type MenuItemType = {
   displayText: string
@@ -51,18 +52,31 @@ const AUTH_MENU_ITEMS: MenuItemType[] = [
   },
 ]
 
+const BOOTCAMP_MENU_ITEM: MenuItemType = {
+  displayText: '🚀 VibeCoding',
+  href: '/bootcamp/vibecoding',
+  isMobileOnly: false,
+}
+
 export default function Navbar() {
   const pathname = usePathname()
   const { ready, authenticated } = usePrivy()
-  const { user, isAuthenticated, isLoading: isLoadingAuth } = useAuth()
+  const { user, convexUser, isAuthenticated, isLoading: isLoadingAuth } = useAuthWithConvex()
   const { bounties: openBounties } = useOpenBounties({ limit: 1 })
+  const bootcampStatus = useBootcampStatus(convexUser?._id)
   const isSignedIn = isAuthenticated && authenticated
   const isLoading = isLoadingAuth
+  const isBootcampParticipant = bootcampStatus?.isParticipant ?? false
   
   // Build public menu items - include bounties only if there are open bounties
   const PUBLIC_MENU_ITEMS = openBounties.length > 0 
     ? [...BASE_PUBLIC_MENU_ITEMS.slice(0, 2), BOUNTIES_MENU_ITEM, ...BASE_PUBLIC_MENU_ITEMS.slice(2)]
     : BASE_PUBLIC_MENU_ITEMS
+  
+  // Build auth menu items - include bootcamp if participant
+  const FULL_AUTH_MENU_ITEMS = isBootcampParticipant
+    ? [BOOTCAMP_MENU_ITEM, ...AUTH_MENU_ITEMS]
+    : AUTH_MENU_ITEMS
 
   return (
     <header className="sticky top-0 z-40 h-24 w-full bg-background">
@@ -82,7 +96,7 @@ export default function Navbar() {
 
         <div className="z-10 col-span-3 flex items-center justify-center">
           <nav className="hidden gap-4 lg:flex">
-            {[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? AUTH_MENU_ITEMS : [])].filter((menuItem) => {
+            {[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? FULL_AUTH_MENU_ITEMS : [])].filter((menuItem) => {
               // Filter out mobile-only items
               if (menuItem.isMobileOnly) return false
               return true
@@ -113,7 +127,7 @@ export default function Navbar() {
               <SparklesIcon className="ml-2 h-4 w-4 fill-background" />
             </AuthButton>
           )}
-          <MobileMenu menuItems={[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? AUTH_MENU_ITEMS : [])]} pathname={pathname} />
+          <MobileMenu menuItems={[...PUBLIC_MENU_ITEMS, ...(isSignedIn ? FULL_AUTH_MENU_ITEMS : [])]} pathname={pathname} />
         </div>
       </div>
     </header>

@@ -11,6 +11,7 @@
 import type * as activities from "../activities.js";
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
+import type * as bootcamp from "../bootcamp.js";
 import type * as bounties from "../bounties.js";
 import type * as crons from "../crons.js";
 import type * as events from "../events.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   activities: typeof activities;
   applications: typeof applications;
   auth: typeof auth;
+  bootcamp: typeof bootcamp;
   bounties: typeof bounties;
   crons: typeof crons;
   events: typeof events;

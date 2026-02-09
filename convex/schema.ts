@@ -538,4 +538,115 @@ export default defineSchema({
     .index("by_bounty", ["bountyId"])
     .index("by_user", ["userId"])
     .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOOTCAMP_PROGRAMS - Bootcamp cohorts
+  // ============================================================
+  bootcampPrograms: defineTable({
+    name: v.string(), // "VibeCoding Cohorte 1"
+    slug: v.string(), // "vibecoding-c1"
+    description: v.optional(v.string()),
+    startDate: v.number(),
+    endDate: v.number(),
+    maxParticipants: v.optional(v.number()),
+    sessionsCount: v.number(), // 5
+    status: v.union(
+      v.literal("draft"),
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("archived")
+    ),
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOOTCAMP_SESSIONS - Sessions within a bootcamp
+  // ============================================================
+  bootcampSessions: defineTable({
+    programId: v.id("bootcampPrograms"),
+    sessionNumber: v.number(), // 1-5
+    title: v.string(), // "Nace tu Regenmon"
+    description: v.optional(v.string()),
+    deliverableTitle: v.string(), // "Regenmon Estático Desplegado"
+    deliverableDescription: v.optional(v.string()),
+    scheduledDate: v.optional(v.number()),
+    contentUrl: v.optional(v.string()), // Link to bootcamp.frutero.club docs
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_program", ["programId"])
+    .index("by_program_number", ["programId", "sessionNumber"]),
+
+  // ============================================================
+  // BOOTCAMP_ENROLLMENTS - User enrollments in bootcamps
+  // ============================================================
+  bootcampEnrollments: defineTable({
+    code: v.string(), // ABC123 - unique join code
+    email: v.string(), // Email from registration (Tally, manual, etc.)
+    userId: v.optional(v.id("users")), // Linked when user joins with code
+    programId: v.id("bootcampPrograms"),
+    status: v.union(
+      v.literal("pending"), // Code sent, waiting for user to join
+      v.literal("active"), // User has joined and linked account
+      v.literal("completed"), // Finished bootcamp
+      v.literal("dropped") // Abandoned
+    ),
+    progress: v.number(), // 0-100 percentage
+    sessionsCompleted: v.number(), // 0-5
+    // Timing
+    createdAt: v.number(), // When enrollment was created
+    joinedAt: v.optional(v.number()), // When user linked account
+    completedAt: v.optional(v.number()),
+    // Metadata
+    tallyResponseId: v.optional(v.string()),
+    metadata: v.optional(v.any()),
+  })
+    .index("by_code", ["code"])
+    .index("by_email", ["email"])
+    .index("by_user", ["userId"])
+    .index("by_program", ["programId"])
+    .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOOTCAMP_DELIVERABLES - Submitted deliverables
+  // ============================================================
+  bootcampDeliverables: defineTable({
+    enrollmentId: v.id("bootcampEnrollments"),
+    userId: v.id("users"),
+    programId: v.id("bootcampPrograms"),
+    sessionNumber: v.number(), // 1-5
+    // Submission content
+    projectUrl: v.string(), // Deployed URL
+    repositoryUrl: v.optional(v.string()), // GitHub repo
+    screenshotUrls: v.optional(v.array(v.string())), // Optional screenshots (external links)
+    notes: v.optional(v.string()), // Notes from student
+    // Grading
+    level: v.optional(v.union(
+      v.literal("core"), // 🟢 Nivel 1
+      v.literal("complete"), // 🟡 Nivel 2
+      v.literal("excellent"), // 🔵 Nivel 3
+      v.literal("bonus") // 🟣 Nivel 4
+    )),
+    status: v.union(
+      v.literal("submitted"), // Awaiting review
+      v.literal("approved"), // Approved
+      v.literal("needs_revision") // Needs changes
+    ),
+    // Review
+    reviewedByUserId: v.optional(v.id("users")),
+    feedback: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    // Timing
+    submittedAt: v.number(),
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_enrollment", ["enrollmentId"])
+    .index("by_user", ["userId"])
+    .index("by_program", ["programId"])
+    .index("by_session", ["programId", "sessionNumber"])
+    .index("by_status", ["status"]),
 });

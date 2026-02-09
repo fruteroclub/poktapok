@@ -16,7 +16,10 @@ export default function JoinBootcampPage() {
   const code = (params.code as string)?.toUpperCase()
   
   const { user, convexUser, isLoading: authLoading, handleLogin } = useAuthWithConvex()
-  const enrollmentData = useQuery(api.bootcamp.getEnrollmentByCode, { code })
+  const enrollmentData = useQuery(
+    api.bootcamp.getEnrollmentByCode,
+    code ? { code } : 'skip'
+  )
   const joinWithCode = useMutation(api.bootcamp.joinWithCode)
   
   const [joining, setJoining] = useState(false)

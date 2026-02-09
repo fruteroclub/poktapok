@@ -121,7 +121,7 @@ const content = {
       title: 'Siguiente Paso',
       description:
         'Invitamos a la Ethereum Foundation a ser el socio fundador del primer Hub Permanente de Comunidad Ethereum en México.',
-      button: 'Discutamos cómo Casa Frutero apoya los objetivos de Ecodev',
+      button: 'Agendar Llamada',
       email: 'mel@frutero.club',
     },
     footer: {
@@ -250,7 +250,7 @@ const content = {
       title: 'Next Step',
       description:
         'We invite the Ethereum Foundation to be the founding partner of Mexico\'s first Ethereum Permanent Community Hub.',
-      button: 'Let\'s discuss how Casa Frutero supports Ecodev goals',
+      button: 'Schedule a Call',
       email: 'mel@frutero.club',
     },
     footer: {

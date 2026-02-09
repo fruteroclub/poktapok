@@ -44,13 +44,13 @@ export function DeckCTA({
         </p>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-        <Button asChild size="lg" className="print:hidden">
+      <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row sm:w-auto sm:max-w-none sm:gap-4">
+        <Button asChild size="lg" className="w-full whitespace-normal py-4 text-center leading-tight sm:w-auto sm:whitespace-nowrap sm:py-2 print:hidden">
           <Link href={primaryAction.href}>{primaryAction.label}</Link>
         </Button>
 
         {secondaryAction && (
-          <Button asChild variant="outline" size="lg" className="print:hidden">
+          <Button asChild variant="outline" size="lg" className="w-full whitespace-normal py-4 text-center leading-tight sm:w-auto sm:whitespace-nowrap sm:py-2 print:hidden">
             <Link href={secondaryAction.href}>{secondaryAction.label}</Link>
           </Button>
         )}

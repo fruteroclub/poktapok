@@ -578,3 +578,41 @@ export const getUserBootcampStatus = query({
     };
   },
 });
+
+/**
+ * Get bootcamp enrollments by username (for public profiles)
+ */
+export const getEnrollmentsByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    // Get user by username
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (!user) return [];
+
+    // Get active/completed enrollments
+    const enrollments = await ctx.db
+      .query("bootcampEnrollments")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .filter((q) => 
+        q.or(
+          q.eq(q.field("status"), "active"),
+          q.eq(q.field("status"), "completed")
+        )
+      )
+      .collect();
+
+    // Get program details
+    const result = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const program = await ctx.db.get(enrollment.programId);
+        return { enrollment, program };
+      })
+    );
+
+    return result.filter((r) => r.program !== null);
+  },
+});

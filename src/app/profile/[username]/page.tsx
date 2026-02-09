@@ -3,10 +3,11 @@
 import { useParams } from 'next/navigation'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
-import { Loader2, MapPin, Github, Twitter, Linkedin, MessageCircle, ArrowLeft, ExternalLink, Play } from 'lucide-react'
+import { Loader2, MapPin, Github, Twitter, Linkedin, MessageCircle, ArrowLeft, ExternalLink, Play, GraduationCap } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ export default function PublicProfilePage() {
 
   const data = useQuery(api.profiles.getByUsername, { username })
   const projectsData = useQuery(api.projects.getByUsername, { username })
+  const bootcampEnrollments = useQuery(api.bootcamp.getEnrollmentsByUsername, { username })
   
   const projects = projectsData?.projects ?? []
   const isOwnProfile = currentUser?.username === username
@@ -219,14 +221,44 @@ export default function PublicProfilePage() {
             </Card>
           </Section>
 
-          {/* Skills Section */}
-          <Section>
-            <Card className="w-full">
-              <CardContent className="pt-6">
-                <SkillsSection username={username} isOwnProfile={isOwnProfile} />
-              </CardContent>
-            </Card>
-          </Section>
+          {/* Skills Section - only show if own profile or has skills */}
+          <SkillsSectionWrapper username={username} isOwnProfile={isOwnProfile} />
+
+          {/* Bootcamp Enrollments */}
+          {bootcampEnrollments && bootcampEnrollments.length > 0 && (
+            <Section>
+              <h2 className="mb-4 text-2xl font-bold flex items-center gap-2">
+                <GraduationCap className="h-6 w-6" />
+                Programas
+              </h2>
+              <div className="grid w-full gap-4">
+                {bootcampEnrollments.map(({ enrollment, program }) => (
+                  <Card key={enrollment._id}>
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg">{program?.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {enrollment.status === 'completed' 
+                              ? '✅ Completado' 
+                              : `${enrollment.sessionsCompleted}/${program?.sessionsCount || 5} sesiones`}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-primary">{enrollment.progress}%</p>
+                          </div>
+                          <div className="w-32">
+                            <Progress value={enrollment.progress} className="h-3" />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </Section>
+          )}
 
           {/* Stats */}
           <Section>
@@ -360,5 +392,28 @@ export default function PublicProfilePage() {
         </div>
       </div>
     </PageWrapper>
+  )
+}
+
+/**
+ * Wrapper that only shows skills card if there are skills
+ */
+function SkillsSectionWrapper({ username, isOwnProfile }: { username: string; isOwnProfile: boolean }) {
+  const skillsData = useQuery(api.skills.getUserSkillsByUsername, { username })
+  
+  // Loading state - don't show anything
+  if (skillsData === undefined) return null
+  
+  // No skills and not own profile - don't show
+  if (skillsData.length === 0 && !isOwnProfile) return null
+  
+  return (
+    <Section>
+      <Card className="w-full">
+        <CardContent className="pt-6">
+          <SkillsSection username={username} isOwnProfile={isOwnProfile} />
+        </CardContent>
+      </Card>
+    </Section>
   )
 }

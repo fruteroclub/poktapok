@@ -224,7 +224,7 @@ function EventCard({
         </div>
 
         {/* Event Type Badge */}
-        <div className="mt-auto flex flex-wrap gap-2 pt-2">
+        <div className="mt-auto pt-2">
           <span
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
               event.eventType === 'in-person'
@@ -240,11 +240,6 @@ function EventCard({
                 ? '💻 Virtual'
                 : '🌐 Híbrido'}
           </span>
-          {event.registrationType === 'free' && (
-            <span className="rounded-full bg-accent/20 px-3 py-1 text-xs font-semibold text-accent">
-              Gratis ✨
-            </span>
-          )}
         </div>
       </div>
     </a>

@@ -26,6 +26,16 @@ import { useState } from 'react'
 import Link from 'next/link'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
 const LEVEL_COLORS = {
@@ -225,6 +235,7 @@ interface SessionCardProps {
 
 function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
   const [showForm, setShowForm] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [projectUrl, setProjectUrl] = useState(deliverable?.projectUrl || '')
   const [repositoryUrl, setRepositoryUrl] = useState('')
   const [notes, setNotes] = useState('')
@@ -233,12 +244,17 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
 
   const submitDeliverable = useMutation(api.bootcamp.submitDeliverable)
 
-  const handleSubmit = async () => {
+  const handlePreSubmit = () => {
     if (!projectUrl.trim()) {
       setError('El URL del proyecto es requerido')
       return
     }
+    setError(null)
+    setShowConfirm(true)
+  }
 
+  const handleConfirmSubmit = async () => {
+    setShowConfirm(false)
     setSubmitting(true)
     setError(null)
 
@@ -251,8 +267,8 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
         notes: notes.trim() || undefined,
       })
       setShowForm(false)
-    } catch (err: any) {
-      setError(err.message || 'Error al enviar')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al enviar')
     } finally {
       setSubmitting(false)
     }
@@ -370,7 +386,7 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
             <div className="flex gap-2">
               <Button
                 size="sm"
-                onClick={handleSubmit}
+                onClick={handlePreSubmit}
                 disabled={submitting}
                 className="flex-1"
               >
@@ -379,7 +395,7 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
                 ) : (
                   <>
                     <Send className="h-4 w-4 mr-1" />
-                    Enviar
+                    Revisar y Enviar
                   </>
                 )}
               </Button>
@@ -393,6 +409,66 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
             </div>
           </div>
         )}
+
+        {/* Confirmation Dialog */}
+        <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar entrega - Sesión {session.sessionNumber}</AlertDialogTitle>
+              <AlertDialogDescription>
+                Revisa que la información sea correcta antes de enviar.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="space-y-3">
+              <div className="rounded-lg border p-3">
+                <p className="text-xs font-medium text-muted-foreground">Entregable</p>
+                <p className="text-sm font-medium">{session.deliverableTitle}</p>
+              </div>
+
+              <div className="rounded-lg border p-3">
+                <p className="text-xs font-medium text-muted-foreground">URL del proyecto</p>
+                <a
+                  href={projectUrl.trim()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline break-all"
+                >
+                  {projectUrl.trim()}
+                </a>
+              </div>
+
+              {repositoryUrl.trim() && (
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs font-medium text-muted-foreground">Repositorio</p>
+                  <a
+                    href={repositoryUrl.trim()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline break-all"
+                  >
+                    {repositoryUrl.trim()}
+                  </a>
+                </div>
+              )}
+
+              {notes.trim() && (
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs font-medium text-muted-foreground">Notas</p>
+                  <p className="text-sm">{notes.trim()}</p>
+                </div>
+              )}
+            </div>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Volver a editar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmSubmit}>
+                <Send className="h-4 w-4 mr-1" />
+                Confirmar entrega
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
 
       <CardFooter className="pt-0">

@@ -55,7 +55,7 @@ const statusColors: Record<SubmissionStatus, string> = {
 };
 
 export default function SubmissionsPage() {
-  const { convexUser } = useAuthWithConvex();
+  const { convexUser, privyDid } = useAuthWithConvex();
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'all'>('pending');
   const { submissions, isLoading } = useBountySubmissions(
     statusFilter !== 'all' ? statusFilter : undefined
@@ -76,6 +76,7 @@ export default function SubmissionsPage() {
     setIsSubmitting(true);
     try {
       await reviewSubmission({
+        callerPrivyDid: privyDid!,
         submissionId: reviewDialog.submissionId,
         reviewerUserId: convexUser._id,
         status: reviewDialog.action,

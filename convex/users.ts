@@ -194,11 +194,18 @@ export const updateAvatar = mutation({
  */
 export const updateRole = mutation({
   args: {
+    callerPrivyDid: v.string(),
     userId: v.id("users"),
     role: v.union(v.literal("member"), v.literal("moderator"), v.literal("admin")),
   },
   handler: async (ctx, args) => {
-    // TODO: Add auth check - only admins can change roles
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
 
     await ctx.db.patch(args.userId, { role: args.role });
 
@@ -207,10 +214,11 @@ export const updateRole = mutation({
 });
 
 /**
- * Update account status
+ * Update account status (admin only)
  */
 export const updateStatus = mutation({
   args: {
+    callerPrivyDid: v.string(),
     userId: v.id("users"),
     accountStatus: v.union(
       v.literal("incomplete"),
@@ -221,6 +229,14 @@ export const updateStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
     await ctx.db.patch(args.userId, { accountStatus: args.accountStatus });
 
     return { success: true };

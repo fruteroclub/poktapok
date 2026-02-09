@@ -373,6 +373,7 @@ export const abandonClaim = mutation({
  */
 export const create = mutation({
   args: {
+    callerPrivyDid: v.string(),
     title: v.string(),
     description: v.string(),
     requirements: v.optional(v.string()),
@@ -395,6 +396,14 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
     return await ctx.db.insert("bounties", {
       title: args.title,
       description: args.description,
@@ -416,10 +425,11 @@ export const create = mutation({
 });
 
 /**
- * Update a bounty
+ * Update a bounty (admin only)
  */
 export const update = mutation({
   args: {
+    callerPrivyDid: v.string(),
     bountyId: v.id("bounties"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -448,7 +458,15 @@ export const update = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const { bountyId, ...updates } = args;
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
+    const { bountyId, callerPrivyDid: _, ...updates } = args;
 
     // Filter out undefined values
     const patch: Record<string, any> = {};
@@ -463,10 +481,11 @@ export const update = mutation({
 });
 
 /**
- * Review a submission
+ * Review a submission (admin only)
  */
 export const reviewSubmission = mutation({
   args: {
+    callerPrivyDid: v.string(),
     submissionId: v.id("bountySubmissions"),
     reviewerUserId: v.id("users"),
     status: v.union(
@@ -477,6 +496,17 @@ export const reviewSubmission = mutation({
     reviewNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+    if (caller._id !== args.reviewerUserId) {
+      throw new Error("Unauthorized: reviewer must match authenticated user");
+    }
+
     const submission = await ctx.db.get(args.submissionId);
     if (!submission) {
       throw new Error("Submission not found");

@@ -81,7 +81,7 @@ const emptyForm: BountyForm = {
 };
 
 export default function AdminBountiesPage() {
-  const { convexUser } = useAuthWithConvex();
+  const { convexUser, privyDid } = useAuthWithConvex();
   const { bounties, isLoading } = useBounties({});
   const { stats } = useBountyStats();
   const { create, update } = useBountyMutations();
@@ -135,6 +135,7 @@ export default function AdminBountiesPage() {
 
       if (editingId) {
         await update({
+          callerPrivyDid: privyDid!,
           bountyId: editingId as any,
           title: form.title,
           description: form.description,
@@ -151,6 +152,7 @@ export default function AdminBountiesPage() {
         toast.success('Bounty actualizado');
       } else {
         await create({
+          callerPrivyDid: privyDid!,
           title: form.title,
           description: form.description,
           requirements: form.requirements || undefined,

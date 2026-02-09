@@ -55,10 +55,11 @@ export const getById = query({
 });
 
 /**
- * Create activity (admin only in production)
+ * Create activity (admin only)
  */
 export const create = mutation({
   args: {
+    callerPrivyDid: v.string(),
     title: v.string(),
     description: v.optional(v.string()),
     activityType: v.string(),
@@ -81,9 +82,18 @@ export const create = mutation({
     metadata: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
+    const { callerPrivyDid: _, ...data } = args;
     const activityId = await ctx.db.insert("activities", {
-      ...args,
-      status: args.status ?? "draft",
+      ...data,
+      status: data.status ?? "draft",
       currentSubmissionsCount: 0,
     });
     return await ctx.db.get(activityId);
@@ -91,10 +101,11 @@ export const create = mutation({
 });
 
 /**
- * Update activity
+ * Update activity (admin only)
  */
 export const update = mutation({
   args: {
+    callerPrivyDid: v.string(),
     activityId: v.id("activities"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -121,7 +132,15 @@ export const update = mutation({
     metadata: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
-    const { activityId, ...updates } = args;
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
+    const { activityId, callerPrivyDid: _, ...updates } = args;
 
     const cleanUpdates: Record<string, any> = {};
     for (const [key, value] of Object.entries(updates)) {
@@ -136,11 +155,22 @@ export const update = mutation({
 });
 
 /**
- * Delete activity
+ * Delete activity (admin only)
  */
 export const remove = mutation({
-  args: { activityId: v.id("activities") },
+  args: {
+    callerPrivyDid: v.string(),
+    activityId: v.id("activities"),
+  },
   handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
     await ctx.db.delete(args.activityId);
   },
 });

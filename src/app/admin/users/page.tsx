@@ -67,19 +67,19 @@ export default function AdminUsersPage() {
 
       switch (action) {
         case 'makeAdmin':
-          await updateRoleMutation({ userId: userId as any, role: 'admin' })
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'admin' })
           toast.success('Usuario promovido a admin')
           break
         case 'removeAdmin':
-          await updateRoleMutation({ userId: userId as any, role: 'member' })
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'member' })
           toast.success('Permisos de admin removidos')
           break
         case 'suspend':
-          await updateStatusMutation({ userId: userId as any, accountStatus: 'suspended' })
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'suspended' })
           toast.success('Usuario suspendido')
           break
         case 'activate':
-          await updateStatusMutation({ userId: userId as any, accountStatus: 'active' })
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'active' })
           toast.success('Usuario activado')
           break
       }

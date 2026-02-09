@@ -125,7 +125,7 @@ export default function JoinBootcampPage() {
                   <XCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
                   <CardTitle>Código inválido</CardTitle>
                   <CardDescription>
-                    El código <code className="bg-muted px-2 py-1 rounded">{code}</code> no existe o ya expiró.
+                    El código <code className="border border-primary/30 bg-primary/10 px-2 py-1 rounded text-primary">{code}</code> no existe o ya expiró.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -244,7 +244,7 @@ export default function JoinBootcampPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-muted rounded-lg p-4 text-center">
+                  <div className="border border-primary/30 bg-primary/5 rounded-lg p-4 text-center">
                     <p className="text-sm text-muted-foreground mb-1">Código de inscripción</p>
                     <code className="text-2xl font-mono font-bold text-primary">{code}</code>
                   </div>
@@ -294,12 +294,12 @@ export default function JoinBootcampPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-muted rounded-lg p-4 text-center">
+                <div className="border border-primary/30 bg-primary/5 rounded-lg p-4 text-center">
                   <p className="text-sm text-muted-foreground mb-1">Código de inscripción</p>
                   <code className="text-2xl font-mono font-bold text-primary">{code}</code>
                 </div>
 
-                <div className="bg-primary/10 rounded-lg p-4 text-center">
+                <div className="border border-primary/20 bg-primary/5 rounded-lg p-4 text-center">
                   <p className="text-sm text-muted-foreground mb-1">Conectado como</p>
                   <p className="font-semibold">{user?.username || user?.email || 'Usuario'}</p>
                 </div>

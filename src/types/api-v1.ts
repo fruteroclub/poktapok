@@ -39,6 +39,7 @@ export interface Profile {
   } | null
   // Stats
   projectsCount?: number
+  completedBounties?: number
   totalEarningsUsd?: number
   profileViews?: number
   // Social usernames

@@ -83,8 +83,9 @@ export function ClubContent() {
     displayName: p.user?.displayName,
     avatarUrl: p.user?.avatarUrl,
     bio: p.user?.bio,
-    projectsCount: p.projectsCount,
-    totalEarningsUsd: p.totalEarningsUsd,
+    projectsCount: p.projectsCount || 0,
+    completedBounties: p.completedBounties || 0,
+    totalEarningsUsd: p.totalEarningsUsd || 0,
   }))
 
   const stats = {
@@ -146,7 +147,7 @@ export function ClubContent() {
                         )}
                       </div>
 
-                      <CardFooter className="mt-auto flex w-full justify-center text-center text-sm">
+                      <CardFooter className="mt-auto flex w-full justify-center gap-4 text-center text-sm">
                         <div>
                           <p className="font-semibold">
                             {member.projectsCount}
@@ -155,7 +156,22 @@ export function ClubContent() {
                             Proyectos
                           </p>
                         </div>
-                        {/* Earnings hidden until Epic 3 (Bounty Marketplace) */}
+                        <div>
+                          <p className="font-semibold">
+                            {member.completedBounties}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Bounties
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-green-600 dark:text-green-400">
+                            ${member.totalEarningsUsd}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Ganado
+                          </p>
+                        </div>
                       </CardFooter>
                     </Card>
                   </Link>

@@ -46,6 +46,7 @@ export function toApiProfile(convexProfile: Doc<'profiles'>): Profile {
     },
     // Stats
     projectsCount: convexProfile.projectsCount ?? 0,
+    completedBounties: convexProfile.completedBounties ?? 0,
     totalEarningsUsd: convexProfile.totalEarningsUsd ?? 0,
     profileViews: convexProfile.profileViews ?? 0,
     // Social usernames

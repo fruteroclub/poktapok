@@ -7,7 +7,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trophy, TrendingUp, Briefcase } from 'lucide-react'
+import { Trophy, TrendingUp, Briefcase, Target } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useDirectoryProfiles } from '@/hooks/use-directory'
 
-type RankingCategory = 'earnings' | 'projects'
+type RankingCategory = 'earnings' | 'bounties' | 'projects'
 
 export function LeaderboardContent() {
   const [category, setCategory] = useState<RankingCategory>('earnings')
@@ -85,6 +85,7 @@ export function LeaderboardContent() {
     city: p.city,
     country: p.country,
     projectsCount: p.projectsCount || 0,
+    completedBounties: p.completedBounties || 0,
     totalEarningsUsd: p.totalEarningsUsd || 0,
     learningTracks: p.learningTracks,
     availabilityStatus: p.availabilityStatus,
@@ -94,6 +95,9 @@ export function LeaderboardContent() {
   const sortedMembers = [...members].sort((a, b) => {
     if (category === 'earnings') {
       return b.totalEarningsUsd - a.totalEarningsUsd
+    }
+    if (category === 'bounties') {
+      return b.completedBounties - a.completedBounties
     }
     return b.projectsCount - a.projectsCount
   })
@@ -117,13 +121,20 @@ export function LeaderboardContent() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant={category === 'earnings' ? 'default' : 'outline'}
             onClick={() => setCategory('earnings')}
           >
             <TrendingUp className="mr-2 size-4" />
             Por ganancias
+          </Button>
+          <Button
+            variant={category === 'bounties' ? 'default' : 'outline'}
+            onClick={() => setCategory('bounties')}
+          >
+            <Target className="mr-2 size-4" />
+            Por bounties
           </Button>
           <Button
             variant={category === 'projects' ? 'default' : 'outline'}
@@ -143,7 +154,9 @@ export function LeaderboardContent() {
               const value =
                 category === 'earnings'
                   ? `$${member.totalEarningsUsd}`
-                  : `${member.projectsCount} proyectos`
+                  : category === 'bounties'
+                    ? `${member.completedBounties} bounties`
+                    : `${member.projectsCount} proyectos`
 
               return (
                 <Link key={member.id} href={`/profile/${member.username}`}>
@@ -197,12 +210,21 @@ export function LeaderboardContent() {
 
                     {/* Additional Stats for Top 3 */}
                     {rank <= 3 && (
-                      <div className="mt-4 flex gap-8 border-t pt-4">
+                      <div className="mt-4 flex flex-wrap gap-6 border-t pt-4">
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Proyectos</p>
                           <p className="text-lg font-semibold">{member.projectsCount}</p>
                         </div>
-                        {/* Earnings hidden until Epic 3 (Bounty Marketplace) */}
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Bounties</p>
+                          <p className="text-lg font-semibold">{member.completedBounties}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Ganado</p>
+                          <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                            ${member.totalEarningsUsd}
+                          </p>
+                        </div>
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Estado</p>
                           <Badge

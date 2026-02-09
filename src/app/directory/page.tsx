@@ -143,7 +143,7 @@ export default function DirectoryPage() {
                         )}
                       </div>
 
-                      <CardFooter className="mt-auto flex w-full justify-center text-center text-sm">
+                      <CardFooter className="mt-auto flex w-full justify-center gap-4 text-center text-sm">
                         <div>
                           <p className="font-semibold">
                             {profile.projectsCount || 0}
@@ -152,7 +152,22 @@ export default function DirectoryPage() {
                             Proyectos
                           </p>
                         </div>
-                        {/* Earnings hidden until Epic 3 (Bounty Marketplace) */}
+                        <div>
+                          <p className="font-semibold">
+                            {profile.completedBounties || 0}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Bounties
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-green-600 dark:text-green-400">
+                            ${profile.totalEarningsUsd || 0}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Ganado
+                          </p>
+                        </div>
                       </CardFooter>
                     </Card>
                   </Link>

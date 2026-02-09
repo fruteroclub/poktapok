@@ -499,20 +499,29 @@ export const reviewSubmission = mutation({
           reviewedAt: Date.now(),
         });
 
-        // Update bounty
+        // Get bounty for reward amount
+        const bounty = await ctx.db.get(submission.bountyId);
+        
+        // Update bounty status
         await ctx.db.patch(submission.bountyId, {
           status: "completed",
         });
 
-        // Update user's completed bounties count
+        // Update user's completed bounties count and earnings
         const profile = await ctx.db
           .query("profiles")
           .withIndex("by_user_id", (q) => q.eq("userId", submission.userId))
           .first();
 
-        if (profile) {
+        if (profile && bounty) {
+          // Convert reward to USD (for simplicity, assume 1:1 for USD/USDC)
+          const rewardInUsd = bounty.rewardCurrency === "ETH" 
+            ? bounty.rewardAmount * 2500 // Rough ETH price
+            : bounty.rewardAmount;
+          
           await ctx.db.patch(profile._id, {
             completedBounties: (profile.completedBounties || 0) + 1,
+            totalEarningsUsd: (profile.totalEarningsUsd || 0) + rewardInUsd,
           });
         }
       } else if (args.status === "rejected") {

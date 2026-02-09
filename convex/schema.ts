@@ -543,7 +543,7 @@ export default defineSchema({
   // BOOTCAMP_PROGRAMS - Bootcamp cohorts
   // ============================================================
   bootcampPrograms: defineTable({
-    name: v.string(), // "VibeCoding Cohorte 1"
+    name: v.string(), // "VibeCoding Bootcamp 1"
     slug: v.string(), // "vibecoding-c1"
     description: v.optional(v.string()),
     startDate: v.number(),

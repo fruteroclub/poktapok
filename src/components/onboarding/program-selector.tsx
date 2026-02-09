@@ -88,7 +88,7 @@ export function ProgramSelector({
                   {program.programType === 'cohort' ? (
                     <>
                       <Calendar className="mr-1 h-3 w-3" />
-                      Cohorte
+                      Intensivo
                     </>
                   ) : (
                     <>

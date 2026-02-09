@@ -18,12 +18,16 @@ export default function JoinBootcampPage() {
   const router = useRouter()
   const code = (params.code as string)?.toUpperCase()
   
+  console.log("[Join] Code from URL:", code)
+  
   const { user, convexUser, isLoading: authLoading } = useAuthWithConvex()
   const { login, ready: privyReady, authenticated } = usePrivy()
   const enrollmentData = useQuery(
     api.bootcamp.getEnrollmentByCode,
     code ? { code } : 'skip'
   )
+  
+  console.log("[Join] enrollmentData:", enrollmentData)
   const joinWithCode = useMutation(api.bootcamp.joinWithCode)
   
   const [joining, setJoining] = useState(false)

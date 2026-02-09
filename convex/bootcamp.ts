@@ -355,6 +355,18 @@ export const joinWithCode = mutation({
         if (existingUser && existingUser.accountStatus !== "active") {
           await ctx.db.patch(args.userId, { accountStatus: "active" });
         }
+        // Also approve pending application so it doesn't show in admin queue
+        const existingApp = await ctx.db
+          .query("applications")
+          .withIndex("by_user", (q) => q.eq("userId", args.userId))
+          .unique();
+        if (existingApp && existingApp.status === "pending") {
+          await ctx.db.patch(existingApp._id, {
+            status: "approved",
+            reviewedAt: Date.now(),
+            reviewNotes: "Auto-approved via bootcamp code",
+          });
+        }
         return { enrollment, alreadyLinked: true };
       }
       throw new Error("This code has already been used");
@@ -383,6 +395,19 @@ export const joinWithCode = mutation({
     if (user && user.accountStatus !== "active") {
       await ctx.db.patch(args.userId, {
         accountStatus: "active",
+      });
+    }
+
+    // Also approve pending application so it doesn't show in admin queue
+    const application = await ctx.db
+      .query("applications")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .unique();
+    if (application && application.status === "pending") {
+      await ctx.db.patch(application._id, {
+        status: "approved",
+        reviewedAt: Date.now(),
+        reviewNotes: "Auto-approved via bootcamp code",
       });
     }
 

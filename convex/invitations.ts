@@ -234,7 +234,20 @@ export const redeem = mutation({
       invitedByUserId: invitation.inviterUserId,
     });
 
-    return { 
+    // Also approve pending application so it doesn't show in admin queue
+    const application = await ctx.db
+      .query("applications")
+      .withIndex("by_user", (q) => q.eq("userId", redeemer._id))
+      .unique();
+    if (application && application.status === "pending") {
+      await ctx.db.patch(application._id, {
+        status: "approved",
+        reviewedAt: Date.now(),
+        reviewNotes: "Auto-approved via invitation code",
+      });
+    }
+
+    return {
       success: true,
       inviterUsername: inviter?.username,
     };

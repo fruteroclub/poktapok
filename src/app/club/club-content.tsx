@@ -157,14 +157,6 @@ export function ClubContent() {
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold">
-                            {member.completedBounties}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Bounties
-                          </p>
-                        </div>
-                        <div>
                           <p className="font-semibold text-green-600 dark:text-green-400">
                             ${member.totalEarningsUsd}
                           </p>

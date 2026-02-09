@@ -644,3 +644,31 @@ export const getStats = query({
     };
   },
 });
+
+/**
+ * Delete all bounties (admin cleanup)
+ */
+export const deleteAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // Delete all submissions
+    const submissions = await ctx.db.query("bountySubmissions").collect();
+    for (const s of submissions) {
+      await ctx.db.delete(s._id);
+    }
+    
+    // Delete all claims
+    const claims = await ctx.db.query("bountyClaims").collect();
+    for (const c of claims) {
+      await ctx.db.delete(c._id);
+    }
+    
+    // Delete all bounties
+    const bounties = await ctx.db.query("bounties").collect();
+    for (const b of bounties) {
+      await ctx.db.delete(b._id);
+    }
+    
+    return { deleted: bounties.length };
+  },
+});

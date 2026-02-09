@@ -10,6 +10,7 @@ import { SparkleIcon, SparklesIcon } from 'lucide-react'
 import { useAuth } from '@/hooks'
 import MobileMenuDropdown from './mobile-menu-dropdown'
 import { usePrivy } from '@privy-io/react-auth'
+import { useOpenBounties } from '@/hooks/use-bounties'
 
 export type MenuItemType = {
   displayText: string
@@ -18,7 +19,7 @@ export type MenuItemType = {
   isExternal?: boolean
 }
 
-const PUBLIC_MENU_ITEMS: MenuItemType[] = [
+const BASE_PUBLIC_MENU_ITEMS: MenuItemType[] = [
   {
     displayText: 'club',
     href: '/club',
@@ -30,16 +31,17 @@ const PUBLIC_MENU_ITEMS: MenuItemType[] = [
     isMobileOnly: false,
   },
   {
-    displayText: 'bounties',
-    href: '/bounties',
-    isMobileOnly: false,
-  },
-  {
     displayText: 'leaderboard',
     href: '/club/leaderboard',
     isMobileOnly: false,
   },
 ]
+
+const BOUNTIES_MENU_ITEM: MenuItemType = {
+  displayText: 'bounties',
+  href: '/bounties',
+  isMobileOnly: false,
+}
 
 const AUTH_MENU_ITEMS: MenuItemType[] = [
   {
@@ -53,8 +55,14 @@ export default function Navbar() {
   const pathname = usePathname()
   const { ready, authenticated } = usePrivy()
   const { user, isAuthenticated, isLoading: isLoadingAuth } = useAuth()
+  const { bounties: openBounties } = useOpenBounties({ limit: 1 })
   const isSignedIn = isAuthenticated && authenticated
   const isLoading = isLoadingAuth
+  
+  // Build public menu items - include bounties only if there are open bounties
+  const PUBLIC_MENU_ITEMS = openBounties.length > 0 
+    ? [...BASE_PUBLIC_MENU_ITEMS.slice(0, 2), BOUNTIES_MENU_ITEM, ...BASE_PUBLIC_MENU_ITEMS.slice(2)]
+    : BASE_PUBLIC_MENU_ITEMS
 
   return (
     <header className="sticky top-0 z-40 h-24 w-full bg-background">

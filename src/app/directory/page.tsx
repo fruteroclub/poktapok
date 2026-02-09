@@ -153,14 +153,6 @@ export default function DirectoryPage() {
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold">
-                            {profile.completedBounties || 0}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Bounties
-                          </p>
-                        </div>
-                        <div>
                           <p className="font-semibold text-green-600 dark:text-green-400">
                             ${profile.totalEarningsUsd || 0}
                           </p>

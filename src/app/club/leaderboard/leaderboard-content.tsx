@@ -7,7 +7,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trophy, TrendingUp, Briefcase, Target } from 'lucide-react'
+import { Trophy, TrendingUp, Briefcase } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useDirectoryProfiles } from '@/hooks/use-directory'
 
-type RankingCategory = 'earnings' | 'bounties' | 'projects'
+type RankingCategory = 'earnings' | 'projects'
 
 export function LeaderboardContent() {
   const [category, setCategory] = useState<RankingCategory>('earnings')
@@ -96,9 +96,6 @@ export function LeaderboardContent() {
     if (category === 'earnings') {
       return b.totalEarningsUsd - a.totalEarningsUsd
     }
-    if (category === 'bounties') {
-      return b.completedBounties - a.completedBounties
-    }
     return b.projectsCount - a.projectsCount
   })
 
@@ -130,13 +127,6 @@ export function LeaderboardContent() {
             Por ganancias
           </Button>
           <Button
-            variant={category === 'bounties' ? 'default' : 'outline'}
-            onClick={() => setCategory('bounties')}
-          >
-            <Target className="mr-2 size-4" />
-            Por bounties
-          </Button>
-          <Button
             variant={category === 'projects' ? 'default' : 'outline'}
             onClick={() => setCategory('projects')}
           >
@@ -154,9 +144,7 @@ export function LeaderboardContent() {
               const value =
                 category === 'earnings'
                   ? `$${member.totalEarningsUsd}`
-                  : category === 'bounties'
-                    ? `${member.completedBounties} bounties`
-                    : `${member.projectsCount} proyectos`
+                  : `${member.projectsCount} proyectos`
 
               return (
                 <Link key={member.id} href={`/profile/${member.username}`}>
@@ -214,10 +202,6 @@ export function LeaderboardContent() {
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Proyectos</p>
                           <p className="text-lg font-semibold">{member.projectsCount}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Bounties</p>
-                          <p className="text-lg font-semibold">{member.completedBounties}</p>
                         </div>
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Ganado</p>

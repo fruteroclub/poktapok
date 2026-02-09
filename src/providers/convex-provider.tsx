@@ -4,9 +4,10 @@ import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import { type ReactNode } from 'react'
 
 // Create the Convex client
-const convex = new ConvexReactClient(
-  process.env.NEXT_PUBLIC_CONVEX_URL as string
-)
+// Hardcoded temporarily to debug Vercel env issue
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL || "https://brainy-porcupine-595.convex.cloud"
+console.log("[Convex] Using URL:", convexUrl)
+const convex = new ConvexReactClient(convexUrl)
 
 /**
  * Convex Provider

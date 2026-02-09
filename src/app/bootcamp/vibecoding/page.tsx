@@ -3,6 +3,7 @@
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { useAuthWithConvex } from '@/hooks/use-auth-with-convex'
+import { usePrivy } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,8 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { Section } from '@/components/layout/section'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
 const LEVEL_COLORS = {
@@ -41,6 +44,7 @@ const LEVEL_LABELS = {
 
 export default function VibeCodingDashboard() {
   const { user, convexUser, isLoading: authLoading } = useAuthWithConvex()
+  const { authenticated } = usePrivy()
   
   const enrollmentData = useQuery(
     api.bootcamp.getEnrollmentWithDetails,
@@ -50,108 +54,146 @@ export default function VibeCodingDashboard() {
   // Loading
   if (authLoading || enrollmentData === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Cargando bootcamp...</p>
+      <PageWrapper>
+        <div className="page">
+          <div className="page-content">
+            <Section className="flex justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Cargando bootcamp...</p>
+              </div>
+            </Section>
+          </div>
         </div>
-      </div>
+      </PageWrapper>
     )
   }
 
   // Not logged in
-  if (!user) {
+  if (!authenticated || !convexUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <CardTitle>Acceso restringido</CardTitle>
-            <CardDescription>
-              Debes iniciar sesión para acceder al bootcamp
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/">Iniciar sesión</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <PageWrapper>
+        <div className="page">
+          <div className="page-content">
+            <Section className="flex justify-center py-20">
+              <Card className="w-full max-w-md text-center">
+                <CardHeader>
+                  <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <CardTitle>Acceso restringido</CardTitle>
+                  <CardDescription>
+                    Debes iniciar sesión para acceder al bootcamp
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild>
+                    <Link href="/">Iniciar sesión</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </Section>
+          </div>
+        </div>
+      </PageWrapper>
     )
   }
 
   // Not enrolled
   if (!enrollmentData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-            <CardTitle>No estás inscrito</CardTitle>
-            <CardDescription>
-              No tienes acceso al VibeCoding Bootcamp. Si tienes un código de inscripción, úsalo para activar tu lugar.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline">
-              <Link href="/">Volver al inicio</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <PageWrapper>
+        <div className="page">
+          <div className="page-content">
+            <Section className="flex justify-center py-20">
+              <Card className="w-full max-w-md text-center">
+                <CardHeader>
+                  <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+                  <CardTitle>No estás inscrito</CardTitle>
+                  <CardDescription>
+                    No tienes acceso al VibeCoding Bootcamp. Si tienes un código de inscripción, úsalo para activar tu lugar.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild variant="outline">
+                    <Link href="/">Volver al inicio</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </Section>
+          </div>
+        </div>
+      </PageWrapper>
     )
   }
 
   const { program, enrollment, sessions, deliverables } = enrollmentData
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                {program.name}
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {program.description}
+    <PageWrapper>
+      <div className="page">
+        <div className="page-content gap-y-8">
+          {/* Header */}
+          <Section>
+            <div className="header-section space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                    {program.name}
+                  </h1>
+                  <p className="text-muted-foreground mt-2">
+                    {program.description}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 bg-card rounded-lg p-4 border">
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Progreso</p>
+                    <p className="text-2xl font-bold text-primary">{enrollment.progress}%</p>
+                  </div>
+                  <div className="w-24">
+                    <Progress value={enrollment.progress} className="h-3" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Sessions Grid */}
+          <Section>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {sessions.map((session) => {
+                const deliverable = deliverables.find(
+                  (d) => d.sessionNumber === session.sessionNumber
+                )
+                return (
+                  <SessionCard
+                    key={session._id}
+                    session={session}
+                    deliverable={deliverable}
+                    enrollmentId={enrollment._id}
+                  />
+                )
+              })}
+            </div>
+          </Section>
+
+          {/* Footer */}
+          <Section>
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">
+                📚 Contenido del bootcamp en{' '}
+                <a
+                  href="https://bootcamp.frutero.club"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  bootcamp.frutero.club
+                </a>
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Progreso general</p>
-                <p className="text-2xl font-bold text-primary">{enrollment.progress}%</p>
-              </div>
-              <div className="w-32">
-                <Progress value={enrollment.progress} className="h-3" />
-              </div>
-            </div>
-          </div>
+          </Section>
         </div>
       </div>
-
-      {/* Sessions Grid */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {sessions.map((session) => {
-            const deliverable = deliverables.find(
-              (d) => d.sessionNumber === session.sessionNumber
-            )
-            return (
-              <SessionCard
-                key={session._id}
-                session={session}
-                deliverable={deliverable}
-                enrollmentId={enrollment._id}
-                isLocked={false} // Could add logic to lock future sessions
-              />
-            )
-          })}
-        </div>
-      </div>
-    </div>
+    </PageWrapper>
   )
 }
 
@@ -171,10 +213,9 @@ interface SessionCardProps {
     feedback?: string
   }
   enrollmentId: Id<'bootcampEnrollments'>
-  isLocked: boolean
 }
 
-function SessionCard({ session, deliverable, enrollmentId, isLocked }: SessionCardProps) {
+function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
   const [showForm, setShowForm] = useState(false)
   const [projectUrl, setProjectUrl] = useState(deliverable?.projectUrl || '')
   const [repositoryUrl, setRepositoryUrl] = useState('')
@@ -215,7 +256,7 @@ function SessionCard({ session, deliverable, enrollmentId, isLocked }: SessionCa
     switch (deliverable.status) {
       case 'submitted':
         return (
-          <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+          <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/30">
             <Clock className="w-3 h-3 mr-1" />
             En revisión
           </Badge>
@@ -229,9 +270,9 @@ function SessionCard({ session, deliverable, enrollmentId, isLocked }: SessionCa
         )
       case 'needs_revision':
         return (
-          <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30">
+          <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/30">
             <XCircle className="w-3 h-3 mr-1" />
-            Necesita revisión
+            Revisión
           </Badge>
         )
       default:
@@ -239,30 +280,9 @@ function SessionCard({ session, deliverable, enrollmentId, isLocked }: SessionCa
     }
   }
 
-  if (isLocked) {
-    return (
-      <Card className="opacity-50">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Lock className="h-5 w-5 text-muted-foreground" />
-            <CardTitle className="text-lg">
-              Sesión {session.sessionNumber}
-            </CardTitle>
-          </div>
-          <CardDescription>{session.title}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Completa la sesión anterior para desbloquear
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <Card className="flex flex-col">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {deliverable?.status === 'approved' ? (
@@ -282,7 +302,7 @@ function SessionCard({ session, deliverable, enrollmentId, isLocked }: SessionCa
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
-        <div className="bg-muted/50 rounded-lg p-3">
+        <div className="bg-muted rounded-lg p-3">
           <p className="text-xs text-muted-foreground mb-1">Entregable</p>
           <p className="font-medium text-sm">{session.deliverableTitle}</p>
         </div>

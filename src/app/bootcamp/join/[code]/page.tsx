@@ -51,9 +51,16 @@ export default function JoinBootcampPage() {
       
       setSuccess(true)
       
-      // Redirect to bootcamp dashboard after 2 seconds
+      // Check if user needs to complete onboarding first
+      const needsOnboarding = !convexUser?.username || convexUser?.accountStatus === 'incomplete'
+      
+      // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/bootcamp/vibecoding')
+        if (needsOnboarding) {
+          router.push('/onboarding')
+        } else {
+          router.push('/bootcamp/vibecoding')
+        }
       }, 2000)
     } catch (err: any) {
       setError(err.message || 'Error al unirse al bootcamp')
@@ -201,6 +208,8 @@ export default function JoinBootcampPage() {
 
   // Success state
   if (success) {
+    const needsOnboarding = !convexUser?.username || convexUser?.accountStatus === 'incomplete'
+    
     return (
       <PageWrapper>
         <div className="page">
@@ -216,7 +225,9 @@ export default function JoinBootcampPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Redirigiendo al dashboard...
+                    {needsOnboarding 
+                      ? 'Primero completa tu perfil...' 
+                      : 'Redirigiendo al bootcamp...'}
                   </p>
                   <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
                 </CardContent>

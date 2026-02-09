@@ -52,7 +52,12 @@ export default function JoinBootcampPage() {
       setSuccess(true)
       
       // Check if user needs to complete onboarding first
-      const needsOnboarding = !convexUser?.username || convexUser?.accountStatus === 'incomplete'
+      // User needs onboarding if: no username, temp username (user_xxx), or account not active
+      const hasTempUsername = convexUser?.username?.startsWith('user_')
+      const needsOnboarding = !convexUser?.username || 
+        hasTempUsername ||
+        convexUser?.accountStatus === 'incomplete' ||
+        convexUser?.accountStatus === 'pending'
       
       // Redirect after 2 seconds
       setTimeout(() => {
@@ -150,6 +155,17 @@ export default function JoinBootcampPage() {
 
   const { enrollment, program } = enrollmentData
 
+  // Helper: user needs onboarding if:
+  // - No username, OR username is temporary (starts with 'user_')
+  // - Account status is incomplete or pending
+  const hasTemporaryUsername = convexUser?.username?.startsWith('user_')
+  const userNeedsOnboarding = convexUser && (
+    !convexUser.username || 
+    hasTemporaryUsername ||
+    convexUser.accountStatus === 'incomplete' ||
+    convexUser.accountStatus === 'pending'
+  )
+
   // Code already used by someone else
   if (enrollment.userId && !success) {
     // Check if it's the current user
@@ -168,9 +184,15 @@ export default function JoinBootcampPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button asChild>
-                      <Link href="/bootcamp/vibecoding">Ir al Bootcamp</Link>
-                    </Button>
+                    {userNeedsOnboarding ? (
+                      <Button asChild>
+                        <Link href="/onboarding">Completar mi perfil</Link>
+                      </Button>
+                    ) : (
+                      <Button asChild>
+                        <Link href="/bootcamp/vibecoding">Ir al Bootcamp</Link>
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               </Section>
@@ -208,7 +230,11 @@ export default function JoinBootcampPage() {
 
   // Success state
   if (success) {
-    const needsOnboarding = !convexUser?.username || convexUser?.accountStatus === 'incomplete'
+    const hasTempUsername = convexUser?.username?.startsWith('user_')
+    const needsOnboarding = !convexUser?.username || 
+      hasTempUsername ||
+      convexUser?.accountStatus === 'incomplete' ||
+      convexUser?.accountStatus === 'pending'
     
     return (
       <PageWrapper>

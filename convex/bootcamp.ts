@@ -350,7 +350,11 @@ export const joinWithCode = mutation({
 
     if (enrollment.userId) {
       if (enrollment.userId === args.userId) {
-        // Already linked to this user - just return
+        // Already linked to this user — ensure auto-approve in case they joined before this feature
+        const existingUser = await ctx.db.get(args.userId);
+        if (existingUser && existingUser.accountStatus !== "active") {
+          await ctx.db.patch(args.userId, { accountStatus: "active" });
+        }
         return { enrollment, alreadyLinked: true };
       }
       throw new Error("This code has already been used");
@@ -373,6 +377,14 @@ export const joinWithCode = mutation({
       status: "active",
       joinedAt: Date.now(),
     });
+
+    // Auto-approve the user (skip application review) — same as referral invitation flow
+    const user = await ctx.db.get(args.userId);
+    if (user && user.accountStatus !== "active") {
+      await ctx.db.patch(args.userId, {
+        accountStatus: "active",
+      });
+    }
 
     return { enrollment: { ...enrollment, userId: args.userId }, alreadyLinked: false };
   },
@@ -464,7 +476,28 @@ export const submitDeliverable = mutation({
       throw new Error("Deliverable already approved");
     }
 
-    // Create new submission
+    // If there's an existing submission (submitted or needs_revision), update it instead of creating a duplicate
+    const existingSubmission = existing.find(
+      (d) => d.status === "submitted" || d.status === "needs_revision"
+    );
+    if (existingSubmission) {
+      await ctx.db.patch(existingSubmission._id, {
+        projectUrl: args.projectUrl,
+        repositoryUrl: args.repositoryUrl,
+        screenshotUrls: args.screenshotUrls,
+        notes: args.notes,
+        status: "submitted",
+        submittedAt: Date.now(),
+        // Reset review fields on resubmission
+        feedback: undefined,
+        reviewedAt: undefined,
+        reviewedByUserId: undefined,
+        level: undefined,
+      });
+      return existingSubmission._id;
+    }
+
+    // No existing submission — create new
     const deliverableId = await ctx.db.insert("bootcampDeliverables", {
       enrollmentId: args.enrollmentId,
       userId: enrollment.userId,
@@ -516,7 +549,7 @@ export const reviewDeliverable = mutation({
     if (args.status === "approved") {
       const enrollment = await ctx.db.get(deliverable.enrollmentId);
       if (enrollment) {
-        // Count approved deliverables
+        // Count approved deliverables by unique session (prevents duplicate inflation)
         const approvedDeliverables = await ctx.db
           .query("bootcampDeliverables")
           .withIndex("by_enrollment", (q) => q.eq("enrollmentId", enrollment._id))
@@ -527,7 +560,8 @@ export const reviewDeliverable = mutation({
         const program = await ctx.db.get(enrollment.programId);
         const totalSessions = program?.sessionsCount || 5;
 
-        const sessionsCompleted = approvedDeliverables.length;
+        const uniqueApprovedSessions = new Set(approvedDeliverables.map((d) => d.sessionNumber));
+        const sessionsCompleted = uniqueApprovedSessions.size;
         const progress = Math.round((sessionsCompleted / totalSessions) * 100);
 
         await ctx.db.patch(enrollment._id, {

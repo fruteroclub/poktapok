@@ -160,9 +160,17 @@ export default function VibeCodingDashboard() {
           <Section>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {sessions.map((session) => {
-                const deliverable = deliverables.find(
-                  (d) => d.sessionNumber === session.sessionNumber
-                )
+                // Pick the best deliverable for this session: approved > submitted > needs_revision, then latest
+                const sessionDeliverables = deliverables
+                  .filter((d) => d.sessionNumber === session.sessionNumber)
+                  .sort((a, b) => {
+                    const priority: Record<string, number> = { approved: 0, submitted: 1, needs_revision: 2 }
+                    const pa = priority[a.status] ?? 3
+                    const pb = priority[b.status] ?? 3
+                    if (pa !== pb) return pa - pb
+                    return (b.submittedAt ?? 0) - (a.submittedAt ?? 0)
+                  })
+                const deliverable = sessionDeliverables[0]
                 return (
                   <SessionCard
                     key={session._id}

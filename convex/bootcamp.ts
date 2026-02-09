@@ -131,15 +131,10 @@ export const updateProgramStatus = mutation({
 export const getEnrollmentByCode = query({
   args: { code: v.string() },
   handler: async (ctx, args) => {
-    const searchCode = args.code.toUpperCase();
-    console.log("[getEnrollmentByCode] Searching for code:", searchCode);
-    
     const enrollment = await ctx.db
       .query("bootcampEnrollments")
-      .withIndex("by_code", (q) => q.eq("code", searchCode))
+      .withIndex("by_code", (q) => q.eq("code", args.code.toUpperCase()))
       .unique();
-
-    console.log("[getEnrollmentByCode] Found enrollment:", enrollment?._id ?? "null");
 
     if (!enrollment) return null;
 

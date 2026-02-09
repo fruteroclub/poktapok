@@ -11,11 +11,26 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useDirectoryProfiles } from '@/hooks/use-directory'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
+import { Progress } from '@/components/ui/progress'
 
 export default function DirectoryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const { data, isLoading } = useDirectoryProfiles({ limit: 50 })
+  const participants = useQuery(api.bootcamp.listActiveParticipants)
+
+  // Build a lookup map: userId → participant data
+  const participantMap = useMemo(() => {
+    const map = new Map<string, { programName: string; progress: number; status: string }>()
+    if (participants) {
+      for (const p of participants) {
+        map.set(p.userId, { programName: p.programName, progress: p.progress, status: p.status })
+      }
+    }
+    return map
+  }, [participants])
 
   const profiles = data?.profiles || []
 
@@ -141,6 +156,21 @@ export default function DirectoryPage() {
                             ))}
                           </div>
                         )}
+
+                        {/* Bootcamp progress badge */}
+                        {profile.user?._id && participantMap.has(profile.user._id) && (() => {
+                          const bp = participantMap.get(profile.user!._id)!
+                          return (
+                            <div className="flex w-full items-center justify-center gap-2">
+                              <Badge variant="outline" className="text-xs gap-1">
+                                {bp.status === 'completed' ? 'VibeCoding ✅' : `VibeCoding ${bp.progress}%`}
+                              </Badge>
+                              {bp.status !== 'completed' && (
+                                <Progress value={bp.progress} className="h-1.5 w-16" />
+                              )}
+                            </div>
+                          )
+                        })()}
                       </div>
 
                       <CardFooter className="mt-auto flex w-full justify-center gap-4 text-center text-sm">

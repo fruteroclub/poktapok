@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
-import { Loader2, Copy, Check, Trash2, UserPlus, Gift, Target, ArrowRight, DollarSign, Clock } from 'lucide-react'
+import { Loader2, Copy, Check, Trash2, UserPlus, Gift, Target, ArrowRight, Clock, GraduationCap } from 'lucide-react'
 import { useMyBounties, useOpenBounties, getDifficultyColor, getDifficultyDisplayName, formatReward } from '@/hooks/use-bounties'
 import Link from 'next/link'
 import PageWrapper from '@/components/layout/page-wrapper'
@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Section } from '@/components/layout/section'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
 
 export default function DashboardPage() {
@@ -34,6 +35,12 @@ export default function DashboardPage() {
     privyDid ? { privyDid } : 'skip'
   )
   
+  // Bootcamp
+  const bootcampStatus = useQuery(
+    api.bootcamp.getUserBootcampStatus,
+    convexUser?._id ? { userId: convexUser._id } : 'skip'
+  )
+
   // Bounties
   const { claims: myBounties, isLoading: bountiesLoading } = useMyBounties(convexUser?._id)
   const { bounties: openBounties } = useOpenBounties({ limit: 1 })
@@ -170,6 +177,55 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Bootcamp Progress */}
+              {bootcampStatus?.isParticipant && bootcampStatus.enrollments.length > 0 && (
+                <Card className="w-full">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <GraduationCap className="h-5 w-5" />
+                          Mi Bootcamp
+                        </CardTitle>
+                        <CardDescription>
+                          Tu progreso en programas activos
+                        </CardDescription>
+                      </div>
+                      <Button asChild variant="outline" size="sm">
+                        <Link href="/bootcamp/vibecoding">
+                          Ir al Bootcamp
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {bootcampStatus.enrollments.map(({ enrollment, program }) => (
+                        <div key={enrollment._id} className="flex flex-col sm:flex-row sm:items-center gap-4">
+                          <div className="flex-1">
+                            <p className="font-medium">{program?.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {enrollment.status === 'completed'
+                                ? 'Completado'
+                                : `${enrollment.sessionsCompleted}/${program?.sessionsCount || 5} sesiones`}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-32">
+                              <Progress value={enrollment.progress} className="h-2" />
+                            </div>
+                            <Badge variant={enrollment.status === 'completed' ? 'default' : 'secondary'}>
+                              {enrollment.progress}%
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Invitations Section */}
               {user.accountStatus === 'active' && (

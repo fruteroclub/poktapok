@@ -163,6 +163,40 @@ export const getMyEnrollments = query({
   },
 });
 
+/** List all active/completed participants (for directory badges) */
+export const listActiveParticipants = query({
+  args: {},
+  handler: async (ctx) => {
+    const enrollments = await ctx.db
+      .query("bootcampEnrollments")
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("status"), "active"),
+          q.eq(q.field("status"), "completed")
+        )
+      )
+      .collect();
+
+    const result = await Promise.all(
+      enrollments
+        .filter((e) => e.userId)
+        .map(async (e) => {
+          const program = await ctx.db.get(e.programId);
+          return {
+            userId: e.userId!,
+            programName: program?.name ?? "Bootcamp",
+            programSlug: program?.slug ?? "",
+            progress: e.progress,
+            status: e.status,
+            sessionsCompleted: e.sessionsCompleted,
+            sessionsCount: program?.sessionsCount ?? 5,
+          };
+        })
+    );
+    return result;
+  },
+});
+
 export const getEnrollmentWithDetails = query({
   args: { 
     programSlug: v.string(),
@@ -233,6 +267,32 @@ export const listEnrollmentsByProgram = query({
 // ============================================================
 // ENROLLMENTS - Mutations
 // ============================================================
+
+/** Admin utility: reset an enrollment so the code can be reused */
+export const resetEnrollment = mutation({
+  args: { enrollmentId: v.id("bootcampEnrollments") },
+  handler: async (ctx, args) => {
+    const enrollment = await ctx.db.get(args.enrollmentId);
+    if (!enrollment) throw new Error("Enrollment not found");
+    await ctx.db.patch(args.enrollmentId, {
+      userId: undefined,
+      status: "pending",
+      joinedAt: undefined,
+      progress: 0,
+      sessionsCompleted: 0,
+    });
+    return { code: enrollment.code, reset: true };
+  },
+});
+
+/** Admin utility: delete an enrollment */
+export const deleteEnrollment = mutation({
+  args: { enrollmentId: v.id("bootcampEnrollments") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.enrollmentId);
+    return { deleted: true };
+  },
+});
 
 export const createEnrollment = mutation({
   args: {

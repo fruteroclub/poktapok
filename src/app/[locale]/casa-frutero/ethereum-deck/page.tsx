@@ -581,7 +581,7 @@ export default async function EthereumDeckPage({ params }: Props) {
         title={t.header.title}
         subtitle={t.header.subtitle}
         logo={{
-          src: '/images/frutero-logo.svg',
+          src: '/images/logos/frutero-logo.svg',
           alt: 'Frutero',
           width: 100,
           height: 100,

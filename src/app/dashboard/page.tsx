@@ -204,7 +204,7 @@ export default function DashboardPage() {
                             className="flex items-center justify-between rounded-lg border p-3"
                           >
                             <div className="flex items-center gap-3">
-                              <code className="rounded bg-muted px-2 py-1 font-mono text-sm">
+                              <code className="rounded border border-primary/30 bg-primary/10 px-2 py-1 font-mono text-sm text-primary">
                                 {inv.inviteCode}
                               </code>
                               <Badge

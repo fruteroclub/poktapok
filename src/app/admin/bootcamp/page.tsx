@@ -287,7 +287,7 @@ export default function AdminBootcampPage() {
                         {filteredDeliverables?.map(({ deliverable, user, enrollment }) => (
                           <div
                             key={deliverable._id}
-                            className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors space-y-3"
+                            className="p-4 rounded-lg border bg-card hover:bg-primary/5 hover:border-primary/30 transition-colors space-y-3"
                           >
                             {/* Header: User + Status */}
                             <div className="flex items-center justify-between">

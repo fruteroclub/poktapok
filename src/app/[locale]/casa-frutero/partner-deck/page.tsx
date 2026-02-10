@@ -94,6 +94,36 @@ const content = {
         ],
       },
     },
+    alaCarte: {
+      title: 'Menú a la Carta',
+      subtitle: '¿Quieres workshops adicionales entregados por Frutero más allá de tu tier?',
+      table: {
+        columns: [
+          { key: 'tier', header: 'Tier de Membresía' },
+          { key: 'first', header: 'Primer Workshop*' },
+          { key: 'additional', header: 'Workshops Adicionales' },
+        ],
+        data: [
+          { tier: 'No Miembro', first: '$350', additional: '$275 c/u' },
+          { tier: 'Bronze', first: '$150', additional: '$250 c/u' },
+          { tier: 'Silver', first: '$150', additional: '$225 c/u' },
+          { tier: 'Gold', first: '2 incluidos/mes', additional: '$200 c/u' },
+          { tier: 'Founding Partner', first: '2 incluidos/mes', additional: '$175 c/u' },
+        ],
+      },
+      note: '*El primer workshop para no miembros requiere establecer un tier de membresía',
+      whatYouGet: {
+        title: 'Lo Que Incluye',
+        items: [
+          'Workshop técnico de 45 minutos',
+          'Contenido custom sobre tu protocolo/producto',
+          'Entregado por el equipo Frutero a la comunidad',
+          'Grabación profesional para tus canales',
+          'Promoción a 1,000+ builders',
+          'Reporte de engagement post-evento',
+        ],
+      },
+    },
     tiers: {
       title: 'Tiers de Patrocinio',
       bronze: {
@@ -306,6 +336,36 @@ const content = {
           'Demo opportunities at monthly events',
           'Developer onboarding sessions',
           'Custom programming (higher tiers)',
+        ],
+      },
+    },
+    alaCarte: {
+      title: 'À La Carte Menu',
+      subtitle: 'Want additional Frutero-delivered workshops beyond your tier allocation?',
+      table: {
+        columns: [
+          { key: 'tier', header: 'Membership Tier' },
+          { key: 'first', header: 'First Workshop*' },
+          { key: 'additional', header: 'Additional Workshops' },
+        ],
+        data: [
+          { tier: 'Non-Member', first: '$350', additional: '$275 each' },
+          { tier: 'Bronze', first: '$150', additional: '$250 each' },
+          { tier: 'Silver', first: '$150', additional: '$225 each' },
+          { tier: 'Gold', first: '2 included/month', additional: '$200 each' },
+          { tier: 'Founding Partner', first: '2 included/month', additional: '$175 each' },
+        ],
+      },
+      note: '*First workshop for non-members requires establishing a membership tier',
+      whatYouGet: {
+        title: 'What You Get',
+        items: [
+          '45 minute technical workshop',
+          'Custom content about your protocol/product',
+          'Delivered by Frutero team to community',
+          'Professional recording for your channels',
+          'Promotion to 1,000+ builders',
+          'Post-event engagement report',
         ],
       },
     },
@@ -743,6 +803,23 @@ export default async function PartnerDeckPage({ params }: Props) {
           <TierCard {...t.tiers.silver} />
           <TierCard {...t.tiers.gold} highlight />
           <TierCard {...t.tiers.founding} />
+        </div>
+      </DeckSection>
+
+      {/* À La Carte Menu */}
+      <DeckSection title={t.alaCarte.title} description={t.alaCarte.subtitle}>
+        <DeckTable columns={t.alaCarte.table.columns} data={t.alaCarte.table.data} />
+        <p className="mt-2 text-sm text-foreground/60 italic">{t.alaCarte.note}</p>
+        <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-6">
+          <h4 className="font-semibold mb-3">{t.alaCarte.whatYouGet.title}</h4>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {t.alaCarte.whatYouGet.items.map((item, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                <span className="text-primary">✓</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </DeckSection>
 

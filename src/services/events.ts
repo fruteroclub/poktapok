@@ -187,3 +187,26 @@ export async function fetchLumaMetadata(
     body: JSON.stringify({ url }),
   })
 }
+
+export interface SyncCalendarResponse {
+  synced: number
+  created: number
+  updated: number
+  errors?: number
+  events: { slug: string; title: string; action: string }[]
+  message: string
+}
+
+/**
+ * Sync events from a Luma calendar
+ * @param calendarSlug - The Luma calendar slug (e.g., 'fruteroclub')
+ */
+export async function syncLumaCalendar(
+  calendarSlug: string
+): Promise<SyncCalendarResponse> {
+  return apiFetch<SyncCalendarResponse>('/api/luma/sync-calendar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ calendarSlug }),
+  })
+}

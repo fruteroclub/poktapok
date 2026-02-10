@@ -15,6 +15,13 @@ const HUB_IMAGES = [
   '/images/landing/casa-frutero/coworking-office.jpg',
   '/images/landing/casa-frutero/coworking-open-space.jpg',
   '/images/landing/casa-frutero/coworking-sala-juntas.jpg',
+  '/images/landing/casa-frutero/IMG_20260114_160959.jpg',
+  '/images/landing/casa-frutero/IMG_20260114_205309.jpg',
+  '/images/landing/casa-frutero/IMG_20260121_141521.jpg',
+  '/images/landing/casa-frutero/IMG_20260121_141537.jpg',
+  '/images/landing/casa-frutero/IMG_20260121_191529.jpg',
+  '/images/landing/casa-frutero/IMG_20260121_191542.jpg',
+  '/images/landing/casa-frutero/IMG_20260121_191643.jpg',
 ]
 
 export default function HubCarousel({ className }: HubCarouselProps) {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { locales, defaultLocale } from './i18n/config'
 
 // Routes that should use i18n
-const i18nRoutes = ['/casa-frutero', '/devrel']
+const i18nRoutes = ['/casa-frutero', '/devrel', '/proposals']
 
 const intlMiddleware = createMiddleware({
   locales,

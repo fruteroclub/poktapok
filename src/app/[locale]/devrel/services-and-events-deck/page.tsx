@@ -705,13 +705,8 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
         description={t.cta.description}
         primaryAction={{
           label: t.cta.button,
-          href: `mailto:${t.cta.email}?subject=Frutero%20DevRel%20Inquiry`,
+          href: 'https://cal.com/troopdegen/lets-build-together?duration=20&overlayCalendar=true',
         }}
-        secondaryAction={{
-          label: 'Mel — CEO',
-          href: 'mailto:mel@frutero.club?subject=Frutero%20DevRel%20Inquiry',
-        }}
-        contactEmail={t.cta.email}
       />
 
       {/* Footer */}

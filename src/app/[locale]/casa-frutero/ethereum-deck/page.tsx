@@ -803,9 +803,8 @@ export default async function EthereumDeckPage({ params }: Props) {
         description={t.cta.description}
         primaryAction={{
           label: t.cta.button,
-          href: `mailto:${t.cta.email}?subject=Casa%20Frutero%20Partnership`,
+          href: 'https://cal.com/troopdegen/lets-build-together?duration=20&overlayCalendar=true',
         }}
-        contactEmail={t.cta.email}
       />
 
       {/* Footer */}

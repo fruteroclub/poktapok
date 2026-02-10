@@ -920,13 +920,8 @@ export default async function PartnerDeckPage({ params }: Props) {
         description={t.cta.description}
         primaryAction={{
           label: t.cta.button,
-          href: `mailto:${t.cta.email}?subject=Casa%20Frutero%20Sponsorship`,
+          href: 'https://cal.com/troopdegen/lets-build-together?duration=20&overlayCalendar=true',
         }}
-        secondaryAction={{
-          label: 'Ian — BD',
-          href: 'mailto:ian@frutero.club?subject=Casa%20Frutero%20Sponsorship',
-        }}
-        contactEmail={t.cta.email}
       />
 
       {/* Footer */}

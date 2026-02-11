@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     'pino-pretty',
     '@reown/appkit',
     '@privy-io/server-auth',
+    '@vercel/blob',
   ],
 
   // Image optimization configuration

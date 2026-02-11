@@ -11,8 +11,13 @@ const privy = new PrivyClient(
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
-// Explicit token — Turbopack may not pass process.env to @vercel/blob internals
-const blobToken = process.env.BLOB_READ_WRITE_TOKEN!
+function getBlobToken(): string {
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) {
+    throw new Error('BLOB_READ_WRITE_TOKEN is not configured')
+  }
+  return token
+}
 
 /**
  * POST /api/profiles/avatar
@@ -80,6 +85,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Read token at runtime (not build time)
+    const blobToken = getBlobToken()
+    console.log('[avatar] Blob token present, length:', blobToken.length)
 
     // Step 5: Delete old avatar if exists
     if (user.avatarUrl && user.avatarUrl.includes('vercel-storage.com')) {
@@ -170,6 +179,7 @@ export async function DELETE(request: NextRequest) {
     // Delete from blob storage
     if (user.avatarUrl && user.avatarUrl.includes('vercel-storage.com')) {
       try {
+        const blobToken = getBlobToken()
         await del(user.avatarUrl, { token: blobToken })
       } catch (error) {
         console.error('Failed to delete avatar from blob:', error)

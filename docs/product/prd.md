@@ -910,3 +910,25 @@ graph TD
 
 **Document Status:** ✅ Ready for Development
 **Next Steps:** Epic 1 kickoff, assign tasks, daily standups
+
+---
+
+## Implementation Notes (Added during development)
+
+### Profile Stats Fields
+
+| Field | Description | When to show |
+|-------|-------------|--------------|
+| `projectsCount` | Number of portfolio projects (Epic 2) | Always |
+| `completedBounties` | Number of bounties completed (Epic 3) | After Epic 3 implementation |
+| `totalEarningsUsd` | Total earnings from bounties (Epic 3) | After Epic 3 implementation |
+
+**Decision:** Portfolio projects (Epic 2) are tracked separately from Bounty completions (Epic 3).
+
+- **Epic 2 (Portfolio):** User uploads personal projects → increments `projectsCount`
+- **Epic 3 (Bounty Marketplace):** User claims, completes, gets paid → increments `completedBounties` and `totalEarningsUsd`
+
+**UI Display:**
+- Pre-Epic 3: Show only "Proyectos" count
+- Post-Epic 3: Show "Proyectos", "Bounties", and "$ Ganado"
+

@@ -5,7 +5,7 @@ import { Code2, Coins, Shield } from 'lucide-react'
 interface ProfileInfoProps {
   learningTracks: ('ai' | 'crypto' | 'privacy')[] | null
   availabilityStatus: 'available' | 'open_to_offers' | 'unavailable' | null
-  completedBounties: number
+  projectsCount: number
   totalEarningsUsd: number
   canViewData: boolean
 }
@@ -49,7 +49,7 @@ const availabilityConfig = {
 export function ProfileInfo({
   learningTracks,
   availabilityStatus,
-  completedBounties,
+  projectsCount,
   totalEarningsUsd,
   canViewData,
 }: ProfileInfoProps) {
@@ -117,7 +117,7 @@ export function ProfileInfo({
       )}
 
       {/* Stats */}
-      {(completedBounties > 0 || totalEarningsUsd > 0) && (
+      {(projectsCount > 0 || totalEarningsUsd > 0) && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Stats</CardTitle>
@@ -127,7 +127,7 @@ export function ProfileInfo({
               <span className="text-sm text-muted-foreground">
                 Completed Bounties
               </span>
-              <span className="font-semibold">{completedBounties}</span>
+              <span className="font-semibold">{projectsCount}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">

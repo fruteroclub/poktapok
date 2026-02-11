@@ -1,87 +1,70 @@
-/**
- * Profile Hooks - TanStack Query hooks for profile operations
- */
+'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  createProfile,
-  uploadAvatar,
-  deleteAvatar,
-} from '@/services/profile'
-import type { ProfileFormData } from '@/lib/validators/profile'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 /**
- * Hook to create or update a profile
- * Invalidates the "me" query on success to refetch user data
+ * Hook for creating profile
  */
 export function useCreateProfile() {
-  const queryClient = useQueryClient()
+  const mutation = useMutation(api.profiles.upsert)
 
-  return useMutation({
-    mutationFn: (data: ProfileFormData) => createProfile(data),
-    onSuccess: () => {
-      // Invalidate and refetch user data to get updated profile
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-    },
-  })
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }
 
 /**
- * Hook to upload user avatar
- * Returns the new avatar URL on success
- *
- * @example
- * ```typescript
- * const uploadAvatarMutation = useUploadAvatar()
- *
- * const handleFileSelect = async (file: File) => {
- *   try {
- *     const avatarUrl = await uploadAvatarMutation.mutateAsync(file)
- *     console.log('New avatar URL:', avatarUrl)
- *   } catch (error) {
- *     toast.error('Failed to upload avatar')
- *   }
- * }
- * ```
+ * Hook for updating profile
+ */
+export function useUpdateProfile() {
+  const mutation = useMutation(api.profiles.update)
+
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
+}
+
+/**
+ * Hook for uploading avatar
+ * Note: Avatar upload still uses the API route
  */
 export function useUploadAvatar() {
-  const queryClient = useQueryClient()
+  return {
+    mutate: async (file: File) => {
+      const formData = new FormData()
+      formData.append('avatar', file)
 
-  return useMutation({
-    mutationFn: (file: File) => uploadAvatar(file),
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data with new avatar
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+      const response = await fetch('/api/profiles/avatar', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar')
+      }
+
+      return response.json()
     },
-  })
-}
+    mutateAsync: async (file: File) => {
+      const formData = new FormData()
+      formData.append('avatar', file)
 
-/**
- * Hook to delete user avatar
- * Reverts to fallback avatar (blo or initials)
- *
- * @example
- * ```typescript
- * const deleteAvatarMutation = useDeleteAvatar()
- *
- * const handleDelete = async () => {
- *   try {
- *     await deleteAvatarMutation.mutateAsync()
- *     toast.success('Avatar deleted')
- *   } catch (error) {
- *     toast.error('Failed to delete avatar')
- *   }
- * }
- * ```
- */
-export function useDeleteAvatar() {
-  const queryClient = useQueryClient()
+      const response = await fetch('/api/profiles/avatar', {
+        method: 'POST',
+        body: formData,
+      })
 
-  return useMutation({
-    mutationFn: () => deleteAvatar(),
-    onSuccess: () => {
-      // Invalidate auth query to refetch user data
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar')
+      }
+
+      return response.json()
     },
-  })
+    isPending: false,
+  }
 }

@@ -22,8 +22,8 @@ export default function ProblemV2Section() {
             Ya viste el potencial de la IA<br /> ¿<span className="subrayado underline-offset-8">Y ahora qué</span>?
           </h2>
 
-          {/* Problem Description - Muted card with white text */}
-          <Card className="bg-muted w-full md:max-w-md lg:max-w-2xl">
+          {/* Problem Description - Dark card with white text */}
+          <Card className="bg-zinc-900 w-full md:max-w-md lg:max-w-2xl">
             <CardContent className="space-y-4">
               <p className="text-2xl text-white">
                 Sabes que la tecnología puede cambiar todo.
@@ -56,8 +56,8 @@ export default function ProblemV2Section() {
             </div>
           </div>
 
-          {/* CTA - Muted background */}
-          <Card className="bg-muted w-full md:max-w-md lg:max-w-2xl">
+          {/* CTA - Dark background */}
+          <Card className="bg-zinc-900 w-full md:max-w-md lg:max-w-2xl">
             <CardContent className="space-y-8">
               <h2 className="font-black text-background">
                 Eso es <br />

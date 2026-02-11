@@ -17,7 +17,7 @@ import { useDirectoryProfiles } from '@/hooks/use-directory'
 import { usePublicActivities } from '@/hooks/use-activities'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Section } from '@/components/layout/section'
-import EventsCarousel from '@/components/events/events-carousel'
+import EventsCarousel from '@/components/events/events-carousel-convex'
 
 export function ClubContent() {
   const { data: directoryData, isLoading: directoryLoading } =
@@ -73,12 +73,24 @@ export function ClubContent() {
     )
   }
 
-  const members = directoryData?.profiles || []
+  const rawProfiles = directoryData?.profiles || []
   const activities = activitiesData?.activities || []
 
+  // Transform Convex profiles to expected format
+  const members = rawProfiles.map((p) => ({
+    id: p._id,
+    username: p.user?.username || 'unknown',
+    displayName: p.user?.displayName,
+    avatarUrl: p.user?.avatarUrl,
+    bio: p.user?.bio,
+    projectsCount: p.projectsCount || 0,
+    completedBounties: p.completedBounties || 0,
+    totalEarningsUsd: p.totalEarningsUsd || 0,
+  }))
+
   const stats = {
-    totalMembers: directoryData?.pagination.total || 0,
-    totalProjects: members.reduce((sum, m) => sum + m.completedBounties, 0),
+    totalMembers: members.length,
+    totalProjects: members.reduce((sum, m) => sum + (m.projectsCount || 0), 0),
     totalActivities: activities.length,
   }
 
@@ -135,17 +147,17 @@ export function ClubContent() {
                         )}
                       </div>
 
-                      <CardFooter className="mt-auto flex w-full justify-around text-center text-sm">
+                      <CardFooter className="mt-auto flex w-full justify-center gap-4 text-center text-sm">
                         <div>
                           <p className="font-semibold">
-                            {member.completedBounties}
+                            {member.projectsCount}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Proyectos
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-green-600 dark:text-green-400">
                             ${member.totalEarningsUsd}
                           </p>
                           <p className="text-xs text-muted-foreground">
@@ -179,7 +191,21 @@ export function ClubContent() {
             {activities.length > 0 ? (
               <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {activities.slice(0, 6).map((activity) => (
-                  <ActivityCard key={activity.id} activity={activity} />
+                  <ActivityCard
+                    key={activity._id}
+                    activity={{
+                      id: activity._id,
+                      title: activity.title,
+                      description: activity.description || null,
+                      activityType: activity.activityType,
+                      difficulty: activity.difficulty,
+                      rewardPulpaAmount: String(activity.rewardPulpaAmount),
+                      status: activity.status,
+                      createdAt: new Date(activity._creationTime).toISOString(),
+                      totalAvailableSlots: activity.totalAvailableSlots,
+                      currentSubmissionsCount: activity.currentSubmissionsCount,
+                    }}
+                  />
                 ))}
               </div>
             ) : (

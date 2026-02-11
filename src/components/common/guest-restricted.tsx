@@ -20,13 +20,13 @@ export function GuestRestricted({
   fallback,
   showMessage = true,
 }: GuestRestrictedProps) {
-  const { data, isLoading } = useAuth()
+  const { user, isLoading } = useAuth()
 
   if (isLoading) {
     return null
   }
 
-  const isGuest = data?.user?.accountStatus === 'guest'
+  const isGuest = user?.accountStatus === 'guest'
 
   if (!isGuest) {
     return <>{children}</>

@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import AuthButton from '@/components/buttons/auth-button-privy'
+import AuthButton from '@/components/buttons/auth-button-convex'
 import { BlockieAvatar } from '@/components/common/blockie-avatar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { isAddress } from 'viem'

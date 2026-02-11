@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/sheet'
 import { MenuIcon, SparkleIcon } from 'lucide-react'
 import { type MenuItemType } from './navbar'
-import AuthButton from '../buttons/auth-button-privy'
+import AuthButton from '../buttons/auth-button-convex'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks'
 import { usePrivy } from '@privy-io/react-auth'
@@ -24,8 +24,8 @@ type MobileMenuProps = {
 export default function MobileMenu({ menuItems, pathname }: MobileMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { authenticated } = usePrivy()
-  const { data: authData } = useAuth()
-  const isSignedIn = authData?.isAuthenticated && authenticated
+  const { isAuthenticated } = useAuth()
+  const isSignedIn = isAuthenticated && authenticated
 
   return (
     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>

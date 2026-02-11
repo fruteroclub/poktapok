@@ -37,7 +37,7 @@ export default function ProjectsV2Section() {
   ]
 
   return (
-    <section id="projects-section" className="page bg-muted py-16">
+    <section id="projects-section" className="page bg-zinc-900 py-16">
       <div className="page-content">
         <div className="mx-auto max-w-6xl space-y-12">
           {/* Headline */}

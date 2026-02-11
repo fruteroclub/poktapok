@@ -52,21 +52,19 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
     },
   })
 
-  const handleSubmit = (data: ProfileFormData) => {
-    createProfileMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('¡Perfil creado exitosamente!')
-        router.push('/dashboard')
-      },
-      onError: (error) => {
-        console.error('Error creating profile:', error)
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : 'Error al crear perfil. Intenta de nuevo',
-        )
-      },
-    })
+  const handleSubmit = async (data: ProfileFormData) => {
+    try {
+      await createProfileMutation.mutate(data as any)
+      toast.success('¡Perfil creado exitosamente!')
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Error creating profile:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Error al crear perfil. Intenta de nuevo',
+      )
+    }
   }
 
   const handlePreview = () => {

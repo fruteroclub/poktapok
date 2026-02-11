@@ -20,13 +20,13 @@ export function MemberOnly({
   fallback,
   showMessage = true,
 }: MemberOnlyProps) {
-  const { data, isLoading } = useAuth()
+  const { user, isLoading } = useAuth()
 
   if (isLoading) {
     return null
   }
 
-  const isActiveMember = data?.user?.accountStatus === 'active'
+  const isActiveMember = user?.accountStatus === 'active'
 
   if (isActiveMember) {
     return <>{children}</>

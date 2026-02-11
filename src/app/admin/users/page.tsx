@@ -1,11 +1,21 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useUsers } from '@/hooks/use-user-management'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
+import { usePrivy } from '@privy-io/react-auth'
+import { useAuth } from '@/hooks/use-auth'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import { Loader2, ArrowLeft, Shield, ShieldOff, UserX, UserCheck } from 'lucide-react'
+import PageWrapper from '@/components/layout/page-wrapper'
+import { Section } from '@/components/layout/section'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+import Link from 'next/link'
 import {
   Select,
   SelectContent,
@@ -14,712 +24,304 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Loader2,
-  MoreVertical,
-  Users as UsersIcon,
-  Filter,
-  X,
-  Eye,
-} from 'lucide-react'
-import { AdminRoute } from '@/components/layout/admin-route-wrapper'
-import type { User } from '@/services/user-management'
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
-/**
- * Helper function to get Badge variant for user role
- */
-function getRoleVariant(
-  role: string,
-): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (role) {
-    case 'admin':
-      return 'default'
-    case 'moderator':
-      return 'secondary'
-    default:
-      return 'outline'
-  }
+type UserAction = {
+  userId: string
+  action: 'makeAdmin' | 'removeAdmin' | 'suspend' | 'activate'
 }
 
-/**
- * Helper function to get Badge variant for account status
- */
-function getStatusVariant(
-  status: string,
-): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'active':
-      return 'default'
-    case 'pending':
-      return 'secondary'
-    case 'suspended':
-    case 'banned':
-      return 'destructive'
-    default:
-      return 'outline'
-  }
-}
-
-/**
- * User Details Modal Component
- */
-interface UserDetailsModalProps {
-  user: User | null
-  isOpen: boolean
-  onClose: () => void
-  onViewFullProfile: (userId: string) => void
-}
-
-function UserDetailsModal({
-  user,
-  isOpen,
-  onClose,
-  onViewFullProfile,
-}: UserDetailsModalProps) {
-  if (!user) return null
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>User Details</DialogTitle>
-          <DialogDescription>
-            View detailed information about this user
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* User Info */}
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={user.avatarUrl || undefined} />
-              <AvatarFallback>
-                {user.displayName?.charAt(0)?.toUpperCase() ||
-                  user.username?.charAt(0)?.toUpperCase() ||
-                  '?'}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="text-lg font-semibold">
-                {user.displayName || user.username || 'Anonymous'}
-              </div>
-              <div className="text-sm text-muted-foreground">{user.email}</div>
-            </div>
-          </div>
-
-          {/* Role & Status */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs text-muted-foreground">Role</Label>
-              <div>
-                <Badge variant={getRoleVariant(user.role)}>{user.role}</Badge>
-              </div>
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Status</Label>
-              <div>
-                <Badge variant={getStatusVariant(user.accountStatus)}>
-                  {user.accountStatus}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div>
-            <Label className="text-xs text-muted-foreground">Statistics</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border p-3">
-                <div className="text-2xl font-bold">
-                  {user.stats.totalEarnings}
-                </div>
-                <div className="text-xs text-muted-foreground">$PULPA</div>
-              </div>
-              <div className="rounded-lg border p-3">
-                <div className="text-2xl font-bold">
-                  {user.stats.submissionsCount}
-                </div>
-                <div className="text-xs text-muted-foreground">Submissions</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Date Joined */}
-          <div>
-            <Label className="text-xs text-muted-foreground">Joined</Label>
-            <div className="text-sm">
-              {new Date(user.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2">
-            <Button
-              onClick={() => onViewFullProfile(user.id)}
-              className="flex-1"
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              View Full Profile
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-/**
- * Filter Controls Component
- * Extracted as separate component to avoid React hooks warnings
- */
-interface FilterControlsProps {
-  search: string
-  setSearch: (value: string) => void
-  role: string
-  setRole: (value: string) => void
-  accountStatus: string
-  setAccountStatus: (value: string) => void
-  setPage: (value: number) => void
-  activeFiltersCount: number
-}
-
-function FilterControls({
-  search,
-  setSearch,
-  role,
-  setRole,
-  accountStatus,
-  setAccountStatus,
-  setPage,
-  activeFiltersCount,
-}: FilterControlsProps) {
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      <div className="space-y-2">
-        <Label htmlFor="search">Search</Label>
-        <Input
-          id="search"
-          placeholder="Username, email, or name..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="w-full space-y-2">
-          <Label htmlFor="role">Role</Label>
-          <Select
-            value={role}
-            onValueChange={(value) => {
-              setRole(value)
-              setPage(1)
-            }}
-          >
-            <SelectTrigger id="role" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="member">Member</SelectItem>
-              <SelectItem value="moderator">Moderator</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="w-full space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Select
-            value={accountStatus}
-            onValueChange={(value) => {
-              setAccountStatus(value)
-              setPage(1)
-            }}
-          >
-            <SelectTrigger id="status" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="suspended">Suspended</SelectItem>
-              <SelectItem value="banned">Banned</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      {activeFiltersCount > 0 && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={() => {
-            setSearch('')
-            setRole('all')
-            setAccountStatus('all')
-            setPage(1)
-          }}
-        >
-          <X className="mr-2 h-4 w-4" />
-          Clear Filters ({activeFiltersCount})
-        </Button>
-      )}
-    </div>
-  )
-}
-
-/**
- * Admin Users Management Page
- *
- * Lists all users with filters, stats, and actions
- */
-function UsersPageContent() {
+export default function AdminUsersPage() {
   const router = useRouter()
-  const [search, setSearch] = useState('')
-  const [role, setRole] = useState('all')
-  const [accountStatus, setAccountStatus] = useState('all')
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [page, setPage] = useState(1)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const { user: privyUser } = usePrivy()
+  const { user, isLoading: authLoading } = useAuth()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [pendingAction, setPendingAction] = useState<UserAction | null>(null)
 
-  const { data, isLoading, error } = useUsers({
-    search: search || undefined,
-    role: role !== 'all' ? role : undefined,
-    accountStatus: accountStatus !== 'all' ? accountStatus : undefined,
-    page,
-    limit: 24,
+  const users = useQuery(api.users.list)
+  const updateRoleMutation = useMutation(api.users.updateRole)
+  const updateStatusMutation = useMutation(api.users.updateStatus)
+
+  const privyDid = privyUser?.id
+
+  useEffect(() => {
+    if (!authLoading && (!user || user.role !== 'admin')) {
+      router.push('/')
+    }
+  }, [user, authLoading, router])
+
+  const handleAction = async () => {
+    if (!pendingAction || !privyDid) return
+
+    try {
+      const { userId, action } = pendingAction
+
+      switch (action) {
+        case 'makeAdmin':
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'admin' })
+          toast.success('Usuario promovido a admin')
+          break
+        case 'removeAdmin':
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'member' })
+          toast.success('Permisos de admin removidos')
+          break
+        case 'suspend':
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'suspended' })
+          toast.success('Usuario suspendido')
+          break
+        case 'activate':
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'active' })
+          toast.success('Usuario activado')
+          break
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Error al realizar la acción')
+    } finally {
+      setPendingAction(null)
+    }
+  }
+
+  if (authLoading || users === undefined) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!user || user.role !== 'admin') {
+    return null
+  }
+
+  // Filter users
+  const filteredUsers = (users || []).filter((u) => {
+    // Search filter
+    const query = searchQuery.toLowerCase()
+    const matchesSearch =
+      !searchQuery ||
+      u.username?.toLowerCase().includes(query) ||
+      u.displayName?.toLowerCase().includes(query) ||
+      u.email?.toLowerCase().includes(query)
+
+    // Status filter
+    const matchesStatus =
+      statusFilter === 'all' || u.accountStatus === statusFilter
+
+    return matchesSearch && matchesStatus
   })
 
-  const users = data?.users || []
-  const pagination = data?.pagination
-
-  // Calculate stats from filtered data
-  const stats = {
-    total: pagination?.total || 0,
-    active: users.filter((u) => u.accountStatus === 'active').length,
-    suspended: users.filter((u) => u.accountStatus === 'suspended').length,
-    banned: users.filter((u) => u.accountStatus === 'banned').length,
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-500">Activo</Badge>
+      case 'pending':
+        return <Badge variant="secondary">Pendiente</Badge>
+      case 'suspended':
+        return <Badge variant="destructive">Suspendido</Badge>
+      case 'incomplete':
+        return <Badge variant="outline">Incompleto</Badge>
+      default:
+        return <Badge variant="outline">{status}</Badge>
+    }
   }
 
-  // Count active filters
-  const activeFiltersCount = [
-    search,
-    role !== 'all' ? role : null,
-    accountStatus !== 'all' ? accountStatus : null,
-  ].filter(Boolean).length
+  const getActionLabel = (action: string) => {
+    switch (action) {
+      case 'makeAdmin':
+        return '¿Hacer admin a este usuario?'
+      case 'removeAdmin':
+        return '¿Quitar permisos de admin?'
+      case 'suspend':
+        return '¿Suspender este usuario?'
+      case 'activate':
+        return '¿Activar este usuario?'
+      default:
+        return '¿Confirmar acción?'
+    }
+  }
 
   return (
-    <div className="page-content">
-      {/* Header */}
-      <div className="admin-header-section">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Users Management
-          </h1>
-          <p className="text-muted-foreground">
-            Manage user accounts, roles, and permissions
-          </p>
-        </div>
-      </div>
-
-      <div className="w-full space-y-2">
-        {/* Mobile: Filter Button + Inline Stats */}
-        <div className="w-full space-y-2 md:hidden">
-          <div className="flex items-center justify-center gap-2">
-            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="relative">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filters
-                  {activeFiltersCount > 0 && (
-                    <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                      {activeFiltersCount}
-                    </span>
-                  )}
+    <PageWrapper>
+      <div className="page">
+        <div className="page-content space-y-6">
+          <Section>
+            <div className="header-section">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/admin">
+                    <ArrowLeft className="h-4 w-4" />
+                  </Link>
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-80">
-                <SheetHeader>
-                  <SheetTitle>Filter Users</SheetTitle>
-                  <SheetDescription>
-                    Refine the user list by search, role, and status
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="px-4">
-                  <FilterControls
-                    search={search}
-                    setSearch={setSearch}
-                    role={role}
-                    setRole={setRole}
-                    accountStatus={accountStatus}
-                    setAccountStatus={setAccountStatus}
-                    setPage={setPage}
-                    activeFiltersCount={activeFiltersCount}
-                  />
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">
+                    Gestión de Usuarios
+                  </h1>
+                  <p className="text-muted-foreground">
+                    {filteredUsers.length} usuario{filteredUsers.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
-              </SheetContent>
-            </Sheet>
-            <div className="text-sm text-muted-foreground">
-              {stats.total} users
+              </div>
             </div>
-          </div>
+          </Section>
 
-          {/* Mobile: Inline Stats (2 cards) */}
-          <div className="grid w-full grid-cols-2 gap-2">
-            <Card className="gap-0 py-2">
-              <CardHeader className="py-0!">
-                <CardTitle className="text-sm font-medium">Active</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.active}</div>
-              </CardContent>
-            </Card>
-            <Card className="gap-0 py-2">
-              <CardHeader className="py-0!">
-                <CardTitle className="text-sm font-medium">Issues</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats.suspended + stats.banned}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Desktop: Filters + Full Stats */}
-        <div className="hidden w-full md:block">
-          <div className="grid w-full grid-cols-1 gap-2">
-            {/* Desktop Filters Card */}
-            <Card className="gap-2 py-4">
-              <CardHeader>
-                <CardTitle>Filters</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FilterControls
-                  search={search}
-                  setSearch={setSearch}
-                  role={role}
-                  setRole={setRole}
-                  accountStatus={accountStatus}
-                  setAccountStatus={setAccountStatus}
-                  setPage={setPage}
-                  activeFiltersCount={activeFiltersCount}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Desktop Stats Cards */}
-            <div className="grid grid-cols-4 gap-4">
-              <Card className="gap-0 py-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">
-                    Total Users
-                  </CardTitle>
-                  <UsersIcon className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.total}</div>
-                </CardContent>
-              </Card>
-              <Card className="gap-0 py-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">Active</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.active}</div>
-                </CardContent>
-              </Card>
-              <Card className="gap-0 py-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">
-                    Suspended
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.suspended}</div>
-                </CardContent>
-              </Card>
-              <Card className="gap-0 py-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">Banned</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.banned}</div>
-                </CardContent>
-              </Card>
+          {/* Filters */}
+          <Section>
+            <div className="flex w-full flex-col gap-4 sm:flex-row">
+              <Input
+                placeholder="Buscar por nombre, username o email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1"
+              />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="active">Activos</SelectItem>
+                  <SelectItem value="pending">Pendientes</SelectItem>
+                  <SelectItem value="suspended">Suspendidos</SelectItem>
+                  <SelectItem value="incomplete">Incompletos</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-        </div>
+          </Section>
 
-        {/* User Details Modal */}
-        <UserDetailsModal
-          user={selectedUser}
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false)
-            setSelectedUser(null)
-          }}
-          onViewFullProfile={(userId) => {
-            router.push(`/admin/users/${userId}`)
-            setIsModalOpen(false)
-          }}
-        />
+          {/* Users List */}
+          <Section>
+            {filteredUsers.length > 0 ? (
+              <div className="w-full space-y-4">
+                {filteredUsers.map((u) => (
+                  <Card key={u._id} className="w-full">
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex gap-4">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={u.avatarUrl || undefined} />
+                            <AvatarFallback>
+                              {u.displayName?.[0] || u.username?.[0] || '?'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="font-semibold">
+                                {u.displayName || u.username}
+                              </h3>
+                              <Badge variant="outline">@{u.username}</Badge>
+                              {u.role === 'admin' && (
+                                <Badge className="bg-purple-500">Admin</Badge>
+                              )}
+                              {getStatusBadge(u.accountStatus)}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {u.email}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Creado: {new Date(u._creationTime).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
 
-        {/* Loading/Error States */}
-        {error ? (
-          <Card>
-            <CardContent>
-              <div className="py-8 text-center text-destructive">
-                Failed to load users. Please try again.
-              </div>
-            </CardContent>
-          </Card>
-        ) : isLoading ? (
-          <Card>
-            <CardContent>
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin" />
-                <span className="ml-2">Loading users...</span>
-              </div>
-            </CardContent>
-          </Card>
-        ) : users.length === 0 ? (
-          <Card>
-            <CardContent>
-              <div className="py-8 text-center text-muted-foreground">
-                No users found matching your filters.
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            {/* Mobile: Card List */}
-            <div className="w-full space-y-2 md:hidden">
-              {users.map((user) => (
-                <Card key={user.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      {/* User Info */}
-                      <div className="flex min-w-0 flex-1 items-center gap-3">
-                        <Avatar className="h-12 w-12 shrink-0">
-                          <AvatarImage src={user.avatarUrl || undefined} />
-                          <AvatarFallback>
-                            {user.displayName?.charAt(0)?.toUpperCase() ||
-                              user.username?.charAt(0)?.toUpperCase() ||
-                              '?'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate font-medium">
-                            {user.displayName || user.username || 'Anonymous'}
-                          </div>
-                          <div className="truncate text-sm text-muted-foreground">
-                            {user.email}
-                          </div>
+                        {/* Actions - don't show for current user */}
+                        {u._id !== user.id && (
                           <div className="flex flex-wrap gap-2">
-                            <Badge variant={getRoleVariant(user.role)}>
-                              {user.role}
-                            </Badge>
-                            <Badge
-                              variant={getStatusVariant(user.accountStatus)}
-                            >
-                              {user.accountStatus}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* View Button */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedUser(user)
-                          setIsModalOpen(true)
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    {/* Stats Row */}
-                    <div className="flex gap-4 border-t text-sm">
-                      <div className="flex-1">
-                        <div className="text-muted-foreground">Earnings</div>
-                        <div className="font-medium">
-                          {user.stats.totalEarnings} $PULPA
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-muted-foreground">Submissions</div>
-                        <div className="font-medium">
-                          {user.stats.submissionsCount}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Desktop: Table */}
-            <Card className="hidden w-full md:block">
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Stats</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={user.avatarUrl || undefined} />
-                              <AvatarFallback>
-                                {user.displayName?.charAt(0)?.toUpperCase() ||
-                                  user.username?.charAt(0)?.toUpperCase() ||
-                                  '?'}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="font-medium">
-                                {user.displayName ||
-                                  user.username ||
-                                  'Anonymous'}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {user.email}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getRoleVariant(user.role)}>
-                            {user.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusVariant(user.accountStatus)}>
-                            {user.accountStatus}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <div>{user.stats.totalEarnings} $PULPA</div>
-                            <div className="text-muted-foreground">
-                              {user.stats.submissionsCount} submissions
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
+                            {u.role !== 'admin' ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
                                 onClick={() =>
-                                  router.push(`/admin/users/${user.id}`)
+                                  setPendingAction({ userId: u._id, action: 'makeAdmin' })
                                 }
                               >
-                                View Details
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                                <Shield className="mr-2 h-4 w-4" />
+                                Hacer Admin
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  setPendingAction({ userId: u._id, action: 'removeAdmin' })
+                                }
+                              >
+                                <ShieldOff className="mr-2 h-4 w-4" />
+                                Quitar Admin
+                              </Button>
+                            )}
 
-            {/* Pagination */}
-            {pagination && pagination.total > pagination.limit && (
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  Page {pagination.page} of{' '}
-                  {Math.ceil(pagination.total / pagination.limit)}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(page - 1)}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(page + 1)}
-                    disabled={!pagination.hasMore}
-                  >
-                    Next
-                  </Button>
-                </div>
+                            {u.accountStatus !== 'suspended' ? (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() =>
+                                  setPendingAction({ userId: u._id, action: 'suspend' })
+                                }
+                              >
+                                <UserX className="mr-2 h-4 w-4" />
+                                Suspender
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() =>
+                                  setPendingAction({ userId: u._id, action: 'activate' })
+                                }
+                              >
+                                <UserCheck className="mr-2 h-4 w-4" />
+                                Activar
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
+            ) : (
+              <Card className="w-full">
+                <CardContent className="py-12 text-center">
+                  <p className="text-muted-foreground">
+                    No se encontraron usuarios
+                  </p>
+                </CardContent>
+              </Card>
             )}
-          </>
-        )}
+          </Section>
+        </div>
       </div>
-    </div>
-  )
-}
 
-export default function UsersPage() {
-  return (
-    <AdminRoute>
-      <UsersPageContent />
-    </AdminRoute>
+      {/* Confirmation Dialog */}
+      <AlertDialog open={!!pendingAction} onOpenChange={() => setPendingAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingAction && getActionLabel(pendingAction.action)}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción se puede revertir más tarde.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleAction}>
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </PageWrapper>
   )
 }

@@ -19,7 +19,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useSkills } from '@/hooks/use-skills'
-import type { Skill } from '@/types/api-v1'
 
 interface SkillsFilterProps {
   selectedSkillIds: string[]
@@ -31,19 +30,18 @@ export function SkillsFilter({
   onSelectionChange,
 }: SkillsFilterProps) {
   const [open, setOpen] = React.useState(false)
-  const { data: skillsData, isLoading } = useSkills()
+  const { skills, isLoading } = useSkills()
 
-  const skills = skillsData?.skills || []
   const selectedSkills = skills.filter((skill) =>
-    selectedSkillIds.includes(skill.id),
+    selectedSkillIds.includes(skill._id),
   )
 
-  const handleSelect = (skill: Skill) => {
-    const isSelected = selectedSkillIds.includes(skill.id)
+  const handleSelect = (skill: typeof skills[number]) => {
+    const isSelected = selectedSkillIds.includes(skill._id)
     if (isSelected) {
-      onSelectionChange(selectedSkillIds.filter((id) => id !== skill.id))
+      onSelectionChange(selectedSkillIds.filter((id) => id !== skill._id))
     } else {
-      onSelectionChange([...selectedSkillIds, skill.id])
+      onSelectionChange([...selectedSkillIds, skill._id])
     }
   }
 
@@ -80,10 +78,10 @@ export function SkillsFilter({
               </CommandEmpty>
               <CommandGroup>
                 {skills.map((skill) => {
-                  const isSelected = selectedSkillIds.includes(skill.id)
+                  const isSelected = selectedSkillIds.includes(skill._id)
                   return (
                     <CommandItem
-                      key={skill.id}
+                      key={skill._id}
                       value={skill.name}
                       onSelect={() => handleSelect(skill)}
                     >
@@ -123,13 +121,13 @@ export function SkillsFilter({
           <div className="flex flex-wrap gap-1.5">
             {selectedSkills.map((skill) => (
               <Badge
-                key={skill.id}
+                key={skill._id}
                 variant="secondary"
                 className="flex items-center gap-1 pr-1"
               >
                 <span>{skill.name}</span>
                 <button
-                  onClick={() => handleRemove(skill.id)}
+                  onClick={() => handleRemove(skill._id)}
                   className="ml-1 rounded-full hover:bg-gray-300"
                   aria-label={`Remove ${skill.name}`}
                 >

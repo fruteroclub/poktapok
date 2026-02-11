@@ -13,6 +13,7 @@ import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
 import type * as bootcamp from "../bootcamp.js";
 import type * as bounties from "../bounties.js";
+import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
 import type * as events from "../events.js";
 import type * as invitations from "../invitations.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   bootcamp: typeof bootcamp;
   bounties: typeof bounties;
+  cleanup: typeof cleanup;
   crons: typeof crons;
   events: typeof events;
   invitations: typeof invitations;

@@ -261,7 +261,14 @@ export const updateLastLogin = mutation({
 export const generateAvatarUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    return await ctx.storage.generateUploadUrl();
+    try {
+      const url = await ctx.storage.generateUploadUrl();
+      return url;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error("Storage generateUploadUrl failed:", msg);
+      throw new Error(`Storage error: ${msg}`);
+    }
   },
 });
 

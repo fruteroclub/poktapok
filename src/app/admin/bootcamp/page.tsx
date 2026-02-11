@@ -29,8 +29,9 @@ import {
 } from '@/components/ui/dialog'
 import {
   Loader2, ExternalLink, CheckCircle, XCircle, Clock, 
-  GraduationCap, Users, FileCheck, AlertCircle
+  GraduationCap, Users, FileCheck, AlertCircle, Key, Copy
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
@@ -88,6 +89,12 @@ export default function AdminBootcampPage() {
   )
 
   const reviewDeliverable = useMutation(api.bootcamp.reviewDeliverable)
+  const assignApiKey = useMutation(api.bootcamp.assignApiKey)
+  const assignApiKeysBulk = useMutation(api.bootcamp.assignApiKeysBulk)
+
+  // API Key management state
+  const [bulkApiKey, setBulkApiKey] = useState('')
+  const [isAssigningKeys, setIsAssigningKeys] = useState(false)
 
   const [reviewDialog, setReviewDialog] = useState<{
     open: boolean
@@ -236,6 +243,121 @@ export default function AdminBootcampPage() {
                     </CardContent>
                   </Card>
                 </div>
+              </Section>
+            )}
+
+            {/* API Keys Management */}
+            {selectedProgramId && (
+              <Section>
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Key className="h-5 w-5" />
+                          API Keys
+                        </CardTitle>
+                        <CardDescription>
+                          Asigna API keys de Anthropic a los participantes
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Bulk assign */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Asignar key a todos los inscritos</label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="sk-ant-api03-..."
+                          value={bulkApiKey}
+                          onChange={(e) => setBulkApiKey(e.target.value)}
+                          className="font-mono text-sm"
+                        />
+                        <Button
+                          onClick={async () => {
+                            if (!bulkApiKey.trim() || !selectedProgramId) return
+                            setIsAssigningKeys(true)
+                            try {
+                              // Get all emails for this program
+                              const allEmails = enrollments?.map(e => e.enrollment.email) || []
+                              const assignments = allEmails.map(email => ({
+                                email,
+                                apiKey: bulkApiKey.trim()
+                              }))
+                              
+                              await assignApiKeysBulk({
+                                programId: selectedProgramId as Id<'bootcampPrograms'>,
+                                assignments
+                              })
+                              
+                              toast.success(`API key asignada a ${assignments.length} participantes`)
+                              setBulkApiKey('')
+                            } catch (error: any) {
+                              toast.error(error.message || 'Error al asignar keys')
+                            } finally {
+                              setIsAssigningKeys(false)
+                            }
+                          }}
+                          disabled={!bulkApiKey.trim() || isAssigningKeys}
+                        >
+                          {isAssigningKeys ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : null}
+                          Asignar a todos ({enrollments?.length || 0})
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Enrollments with API key status */}
+                    <div className="border rounded-lg divide-y max-h-[400px] overflow-y-auto">
+                      {enrollments?.map(({ enrollment, user }) => (
+                        <div key={enrollment._id} className="p-3 flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={user?.avatarUrl} />
+                              <AvatarFallback className="text-xs">
+                                {(user?.displayName || enrollment.email)[0].toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {user?.displayName || user?.username || 'Sin cuenta'}
+                              </p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {enrollment.email}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {enrollment.anthropicApiKey ? (
+                              <>
+                                <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
+                                  {enrollment.anthropicApiKey.slice(0, 15)}...
+                                </code>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(enrollment.anthropicApiKey!)
+                                    toast.success('Copiado')
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </>
+                            ) : (
+                              <Badge variant="outline" className="text-muted-foreground">
+                                Sin key
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </Section>
             )}
 

@@ -125,15 +125,16 @@ export default function ProfilePage() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to upload avatar')
+        const errorData = await response.json().catch(() => null)
+        const serverMsg = errorData?.error || `Server error ${response.status}`
+        throw new Error(serverMsg)
       }
 
-      const data = await response.json()
       toast.success('Avatar actualizado')
-      // Refresh will happen automatically via Convex
     } catch (error) {
-      console.error('Error uploading avatar:', error)
-      toast.error('Error al subir avatar')
+      const msg = error instanceof Error ? error.message : 'Error desconocido'
+      console.error('Error uploading avatar:', msg)
+      toast.error(`Error al subir avatar: ${msg}`)
     }
   }
 

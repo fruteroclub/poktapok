@@ -4,6 +4,11 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
+  // Inline BLOB_READ_WRITE_TOKEN at build time so it's available in serverless functions
+  env: {
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN || '',
+  },
+
   // Turbopack configuration for Next.js 16+
   turbopack: {
     // Resolve only these extensions
@@ -20,7 +25,6 @@ const nextConfig: NextConfig = {
     'pino-pretty',
     '@reown/appkit',
     '@privy-io/server-auth',
-    '@vercel/blob',
   ],
 
   // Image optimization configuration

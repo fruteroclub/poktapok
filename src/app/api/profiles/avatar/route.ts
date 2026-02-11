@@ -12,10 +12,9 @@ const privy = new PrivyClient(
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 function getBlobToken(): string {
-  const token = process.env.BLOB_READ_WRITE_TOKEN || process.env.MY_BLOB_TOKEN
+  const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) {
-    const available = Object.keys(process.env).filter(k => k.includes('BLOB')).join(', ')
-    throw new Error(`No blob token found. BLOB-related env vars: [${available}]`)
+    throw new Error('BLOB_READ_WRITE_TOKEN is not configured')
   }
   return token
 }

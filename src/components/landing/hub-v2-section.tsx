@@ -9,7 +9,7 @@ export default function HubV2Section() {
     { icon: Calendar, label: 'Coworking semanal', color: 'bg-primary' },
     { icon: MessageSquare, label: 'Meetups abiertos', color: 'bg-accent' },
     { icon: Wrench, label: 'Workshops técnicos', color: 'bg-secondary' },
-    { icon: Coffee, label: 'Office hours', color: 'bg-muted' },
+    { icon: Coffee, label: 'Office hours', color: 'bg-zinc-700' },
   ]
 
   return (
@@ -21,7 +21,7 @@ export default function HubV2Section() {
             {/* Headline */}
             <div id="hub-headline" className="space-y-6 text-center">
               <div className="space-y-2">
-                <h2><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-muted px-4 py-2 text-background shadow-lg">Casa Frutero</span></h2>
+                <h2><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-zinc-900 px-4 py-2 text-white shadow-lg">Casa Frutero</span></h2>
                 <h3 className="text-3xl font-semibold text-foreground md:text-4xl">
                   Impact Tech Hub
                 </h3>
@@ -48,7 +48,7 @@ export default function HubV2Section() {
             {/* Right: Headline */}
             <div id="hub-headline" className="space-y-6 text-center">
               <div className="space-y-2">
-                <h2 className="lg:text-5xl"><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-muted px-4 py-2 text-background shadow-lg">Casa Frutero</span></h2>
+                <h2 className="lg:text-5xl"><span className="font-medium inline-block -rotate-2 transform rounded-lg bg-zinc-900 px-4 py-2 text-white shadow-lg">Casa Frutero</span></h2>
                 <h3 className="text-3xl font-semibold text-foreground lg:text-4xl">
                   Impact Tech Hub
                 </h3>
@@ -75,7 +75,7 @@ export default function HubV2Section() {
                 >
                   <div className={`absolute inset-0 ${activity.color} opacity-0`}></div>
                   <div className={`rounded-full ${activity.color} p-3`}>
-                    <Icon className={`h-8 w-8 ${activity.color === 'bg-muted' ? 'text-background' : 'text-white'}`} />
+                    <Icon className="h-8 w-8 text-white" />
                   </div>
                   <p className="text-sm font-bold text-foreground">
                     {activity.label}
@@ -86,14 +86,14 @@ export default function HubV2Section() {
           </Section>
 
           {/* ¿Eres Hacker? Section */}
-          <div className="space-y-6 rounded-2xl bg-muted p-8 md:p-10 shadow-lg">
-            <h3 className="text-center text-2xl font-medium text-background md:text-3xl">
+          <div className="space-y-6 rounded-2xl bg-zinc-900 p-8 md:p-10 shadow-lg">
+            <h3 className="text-center text-2xl font-medium text-white md:text-3xl">
               ¿Eres{' '}
               <span className="font-semibold inline-block rotate-1 transform rounded-lg bg-accent px-3 py-1 text-foreground shadow">
                 Hacker
               </span> ?
             </h3>
-            <p className="text-center text-lg font-medium text-background">
+            <p className="text-center text-lg font-medium text-white">
               No hablamos de código. <br />Hablamos de{' '}
               <span className="subrayado">mentalidad.</span>
             </p>
@@ -114,7 +114,7 @@ export default function HubV2Section() {
                 </p>
               </div>
             </div>
-            <p className="text-center text-lg font-semibold text-background">
+            <p className="text-center text-lg font-semibold text-white">
               Si eso suena a ti, este es tu lugar.
             </p>
             <div className="flex justify-center">

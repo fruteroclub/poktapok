@@ -269,7 +269,9 @@ export default function MultiStepOnboardingFormConvex() {
           const data = await avatarResponse.json()
           avatarUrl = data.avatarUrl || data.data?.avatarUrl || data.url
         } else {
-          console.error('Avatar upload failed:', await avatarResponse.text())
+          const errorText = await avatarResponse.text()
+          console.error('Avatar upload failed:', errorText)
+          toast.error('No se pudo subir el avatar. Puedes actualizarlo después en tu perfil.')
         }
       }
 

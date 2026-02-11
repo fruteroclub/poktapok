@@ -96,9 +96,10 @@ export async function POST(request: NextRequest) {
       message: 'Avatar uploaded successfully',
     })
   } catch (error) {
-    console.error('Error uploading avatar:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Error uploading avatar:', message, error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Avatar upload failed: ${message}` },
       { status: 500 }
     )
   }
@@ -155,9 +156,10 @@ export async function DELETE(request: NextRequest) {
       message: 'Avatar removed successfully',
     })
   } catch (error) {
-    console.error('Error removing avatar:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Error removing avatar:', message, error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Avatar removal failed: ${message}` },
       { status: 500 }
     )
   }

@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     'pino',
     'pino-pretty',
     '@reown/appkit',
+    '@privy-io/server-auth',
   ],
 
   // Image optimization configuration

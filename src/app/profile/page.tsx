@@ -27,7 +27,7 @@ import { AvatarUpload } from '@/components/profile/avatar-upload'
  * Profile Page - User's own profile with inline editing
  */
 export default function ProfilePage() {
-  const { authenticated, ready, getAccessToken } = usePrivy()
+  const { authenticated, ready } = usePrivy()
   const router = useRouter()
   const { user, profile, isLoading } = useAuth()
 
@@ -44,6 +44,8 @@ export default function ProfilePage() {
   const updateUserMutation = useMutation(api.auth.updateUser)
   const updateCurrentUserMutation = useMutation(api.auth.updateCurrentUser)
   const updateProfileMutation = useMutation(api.profiles.update)
+  const generateUploadUrl = useMutation(api.users.generateAvatarUploadUrl)
+  const saveAvatarMutation = useMutation(api.users.saveAvatar)
   const checkUsernameMutation = useQuery(api.auth.checkUsername, 
     username && username !== user?.username ? { username } : 'skip'
   )
@@ -137,26 +139,22 @@ export default function ProfilePage() {
 
   const handleAvatarUpload = async (file: File) => {
     try {
-      // Get Privy auth token
-      const token = await getAccessToken()
-      if (!token) throw new Error('No authenticated')
+      if (!privyDid) throw new Error('No authenticated')
 
-      // Upload via Vercel Blob API
-      const formData = new FormData()
-      formData.append('avatar', file)
-
-      const result = await fetch('/api/profiles/avatar', {
+      // Upload directly to Convex Storage (no Vercel Blob needed)
+      const uploadUrl = await generateUploadUrl()
+      const result = await fetch(uploadUrl, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData,
+        headers: { 'Content-Type': file.type },
+        body: file,
       })
 
-      const data = await result.json()
-      if (!result.ok) throw new Error(data.error || 'Failed to upload')
+      if (!result.ok) throw new Error('Failed to upload file')
+
+      const { storageId } = await result.json()
+      await saveAvatarMutation({ privyDid, storageId })
 
       toast.success('Avatar actualizado')
-      // Refresh the page to show new avatar
-      router.refresh()
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Error desconocido'
       console.error('Error uploading avatar:', msg)

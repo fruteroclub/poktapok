@@ -11,6 +11,9 @@ const privy = new PrivyClient(
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
+// Explicit token — Turbopack may not pass process.env to @vercel/blob internals
+const blobToken = process.env.BLOB_READ_WRITE_TOKEN!
+
 /**
  * POST /api/profiles/avatar
  * Upload user avatar to Vercel Blob Storage
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
     // Step 5: Delete old avatar if exists
     if (user.avatarUrl && user.avatarUrl.includes('vercel-storage.com')) {
       try {
-        await del(user.avatarUrl)
+        await del(user.avatarUrl, { token: blobToken })
         console.log('[avatar] Step 5: Old avatar deleted')
       } catch (error) {
         console.error('[avatar] Step 5: Failed to delete old (continuing):', error)
@@ -96,6 +99,7 @@ export async function POST(request: NextRequest) {
       blob = await put(`avatars/${user._id}/${file.name}`, file, {
         access: 'public',
         addRandomSuffix: true,
+        token: blobToken,
       })
       console.log('[avatar] Step 6: Blob uploaded:', blob.url)
     } catch (error) {
@@ -166,7 +170,7 @@ export async function DELETE(request: NextRequest) {
     // Delete from blob storage
     if (user.avatarUrl && user.avatarUrl.includes('vercel-storage.com')) {
       try {
-        await del(user.avatarUrl)
+        await del(user.avatarUrl, { token: blobToken })
       } catch (error) {
         console.error('Failed to delete avatar from blob:', error)
       }

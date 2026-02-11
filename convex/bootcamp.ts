@@ -735,3 +735,31 @@ export const getEnrollmentsByUsername = query({
     return result.filter((r) => r.program !== null);
   },
 });
+
+// ============================================================
+// CLEANUP - Admin functions
+
+/**
+ * Delete a deliverable (admin cleanup)
+ */
+export const deleteDeliverable = mutation({
+  args: { deliverableId: v.id("bootcampDeliverables") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.deliverableId);
+    return { deleted: true };
+  },
+});
+
+/**
+ * Reset enrollment progress (admin cleanup)
+ */
+export const resetEnrollmentProgress = mutation({
+  args: { enrollmentId: v.id("bootcampEnrollments") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.enrollmentId, {
+      progress: 0,
+      sessionsCompleted: 0,
+    });
+    return { reset: true };
+  },
+});

@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
   // Turbopack configuration for Next.js 16+
@@ -16,6 +19,7 @@ const nextConfig: NextConfig = {
     'pino',
     'pino-pretty',
     '@reown/appkit',
+    '@privy-io/server-auth',
   ],
 
   // Image optimization configuration
@@ -37,4 +41,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)

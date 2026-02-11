@@ -54,7 +54,7 @@ type FormErrors = Partial<Record<keyof FormData, string>>
 export default function MultiStepOnboardingFormConvex() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user: privyUser, getAccessToken } = usePrivy()
+  const { user: privyUser } = usePrivy()
   const privyDid = privyUser?.id
 
   // Invitation code from URL or localStorage
@@ -79,6 +79,8 @@ export default function MultiStepOnboardingFormConvex() {
   const updateCurrentUser = useMutation(api.auth.updateCurrentUser)
   const submitApplication = useMutation(api.applications.submit)
   const redeemInvitation = useMutation(api.invitations.redeem)
+  const generateUploadUrl = useMutation(api.users.generateAvatarUploadUrl)
+  const saveAvatarMutation = useMutation(api.users.saveAvatar)
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('userInfo')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -248,28 +250,28 @@ export default function MultiStepOnboardingFormConvex() {
     setIsSubmitting(true)
 
     try {
-      // Step 1: Upload avatar if provided (using existing API route)
+      // Step 1: Upload avatar to Convex Storage
       let avatarUrl: string | undefined
       if (formData.avatarFile) {
-        const avatarFormData = new FormData()
-        avatarFormData.append('avatar', formData.avatarFile)
+        try {
+          const uploadUrl = await generateUploadUrl()
+          const uploadResult = await fetch(uploadUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': formData.avatarFile.type },
+            body: formData.avatarFile,
+          })
 
-        // Get access token for auth
-        const token = await getAccessToken()
-        
-        const avatarResponse = await fetch('/api/profiles/avatar', {
-          method: 'POST',
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: avatarFormData,
-        })
-
-        if (avatarResponse.ok) {
-          const data = await avatarResponse.json()
-          avatarUrl = data.avatarUrl || data.data?.avatarUrl || data.url
-        } else {
-          console.error('Avatar upload failed:', await avatarResponse.text())
+          if (uploadResult.ok) {
+            const { storageId } = await uploadResult.json()
+            const result = await saveAvatarMutation({ privyDid, storageId })
+            avatarUrl = result.avatarUrl
+          } else {
+            console.error('Avatar upload failed:', uploadResult.statusText)
+            toast.error('No se pudo subir el avatar. Puedes actualizarlo después en tu perfil.')
+          }
+        } catch (error) {
+          console.error('Avatar upload error:', error)
+          toast.error('No se pudo subir el avatar. Puedes actualizarlo después en tu perfil.')
         }
       }
 

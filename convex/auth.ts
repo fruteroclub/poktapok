@@ -73,11 +73,23 @@ export const getOrCreateUser = mutation({
       lastLoginAt: Date.now(),
     });
 
+    // Create basic profile to prevent "profile not found" errors
+    // User will complete full profile during onboarding
+    const profileId = await ctx.db.insert("profiles", {
+      userId,
+      profileVisibility: "public",
+      availabilityStatus: "available",
+      learningTracks: [],
+      profileViews: 0,
+      projectsCount: 0,
+    });
+
     const newUser = await ctx.db.get(userId);
+    const newProfile = await ctx.db.get(profileId);
 
     return {
       user: newUser,
-      profile: null,
+      profile: newProfile,
       isNewUser: true,
     };
   },
@@ -280,5 +292,35 @@ export const deleteUser = mutation({
     await ctx.db.delete(user._id);
 
     return { deleted: true };
+  },
+});
+
+/**
+ * Create missing profile for existing user (admin cleanup)
+ */
+export const createMissingProfile = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    // Check if profile already exists
+    const existing = await ctx.db
+      .query("profiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
+      .unique();
+    
+    if (existing) {
+      return { created: false, message: "Profile already exists" };
+    }
+
+    // Create basic profile
+    await ctx.db.insert("profiles", {
+      userId: args.userId,
+      profileVisibility: "public",
+      availabilityStatus: "available",
+      learningTracks: [],
+      profileViews: 0,
+      projectsCount: 0,
+    });
+
+    return { created: true };
   },
 });

@@ -44,3 +44,6 @@ next-env.d.ts
 # convex
 # convex/_generated/  # Committed to repo for Vercel builds
 .convex/
+
+# bootcamp invite scripts (contains credentials and email lists)
+scripts/bootcamp-invites/

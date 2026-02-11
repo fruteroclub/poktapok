@@ -326,7 +326,7 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
-        <div className="bg-muted rounded-lg p-3">
+        <div className="bg-secondary/10 rounded-lg p-3">
           <p className="text-xs text-muted-foreground mb-1">Entregable</p>
           <p className="font-medium text-sm">{session.deliverableTitle}</p>
         </div>
@@ -420,32 +420,32 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
               </AlertDialogDescription>
             </AlertDialogHeader>
 
-            <div className="space-y-3">
+            <div className="space-y-3 max-w-full overflow-hidden">
               <div className="rounded-lg border p-3">
                 <p className="text-xs font-medium text-muted-foreground">Entregable</p>
                 <p className="text-sm font-medium">{session.deliverableTitle}</p>
               </div>
 
-              <div className="rounded-lg border p-3">
+              <div className="rounded-lg border p-3 overflow-hidden">
                 <p className="text-xs font-medium text-muted-foreground">URL del proyecto</p>
                 <a
                   href={projectUrl.trim()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline break-all"
+                  className="text-sm text-primary hover:underline break-all line-clamp-2"
                 >
                   {projectUrl.trim()}
                 </a>
               </div>
 
               {repositoryUrl.trim() && (
-                <div className="rounded-lg border p-3">
+                <div className="rounded-lg border p-3 overflow-hidden">
                   <p className="text-xs font-medium text-muted-foreground">Repositorio</p>
                   <a
                     href={repositoryUrl.trim()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline break-all"
+                    className="text-sm text-primary hover:underline break-all line-clamp-2"
                   >
                     {repositoryUrl.trim()}
                   </a>
@@ -453,9 +453,9 @@ function SessionCard({ session, deliverable, enrollmentId }: SessionCardProps) {
               )}
 
               {notes.trim() && (
-                <div className="rounded-lg border p-3">
+                <div className="rounded-lg border p-3 overflow-hidden">
                   <p className="text-xs font-medium text-muted-foreground">Notas</p>
-                  <p className="text-sm">{notes.trim()}</p>
+                  <p className="text-sm break-all line-clamp-3">{notes.trim()}</p>
                 </div>
               )}
             </div>

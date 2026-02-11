@@ -256,6 +256,41 @@ export const updateLastLogin = mutation({
 });
 
 /**
+ * Generate a URL for uploading an avatar to Convex Storage
+ */
+export const generateAvatarUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+/**
+ * Save avatar from Convex Storage to user record
+ */
+export const saveAvatar = mutation({
+  args: {
+    privyDid: v.string(),
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.privyDid))
+      .unique();
+
+    if (!user) throw new Error("User not found");
+
+    const url = await ctx.storage.getUrl(args.storageId);
+    if (!url) throw new Error("Storage file not found");
+
+    await ctx.db.patch(user._id, { avatarUrl: url });
+
+    return { success: true, avatarUrl: url };
+  },
+});
+
+/**
  * Soft delete user
  */
 export const softDelete = mutation({

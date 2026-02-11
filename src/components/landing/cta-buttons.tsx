@@ -1,7 +1,7 @@
 "use client"
 
 import { ArrowRight, ArrowRightIcon, SparklesIcon } from 'lucide-react'
-import AuthButtonPrivy from '../buttons/auth-button-privy'
+import AuthButtonPrivy from '../buttons/auth-button-convex'
 import { Button } from '../ui/button'
 import { usePrivy } from '@privy-io/react-auth'
 

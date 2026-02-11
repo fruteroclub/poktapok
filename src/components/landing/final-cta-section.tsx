@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { SparkleIcon, SparklesIcon } from 'lucide-react'
-import AuthButtonPrivy from '../buttons/auth-button-privy'
+import AuthButtonPrivy from '../buttons/auth-button-convex'
 
 export default function FooterSection() {
   return (

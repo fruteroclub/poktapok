@@ -32,7 +32,7 @@ export function LeaderboardContent() {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-destructive">Error al cargar clasificación</h2>
             <p className="mt-2 text-muted-foreground">
-              {error instanceof Error ? error.message : 'Ocurrió un error desconocido'}
+              Ocurrió un error desconocido
             </p>
           </div>
         </div>
@@ -73,14 +73,30 @@ export function LeaderboardContent() {
     )
   }
 
-  const members = data?.profiles || []
+  const rawProfiles = data?.profiles || []
+
+  // Transform Convex profiles to expected format
+  const members = rawProfiles.map((p) => ({
+    id: p._id,
+    username: p.user?.username || 'unknown',
+    displayName: p.user?.displayName,
+    avatarUrl: p.user?.avatarUrl,
+    bio: p.user?.bio,
+    city: p.city,
+    country: p.country,
+    projectsCount: p.projectsCount || 0,
+    completedBounties: p.completedBounties || 0,
+    totalEarningsUsd: p.totalEarningsUsd || 0,
+    learningTracks: p.learningTracks,
+    availabilityStatus: p.availabilityStatus,
+  }))
 
   // Sort members based on category
   const sortedMembers = [...members].sort((a, b) => {
     if (category === 'earnings') {
       return b.totalEarningsUsd - a.totalEarningsUsd
     }
-    return b.completedBounties - a.completedBounties
+    return b.projectsCount - a.projectsCount
   })
 
   const getRankBadge = (rank: number) => {
@@ -102,7 +118,7 @@ export function LeaderboardContent() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant={category === 'earnings' ? 'default' : 'outline'}
             onClick={() => setCategory('earnings')}
@@ -128,7 +144,7 @@ export function LeaderboardContent() {
               const value =
                 category === 'earnings'
                   ? `$${member.totalEarningsUsd}`
-                  : `${member.completedBounties} proyectos`
+                  : `${member.projectsCount} proyectos`
 
               return (
                 <Link key={member.id} href={`/profile/${member.username}`}>
@@ -182,14 +198,16 @@ export function LeaderboardContent() {
 
                     {/* Additional Stats for Top 3 */}
                     {rank <= 3 && (
-                      <div className="mt-4 flex gap-8 border-t pt-4">
+                      <div className="mt-4 flex flex-wrap gap-6 border-t pt-4">
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Proyectos</p>
-                          <p className="text-lg font-semibold">{member.completedBounties}</p>
+                          <p className="text-lg font-semibold">{member.projectsCount}</p>
                         </div>
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Ganado</p>
-                          <p className="text-lg font-semibold">${member.totalEarningsUsd}</p>
+                          <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                            ${member.totalEarningsUsd}
+                          </p>
                         </div>
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">Estado</p>

@@ -6,7 +6,7 @@ import {
   CardFooter,
 } from '@/components/ui/card'
 import { SparkleIcon, Sparkles, TrendingUp } from 'lucide-react'
-import AuthButtonPrivy from '../buttons/auth-button-privy'
+import AuthButtonPrivy from '../buttons/auth-button-convex'
 
 export default function DifferentiatorSection() {
   return (

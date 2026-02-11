@@ -37,6 +37,15 @@ export interface Profile {
     linkedin?: string // Username only (e.g., "username" from linkedin.com/in/username)
     telegram?: string // Username only (e.g., "@username" or "username")
   } | null
+  // Stats
+  projectsCount?: number
+  completedBounties?: number
+  totalEarningsUsd?: number
+  profileViews?: number
+  // Social usernames
+  githubUsername?: string
+  twitterUsername?: string
+  telegramUsername?: string
 }
 
 // ============================================================================
@@ -98,7 +107,7 @@ export interface DirectoryProfile {
   countryCode: string | null
   learningTracks: ('ai' | 'crypto' | 'privacy')[] | null
   availabilityStatus: 'available' | 'open_to_offers' | 'unavailable'
-  completedBounties: number
+  projectsCount: number
   totalEarningsUsd: number
   githubUrl: string | null
   twitterUrl: string | null
@@ -158,10 +167,34 @@ export interface DirectoryCountriesData {
 // Project Types (Epic 2: Portfolio Showcase)
 // ============================================================================
 
-import type { Project, Skill, UserSkill, ProjectSkill } from '@/lib/db/schema'
+// Project and Skill types (migrated from Drizzle schema)
+export interface Project {
+  id: string
+  name: string
+  description?: string | null
+  ownerId?: string | null
+  status: 'active' | 'completed' | 'archived'
+}
 
-// Re-export schema types for convenience
-export type { Project, Skill, UserSkill, ProjectSkill }
+export interface Skill {
+  id: string
+  name: string
+  category?: string | null
+  description?: string | null
+}
+
+export interface UserSkill {
+  id: string
+  userId: string
+  skillId: string
+  proficiencyLevel?: number | null
+}
+
+export interface ProjectSkill {
+  id: string
+  projectId: string
+  skillId: string
+}
 
 /**
  * Project with related data (skills, user info, etc.)

@@ -94,9 +94,9 @@ const MENU_ITEMS: MenuItemType[] = [
 const visiblePathnames = ['/profile']
 
 export default function Sidebar() {
-  const { data: authData } = useAuth()
-  const isSignedIn = authData?.isAuthenticated
-  const isAdmin = authData?.user?.role === 'admin'
+  const { user, isAuthenticated } = useAuth()
+  const isSignedIn = isAuthenticated
+  const isAdmin = user?.role === 'admin'
   const pathname = usePathname()
 
   const isPathVisible =

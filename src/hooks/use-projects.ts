@@ -1,145 +1,98 @@
-/**
- * Projects TanStack Query Hooks
- *
- * React Query hooks for project operations
- * Provides queries and mutations with optimistic updates
- */
+'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { ListProjectsQuery } from '@/types/api-v1'
-import {
-  createProject,
-  updateProject,
-  deleteProject,
-  fetchProject,
-  fetchProjects,
-  publishProject,
-} from '@/services/projects'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { Id } from '../../convex/_generated/dataModel'
+import { usePrivy } from '@privy-io/react-auth'
 
 /**
- * Query key factory for projects
+ * Hook for project detail
  */
-export const projectKeys = {
-  all: ['projects'] as const,
-  lists: () => [...projectKeys.all, 'list'] as const,
-  list: (filters?: ListProjectsQuery) =>
-    [...projectKeys.lists(), filters] as const,
-  details: () => [...projectKeys.all, 'detail'] as const,
-  detail: (id: string) => [...projectKeys.details(), id] as const,
+export function useProject(projectId: string) {
+  const result = useQuery(
+    api.projects.getById,
+    projectId ? { projectId: projectId as Id<'projects'> } : 'skip'
+  )
+
+  return {
+    data: result ?? null,
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
 }
 
 /**
- * Fetch a single project by ID
+ * Hook for user's projects
  */
-export function useProject(id: string) {
-  return useQuery({
-    queryKey: projectKeys.detail(id),
-    queryFn: () => fetchProject(id),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!id,
+export function useUserProjects() {
+  const { user } = usePrivy()
+  const privyDid = user?.id
+
+  const result = useQuery(
+    api.projects.getMyProjects,
+    privyDid ? { privyDid } : 'skip'
+  )
+
+  return {
+    data: result ?? { projects: [] },
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
+}
+
+/**
+ * Hook for public projects
+ */
+export function usePublicProjects(options?: { limit?: number }) {
+  const result = useQuery(api.projects.listPublic, {
+    limit: options?.limit,
   })
+
+  return {
+    data: result ?? { projects: [] },
+    isLoading: result === undefined,
+    isError: false,
+    error: null,
+  }
 }
 
 /**
- * Fetch projects with optional filters
- */
-export function useProjects(filters?: ListProjectsQuery) {
-  return useQuery({
-    queryKey: projectKeys.list(filters),
-    queryFn: () => fetchProjects(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-}
-
-/**
- * Fetch user's projects
- */
-export function useUserProjects(
-  userId?: string,
-  filters?: Omit<ListProjectsQuery, 'userId'>,
-) {
-  return useQuery({
-    queryKey: projectKeys.list({ ...filters, userId }),
-    queryFn: () => fetchProjects({ ...filters, userId }),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!userId,
-  })
-}
-
-/**
- * Create a new project
+ * Hook for creating a project
  */
 export function useCreateProject() {
-  const queryClient = useQueryClient()
+  const mutation = useMutation(api.projects.create)
 
-  return useMutation({
-    mutationFn: createProject,
-    onSuccess: () => {
-      // Invalidate all project lists to refetch
-      queryClient.invalidateQueries({ queryKey: projectKeys.lists() })
-    },
-  })
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }
 
 /**
- * Update an existing project
+ * Hook for updating a project
  */
 export function useUpdateProject() {
-  const queryClient = useQueryClient()
+  const mutation = useMutation(api.projects.update)
 
-  return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string
-      data: FormData | Record<string, unknown>
-    }) => updateProject(id, data),
-    onSuccess: (response) => {
-      // Invalidate the specific project detail
-      queryClient.invalidateQueries({
-        queryKey: projectKeys.detail(response.project.id),
-      })
-      // Invalidate all project lists
-      queryClient.invalidateQueries({ queryKey: projectKeys.lists() })
-    },
-  })
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }
 
 /**
- * Delete a project
+ * Hook for deleting a project
  */
 export function useDeleteProject() {
-  const queryClient = useQueryClient()
+  const mutation = useMutation(api.projects.remove)
 
-  return useMutation({
-    mutationFn: deleteProject,
-    onSuccess: (response) => {
-      // Remove from cache
-      queryClient.removeQueries({
-        queryKey: projectKeys.detail(response.projectId),
-      })
-      // Invalidate all project lists
-      queryClient.invalidateQueries({ queryKey: projectKeys.lists() })
-    },
-  })
-}
-
-/**
- * Toggle project publish status
- */
-export function usePublishProject() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: publishProject,
-    onSuccess: (response) => {
-      // Invalidate the specific project detail
-      queryClient.invalidateQueries({
-        queryKey: projectKeys.detail(response.project.id),
-      })
-      // Invalidate all project lists
-      queryClient.invalidateQueries({ queryKey: projectKeys.lists() })
-    },
-  })
+  return {
+    mutate: mutation,
+    mutateAsync: mutation,
+    isPending: false,
+  }
 }

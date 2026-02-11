@@ -5,7 +5,23 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar, MapPin, ExternalLink, Users } from 'lucide-react'
 import Image from 'next/image'
-import type { Event } from '@/lib/db/schema'
+/**
+ * Event type for the EventCard component
+ */
+interface Event {
+  id: string
+  title: string
+  description?: string | null
+  coverImage?: string | null
+  lumaUrl?: string | null
+  eventType?: string | null
+  startDate: string | number | Date
+  endDate?: string | number | Date | null
+  location?: string | null
+  registrationCount?: number | null
+  hosts?: { name: string; avatarUrl?: string }[] | null
+  status?: string | null
+}
 import {
   formatEventDate,
   formatCalendarDate,
@@ -22,8 +38,12 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, variant = 'default' }: EventCardProps) {
-  const isPast = isPastDate(event.startDate)
-  const { day, month } = formatCalendarDate(event.startDate)
+  // Convert startDate to Date if it's a number (Unix timestamp)
+  const startDateValue = typeof event.startDate === 'number' 
+    ? new Date(event.startDate) 
+    : event.startDate
+  const isPast = isPastDate(startDateValue)
+  const { day, month } = formatCalendarDate(startDateValue)
 
   if (variant === 'compact') {
     return (
@@ -114,7 +134,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />
-            {formatEventDate(event.startDate)}
+            {formatEventDate(startDateValue)}
           </div>
 
           {event.location && (
@@ -124,7 +144,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
             </div>
           )}
 
-          {event.registrationCount !== null && event.registrationCount > 0 && (
+          {event.registrationCount != null && event.registrationCount > 0 && (
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
               {event.registrationCount} registrados

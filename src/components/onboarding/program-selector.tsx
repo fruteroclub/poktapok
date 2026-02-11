@@ -41,7 +41,7 @@ export function ProgramSelector({
     return (
       <div className="rounded-lg border border-orange-400 bg-orange-100 p-4">
         <p className="text-sm text-orange-500">
-          {fetchError instanceof Error ? fetchError.message : 'Failed to load programs'}
+          Failed to load programs
         </p>
       </div>
     )
@@ -88,7 +88,7 @@ export function ProgramSelector({
                   {program.programType === 'cohort' ? (
                     <>
                       <Calendar className="mr-1 h-3 w-3" />
-                      Cohorte
+                      Intensivo
                     </>
                   ) : (
                     <>

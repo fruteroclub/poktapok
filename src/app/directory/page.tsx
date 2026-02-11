@@ -1,236 +1,209 @@
 'use client'
 
-import { useState } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { SearchBar } from '@/components/directory/search-bar'
-import { Filters } from '@/components/directory/filters'
-import { DirectoryGrid } from '@/components/directory/directory-grid'
-import {
-  useDirectoryProfiles,
-  useDirectoryCountries,
-} from '@/hooks/use-directory'
-import { formatProfileCount } from '@/lib/utils/directory'
-import type { DirectoryFilters } from '@/types/api-v1'
+import Link from 'next/link'
+import { Search, Filter } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import { SlidersHorizontal } from 'lucide-react'
+import { Card, CardFooter } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { useDirectoryProfiles } from '@/hooks/use-directory'
+import { useState, useMemo } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
+import { Progress } from '@/components/ui/progress'
 
 export default function DirectoryPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const { data, isLoading } = useDirectoryProfiles({ limit: 50 })
+  const participants = useQuery(api.bootcamp.listActiveParticipants)
 
-  // Parse skills from URL (comma-separated)
-  const skillsParam = searchParams.get('skills')
-  const skillsFromUrl = skillsParam
-    ? skillsParam.split(',').filter(Boolean)
-    : undefined
-
-  const [currentFilters, setCurrentFilters] = useState<DirectoryFilters>({
-    search: searchParams.get('search') || undefined,
-    learningTrack:
-      (searchParams.get('learningTrack') as
-        | 'ai'
-        | 'crypto'
-        | 'privacy'
-        | undefined) || undefined,
-    availabilityStatus:
-      (searchParams.get('availabilityStatus') as
-        | 'available'
-        | 'open_to_offers'
-        | 'unavailable'
-        | undefined) || undefined,
-    country: searchParams.get('country') || undefined,
-    skills: skillsFromUrl,
-    page: parseInt(searchParams.get('page') || '1'),
-    limit: 24,
-  })
-
-  const { data, isLoading, isError } = useDirectoryProfiles(currentFilters)
-  const { data: countriesData } = useDirectoryCountries()
-
-  const updateFilter = (
-    key: keyof DirectoryFilters,
-    value: string | string[] | null,
-  ) => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (value) {
-      // Handle array values (skills)
-      if (Array.isArray(value)) {
-        params.set(key, value.join(','))
-      } else {
-        params.set(key, value)
+  // Build a lookup map: userId → participant data
+  const participantMap = useMemo(() => {
+    const map = new Map<string, { programName: string; progress: number; status: string }>()
+    if (participants) {
+      for (const p of participants) {
+        map.set(p.userId, { programName: p.programName, progress: p.progress, status: p.status })
       }
-    } else {
-      params.delete(key)
     }
-
-    if (key !== 'page') {
-      params.delete('page')
-    }
-
-    router.push(`/directory?${params.toString()}`)
-
-    setCurrentFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-      ...(key !== 'page' && { page: 1 }),
-    }))
-  }
-
-  const handleClearAll = () => {
-    router.push('/directory')
-    setCurrentFilters({
-      page: 1,
-      limit: 24,
-    })
-  }
-
-  const handleLoadMore = () => {
-    const nextPage = (currentFilters.page || 1) + 1
-    updateFilter('page', nextPage.toString())
-  }
-
-  const hasActiveFilters =
-    currentFilters.search ||
-    currentFilters.learningTrack ||
-    currentFilters.availabilityStatus ||
-    currentFilters.country ||
-    (currentFilters.skills && currentFilters.skills.length > 0)
+    return map
+  }, [participants])
 
   const profiles = data?.profiles || []
-  const pagination = data?.pagination
-  const countries = countriesData || []
+
+  // Filter by search query
+  const filteredProfiles = profiles.filter((p) => {
+    if (!searchQuery) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      p.user?.username?.toLowerCase().includes(query) ||
+      p.user?.displayName?.toLowerCase().includes(query) ||
+      p.user?.bio?.toLowerCase().includes(query)
+    )
+  })
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="page">
+          <div className="page-content space-y-6">
+            <Section>
+              <div className="header-section">
+                <Skeleton className="h-10 w-48" />
+                <Skeleton className="h-6 w-72" />
+              </div>
+            </Section>
+            <Section>
+              <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <Card key={i} className="p-6">
+                    <Skeleton className="mx-auto h-20 w-20 rounded-full" />
+                    <Skeleton className="mx-auto mt-4 h-6 w-32" />
+                    <Skeleton className="mx-auto mt-2 h-4 w-24" />
+                  </Card>
+                ))}
+              </div>
+            </Section>
+          </div>
+        </div>
+      </PageWrapper>
+    )
+  }
 
   return (
     <PageWrapper>
       <div className="page">
-        <div className="page-content">
-          <div className="header-section">
-            <h1 className="mb-2 text-4xl font-bold">Talent Directory</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Discover talented builders from Latin America
-            </p>
-          </div>
+        <div className="page-content space-y-6">
+          {/* Header */}
+          <Section>
+            <div className="header-section">
+              <h1 className="text-3xl font-bold tracking-tight">Directorio</h1>
+              <p className="text-muted-foreground">
+                Conoce a los miembros de la comunidad
+              </p>
+            </div>
+          </Section>
 
-          <Section className="grid grid-cols-1 items-start gap-4 lg:grid-cols-4">
-            {/* Desktop Sidebar - Hidden on mobile */}
-            <aside className="hidden lg:col-span-1 lg:block">
-              <div className="lg:sticky lg:top-8">
-                <Filters
-                  filters={currentFilters}
-                  countries={countries}
-                  onFilterChange={updateFilter}
-                  onClearAll={handleClearAll}
+          {/* Search */}
+          <Section>
+            <div className="flex w-full gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nombre, username o bio..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
                 />
               </div>
-            </aside>
-
-            <div className="min-h-[600px] space-y-4 lg:col-span-3">
-              <div className="flex items-center gap-2">
-                {/* Mobile Filter Button */}
-                <Sheet
-                  open={mobileFiltersOpen}
-                  onOpenChange={setMobileFiltersOpen}
-                >
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="lg:hidden">
-                      <SlidersHorizontal className="mr-2 h-4 w-4" />
-                      Filters
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent
-                    side="left"
-                    className="w-[300px] px-4 sm:w-[400px]"
-                  >
-                    <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
-                    </SheetHeader>
-                    <div>
-                      <Filters
-                        filters={currentFilters}
-                        countries={countries}
-                        onFilterChange={(key, value) => {
-                          updateFilter(key, value)
-                          setMobileFiltersOpen(false)
-                        }}
-                        onClearAll={() => {
-                          handleClearAll()
-                          setMobileFiltersOpen(false)
-                        }}
-                      />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-
-                {/* Search Bar */}
-                <div className="flex-1">
-                  <SearchBar
-                    value={currentFilters.search || ''}
-                    onChange={(value) => updateFilter('search', value || null)}
-                    placeholder="Search by name or bio..."
-                  />
-                </div>
-              </div>
-
-              {!isLoading && profiles.length > 0 && (
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatProfileCount(pagination?.total || profiles.length)}
-                  </p>
-                </div>
-              )}
-
-              {isError && (
-                <div className="py-8 text-center">
-                  <p className="text-red-500">
-                    Failed to load directory. Please try again.
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => window.location.reload()}
-                  >
-                    Retry
-                  </Button>
-                </div>
-              )}
-
-              {!isError && (
-                <>
-                  <DirectoryGrid
-                    profiles={profiles}
-                    isLoading={isLoading}
-                    onClearFilters={handleClearAll}
-                    hasActiveFilters={!!hasActiveFilters}
-                  />
-
-                  {pagination && pagination.hasMore && !isLoading && (
-                    <div className="flex justify-center">
-                      <Button onClick={handleLoadMore} size="lg">
-                        Load More
-                      </Button>
-                    </div>
-                  )}
-
-                  {pagination && !pagination.hasMore && profiles.length > 0 && (
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        You&apos;ve reached the end of the directory
-                      </p>
-                    </div>
-                  )}
-                </>
-              )}
             </div>
+          </Section>
+
+          {/* Results count */}
+          <Section>
+            <p className="text-sm text-muted-foreground">
+              {filteredProfiles.length} miembro{filteredProfiles.length !== 1 ? 's' : ''}
+            </p>
+          </Section>
+
+          {/* Grid */}
+          <Section>
+            {filteredProfiles.length > 0 ? (
+              <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredProfiles.map((profile) => (
+                  <Link
+                    key={profile._id}
+                    href={`/profile/${profile.user?.username}`}
+                  >
+                    <Card className="flex h-full flex-col gap-y-4 px-4 py-6 transition-colors hover:bg-accent">
+                      <div className="flex flex-1 flex-col items-center gap-2 text-center">
+                        <Avatar className="size-20">
+                          <AvatarImage
+                            src={profile.user?.avatarUrl || undefined}
+                            alt={profile.user?.username}
+                          />
+                          <AvatarFallback>
+                            {profile.user?.displayName?.[0] ||
+                              profile.user?.username?.[0] ||
+                              '?'}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="w-full">
+                          <h4 className="line-clamp-1 font-semibold">
+                            {profile.user?.displayName || profile.user?.username}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            @{profile.user?.username}
+                          </p>
+                        </div>
+
+                        {profile.user?.bio && (
+                          <p className="line-clamp-2 text-sm text-muted-foreground">
+                            {profile.user.bio}
+                          </p>
+                        )}
+
+                        {profile.learningTracks && profile.learningTracks.length > 0 && (
+                          <div className="flex flex-wrap justify-center gap-1">
+                            {profile.learningTracks.map((track) => (
+                              <Badge key={track} variant="secondary" className="text-xs">
+                                {track.toUpperCase()}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Bootcamp progress badge */}
+                        {profile.user?._id && participantMap.has(profile.user._id) && (() => {
+                          const bp = participantMap.get(profile.user!._id)!
+                          return (
+                            <div className="flex w-full items-center justify-center gap-2">
+                              <Badge variant="outline" className="text-xs gap-1">
+                                {bp.status === 'completed' ? 'VibeCoding ✅' : `VibeCoding ${bp.progress}%`}
+                              </Badge>
+                              {bp.status !== 'completed' && (
+                                <Progress value={bp.progress} className="h-1.5 w-16" />
+                              )}
+                            </div>
+                          )
+                        })()}
+                      </div>
+
+                      <CardFooter className="mt-auto flex w-full justify-center gap-4 text-center text-sm">
+                        <div>
+                          <p className="font-semibold">
+                            {profile.projectsCount || 0}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Proyectos
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-green-600 dark:text-green-400">
+                            ${profile.totalEarningsUsd || 0}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Ganado
+                          </p>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  {searchQuery
+                    ? 'No se encontraron miembros con esa búsqueda'
+                    : 'No hay miembros en el directorio aún'}
+                </p>
+              </div>
+            )}
           </Section>
         </div>
       </div>

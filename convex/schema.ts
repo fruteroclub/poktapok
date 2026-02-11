@@ -603,6 +603,8 @@ export default defineSchema({
     // Metadata
     tallyResponseId: v.optional(v.string()),
     metadata: v.optional(v.any()),
+    // API Keys - assigned by admin
+    anthropicApiKey: v.optional(v.string()),
   })
     .index("by_code", ["code"])
     .index("by_email", ["email"])

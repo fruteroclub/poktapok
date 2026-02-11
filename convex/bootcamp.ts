@@ -763,3 +763,103 @@ export const resetEnrollmentProgress = mutation({
     return { reset: true };
   },
 });
+
+// ============================================================
+// API KEYS - Admin management
+// ============================================================
+
+/**
+ * Assign API key to enrollment (admin only)
+ */
+export const assignApiKey = mutation({
+  args: {
+    enrollmentId: v.id("bootcampEnrollments"),
+    anthropicApiKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.enrollmentId, {
+      anthropicApiKey: args.anthropicApiKey,
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Bulk assign API keys to enrollments (admin only)
+ * Accepts array of { email, apiKey }
+ */
+export const assignApiKeysBulk = mutation({
+  args: {
+    programId: v.id("bootcampPrograms"),
+    assignments: v.array(
+      v.object({
+        email: v.string(),
+        apiKey: v.string(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const results = [];
+    
+    for (const assignment of args.assignments) {
+      const enrollment = await ctx.db
+        .query("bootcampEnrollments")
+        .withIndex("by_email", (q) => q.eq("email", assignment.email.toLowerCase()))
+        .filter((q) => q.eq(q.field("programId"), args.programId))
+        .unique();
+      
+      if (enrollment) {
+        await ctx.db.patch(enrollment._id, {
+          anthropicApiKey: assignment.apiKey,
+        });
+        results.push({ email: assignment.email, status: "assigned" });
+      } else {
+        results.push({ email: assignment.email, status: "not_found" });
+      }
+    }
+    
+    return { results };
+  },
+});
+
+/**
+ * Get user's API keys for their enrollments
+ */
+export const getMyApiKeys = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const enrollments = await ctx.db
+      .query("bootcampEnrollments")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.neq(q.field("anthropicApiKey"), undefined))
+      .collect();
+    
+    const keys = [];
+    for (const enrollment of enrollments) {
+      const program = await ctx.db.get(enrollment.programId);
+      if (enrollment.anthropicApiKey) {
+        keys.push({
+          provider: "anthropic",
+          key: enrollment.anthropicApiKey,
+          programName: program?.name || "Unknown",
+          programId: enrollment.programId,
+        });
+      }
+    }
+    
+    return keys;
+  },
+});
+
+/**
+ * Remove API key from enrollment (admin only)
+ */
+export const removeApiKey = mutation({
+  args: { enrollmentId: v.id("bootcampEnrollments") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.enrollmentId, {
+      anthropicApiKey: undefined,
+    });
+    return { success: true };
+  },
+});

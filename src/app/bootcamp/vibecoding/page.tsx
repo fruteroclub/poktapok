@@ -20,9 +20,14 @@ import {
   XCircle,
   AlertCircle,
   Lock,
-  Rocket
+  Rocket,
+  Key,
+  Copy,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
@@ -55,6 +60,7 @@ const LEVEL_LABELS = {
 export default function VibeCodingDashboard() {
   const { user, convexUser, isLoading: authLoading } = useAuthWithConvex()
   const { authenticated } = usePrivy()
+  const [showApiKey, setShowApiKey] = useState(false)
   
   const enrollmentData = useQuery(
     api.bootcamp.getEnrollmentWithDetails,
@@ -165,6 +171,61 @@ export default function VibeCodingDashboard() {
               </div>
             </div>
           </Section>
+
+          {/* API Keys Section */}
+          {enrollment.anthropicApiKey && (
+            <Section>
+              <Card className="border-primary/30 bg-primary/5">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Key className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Mis API Keys</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Tu llave personal para usar los servicios de IA
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground">Anthropic</span>
+                      <Badge variant="secondary" className="text-xs">$5 USD crédito</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 bg-background/50 border rounded-lg px-3 py-2 font-mono text-sm overflow-hidden">
+                        {showApiKey 
+                          ? enrollment.anthropicApiKey 
+                          : '••••••••••••••••••••••••••••••••••••••••'
+                        }
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        title={showApiKey ? 'Ocultar' : 'Mostrar'}
+                      >
+                        {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          navigator.clipboard.writeText(enrollment.anthropicApiKey!)
+                          toast.success('API Key copiada')
+                        }}
+                        title="Copiar"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      ⚠️ No compartas esta key. Es personal y tiene un límite de uso.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Section>
+          )}
 
           {/* Sessions Grid */}
           <Section>

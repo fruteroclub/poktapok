@@ -4,8 +4,9 @@ import { usePrivy } from '@privy-io/react-auth'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import { useState } from 'react'
-import { Loader2, Clock, Pencil, Check, X } from 'lucide-react'
+import { Loader2, Clock, Pencil, Check, X, AlertCircle } from 'lucide-react'
 import { useEffect } from 'react'
+import Link from 'next/link'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { ProtectedRoute } from '@/components/layout/protected-route-wrapper'
 import { Section } from '@/components/layout/section'
@@ -17,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { toast } from 'sonner'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
@@ -32,6 +33,8 @@ export default function ProfilePage() {
 
   const [isEditingUser, setIsEditingUser] = useState(false)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [isEditingUsername, setIsEditingUsername] = useState(false)
+  const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [bio, setBio] = useState('')
   const [city, setCity] = useState('')
@@ -39,13 +42,18 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false)
 
   const updateUserMutation = useMutation(api.auth.updateUser)
+  const updateCurrentUserMutation = useMutation(api.auth.updateCurrentUser)
   const updateProfileMutation = useMutation(api.profiles.update)
   const generateUploadUrl = useMutation(api.users.generateAvatarUploadUrl)
   const saveAvatarMutation = useMutation(api.users.saveAvatar)
+  const checkUsernameMutation = useQuery(api.auth.checkUsername, 
+    username && username !== user?.username ? { username } : 'skip'
+  )
 
   // Initialize form values when data loads
   useEffect(() => {
     if (user) {
+      setUsername(user.username || '')
       setDisplayName(user.displayName || '')
       setBio(user.bio || '')
     }
@@ -62,17 +70,34 @@ export default function ProfilePage() {
     }
   }, [authenticated, ready, router])
 
-  // Redirect if user hasn't completed onboarding
-  useEffect(() => {
-    if (user) {
-      if (user.accountStatus === 'incomplete' || !user.username) {
-        router.push('/onboarding')
-      }
-    }
-  }, [user, router])
+  // Check if user has temporary username (needs to set a real one)
+  const hasTempUsername = user?.username?.startsWith('user_')
+  const needsOnboarding = user && (user.accountStatus === 'incomplete' || !user.username || hasTempUsername)
 
   // Get privyDid from Privy
   const privyDid = usePrivy().user?.id
+
+  const handleSaveUsername = async () => {
+    if (!user || !privyDid || !username) return
+    if (checkUsernameMutation && !checkUsernameMutation.available) {
+      toast.error('Username no disponible')
+      return
+    }
+    setIsSaving(true)
+    try {
+      await updateCurrentUserMutation({
+        privyDid,
+        username,
+      })
+      toast.success('Username actualizado')
+      setIsEditingUsername(false)
+    } catch (error: any) {
+      console.error('Error updating username:', error)
+      toast.error(error.message || 'Error al actualizar username')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const handleSaveUser = async () => {
     if (!user || !privyDid) return
@@ -169,6 +194,22 @@ export default function ProfilePage() {
                 Ve y edita tu información de perfil
               </p>
 
+              {/* Temp Username Banner - Complete Profile */}
+              {hasTempUsername && (
+                <Alert className="border-blue-500/50 bg-blue-500/10">
+                  <AlertCircle className="h-4 w-4 text-blue-600" />
+                  <AlertTitle className="text-blue-900 dark:text-blue-100">
+                    Completa tu perfil
+                  </AlertTitle>
+                  <AlertDescription className="text-blue-800 dark:text-blue-200">
+                    Elige un username personalizado para tu perfil. Puedes hacerlo aquí o en{' '}
+                    <Link href="/onboarding" className="underline font-medium">
+                      onboarding
+                    </Link>.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Pending Approval Banner */}
               {user.accountStatus === 'pending' && (
                 <Alert className="border-amber-500/50 bg-amber-500/10">
@@ -239,7 +280,63 @@ export default function ProfilePage() {
                     {/* Username */}
                     <div>
                       <Label className="text-muted-foreground">Username</Label>
-                      <p className="font-medium">@{user.username}</p>
+                      {hasTempUsername ? (
+                        isEditingUsername ? (
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                              <Input
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                                placeholder="tu_username"
+                                className={checkUsernameMutation?.available === false ? 'border-red-500' : ''}
+                              />
+                              {checkUsernameMutation?.available === false && (
+                                <p className="text-xs text-red-500 mt-1">Username no disponible</p>
+                              )}
+                              {checkUsernameMutation?.available === true && username.length >= 3 && (
+                                <p className="text-xs text-green-500 mt-1">✓ Disponible</p>
+                              )}
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setIsEditingUsername(false)
+                                setUsername(user.username || '')
+                              }}
+                              disabled={isSaving}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleSaveUsername}
+                              disabled={isSaving || !username || username.length < 3 || checkUsernameMutation?.available === false}
+                            >
+                              {isSaving ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Check className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium text-muted-foreground">@{user.username}</p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setIsEditingUsername(true)}
+                            >
+                              <Pencil className="h-3 w-3 mr-1" />
+                              Cambiar
+                            </Button>
+                          </div>
+                        )
+                      ) : (
+                        <p className="font-medium">@{user.username}</p>
+                      )}
                     </div>
 
                     {/* Display Name */}

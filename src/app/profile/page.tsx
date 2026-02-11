@@ -26,7 +26,7 @@ import { AvatarUpload } from '@/components/profile/avatar-upload'
  * Profile Page - User's own profile with inline editing
  */
 export default function ProfilePage() {
-  const { authenticated, ready, getAccessToken } = usePrivy()
+  const { authenticated, ready } = usePrivy()
   const router = useRouter()
   const { user, profile, isLoading } = useAuth()
 
@@ -40,6 +40,8 @@ export default function ProfilePage() {
 
   const updateUserMutation = useMutation(api.auth.updateUser)
   const updateProfileMutation = useMutation(api.profiles.update)
+  const generateUploadUrl = useMutation(api.users.generateAvatarUploadUrl)
+  const saveAvatarMutation = useMutation(api.users.saveAvatar)
 
   // Initialize form values when data loads
   useEffect(() => {
@@ -112,23 +114,20 @@ export default function ProfilePage() {
 
   const handleAvatarUpload = async (file: File) => {
     try {
-      const token = await getAccessToken()
-      const formData = new FormData()
-      formData.append('avatar', file)
+      if (!privyDid) throw new Error('No authenticated')
 
-      const response = await fetch('/api/profiles/avatar', {
+      // Upload directly to Convex Storage (no Vercel Blob needed)
+      const uploadUrl = await generateUploadUrl()
+      const result = await fetch(uploadUrl, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
+        headers: { 'Content-Type': file.type },
+        body: file,
       })
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null)
-        const serverMsg = errorData?.error || `Server error ${response.status}`
-        throw new Error(serverMsg)
-      }
+      if (!result.ok) throw new Error('Failed to upload file')
+
+      const { storageId } = await result.json()
+      await saveAvatarMutation({ privyDid, storageId })
 
       toast.success('Avatar actualizado')
     } catch (error) {

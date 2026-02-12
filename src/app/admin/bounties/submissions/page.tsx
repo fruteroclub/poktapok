@@ -92,8 +92,8 @@ export default function SubmissionsPage() {
       
       setReviewDialog({ open: false, submissionId: null, action: null });
       setReviewNotes('');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al revisar');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al revisar');
     } finally {
       setIsSubmitting(false);
     }

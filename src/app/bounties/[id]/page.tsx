@@ -101,8 +101,8 @@ export default function BountyDetailPage() {
     try {
       await claim({ bountyId, userId: convexUser._id });
       toast.success('¡Bounty reclamado! Tienes ' + (bounty.deadlineDays || 7) + ' días para completarlo.');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al reclamar bounty');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al reclamar bounty');
     } finally {
       setIsClaiming(false);
     }
@@ -125,8 +125,8 @@ export default function BountyDetailPage() {
       setShowSubmitDialog(false);
       setSubmissionUrl('');
       setSubmissionNotes('');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al enviar entrega');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al enviar entrega');
     } finally {
       setIsSubmitting(false);
     }
@@ -139,8 +139,8 @@ export default function BountyDetailPage() {
     try {
       await abandonClaim({ claimId: existingClaim._id });
       toast.success('Bounty abandonado');
-    } catch (error: any) {
-      toast.error(error.message || 'Error al abandonar bounty');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al abandonar bounty');
     }
   };
 

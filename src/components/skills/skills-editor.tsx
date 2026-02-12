@@ -84,8 +84,8 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
       setSelectedSkillId('');
       setSelectedLevel('beginner');
       setIsDialogOpen(false);
-    } catch (error: any) {
-      toast.error(error.message || 'Error agregando skill');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error agregando skill');
     } finally {
       setIsAdding(false);
     }
@@ -113,8 +113,8 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
       setCustomSkillName('');
       setSelectedLevel('beginner');
       setIsDialogOpen(false);
-    } catch (error: any) {
-      toast.error(error.message || 'Error agregando skill');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error agregando skill');
     } finally {
       setIsAdding(false);
     }
@@ -125,8 +125,8 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
     try {
       await removeUserSkill({ userSkillId });
       toast.success('Skill eliminado');
-    } catch (error: any) {
-      toast.error(error.message || 'Error eliminando skill');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error eliminando skill');
     } finally {
       setRemovingId(null);
     }
@@ -136,8 +136,8 @@ export function SkillsEditor({ userId }: SkillsEditorProps) {
     try {
       await updateUserSkillLevel({ userSkillId, level });
       toast.success('Nivel actualizado');
-    } catch (error: any) {
-      toast.error(error.message || 'Error actualizando nivel');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error actualizando nivel');
     }
   };
 

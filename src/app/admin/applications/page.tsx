@@ -6,6 +6,7 @@ import { usePrivy } from '@privy-io/react-auth'
 import { useAuth } from '@/hooks/use-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
 import { Loader2, Check, X, ArrowLeft } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
@@ -49,7 +50,7 @@ export default function AdminApplicationsPage() {
     if (!privyDid) return
     try {
       await approveMutation({ 
-        applicationId: applicationId as any,
+        applicationId: applicationId as Id<"applications">,
         reviewerPrivyDid: privyDid,
       })
       toast.success('Usuario aprobado')
@@ -65,7 +66,7 @@ export default function AdminApplicationsPage() {
     if (!privyDid) return
     try {
       await rejectMutation({ 
-        applicationId: applicationId as any,
+        applicationId: applicationId as Id<"applications">,
         reviewerPrivyDid: privyDid,
       })
       toast.success('Solicitud rechazada')

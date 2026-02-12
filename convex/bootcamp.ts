@@ -502,7 +502,7 @@ export const listDeliverablesByProgram = query({
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db
+    const q = ctx.db
       .query("bootcampDeliverables")
       .withIndex("by_program", (q) => q.eq("programId", args.programId));
 

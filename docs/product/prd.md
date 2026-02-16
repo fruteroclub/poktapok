@@ -2,8 +2,8 @@
 
 ## Frutero Talent Platform MVP
 
-**Version:** 1.0
-**Last Updated:** December 2024
+**Version:** 2.0
+**Last Updated:** February 2026
 **Status:** In Development
 **Target Launch:** 8 weeks from kickoff
 
@@ -75,6 +75,8 @@ Epic 1: Talent Directory (Week 1) → MVP Launch
 Epic 2: Portfolio (Weeks 2-3) → Showcase Work
 Epic 3: Bounty Board (Weeks 4-6) → Earning Mechanism
 Epic 4: Onchain Funding (Weeks 7-8) → Crypto Payments
+Epic 5: VibeCoding Bootcamp LMS → Learning Management System
+Epic 6: AgentCamp 2.0 → AI Agent Building Bootcamp
 ```
 
 ---
@@ -908,8 +910,257 @@ graph TD
 
 ---
 
+## Epic 5: VibeCoding Bootcamp LMS
+
+### Objective
+
+Build a Learning Management System for the VibeCoding Bootcamp — a 5-session intensive program teaching participants to build AI-powered applications through vibe coding. The LMS handles enrollment, session content delivery, deliverable submission/grading, progress tracking, and API key distribution.
+
+### Current State (Already Built)
+
+The core LMS infrastructure is live and serving the first VibeCoding Bootcamp cohort (Feb 2026):
+
+**Programs & Sessions:**
+- Program CRUD (create, list, update status, archive)
+- Session management (title, deliverable spec, content URL, scheduled date)
+- Slug-based routing (`/bootcamp/vibecoding`)
+
+**Enrollment System:**
+- Code-based enrollment (8-char unique codes: `PCXQTNLC`)
+- Bulk enrollment creation via CLI
+- Email invite pipeline (Nodemailer + HTML templates with inline images)
+- Join flow: `/bootcamp/join/[code]` → auto-approve user → link to enrollment
+- Auto-approve: bootcamp users skip application review queue
+
+**Student Dashboard (`/bootcamp/vibecoding`):**
+- Program header with progress bar (0-100%)
+- Session cards grid with deliverable status indicators
+- Deliverable submission form (project URL, repo URL, notes)
+- Confirmation dialog before submission
+- API key display (show/hide, copy to clipboard)
+- Content links to `bootcamp.frutero.club`
+
+**Admin Dashboard (`/admin/bootcamp`):**
+- Program selector
+- Stats cards (enrolled, active, pending review, graduated)
+- Deliverable review queue with filters (pending, approved, needs revision)
+- 4-tier grading: Core, Complete, Excellent, Bonus
+- Feedback system per deliverable
+- API key management (individual + bulk assign to all enrollees)
+
+**Data Model (Convex):**
+- `bootcampPrograms` — program definitions
+- `bootcampSessions` — sessions per program
+- `bootcampEnrollments` — user enrollments with codes, status, progress, API keys
+- `bootcampDeliverables` — submitted work with grading, feedback, review tracking
+
+### Remaining Features (To Build)
+
+#### Feature 5.1: Progress Automation
+
+**Priority:** P0 (Must Have)
+
+Currently `progress` and `sessionsCompleted` are set manually. Automate:
+- When a deliverable is approved → increment `sessionsCompleted`
+- Recalculate `progress` = `(sessionsCompleted / program.sessionsCount) * 100`
+- When all sessions completed → set enrollment status to `completed` + `completedAt` timestamp
+- Trigger completion badge on user profile
+
+#### Feature 5.2: Session Recordings & Resources
+
+**Priority:** P1 (Should Have)
+
+- Add `recordingUrl` field to `bootcampSessions`
+- Add `resources` array field (title + URL pairs) for supplementary materials
+- Display recordings and resources on student dashboard per session
+- Admin UI to manage recordings/resources per session
+
+#### Feature 5.3: Email Notifications
+
+**Priority:** P1 (Should Have)
+
+Automated email triggers:
+- **Deliverable reviewed:** "Tu entregable de Sesión X fue [aprobado/requiere revisión]"
+- **Session reminder:** 24h before scheduled session
+- **Completion certificate:** When enrollment status = `completed`
+- Template system extending existing Nodemailer pipeline
+
+#### Feature 5.4: Leaderboard
+
+**Priority:** P2 (Nice to Have)
+
+- Rank participants by: sessions completed, average grade level, submission speed
+- Display on student dashboard as motivational element
+- Admin view for identifying top performers
+- Optional: public leaderboard for program showcase
+
+#### Feature 5.5: Deliverable Comments Thread
+
+**Priority:** P2 (Nice to Have)
+
+- Allow back-and-forth comments on deliverables (not just single feedback)
+- Student can ask clarifying questions after "needs_revision"
+- Admin can provide incremental guidance
+- New table: `bootcampComments` (deliverableId, userId, content, timestamp)
+
+#### Feature 5.6: Completion Certificates
+
+**Priority:** P2 (Nice to Have)
+
+- Generate PDF certificate on bootcamp completion
+- Include: student name, program name, completion date, grade level achieved
+- Shareable link for LinkedIn/portfolio
+- Stored in Convex Storage
+
+### Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Enrollment → Active | 85%+ | Codes redeemed / codes created |
+| Deliverable Submission Rate | 70%+ per session | Submissions / active enrollments |
+| Completion Rate | 60%+ | Completed / active enrollments |
+| Time to First Submission | < 48h after session | Timestamp delta |
+| Student Satisfaction | 4.5/5 | Post-bootcamp survey |
+
+### Technical Additions
+
+- **Schema changes:** `recordingUrl`, `resources` on `bootcampSessions`; `bootcampComments` table
+- **Convex mutations:** `autoUpdateProgress`, `sendNotification`
+- **New pages:** Leaderboard component, certificate generation
+- **Scripts:** Session reminder cron, completion certificate generator
+
+---
+
+## Epic 6: AgentCamp 2.0
+
+### Objective
+
+Launch a second bootcamp program focused on building AI agents — the natural progression after VibeCoding. Participants who complete VibeCoding get priority access. AgentCamp teaches participants to build, deploy, and monetize autonomous AI agents using modern tooling (Claude API, LangChain, CrewAI, etc.).
+
+### Program Structure
+
+**Duration:** 5 weeks (10 sessions, 2 per week)
+**Format:** Live sessions + async deliverables
+**Prerequisite:** VibeCoding Bootcamp completion (priority) or equivalent experience
+**Cohort Size:** 30-50 participants
+
+### Session Plan (Tentative)
+
+| Week | Session | Topic | Deliverable |
+|------|---------|-------|-------------|
+| 1 | 1 | Intro to AI Agents — Architecture & Patterns | Simple chatbot agent deployed |
+| 1 | 2 | Tool Use & Function Calling | Agent with 3+ tool integrations |
+| 2 | 3 | RAG Agents — Knowledge Base Integration | RAG agent with custom knowledge base |
+| 2 | 4 | Multi-Agent Systems | 2+ agent collaboration system |
+| 3 | 5 | Agent Memory & State Management | Stateful agent with conversation memory |
+| 3 | 6 | MCP Servers & External Integrations | Agent connected to real-world APIs via MCP |
+| 4 | 7 | Autonomous Workflows & Orchestration | Multi-step autonomous workflow agent |
+| 4 | 8 | Agent Testing & Evaluation | Test suite + eval metrics for an agent |
+| 5 | 9 | Deployment & Monetization | Production-deployed agent with usage tracking |
+| 5 | 10 | Demo Day — Final Projects | Full agent project presentation |
+
+### Key Features
+
+#### Feature 6.1: Priority Enrollment for VibeCoding Graduates
+
+**Priority:** P0 (Must Have)
+
+- Query VibeCoding completions → auto-generate enrollment codes for graduates
+- Graduates get early access (1 week before public registration)
+- Track enrollment source: `vibecodingGraduate` vs `directApply` vs `referral`
+- Add `enrollmentSource` field to `bootcampEnrollments`
+
+#### Feature 6.2: Enhanced Grading Rubric
+
+**Priority:** P0 (Must Have)
+
+AgentCamp deliverables are more complex and need structured evaluation:
+
+- **Functionality** (0-25): Does the agent work as specified?
+- **Architecture** (0-25): Clean code, proper patterns, separation of concerns
+- **Innovation** (0-25): Creative use of tools, novel approaches
+- **Documentation** (0-25): README, comments, usage instructions
+
+Total score → maps to existing level system:
+- 0-40: Core
+- 41-65: Complete
+- 66-85: Excellent
+- 86-100: Bonus
+
+New fields on `bootcampDeliverables`: `gradingRubric` (JSONB with category scores)
+
+#### Feature 6.3: Agent Showcase Gallery
+
+**Priority:** P1 (Should Have)
+
+- Public gallery of approved AgentCamp projects
+- Each entry: title, description, demo URL, repo URL, creator profile link
+- Filter by: agent type, tools used, grade level
+- Voting/featuring by admins
+- Route: `/showcase/agents`
+
+#### Feature 6.4: API Credit Management
+
+**Priority:** P0 (Must Have)
+
+AgentCamp requires more API usage than VibeCoding:
+- Higher credit allocation per participant ($10-20 vs $5)
+- Usage tracking dashboard (admin view)
+- Credit top-up mechanism for exceptional students
+- Support for multiple API keys per enrollment (OpenAI, Anthropic, etc.)
+- Add `apiKeys` (object/map) field to enrollments: `{ openai: "sk-...", anthropic: "sk-ant-..." }`
+
+#### Feature 6.5: Peer Review System
+
+**Priority:** P1 (Should Have)
+
+- Each deliverable assigned to 2 peers for review
+- Peer reviewers use same rubric as admin (with lower weight)
+- Final grade = 60% admin + 40% peer average
+- Incentivizes participants to review carefully (affects their own standing)
+- New table: `bootcampPeerReviews` (deliverableId, reviewerUserId, scores, comments)
+
+#### Feature 6.6: Demo Day Event Integration
+
+**Priority:** P1 (Should Have)
+
+- Final session is a live demo day
+- Integration with Luma events (existing `events` system)
+- Public RSVP for external audience (companies, mentors)
+- Voting mechanism for best projects
+- Winner recognition on platform + social media
+
+### Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| VibeCoding → AgentCamp Conversion | 40%+ | Graduates enrolled / total graduates |
+| Completion Rate | 50%+ | Higher bar than VibeCoding |
+| Agent Deployment Rate | 80%+ | Projects with live demo URLs |
+| Peer Review Participation | 90%+ | Reviews completed / assigned |
+| Demo Day Attendance | 2x cohort size | External attendees |
+| Post-Bootcamp Employment | 20%+ | Participants landing tech jobs within 3 months |
+
+### Technical Additions
+
+- **Schema changes:** `enrollmentSource`, `apiKeys` (multi-provider), `gradingRubric` on deliverables; `bootcampPeerReviews` table
+- **New pages:** `/showcase/agents`, peer review UI, enhanced admin grading form
+- **Convex mutations:** `assignPeerReviewers`, `submitPeerReview`, `calculateFinalGrade`
+- **Integration:** Luma events for Demo Day
+
+### Risks & Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| API costs exceed budget | High | Set hard spending limits per key, monitor usage daily |
+| Low completion rate (harder content) | Medium | Provide starter templates, office hours, peer support |
+| Agent security issues (prompt injection, data leaks) | Medium | Mandatory security review before Demo Day |
+| Peer review gaming | Low | Admin override capability, flag suspicious patterns |
+
+---
+
 **Document Status:** ✅ Ready for Development
-**Next Steps:** Epic 1 kickoff, assign tasks, daily standups
+**Next Steps:** Epic 5 remaining features, Epic 6 planning and program design
 
 ---
 

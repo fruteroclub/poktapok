@@ -188,7 +188,7 @@ export default function VibeCodingDashboard() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-muted-foreground">Anthropic</span>
+                      <span className="text-sm font-medium text-muted-foreground">OpenAI</span>
                       <Badge variant="secondary" className="text-xs">$5 USD crédito</Badge>
                     </div>
                     <div className="flex items-center gap-2">

@@ -863,3 +863,17 @@ export const removeApiKey = mutation({
     return { success: true };
   },
 });
+
+// Admin: Update enrollment API key
+export const updateEnrollmentApiKey = mutation({
+  args: {
+    enrollmentId: v.id("bootcampEnrollments"),
+    anthropicApiKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.enrollmentId, {
+      anthropicApiKey: args.anthropicApiKey,
+    });
+    return { success: true };
+  },
+});

@@ -258,7 +258,7 @@ export default function AdminBootcampPage() {
                           API Keys
                         </CardTitle>
                         <CardDescription>
-                          Asigna API keys de Anthropic a los participantes
+                          Asigna API keys de OpenAI a los participantes
                         </CardDescription>
                       </div>
                     </div>

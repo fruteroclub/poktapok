@@ -502,7 +502,7 @@ export const listDeliverablesByProgram = query({
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db
+    const q = ctx.db
       .query("bootcampDeliverables")
       .withIndex("by_program", (q) => q.eq("programId", args.programId));
 
@@ -859,6 +859,20 @@ export const removeApiKey = mutation({
   handler: async (ctx, args) => {
     await ctx.db.patch(args.enrollmentId, {
       anthropicApiKey: undefined,
+    });
+    return { success: true };
+  },
+});
+
+// Admin: Update enrollment API key
+export const updateEnrollmentApiKey = mutation({
+  args: {
+    enrollmentId: v.id("bootcampEnrollments"),
+    anthropicApiKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.enrollmentId, {
+      anthropicApiKey: args.anthropicApiKey,
     });
     return { success: true };
   },

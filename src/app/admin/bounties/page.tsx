@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { Id } from '../../../../convex/_generated/dataModel';
 import Link from 'next/link';
 import {
   useBounties,
@@ -136,7 +137,7 @@ export default function AdminBountiesPage() {
       if (editingId) {
         await update({
           callerPrivyDid: privyDid!,
-          bountyId: editingId as any,
+          bountyId: editingId as Id<"bounties">,
           title: form.title,
           description: form.description,
           requirements: form.requirements || undefined,
@@ -171,8 +172,8 @@ export default function AdminBountiesPage() {
       setIsDialogOpen(false);
       setForm(emptyForm);
       setEditingId(null);
-    } catch (error: any) {
-      toast.error(error.message || 'Error al guardar');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al guardar');
     } finally {
       setIsSubmitting(false);
     }

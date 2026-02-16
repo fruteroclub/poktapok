@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import type { Id } from '../../../convex/_generated/dataModel'
 import { Loader2, Copy, Check, Trash2, UserPlus, Gift, Target, ArrowRight, Clock, GraduationCap } from 'lucide-react'
 import { useMyBounties, useOpenBounties, getDifficultyColor, getDifficultyDisplayName, formatReward } from '@/hooks/use-bounties'
 import Link from 'next/link'
@@ -70,8 +71,8 @@ export default function DashboardPage() {
     try {
       const result = await createInvitation({ inviterPrivyDid: privyDid })
       toast.success(`Invitación creada: ${result.inviteCode}`)
-    } catch (error: any) {
-      toast.error(error.message || 'Error al crear invitación')
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al crear invitación')
     }
   }
 
@@ -86,10 +87,10 @@ export default function DashboardPage() {
   const handleDeleteInvitation = async (invitationId: string) => {
     if (!privyDid) return
     try {
-      await removeInvitation({ invitationId: invitationId as any, privyDid })
+      await removeInvitation({ invitationId: invitationId as Id<"invitations">, privyDid })
       toast.success('Invitación eliminada')
-    } catch (error: any) {
-      toast.error(error.message || 'Error al eliminar')
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al eliminar')
     }
   }
 

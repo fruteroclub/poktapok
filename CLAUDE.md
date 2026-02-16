@@ -387,28 +387,24 @@ Comprehensive testing strategies and documentation:
 
 ### File Storage
 
-- **Vercel Blob Storage** for avatar uploads
-- Upload endpoint: `POST /api/profiles/avatar` (multipart/form-data)
-- Delete endpoint: `DELETE /api/profiles/avatar`
-- File validation: 5MB max, JPEG/PNG/WebP only
-- Auto-cleanup: Old avatars deleted when new ones uploaded
-- Storage location: `avatars/{userId}/{filename}` with random suffix
+- **Convex Storage** for avatar uploads (migrated from Vercel Blob)
+- Upload flow: Client calls `generateAvatarUploadUrl` mutation → uploads file to Convex → calls `saveAvatar` mutation
+- Convex mutations: `users.generateAvatarUploadUrl`, `users.saveAvatar`
+- No extra env vars needed (built into Convex)
+- Free tier: 1GB storage
 
 Required environment variables:
 
 ```
-# Database
-DATABASE_URL=postgresql://...              # Pooled connection
-DATABASE_URL_UNPOOLED=postgresql://...     # Direct connection for migrations
-
 # Web3
 NEXT_PUBLIC_ALCHEMY_API_KEY=...            # Optional
 NEXT_PUBLIC_PRIVY_APP_ID=...
 NEXT_PUBLIC_PRIVY_CLIENT_ID=...
 PRIVY_APP_SECRET=...
 
-# Vercel Blob Storage (for avatar uploads)
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...  # From Vercel Storage dashboard
+# Convex
+NEXT_PUBLIC_CONVEX_URL=...                 # Convex deployment URL
+CONVEX_DEPLOYMENT=...                      # Convex deployment name
 ```
 
 ### Project Structure

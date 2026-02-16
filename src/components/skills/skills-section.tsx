@@ -119,8 +119,8 @@ function SkillWithEndorse({
         await endorse({ endorserId: currentUserId, userSkillId });
         toast.success('Skill endorsed!');
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Error');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error');
     } finally {
       setIsEndorsing(false);
     }

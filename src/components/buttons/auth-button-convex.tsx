@@ -41,25 +41,18 @@ export default function AuthButtonConvex({
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
       user: privyUserData,
-      isNewUser,
+      isNewUser: _isNewUser,
       wasAlreadyAuthenticated,
       loginMethod,
     }) => {
-      console.log('User logged in successfully', privyUserData)
-      console.log('Is new user:', isNewUser)
-      console.log('Was already authenticated:', wasAlreadyAuthenticated)
-      console.log('Login method:', loginMethod)
-
       // Skip if user was already authenticated (page refresh/navigation)
       if (wasAlreadyAuthenticated) {
-        console.log('User was already authenticated, skipping login')
         return
       }
 
       // Check session storage to prevent duplicate calls
       const sessionKey = `privy_login_processed_${privyUserData.id}`
       if (sessionStorage.getItem(sessionKey)) {
-        console.log('Login already processed this session, skipping')
         return
       }
 
@@ -112,8 +105,6 @@ export default function AuthButtonConvex({
         } else {
           authMethod = 'social'
         }
-
-        console.log('Creating/fetching user in Convex...')
 
         // Create or fetch user from Convex
         const result = await getOrCreateUser({
@@ -174,7 +165,7 @@ export default function AuthButtonConvex({
       }
     },
     onError: (error) => {
-      console.log('Login failed', error)
+      console.error('Login failed', error)
       toast.error('Inicio de sesión fallido', {
         id: 'login-failed',
       })
@@ -215,7 +206,6 @@ export default function AuthButtonConvex({
   if (!isPrivyReady) {
     return (
       <Button
-        onClick={() => console.log('Privy not ready')}
         size={size}
         className={cn('font-funnel font-medium', className)}
         disabled

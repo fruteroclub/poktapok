@@ -132,8 +132,8 @@ export default function AdminBootcampPage() {
       setReviewDialog({ open: false, deliverableId: null, action: null })
       setFeedback('')
       setSelectedLevel('complete')
-    } catch (error: any) {
-      toast.error(error.message || 'Error al revisar')
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al revisar')
     } finally {
       setIsSubmitting(false)
     }
@@ -258,7 +258,7 @@ export default function AdminBootcampPage() {
                           API Keys
                         </CardTitle>
                         <CardDescription>
-                          Asigna API keys de Anthropic a los participantes
+                          Asigna API keys de OpenAI a los participantes
                         </CardDescription>
                       </div>
                     </div>
@@ -293,8 +293,8 @@ export default function AdminBootcampPage() {
                               
                               toast.success(`API key asignada a ${assignments.length} participantes`)
                               setBulkApiKey('')
-                            } catch (error: any) {
-                              toast.error(error.message || 'Error al asignar keys')
+                            } catch (error: unknown) {
+                              toast.error(error instanceof Error ? error.message : 'Error al asignar keys')
                             } finally {
                               setIsAssigningKeys(false)
                             }

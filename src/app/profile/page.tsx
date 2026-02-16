@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import type { Id } from '../../../convex/_generated/dataModel'
 import { toast } from 'sonner'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
 
@@ -91,9 +92,9 @@ export default function ProfilePage() {
       })
       toast.success('Username actualizado')
       setIsEditingUsername(false)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating username:', error)
-      toast.error(error.message || 'Error al actualizar username')
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar username')
     } finally {
       setIsSaving(false)
     }
@@ -123,7 +124,7 @@ export default function ProfilePage() {
     setIsSaving(true)
     try {
       await updateProfileMutation({
-        profileId: profile.id as any,
+        profileId: profile.id as Id<"profiles">,
         city,
         country,
       })

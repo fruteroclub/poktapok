@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { usePrivy } from '@privy-io/react-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import type { Id } from '../../../convex/_generated/dataModel'
 import { 
   Loader2, Plus, Pencil, Trash2, ExternalLink, Github, 
   Play, Eye, EyeOff, Check, X 
@@ -21,7 +22,6 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { SkillsEditor } from '@/components/skills/skills-editor'
 import { useAuth } from '@/hooks'
-import { Id } from '../../../convex/_generated/dataModel'
 import {
   Dialog,
   DialogContent,
@@ -117,7 +117,7 @@ export default function ProjectsPage() {
 
       if (editingId) {
         await updateProject({
-          projectId: editingId as any,
+          projectId: editingId as Id<"projects">,
           privyDid,
           name: form.name,
           description: form.description || undefined,
@@ -146,8 +146,8 @@ export default function ProjectsPage() {
       setIsDialogOpen(false)
       setForm(emptyForm)
       setEditingId(null)
-    } catch (error: any) {
-      toast.error(error.message || 'Error al guardar')
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al guardar')
     } finally {
       setIsSubmitting(false)
     }
@@ -158,10 +158,10 @@ export default function ProjectsPage() {
     if (!confirm('¿Eliminar este proyecto?')) return
 
     try {
-      await deleteProject({ projectId: projectId as any, privyDid })
+      await deleteProject({ projectId: projectId as Id<"projects">, privyDid })
       toast.success('Proyecto eliminado')
-    } catch (error: any) {
-      toast.error(error.message || 'Error al eliminar')
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error al eliminar')
     }
   }
 
@@ -389,7 +389,7 @@ export default function ProjectsPage() {
                 <Label htmlFor="status">Estado</Label>
                 <Select
                   value={form.status}
-                  onValueChange={(v) => setForm({ ...form, status: v as any })}
+                  onValueChange={(v) => setForm({ ...form, status: v as 'draft' | 'active' | 'completed' })}
                 >
                   <SelectTrigger>
                     <SelectValue />

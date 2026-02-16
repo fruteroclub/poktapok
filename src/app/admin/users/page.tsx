@@ -6,6 +6,7 @@ import { usePrivy } from '@privy-io/react-auth'
 import { useAuth } from '@/hooks/use-auth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
 import { Loader2, ArrowLeft, Shield, ShieldOff, UserX, UserCheck } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
@@ -67,19 +68,19 @@ export default function AdminUsersPage() {
 
       switch (action) {
         case 'makeAdmin':
-          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'admin' })
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as Id<"users">, role: 'admin' })
           toast.success('Usuario promovido a admin')
           break
         case 'removeAdmin':
-          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as any, role: 'member' })
+          await updateRoleMutation({ callerPrivyDid: privyDid, userId: userId as Id<"users">, role: 'member' })
           toast.success('Permisos de admin removidos')
           break
         case 'suspend':
-          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'suspended' })
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as Id<"users">, accountStatus: 'suspended' })
           toast.success('Usuario suspendido')
           break
         case 'activate':
-          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as any, accountStatus: 'active' })
+          await updateStatusMutation({ callerPrivyDid: privyDid, userId: userId as Id<"users">, accountStatus: 'active' })
           toast.success('Usuario activado')
           break
       }

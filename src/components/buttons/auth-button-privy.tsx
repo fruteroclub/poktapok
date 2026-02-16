@@ -30,29 +30,19 @@ export default function AuthButton({
   const { login: loginWithPrivy } = useLogin({
     onComplete: async ({
       user: privyUser,
-      isNewUser,
+      isNewUser: _isNewUser,
       wasAlreadyAuthenticated,
       loginMethod,
-      loginAccount,
+      loginAccount: _loginAccount,
     }) => {
-      console.log('User logged in successfully', privyUser)
-      console.log('Is new user:', isNewUser)
-      console.log('Was already authenticated:', wasAlreadyAuthenticated)
-      console.log('Login method:', loginMethod)
-      console.log('Login account:', loginAccount)
-
       // Skip if user was already authenticated (page refresh/navigation)
       if (wasAlreadyAuthenticated) {
-        console.log('User was already authenticated, skipping login API call')
         return
       }
 
       // Check session storage to prevent duplicate calls
       const sessionKey = `privy_login_processed_${privyUser.id}`
       if (sessionStorage.getItem(sessionKey)) {
-        console.log(
-          'Login already processed this session, skipping duplicate call',
-        )
         return
       }
 
@@ -87,10 +77,6 @@ export default function AuthButton({
             ? externalWallet.address
             : undefined
 
-        console.log('All linked accounts:', privyUser.linkedAccounts)
-        console.log('Ethereum embedded wallet:', appWallet)
-        console.log('Ethereum external wallet:', extWallet)
-
         // Try to get email from Privy (optional - will be collected in onboarding if missing)
         const userEmail =
           privyUser.email?.address ||
@@ -98,8 +84,6 @@ export default function AuthButton({
           privyUser.github?.email ||
           privyUser.discord?.email ||
           null
-
-        console.log('User email:', userEmail || 'Not available')
 
         // Map Privy's loginMethod to our auth_method enum
         // Privy returns: email, sms, siwe (wallet), google, github, discord, twitter, etc.
@@ -193,7 +177,7 @@ export default function AuthButton({
       }
     },
     onError: (error) => {
-      console.log('Login failed', error)
+      console.error('Login failed', error)
       toast.error('Inicio de sesión fallido', {
         id: 'login-failed', // Deduplicate toasts across multiple AuthButton instances
       })
@@ -237,7 +221,6 @@ export default function AuthButton({
   if (!isPrivyReady) {
     return (
       <Button
-        onClick={() => console.log('Privy not ready')}
         size={size}
         className={cn('font-funnel font-medium', className)}
         disabled

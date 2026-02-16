@@ -1,189 +1,127 @@
-# poktapok - frutero talent platform
+# poktapok
 
-poktapok es una plataforma de talento que conecta desarrolladores latinoamericanos con oportunidades globales a través de bounties y aprendizaje práctico.
+talent platform connecting Latin American developers with global opportunities through bounties, bootcamps, and practical learning.
 
-## propósito
+## what it does
 
-ayudar a estudiantes universitarios, recién graduados y personas en transición profesional a ganar dinero en 3 meses aprendiendo IA, cripto/DeFi, y privacidad, a través de desafíos del mundo real.
+helps university students, recent grads, and career changers earn money in 3 months learning AI, crypto/DeFi, and privacy through real-world challenges.
 
-## arquitectura
+## architecture
 
 ```
-talent directory → portfolio showcase → bounty marketplace → onchain funding
+talent directory → portfolio showcase → bounty marketplace → bootcamp LMS → onchain funding
 ```
-
-la plataforma sigue un modelo progresivo donde los usuarios crean perfiles, muestran su trabajo a través de bounties completados, y reciben pagos en criptomonedas.
 
 ## tech stack
 
-**frontend**
+| layer | tech |
+|-------|------|
+| frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4, shadcn/ui |
+| backend | Convex (database + real-time + file storage + cron jobs) |
+| auth | Privy (email, wallet, social login) |
+| blockchain | Wagmi, Arbitrum (default), Base, Polygon, Ethereum, Optimism, Scroll |
+| package manager | Bun |
+| hosting | Vercel |
 
-- Next.js 16 (app router)
-- React 19 + TypeScript
-- Tailwind CSS v4 + shadcn/ui
-- Zustand + React Query
+## features
 
-**backend**
+**talent directory** — profile creation, public directory with search/filters, skill endorsements
 
-- PostgreSQL (Neon DB via Vercel)
-- Drizzle ORM + node-postgres
-- Next.js API routes
+**portfolio** — project showcase, GitHub integration, skills management
 
-**web3**
+**bounty marketplace** — claim bounties, submit work, admin review, crypto payments
 
-- Privy (autenticación + wallets)
-- Wagmi (interacción blockchain)
-- Ethereum Sepolia (testnet)
-- Monad, Base, Polygon, Arbitrum (alpha)
+**bootcamp LMS** — VibeCoding Bootcamp with enrollment codes, session tracking, deliverable submission, 4-tier grading (Core/Complete/Excellent/Bonus), API key distribution, admin review dashboard
 
-## primeros pasos
+**programs** — cohort management, attendance tracking, guest-to-member promotion
 
-### requisitos previos
+## getting started
 
-- [Node.js](https://nodejs.org/) (asegúrate de tener Bun instalado como runtime)
+### prerequisites
+
 - [Bun](https://bun.sh/docs/installation)
-- [Git](https://git-scm.com/)
-- [Alchemy](https://alchemy.com/)
-- [Privy](https://privy.io/)
+- [Privy](https://privy.io/) app credentials
+- [Convex](https://convex.dev/) account
 
-### instalación
-
-1. **clona el repositorio:**
-
-   ```bash
-   git clone https://github.com/fruteroclub/frutero-app.git
-   cd frutero-app
-   ```
-
-2. **instala las dependencias usando Bun:**
-
-   ```bash
-   bun install
-   ```
-
-3. **configura las variables de entorno:**
-
-   **opción 1: vercel (recomendado)**
-
-   ```bash
-   vercel env pull .env.local
-   ```
-
-   **opción 2: manual**
-   crea un archivo `.env.local` en la raíz de tu proyecto:
-
-   ```plaintext
-   DATABASE_URL=postgresql://...
-   DATABASE_URL_UNPOOLED=postgresql://...
-
-   NEXT_PUBLIC_ALCHEMY_API_KEY=tu_alchemy_api_key
-
-   NEXT_PUBLIC_PRIVY_APP_ID=tu_privy_app_id
-   NEXT_PUBLIC_PRIVY_CLIENT_ID=tu_privy_client_id
-   PRIVY_APP_SECRET=tu_privy_app_secret
-   ```
-
-4. **configura la base de datos:**
-
-   ejecuta las migraciones:
-
-   ```bash
-   bun run db:migrate
-   ```
-
-   verifica la conexión:
-
-   ```bash
-   bun run scripts/test-db-connection.ts
-   ```
-
-### ejecutando el proyecto
-
-para iniciar el servidor de desarrollo, ejecuta:
+### setup
 
 ```bash
-bun run dev
+git clone https://github.com/fruteroclub/poktapok.git
+cd poktapok
+bun install
 ```
 
-esto lanzará la aplicación en `http://localhost:3000`.
+configure `.env.local`:
 
-### build y producción
+```
+NEXT_PUBLIC_PRIVY_APP_ID=...
+NEXT_PUBLIC_PRIVY_CLIENT_ID=...
+PRIVY_APP_SECRET=...
 
-para builds de producción, utiliza:
+NEXT_PUBLIC_CONVEX_URL=...
+CONVEX_DEPLOYMENT=...
+
+NEXT_PUBLIC_ALCHEMY_API_KEY=...  # optional
+```
+
+### run
+
+```bash
+bun dev          # dev server at localhost:3000
+npx convex dev   # sync Convex functions
+```
+
+### build
 
 ```bash
 bun run build
-bun run start
+bun start
 ```
 
-## base de datos
-
-el proyecto utiliza **PostgreSQL** con **Drizzle ORM** para gestión de esquemas y migraciones.
-
-### esquema
-
-- **users** - identidad y autenticación (integración con Privy)
-- **profiles** - datos extendidos del perfil de usuario
-- **applications** - cola de solicitudes de incorporación
-- **invitations** - sistema de referidos
-
-### comandos disponibles
+### deploy
 
 ```bash
-bun run db:generate   # generar migraciones desde cambios en esquema
-bun run db:migrate    # aplicar migraciones pendientes
-bun run db:studio     # abrir Drizzle Studio (navegador visual)
-bun run db:check      # verificar drift del esquema
+npx convex deploy -y   # deploy Convex to production
+git push origin main    # triggers Vercel deploy
 ```
 
-### documentación completa
+## project structure
 
-consulta [docs/database-setup.md](docs/database-setup.md) para:
-
-- guía de configuración completa
-- referencia del esquema de tablas
-- patrones de consulta comunes
-- workflow de migraciones
-- solución de problemas
-
-## estructura del proyecto
-
-```plaintext
+```
 poktapok/
 ├── src/
-│   ├── app/                 # next.js app router (páginas y rutas)
-│   ├── components/          # componentes react
-│   │   ├── ui/             # componentes shadcn/ui
-│   │   ├── layout/         # navbar, footer, etc.
-│   │   └── ...
-│   ├── lib/                # utilidades y configuración
-│   │   ├── db/             # drizzle client y schema exports
-│   │   ├── auth/           # privy helpers
-│   │   └── utils.ts
-│   ├── providers/          # context providers
-│   ├── store/              # zustand stores
-│   └── styles/             # estilos globales
-├── drizzle/
-│   ├── schema/             # definiciones del esquema
-│   │   ├── utils.ts        # helpers compartidos
-│   │   ├── users.ts        # tabla de usuarios
-│   │   ├── profiles.ts     # perfiles de usuario
-│   │   ├── applications.ts # solicitudes
-│   │   ├── invitations.ts  # sistema de referidos
-│   │   └── index.ts        # exports del esquema
-│   └── migrations/         # migraciones SQL generadas
-├── scripts/                # scripts de testing y verificación
-├── docs/                   # documentación del proyecto
-├── public/                 # archivos estáticos
-└── ...                     # archivos de configuración
+│   ├── app/              # Next.js pages and API routes
+│   ├── components/       # React components (ui/, layout/, admin/, etc.)
+│   ├── hooks/            # Custom React Query hooks
+│   ├── services/         # API service layer
+│   ├── lib/              # Utilities, fonts, error filter
+│   ├── providers/        # Context providers (Privy, Wagmi, App)
+│   └── styles/           # Global CSS
+├── convex/
+│   ├── schema.ts         # Database schema
+│   ├── users.ts          # User queries/mutations
+│   ├── bootcamp.ts       # Bootcamp LMS logic
+│   ├── bounties.ts       # Bounty marketplace
+│   ├── applications.ts   # Onboarding applications
+│   └── ...               # Other modules
+├── scripts/              # Utility scripts (email invites, etc.)
+├── docs/                 # Documentation
+└── vercel.json           # Vercel config (build skip for docs)
 ```
 
-## contribuciones
+## key conventions
 
-¡damos la bienvenida a las contribuciones! siéntete libre de enviar issues o pull requests para ayudar a mejorar este proyecto para el club y la comunidad.
+- **TypeScript strict mode** — no `any` types
+- **kebab-case** for file names
+- **TanStack Query** for all data fetching (never `useEffect` + `fetch`)
+- **Service → Hook → Component** abstraction pattern
+- **Convex** for all database operations (real-time, no REST APIs needed)
+- **Tailwind `space-y` / `gap`** for spacing (no manual margins)
 
-todo el código debe ser TypeScript con tipos apropiados.
+## contributing
+
+contributions welcome. all code must be TypeScript with proper types.
 
 ---
 
-construido por frutero club para builders latinoamericanos
+built by [frutero club](https://frutero.club) for Latin American builders

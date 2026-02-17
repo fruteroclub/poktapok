@@ -20,6 +20,10 @@ import {
   TrendingUp,
   MessageSquare,
   BarChart3,
+  Sparkles,
+  Heart,
+  Map,
+  Rocket,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -30,7 +34,7 @@ type Props = {
 const content = {
   es: {
     header: {
-      title: 'Frutero DevRel',
+      title: 'DevRel Services & Events',
       subtitle: 'DevRel-as-a-Service para Protocolos Web3 — La Capa de Retención que Mantiene a tus Builders Construyendo',
     },
     problem: {
@@ -44,14 +48,14 @@ const content = {
       ],
     },
     solution: {
-      title: 'La Solución Frutero',
+      title: 'La Solución',
       headline: 'La capa de retención persistente que mantiene builders shipeando en tu protocolo.',
-      description: 'Frutero no organiza eventos — construimos pipelines de talento. Nuestro modelo DevRel-as-a-Service cubre el ciclo de vida completo del builder: desde el primer contacto universitario hasta el shipping de productos en mainnet.',
+      description: 'No organizamos eventos — construimos pipelines de talento. Nuestro modelo DevRel-as-a-Service cubre el ciclo de vida completo del builder: desde el primer contacto universitario hasta el shipping de productos en mainnet.',
       differentiators: [
-        { title: 'Puente Bilingüe', desc: 'Español/Inglés nativo — sin fricción cultural' },
-        { title: 'Red LATAM Profunda', desc: '1,000+ builders, 15+ países, 17 mentores' },
-        { title: 'Resultados Probados', desc: '70%+ éxito en hackathons, 32.7% tasa de completación' },
-        { title: 'Operadores, No Organizadores', desc: 'Programación continua, no eventos únicos' },
+        { icon: '🌎', title: 'Puente Bilingüe', desc: 'Español/Inglés nativo — sin fricción cultural' },
+        { icon: '🤝', title: 'Red LATAM Profunda', desc: '1,000+ builders, 15+ países, 17 mentores' },
+        { icon: '🏆', title: 'Resultados Probados', desc: '70%+ éxito en hackathons, 32.7% tasa de completación' },
+        { icon: '⚡', title: 'Operadores, No Organizadores', desc: 'Programación continua, no eventos únicos' },
       ],
     },
     services: {
@@ -60,9 +64,10 @@ const content = {
     },
     packages: {
       title: 'Paquetes de Servicio',
+      description: 'Opciones flexibles adaptadas a tus necesidades de ecosistema:',
       retainer: {
-        name: '📅 RETAINER MENSUAL',
-        price: '$3,500/mes',
+        name: 'RETAINER MENSUAL',
+        emoji: '📅',
         subtitle: 'Engagement Continuo de Builders',
         features: [
           'Activaciones universitarias (2-4/mes)',
@@ -74,11 +79,10 @@ const content = {
           'Contenido técnico en español',
         ],
         note: 'Contrato mínimo: 3 meses',
-        validated: 'Validado con Monad Foundation — $10,500/trimestre',
       },
       event: {
-        name: '🎯 SOPORTE DE EVENTO',
-        price: '$6,000/evento',
+        name: 'SOPORTE DE EVENTO',
+        emoji: '🎯',
         subtitle: 'DevRel para Hackathons',
         features: [
           'Reclutamiento pre-evento (mínimo 20 builders)',
@@ -91,11 +95,11 @@ const content = {
         note: 'Disponible como add-on al retainer',
       },
       incubation: {
-        name: '🚀 INCUBACIÓN DE BUILDERS',
-        price: '$8K - $15K',
+        name: 'INCUBACIÓN DE BUILDERS',
+        emoji: '🚀',
         subtitle: 'Programa Post-Hackathon',
         features: [
-          'Programa de 3 meses ($8K) o 6 meses ($15K)',
+          'Programa de 3 o 6 meses',
           'Cohorte dedicada de 10-15 builders',
           'Mentoría técnica semanal',
           'Office hours con tu equipo',
@@ -114,36 +118,63 @@ const content = {
       title: 'Track Record',
       subtitle: 'Resultados que protocolos necesitan ver:',
     },
-    caseStudy: {
-      title: 'Case Study: Monad Foundation',
-      description: 'Engagement activo desde Q4 2025',
-      metrics: [
-        { label: 'Contrato', value: '$10,500/trimestre' },
-        { label: 'Builders activados', value: '50+' },
-        { label: 'Eventos ejecutados', value: '8+' },
-        { label: 'Universidades alcanzadas', value: '3' },
-      ],
-      services: [
-        'Activaciones universitarias en CDMX',
-        'Soporte de hackathon Blitz',
-        'Coworking semanal en Casa Frutero',
-        'Monad Missions mensuales',
-        'Reporteo de métricas de builders',
+    caseStudies: {
+      title: 'Nuestros Programas en Acción',
+      description: 'Eventos y programas que hemos ejecutado con éxito:',
+      items: [
+        {
+          name: 'ETH Cinco de Mayo',
+          year: '2024 & 2025',
+          desc: 'El evento premier de comunidad Ethereum en México. Reunimos builders, fundadores y protocolos para celebrar y construir.',
+          highlight: 'Evento insignia de LATAM',
+        },
+        {
+          name: 'Mobil3 Hackathon',
+          year: '',
+          desc: 'Hackathon enfocado en mobile-first Web3. Los participantes construyeron aplicaciones reales que usuarios pueden usar.',
+          highlight: 'Mobile-first Web3',
+        },
+        {
+          name: 'Frutero Jam',
+          year: '',
+          desc: 'Sesiones intensivas de building donde developers shipean proyectos en tiempo récord con mentoría dedicada.',
+          highlight: 'Build sprints intensivos',
+        },
+        {
+          name: 'Verano En Cadena',
+          year: '',
+          desc: 'Programa de verano on-chain para builders. Formación práctica, mentoría y proyectos reales en protocolos activos.',
+          highlight: 'Programa de verano',
+        },
+        {
+          name: 'Founders House',
+          year: '',
+          desc: 'Residencia para fundadores LATAM. Espacio dedicado para iterar, conectar con mentores y preparar para el mercado global.',
+          highlight: 'Residencia de fundadores',
+        },
+        {
+          name: 'Hacker Houses',
+          year: '',
+          desc: 'Múltiples hacker houses ejecutadas a lo largo de LATAM, creando espacios temporales para building intensivo y networking.',
+          highlight: 'Across LATAM',
+        },
       ],
     },
-    whyFrutero: {
-      title: '¿Por Qué Frutero?',
-      comparison: {
-        title: 'vs. Agencias DevRel Tradicionales',
-      },
+    whyDifferent: {
+      title: '¿Qué Nos Hace Diferentes?',
+      items: [
+        { icon: '🌎', title: 'Nativos LATAM', desc: 'Operamos donde está el talento — bilingüe, bicultural, con raíces profundas en la región.' },
+        { icon: '🔄', title: 'Retención como Core', desc: 'No solo activamos builders — los mantenemos construyendo con programación continua post-evento.' },
+        { icon: '📊', title: 'Proyectos Shipeados, No Vanidad', desc: 'Medimos éxito por lo que se shipea. 70%+ de nuestros builders terminan lo que empiezan.' },
+        { icon: '🏗️', title: 'Infraestructura Permanente', desc: 'Casa Frutero en CDMX — un espacio físico dedicado para tu comunidad de builders.' },
+        { icon: '🎓', title: 'Pipeline Universitario', desc: 'Relaciones con universidades top de LATAM para reclutamiento temprano de talento.' },
+        { icon: '🤝', title: 'Red de Mentores', desc: '17 mentores activos que guían builders desde idea hasta mainnet.' },
+      ],
     },
     clients: {
       title: 'Protocolos que Confían en Nosotros',
-      list: ['Monad', 'Base (Coinbase L2)', 'Solana Foundation', 'Polygon', 'The Graph', 'Scroll'],
+      description: 'Trabajamos con protocolos Web3 líderes para activar y retener talento en LATAM.',
       partners: 'ETHGlobal • BuidlGuidl • Universidades LATAM',
-    },
-    pricing: {
-      title: 'Resumen de Precios',
     },
     nextSteps: {
       title: 'Siguientes Pasos',
@@ -156,13 +187,13 @@ const content = {
     },
     cta: {
       title: 'Deja de Perder Builders',
-      description: 'Cada hackathon sin retención post-evento es dinero quemado. Frutero es la capa persistente que convierte activaciones en ecosistema.',
+      description: 'Cada hackathon sin retención post-evento es dinero quemado. Somos la capa persistente que convierte activaciones en ecosistema.',
       button: 'Agendar Llamada',
       email: 'ian@frutero.club',
     },
     footer: {
       quote: '"Gastas en activación. Nosotros entregamos retención. Tus builders shipean."',
-      tagline: 'Frutero DevRel — La Capa de Retención de LATAM',
+      tagline: 'DevRel Services — La Capa de Retención de LATAM',
       built: 'Donde los builders se quedan.',
     },
     stats: {
@@ -178,7 +209,7 @@ const content = {
   },
   en: {
     header: {
-      title: 'Frutero DevRel',
+      title: 'DevRel Services & Events',
       subtitle: 'DevRel-as-a-Service for Web3 Protocols — The Retention Layer That Keeps Your Builders Building',
     },
     problem: {
@@ -192,14 +223,14 @@ const content = {
       ],
     },
     solution: {
-      title: 'The Frutero Solution',
+      title: 'The Solution',
       headline: 'The persistent retention layer that keeps builders shipping on your protocol.',
-      description: 'Frutero doesn\'t organize events — we build talent pipelines. Our DevRel-as-a-Service model covers the full builder lifecycle: from first university contact to mainnet product shipping.',
+      description: 'We don\'t organize events — we build talent pipelines. Our DevRel-as-a-Service model covers the full builder lifecycle: from first university contact to mainnet product shipping.',
       differentiators: [
-        { title: 'Bilingual Bridge', desc: 'Native Spanish/English — zero cultural friction' },
-        { title: 'Deep LATAM Network', desc: '1,000+ builders, 15+ countries, 17 mentors' },
-        { title: 'Proven Results', desc: '70%+ hackathon success, 32.7% completion rate' },
-        { title: 'Operators, Not Organizers', desc: 'Continuous programming, not one-off events' },
+        { icon: '🌎', title: 'Bilingual Bridge', desc: 'Native Spanish/English — zero cultural friction' },
+        { icon: '🤝', title: 'Deep LATAM Network', desc: '1,000+ builders, 15+ countries, 17 mentors' },
+        { icon: '🏆', title: 'Proven Results', desc: '70%+ hackathon success, 32.7% completion rate' },
+        { icon: '⚡', title: 'Operators, Not Organizers', desc: 'Continuous programming, not one-off events' },
       ],
     },
     services: {
@@ -208,9 +239,10 @@ const content = {
     },
     packages: {
       title: 'Service Packages',
+      description: 'Flexible options tailored to your ecosystem needs:',
       retainer: {
-        name: '📅 MONTHLY RETAINER',
-        price: '$3,500/month',
+        name: 'MONTHLY RETAINER',
+        emoji: '📅',
         subtitle: 'Continuous Builder Engagement',
         features: [
           'University activations (2-4/month)',
@@ -222,11 +254,10 @@ const content = {
           'Spanish-language technical content',
         ],
         note: 'Minimum contract: 3 months',
-        validated: 'Validated with Monad Foundation — $10,500/quarter',
       },
       event: {
-        name: '🎯 EVENT SUPPORT',
-        price: '$6,000/event',
+        name: 'EVENT SUPPORT',
+        emoji: '🎯',
         subtitle: 'Hackathon DevRel',
         features: [
           'Pre-event recruitment (minimum 20 builders)',
@@ -239,11 +270,11 @@ const content = {
         note: 'Available as add-on to retainer',
       },
       incubation: {
-        name: '🚀 BUILDER INCUBATION',
-        price: '$8K - $15K',
+        name: 'BUILDER INCUBATION',
+        emoji: '🚀',
         subtitle: 'Post-Hackathon Program',
         features: [
-          '3-month ($8K) or 6-month ($15K) program',
+          '3-month or 6-month program',
           'Dedicated cohort of 10-15 builders',
           'Weekly technical mentorship',
           'Office hours with your team',
@@ -262,36 +293,63 @@ const content = {
       title: 'Track Record',
       subtitle: 'Results protocols need to see:',
     },
-    caseStudy: {
-      title: 'Case Study: Monad Foundation',
-      description: 'Active engagement since Q4 2025',
-      metrics: [
-        { label: 'Contract', value: '$10,500/quarter' },
-        { label: 'Builders activated', value: '50+' },
-        { label: 'Events executed', value: '8+' },
-        { label: 'Universities reached', value: '3' },
-      ],
-      services: [
-        'University activations in CDMX',
-        'Blitz hackathon support',
-        'Weekly coworking at Casa Frutero',
-        'Monthly Monad Missions',
-        'Builder metrics reporting',
+    caseStudies: {
+      title: 'Our Programs in Action',
+      description: 'Events and programs we\'ve successfully executed:',
+      items: [
+        {
+          name: 'ETH Cinco de Mayo',
+          year: '2024 & 2025',
+          desc: 'Mexico\'s premier Ethereum community event. Bringing together builders, founders, and protocols to celebrate and build.',
+          highlight: 'LATAM\'s flagship event',
+        },
+        {
+          name: 'Mobil3 Hackathon',
+          year: '',
+          desc: 'Mobile-first Web3 hackathon. Participants built real applications that users can actually use.',
+          highlight: 'Mobile-first Web3',
+        },
+        {
+          name: 'Frutero Jam',
+          year: '',
+          desc: 'Intensive building sessions where developers ship projects in record time with dedicated mentorship.',
+          highlight: 'Intensive build sprints',
+        },
+        {
+          name: 'Verano En Cadena',
+          year: '',
+          desc: 'Summer on-chain program for builders. Practical training, mentorship, and real projects on active protocols.',
+          highlight: 'Summer program',
+        },
+        {
+          name: 'Founders House',
+          year: '',
+          desc: 'Residency for LATAM founders. Dedicated space to iterate, connect with mentors, and prepare for the global market.',
+          highlight: 'Founder residency',
+        },
+        {
+          name: 'Hacker Houses',
+          year: '',
+          desc: 'Multiple hacker houses executed across LATAM, creating temporary spaces for intensive building and networking.',
+          highlight: 'Across LATAM',
+        },
       ],
     },
-    whyFrutero: {
-      title: 'Why Frutero?',
-      comparison: {
-        title: 'vs. Traditional DevRel Agencies',
-      },
+    whyDifferent: {
+      title: 'What Makes Us Different',
+      items: [
+        { icon: '🌎', title: 'LATAM Native', desc: 'We operate where the talent is — bilingual, bicultural, with deep roots in the region.' },
+        { icon: '🔄', title: 'Retention as Core', desc: 'We don\'t just activate builders — we keep them building with continuous post-event programming.' },
+        { icon: '📊', title: 'Shipped Projects, Not Vanity', desc: 'We measure success by what ships. 70%+ of our builders finish what they start.' },
+        { icon: '🏗️', title: 'Permanent Infrastructure', desc: 'Casa Frutero in CDMX — a dedicated physical space for your builder community.' },
+        { icon: '🎓', title: 'University Pipeline', desc: 'Relationships with top LATAM universities for early talent recruitment.' },
+        { icon: '🤝', title: 'Mentor Network', desc: '17 active mentors guiding builders from idea to mainnet.' },
+      ],
     },
     clients: {
-      title: 'Protocols That Trust Us',
-      list: ['Monad', 'Base (Coinbase L2)', 'Solana Foundation', 'Polygon', 'The Graph', 'Scroll'],
+      title: 'Trusted by Leading Web3 Protocols',
+      description: 'We work with leading Web3 protocols to activate and retain talent across LATAM.',
       partners: 'ETHGlobal • BuidlGuidl • LATAM Universities',
-    },
-    pricing: {
-      title: 'Pricing Summary',
     },
     nextSteps: {
       title: 'Next Steps',
@@ -304,13 +362,13 @@ const content = {
     },
     cta: {
       title: 'Stop Losing Builders',
-      description: 'Every hackathon without post-event retention is burned money. Frutero is the persistent layer that converts activations into ecosystem.',
+      description: 'Every hackathon without post-event retention is burned money. We are the persistent layer that converts activations into ecosystem.',
       button: 'Schedule a Call',
       email: 'ian@frutero.club',
     },
     footer: {
       quote: '"You spend on activation. We deliver retention. Your builders ship."',
-      tagline: 'Frutero DevRel — LATAM\'s Retention Layer',
+      tagline: 'DevRel Services — LATAM\'s Retention Layer',
       built: 'Where builders stay.',
     },
     stats: {
@@ -389,101 +447,35 @@ const tableData = {
       ],
     },
   },
-  comparison: {
-    es: {
-      columns: [
-        { key: 'aspect', header: 'Aspecto' },
-        { key: 'traditional', header: 'Agencia Tradicional' },
-        { key: 'frutero', header: 'Frutero' },
-      ],
-      data: [
-        { aspect: 'Ubicación', traditional: 'US/EU based', frutero: 'LATAM nativo' },
-        { aspect: 'Idioma', traditional: 'Solo inglés', frutero: 'Bilingüe ES/EN' },
-        { aspect: 'Red de builders', traditional: 'Genérica', frutero: '1,000+ LATAM builders' },
-        { aspect: 'Retención', traditional: 'No incluida', frutero: 'Core del servicio' },
-        { aspect: 'Costo', traditional: '$5K-$20K/mes', frutero: '$3,500/mes' },
-        { aspect: 'Resultados', traditional: 'Métricas de vanidad', frutero: 'Proyectos shipeados' },
-        { aspect: 'Track record', traditional: 'Variable', frutero: '70%+ éxito hackathon' },
-      ],
-    },
-    en: {
-      columns: [
-        { key: 'aspect', header: 'Aspect' },
-        { key: 'traditional', header: 'Traditional Agency' },
-        { key: 'frutero', header: 'Frutero' },
-      ],
-      data: [
-        { aspect: 'Location', traditional: 'US/EU based', frutero: 'LATAM native' },
-        { aspect: 'Language', traditional: 'English only', frutero: 'Bilingual ES/EN' },
-        { aspect: 'Builder network', traditional: 'Generic', frutero: '1,000+ LATAM builders' },
-        { aspect: 'Retention', traditional: 'Not included', frutero: 'Core service' },
-        { aspect: 'Cost', traditional: '$5K-$20K/month', frutero: '$3,500/month' },
-        { aspect: 'Results', traditional: 'Vanity metrics', frutero: 'Shipped projects' },
-        { aspect: 'Track record', traditional: 'Variable', frutero: '70%+ hackathon success' },
-      ],
-    },
-  },
-  pricing: {
-    es: {
-      columns: [
-        { key: 'package', header: 'Paquete' },
-        { key: 'price', header: 'Precio' },
-        { key: 'best', header: 'Mejor Para' },
-      ],
-      data: [
-        { package: 'Retainer Mensual', price: '$3,500/mes', best: 'Engagement continuo de ecosistema' },
-        { package: 'Soporte de Evento', price: '$6,000/evento', best: 'Hackathons, conferencias' },
-        { package: 'Incubación 3 meses', price: '$8,000', best: 'Pipeline de talento post-hackathon' },
-        { package: 'Incubación 6 meses', price: '$15,000', best: 'Partnership de largo plazo' },
-        { package: 'Custom Enterprise', price: 'Cotizar', best: 'Necesidades de escala' },
-      ],
-    },
-    en: {
-      columns: [
-        { key: 'package', header: 'Package' },
-        { key: 'price', header: 'Price' },
-        { key: 'best', header: 'Best For' },
-      ],
-      data: [
-        { package: 'Monthly Retainer', price: '$3,500/month', best: 'Continuous ecosystem engagement' },
-        { package: 'Event Support', price: '$6,000/event', best: 'Hackathons, conferences' },
-        { package: 'Incubation 3 months', price: '$8,000', best: 'Post-hackathon talent pipeline' },
-        { package: 'Incubation 6 months', price: '$15,000', best: 'Long-term partnership' },
-        { package: 'Custom Enterprise', price: 'Quote', best: 'Scale needs' },
-      ],
-    },
-  },
 }
 
 function PackageCard({
   name,
-  price,
+  emoji,
   subtitle,
   features,
   note,
-  validated,
   highlight = false,
 }: {
   name: string
-  price: string
+  emoji: string
   subtitle: string
   features: string[]
   note: string
-  validated?: string
   highlight?: boolean
 }) {
   return (
     <div
       className={cn(
-        'rounded-xl border p-6 space-y-4',
+        'rounded-2xl p-6 space-y-4 shadow-lg transition-transform hover:scale-[1.02]',
         highlight
-          ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-          : 'border-border/50 bg-card/50'
+          ? 'border-2 border-primary bg-primary/5 ring-2 ring-primary/10'
+          : 'border-2 border-primary/20 bg-background/80'
       )}
     >
-      <div className="text-center">
-        <h3 className="text-lg font-bold">{name}</h3>
-        <p className="text-2xl font-bold text-primary">{price}</p>
+      <div className="text-center space-y-1">
+        <span className="text-3xl">{emoji}</span>
+        <h3 className="font-funnel text-lg font-bold tracking-wide text-foreground">{name}</h3>
         <p className="text-sm text-foreground/70">{subtitle}</p>
       </div>
       <ul className="space-y-2">
@@ -494,12 +486,33 @@ function PackageCard({
           </li>
         ))}
       </ul>
-      <p className="text-xs text-foreground/60 italic">{note}</p>
-      {validated && (
-        <p className="text-xs font-medium text-green-600 bg-green-50 rounded-lg p-2 text-center">
-          ✓ {validated}
-        </p>
-      )}
+      <p className="text-xs text-foreground/60 italic border-t border-primary/10 pt-3">{note}</p>
+    </div>
+  )
+}
+
+function CaseStudyCard({
+  name,
+  year,
+  desc,
+  highlight,
+}: {
+  name: string
+  year: string
+  desc: string
+  highlight: string
+}) {
+  return (
+    <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md space-y-3 transition-transform hover:scale-[1.02]">
+      <div className="flex items-start justify-between gap-2">
+        <h4 className="font-funnel text-lg font-bold text-foreground">
+          {name} {year && <span className="text-primary">{year}</span>}
+        </h4>
+      </div>
+      <span className="inline-block rounded-full border-2 border-primary bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+        {highlight}
+      </span>
+      <p className="text-sm text-foreground/70">{desc}</p>
     </div>
   )
 }
@@ -510,14 +523,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title:
       locale === 'es'
-        ? 'Frutero DevRel — Servicios y Eventos | Frutero'
-        : 'Frutero DevRel — Services and Events | Frutero',
+        ? 'DevRel Services & Events | Frutero'
+        : 'DevRel Services & Events | Frutero',
     description:
       locale === 'es'
         ? 'DevRel-as-a-Service para protocolos Web3 — La capa de retención que mantiene a tus builders construyendo'
         : 'DevRel-as-a-Service for Web3 protocols — The retention layer that keeps your builders building',
     openGraph: {
-      title: 'Frutero DevRel — Services and Events',
+      title: 'DevRel Services & Events',
       description:
         locale === 'es'
           ? 'La capa de retención de LATAM para protocolos Web3'
@@ -536,8 +549,6 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
   const tables = {
     services: tableData.services[locale as 'es' | 'en'] || tableData.services.es,
     events: tableData.events[locale as 'es' | 'en'] || tableData.events.es,
-    comparison: tableData.comparison[locale as 'es' | 'en'] || tableData.comparison.es,
-    pricing: tableData.pricing[locale as 'es' | 'en'] || tableData.pricing.es,
   }
 
   return (
@@ -562,13 +573,13 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
       {/* The Problem */}
       <DeckSection title={t.problem.title}>
         <div className="text-center space-y-6">
-          <p className="text-2xl font-bold text-red-600">{t.problem.headline}</p>
+          <p className="font-funnel text-2xl font-bold text-secondary">{t.problem.headline}</p>
           <p className="max-w-2xl mx-auto text-foreground/80">{t.problem.description}</p>
           <div className="grid gap-4 sm:grid-cols-3">
             {t.problem.stats.map((stat, i) => (
-              <div key={i} className="rounded-lg border border-red-200 bg-red-50 p-4 text-center">
-                <p className="text-2xl font-bold text-red-600">{stat.value}</p>
-                <p className="text-sm text-red-800">{stat.label}</p>
+              <div key={i} className="rounded-2xl border-2 border-secondary/30 bg-secondary/5 p-4 text-center shadow-md">
+                <p className="font-funnel text-2xl font-bold text-secondary">{stat.value}</p>
+                <p className="text-sm text-foreground/70">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -578,13 +589,14 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
       {/* The Solution */}
       <DeckSection title={t.solution.title} variant="highlight">
         <div className="text-center space-y-6">
-          <p className="text-xl font-bold text-primary">{t.solution.headline}</p>
+          <p className="font-funnel text-xl font-bold text-primary">{t.solution.headline}</p>
           <p className="max-w-2xl mx-auto text-foreground/80">{t.solution.description}</p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {t.solution.differentiators.map((diff, i) => (
-              <div key={i} className="rounded-lg border border-primary/30 bg-white p-4">
-                <p className="font-semibold text-primary">{diff.title}</p>
-                <p className="text-sm text-foreground/70">{diff.desc}</p>
+              <div key={i} className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md">
+                <span className="text-2xl">{diff.icon}</span>
+                <p className="font-funnel font-semibold text-foreground mt-2">{diff.title}</p>
+                <p className="text-sm text-foreground/70 mt-1">{diff.desc}</p>
               </div>
             ))}
           </div>
@@ -615,13 +627,22 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
         </div>
       </DeckSection>
 
+      {/* Case Studies — Real Programs */}
+      <DeckSection title={t.caseStudies.title} description={t.caseStudies.description} variant="highlight">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {t.caseStudies.items.map((item, i) => (
+            <CaseStudyCard key={i} {...item} />
+          ))}
+        </div>
+      </DeckSection>
+
       {/* Services */}
       <DeckSection title={t.services.title} description={t.services.description}>
         <DeckTable columns={tables.services.columns} data={tables.services.data} />
       </DeckSection>
 
       {/* Service Packages */}
-      <DeckSection title={t.packages.title}>
+      <DeckSection title={t.packages.title} description={t.packages.description}>
         <div className="grid gap-6 lg:grid-cols-3">
           <PackageCard {...t.packages.retainer} highlight />
           <PackageCard {...t.packages.event} />
@@ -634,65 +655,33 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
         <DeckTable columns={tables.events.columns} data={tables.events.data} />
       </DeckSection>
 
-      {/* Case Study */}
-      <DeckSection title={t.caseStudy.title} description={t.caseStudy.description} variant="highlight">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <h4 className="font-semibold mb-4">{locale === 'es' ? 'Métricas' : 'Metrics'}</h4>
-            <div className="grid grid-cols-2 gap-3">
-              {t.caseStudy.metrics.map((metric, i) => (
-                <div key={i} className="rounded-lg bg-white border border-border/50 p-3 text-center">
-                  <p className="text-xl font-bold text-primary">{metric.value}</p>
-                  <p className="text-xs text-foreground/70">{metric.label}</p>
-                </div>
-              ))}
+      {/* What Makes Us Different */}
+      <DeckSection title={t.whyDifferent.title}>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {t.whyDifferent.items.map((item, i) => (
+            <div key={i} className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md space-y-2">
+              <span className="text-2xl">{item.icon}</span>
+              <h4 className="font-funnel font-bold text-foreground">{item.title}</h4>
+              <p className="text-sm text-foreground/70">{item.desc}</p>
             </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-4">{locale === 'es' ? 'Servicios Entregados' : 'Services Delivered'}</h4>
-            <ul className="space-y-2">
-              {t.caseStudy.services.map((service, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm">
-                  <span className="text-primary">✓</span>
-                  <span>{service}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          ))}
         </div>
-      </DeckSection>
-
-      {/* Why Frutero */}
-      <DeckSection title={t.whyFrutero.title}>
-        <h4 className="font-semibold mb-4 text-center">{t.whyFrutero.comparison.title}</h4>
-        <DeckTable columns={tables.comparison.columns} data={tables.comparison.data} />
       </DeckSection>
 
       {/* Clients */}
       <DeckSection title={t.clients.title}>
         <div className="text-center space-y-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {t.clients.list.map((client, i) => (
-              <span key={i} className="rounded-full bg-primary/10 px-4 py-2 font-medium">
-                {client}
-              </span>
-            ))}
-          </div>
+          <p className="text-foreground/70 max-w-2xl mx-auto">{t.clients.description}</p>
           <p className="text-sm text-foreground/60">{t.clients.partners}</p>
         </div>
-      </DeckSection>
-
-      {/* Pricing Summary */}
-      <DeckSection title={t.pricing.title}>
-        <DeckTable columns={tables.pricing.columns} data={tables.pricing.data} />
       </DeckSection>
 
       {/* Next Steps */}
       <DeckSection title={t.nextSteps.title}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {t.nextSteps.steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50">
-              <span className="text-3xl font-bold text-primary mb-2">{step.num}</span>
+            <div key={i} className="flex flex-col items-center text-center p-5 rounded-2xl border-2 border-primary/20 bg-background/80 shadow-md">
+              <span className="font-funnel text-3xl font-bold text-primary mb-2">{step.num}</span>
               <span className="text-sm">{step.text}</span>
             </div>
           ))}
@@ -713,7 +702,7 @@ export default async function DevRelServicesDeckPage({ params }: Props) {
       <footer className="space-y-4 text-center text-foreground/60">
         <p className="italic">{t.footer.quote}</p>
         <div>
-          <p className="text-lg font-bold text-foreground">{t.footer.tagline}</p>
+          <p className="font-funnel text-lg font-bold text-foreground">{t.footer.tagline}</p>
           <p>{t.footer.built}</p>
         </div>
         <div className="flex justify-center gap-4 text-sm">

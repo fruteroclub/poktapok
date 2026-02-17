@@ -29,7 +29,7 @@ type Props = {
 const content = {
   es: {
     header: {
-      title: 'Casa Frutero',
+      title: 'Partner Deck',
       subtitle: 'El Hogar del Impact Tech en LATAM — Hub Comunitario Premier de CDMX para AI, Crypto, Privacy, Robotics & Cultura',
     },
     opportunity: {
@@ -274,7 +274,7 @@ const content = {
   },
   en: {
     header: {
-      title: 'Casa Frutero',
+      title: 'Partner Deck',
       subtitle: 'The Home for Impact Tech in LATAM — Mexico City\'s Premier Community Hub for AI, Crypto, Privacy, Robotics & Culture',
     },
     opportunity: {
@@ -624,19 +624,19 @@ function TierCard({
   return (
     <div
       className={cn(
-        'rounded-xl border p-6 space-y-4',
+        'rounded-2xl p-6 space-y-4 shadow-lg transition-transform hover:scale-[1.02]',
         highlight
-          ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
-          : 'border-border/50 bg-card/50'
+          ? 'border-2 border-primary bg-primary/5 ring-2 ring-primary/10'
+          : 'border-2 border-primary/20 bg-background/80'
       )}
     >
       <div className="text-center">
-        <h3 className="text-xl font-bold">{name}</h3>
-        <p className="text-2xl font-bold text-primary">{price}</p>
+        <h3 className="font-funnel text-xl font-bold">{name}</h3>
+        <p className="font-funnel text-2xl font-bold text-primary">{price}</p>
         <p className="text-sm text-foreground/70">{subtitle}</p>
       </div>
       {includes && (
-        <p className="text-sm font-medium text-foreground/80">{includes}</p>
+        <p className="text-sm font-medium text-primary/80 border-t border-primary/10 pt-2">{includes}</p>
       )}
       <ul className="space-y-2">
         {features.map((feature, i) => (
@@ -646,7 +646,7 @@ function TierCard({
           </li>
         ))}
       </ul>
-      <p className="text-xs text-foreground/60 italic">{note}</p>
+      <p className="text-xs text-foreground/60 italic border-t border-primary/10 pt-3">{note}</p>
     </div>
   )
 }
@@ -732,16 +732,16 @@ export default async function PartnerDeckPage({ params }: Props) {
           columns={4}
         />
         <div className="mt-8 grid gap-6 md:grid-cols-2">
-          <div className="rounded-lg border border-border/50 p-4">
-            <h4 className="font-semibold mb-2">{t.community.demographics.title}</h4>
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md">
+            <h4 className="font-funnel font-semibold mb-2">{t.community.demographics.title}</h4>
             <ul className="space-y-1 text-sm text-foreground/80">
               {t.community.demographics.items.map((item, i) => (
                 <li key={i}>• {item}</li>
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-border/50 p-4">
-            <h4 className="font-semibold mb-2">{t.community.location.title}</h4>
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md">
+            <h4 className="font-funnel font-semibold mb-2">{t.community.location.title}</h4>
             <ul className="space-y-1 text-sm text-foreground/80">
               {t.community.location.items.map((item, i) => (
                 <li key={i}>• {item}</li>
@@ -754,8 +754,8 @@ export default async function PartnerDeckPage({ params }: Props) {
       {/* What Sponsors Get */}
       <DeckSection title={t.whatSponsorsGet.title}>
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-lg border border-border/50 p-4 space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md space-y-3">
+            <h4 className="font-funnel font-semibold flex items-center gap-2">
               <Zap className="h-5 w-5 text-primary" />
               {t.whatSponsorsGet.brand.title}
             </h4>
@@ -767,8 +767,8 @@ export default async function PartnerDeckPage({ params }: Props) {
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-border/50 p-4 space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md space-y-3">
+            <h4 className="font-funnel font-semibold flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
               {t.whatSponsorsGet.access.title}
             </h4>
@@ -780,8 +780,8 @@ export default async function PartnerDeckPage({ params }: Props) {
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-border/50 p-4 space-y-3">
-            <h4 className="font-semibold flex items-center gap-2">
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md space-y-3">
+            <h4 className="font-funnel font-semibold flex items-center gap-2">
               <Brain className="h-5 w-5 text-primary" />
               {t.whatSponsorsGet.education.title}
             </h4>
@@ -810,8 +810,8 @@ export default async function PartnerDeckPage({ params }: Props) {
       <DeckSection title={t.alaCarte.title} description={t.alaCarte.subtitle}>
         <DeckTable columns={t.alaCarte.table.columns} data={t.alaCarte.table.data} />
         <p className="mt-2 text-sm text-foreground/60 italic">{t.alaCarte.note}</p>
-        <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-6">
-          <h4 className="font-semibold mb-3">{t.alaCarte.whatYouGet.title}</h4>
+        <div className="mt-6 rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-md">
+          <h4 className="font-funnel font-semibold mb-3">{t.alaCarte.whatYouGet.title}</h4>
           <div className="grid gap-2 sm:grid-cols-2">
             {t.alaCarte.whatYouGet.items.map((item, i) => (
               <div key={i} className="flex items-start gap-2 text-sm">
@@ -852,8 +852,8 @@ export default async function PartnerDeckPage({ params }: Props) {
       {/* Why Now */}
       <DeckSection title={t.whyNow.title}>
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-lg border border-border/50 p-6 space-y-4">
-            <h4 className="text-lg font-semibold">{t.whyNow.latam.title}</h4>
+          <div className="rounded-2xl border-2 border-primary/20 bg-background/80 p-6 shadow-md space-y-4">
+            <h4 className="font-funnel text-lg font-semibold">{t.whyNow.latam.title}</h4>
             <ul className="space-y-2">
               {t.whyNow.latam.items.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
@@ -862,8 +862,8 @@ export default async function PartnerDeckPage({ params }: Props) {
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-primary/30 bg-primary/5 p-6 space-y-4">
-            <h4 className="text-lg font-semibold">{t.whyNow.entryPoint.title}</h4>
+          <div className="rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-md space-y-4">
+            <h4 className="font-funnel text-lg font-semibold">{t.whyNow.entryPoint.title}</h4>
             <ul className="space-y-2">
               {t.whyNow.entryPoint.items.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
@@ -879,7 +879,7 @@ export default async function PartnerDeckPage({ params }: Props) {
       <DeckSection title={t.tracking.title} description={t.tracking.description}>
         <div className="grid gap-3 sm:grid-cols-2">
           {t.tracking.items.map((item, i) => (
-            <div key={i} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
+            <div key={i} className="flex items-start gap-2 rounded-2xl border-2 border-primary/20 bg-background/80 p-3 shadow-sm">
               <span className="text-primary">📊</span>
               <span className="text-sm">{item}</span>
             </div>
@@ -892,8 +892,8 @@ export default async function PartnerDeckPage({ params }: Props) {
       <DeckSection title={t.nextSteps.title}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {t.nextSteps.steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50">
-              <span className="text-3xl font-bold text-primary mb-2">{step.num}</span>
+            <div key={i} className="flex flex-col items-center text-center p-5 rounded-2xl border-2 border-primary/20 bg-background/80 shadow-md">
+              <span className="font-funnel text-3xl font-bold text-primary mb-2">{step.num}</span>
               <span className="text-sm">{step.text}</span>
             </div>
           ))}
@@ -906,7 +906,7 @@ export default async function PartnerDeckPage({ params }: Props) {
           <p className="text-xl">📍 <strong>{t.location.address}</strong></p>
           <div className="flex flex-wrap justify-center gap-3">
             {t.location.features.map((feature, i) => (
-              <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm">
+              <span key={i} className="rounded-full border-2 border-primary bg-primary/10 px-4 py-1.5 text-sm font-medium">
                 {feature}
               </span>
             ))}
@@ -928,7 +928,7 @@ export default async function PartnerDeckPage({ params }: Props) {
       <footer className="space-y-4 text-center text-foreground/60">
         <p className="italic">{t.footer.quote}</p>
         <div>
-          <p className="text-lg font-bold text-foreground">{t.footer.tagline}</p>
+          <p className="font-funnel text-lg font-bold text-foreground">{t.footer.tagline}</p>
           <p>{t.footer.built}</p>
         </div>
         <div className="flex justify-center gap-4 text-sm">

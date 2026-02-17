@@ -24,7 +24,7 @@ export function DeckSection({
       )}
     >
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl print:text-xl">
+        <h2 className="font-funnel text-2xl font-semibold tracking-tight text-foreground sm:text-3xl print:text-xl">
           {title}
         </h2>
         {description && (

@@ -26,7 +26,7 @@ type Props = {
 const content = {
   es: {
     header: {
-      title: 'Casa Frutero',
+      title: 'Ethereum Partnership',
       subtitle:
         'El Primer Hub Permanente de Comunidad Ethereum en México — Una Iniciativa de Frutero',
     },
@@ -155,7 +155,7 @@ const content = {
   },
   en: {
     header: {
-      title: 'Casa Frutero',
+      title: 'Ethereum Partnership',
       subtitle:
         'The First Ethereum Permanent Community Hub in Mexico — An Initiative by Frutero',
     },
@@ -627,7 +627,7 @@ export default async function EthereumDeckPage({ params }: Props) {
           </h3>
           <ul className="grid gap-3 sm:grid-cols-2">
             {t.whoIsFrutero.qualifications.map((q, i) => (
-              <li key={i} className="flex items-start gap-2 rounded-lg border border-border/50 p-3">
+              <li key={i} className="flex items-start gap-2 rounded-2xl border-2 border-primary/20 bg-background/80 p-3 shadow-sm">
                 <span className="mt-0.5 text-primary">✓</span>
                 <div>
                   <span className="font-medium">{q.title}</span>
@@ -787,8 +787,8 @@ export default async function EthereumDeckPage({ params }: Props) {
       <DeckSection title={t.team.title}>
         <div className="grid gap-4 sm:grid-cols-3">
           {t.team.members.map((member, i) => (
-            <div key={i} className="rounded-lg border border-border/50 p-4 text-center">
-              <p className="text-xl font-bold">{member.name}</p>
+            <div key={i} className="rounded-2xl border-2 border-primary/20 bg-background/80 p-5 shadow-md text-center">
+              <p className="font-funnel text-xl font-bold">{member.name}</p>
               <p className="text-primary">{member.role}</p>
               <p className="mt-1 text-sm text-foreground/70">{member.desc}</p>
             </div>
@@ -811,7 +811,7 @@ export default async function EthereumDeckPage({ params }: Props) {
       <footer className="space-y-4 text-center text-foreground/60">
         <p className="italic">{t.footer.quote}</p>
         <div>
-          <p className="text-lg font-bold text-foreground">{t.footer.tagline}</p>
+          <p className="font-funnel text-lg font-bold text-foreground">{t.footer.tagline}</p>
           <p>{t.footer.built}</p>
         </div>
         <div className="flex justify-center gap-4 text-sm">

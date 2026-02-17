@@ -43,8 +43,8 @@ export function DeckStats({
           <div
             key={i}
             className={cn(
-              'flex flex-col items-center gap-2 rounded-2xl p-4 text-center',
-              'bg-background/80 border-2 border-primary/20 shadow-md',
+              'flex flex-col items-center gap-2 rounded-xl p-4 text-center',
+              'bg-card/50 border border-border/30',
               'print:border-gray-200 print:bg-white',
             )}
           >
@@ -55,7 +55,7 @@ export function DeckStats({
             )}
             <span
               className={cn(
-                'font-funnel text-3xl font-bold tracking-tight sm:text-4xl',
+                'text-3xl font-bold tracking-tight sm:text-4xl',
                 'print:text-2xl',
                 accentClass,
               )}

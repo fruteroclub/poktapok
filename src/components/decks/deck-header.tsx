@@ -44,7 +44,7 @@ export function DeckHeader({
           />
         )}
 
-        <h1 className="font-funnel text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl print:text-3xl">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl print:text-3xl">
           {title}
         </h1>
 

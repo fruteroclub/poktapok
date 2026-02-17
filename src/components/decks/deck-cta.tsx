@@ -34,7 +34,7 @@ export function DeckCTA({
         className,
       )}
     >
-      <h2 className="font-funnel text-2xl font-bold tracking-tight sm:text-3xl print:text-xl">
+      <h2 className="text-2xl font-bold tracking-tight sm:text-3xl print:text-xl">
         {title}
       </h2>
 

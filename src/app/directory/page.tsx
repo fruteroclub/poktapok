@@ -22,11 +22,23 @@ export default function DirectoryPage() {
   const participants = useQuery(api.bootcamp.listActiveParticipants)
 
   // Build a lookup map: userId → participant data
+  // Prioritize showing active bootcamp over completed ones for the directory card
   const participantMap = useMemo(() => {
-    const map = new Map<string, { programName: string; progress: number; status: string }>()
+    const map = new Map<string, { programName: string; programSlug: string; progress: number; status: string; sessionsCompleted: number; sessionsCount: number }>()
     if (participants) {
       for (const p of participants) {
-        map.set(p.userId, { programName: p.programName, progress: p.progress, status: p.status })
+        const existing = map.get(p.userId)
+        // If no existing entry, or if current is active and existing is completed, use current
+        if (!existing || (p.status === 'active' && existing.status === 'completed')) {
+          map.set(p.userId, { 
+            programName: p.programName, 
+            programSlug: p.programSlug,
+            progress: p.progress, 
+            status: p.status,
+            sessionsCompleted: p.sessionsCompleted,
+            sessionsCount: p.sessionsCount
+          })
+        }
       }
     }
     return map
@@ -160,13 +172,20 @@ export default function DirectoryPage() {
                         {/* Bootcamp progress badge */}
                         {profile.user?._id && participantMap.has(profile.user._id) && (() => {
                           const bp = participantMap.get(profile.user!._id)!
+                          const displayName = bp.programName.replace('Bootcamp', '').trim() || bp.programName
                           return (
                             <div className="flex w-full items-center justify-center gap-2">
-                              <Badge variant="outline" className="text-xs gap-1">
-                                {bp.status === 'completed' ? 'VibeCoding ✅' : `VibeCoding ${bp.progress}%`}
-                              </Badge>
-                              {bp.status !== 'completed' && (
-                                <Progress value={bp.progress} className="h-1.5 w-16" />
+                              {bp.status === 'completed' ? (
+                                <Badge variant="default" className="text-xs gap-1 bg-green-600 hover:bg-green-700">
+                                  🏅 {displayName} 100%
+                                </Badge>
+                              ) : (
+                                <>
+                                  <Badge variant="outline" className="text-xs gap-1">
+                                    {displayName} {bp.progress}%
+                                  </Badge>
+                                  <Progress value={bp.progress} className="h-1.5 w-16" />
+                                </>
                               )}
                             </div>
                           )

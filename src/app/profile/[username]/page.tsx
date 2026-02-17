@@ -233,11 +233,16 @@ export default function PublicProfilePage() {
               </h2>
               <div className="grid w-full gap-4">
                 {bootcampEnrollments.map(({ enrollment, program }) => (
-                  <Card key={enrollment._id}>
+                  <Card key={enrollment._id} className={enrollment.status === 'completed' ? 'border-green-500/50 bg-green-50/50 dark:bg-green-950/20' : ''}>
                     <CardContent className="pt-6">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{program?.name}</h3>
+                          <div className="flex items-center gap-2">
+                            {enrollment.status === 'completed' && (
+                              <span className="text-2xl">🏅</span>
+                            )}
+                            <h3 className="font-semibold text-lg">{program?.name}</h3>
+                          </div>
                           <p className="text-sm text-muted-foreground">
                             {enrollment.status === 'completed' 
                               ? '✅ Completado' 
@@ -246,11 +251,15 @@ export default function PublicProfilePage() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-primary">{enrollment.progress}%</p>
+                            <p className={`text-2xl font-bold ${enrollment.status === 'completed' ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
+                              {enrollment.progress}%
+                            </p>
                           </div>
-                          <div className="w-32">
-                            <Progress value={enrollment.progress} className="h-3" />
-                          </div>
+                          {enrollment.status !== 'completed' && (
+                            <div className="w-32">
+                              <Progress value={enrollment.progress} className="h-3" />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>

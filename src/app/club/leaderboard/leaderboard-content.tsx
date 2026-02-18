@@ -2,28 +2,43 @@
 
 /**
  * LeaderboardContent - Client component for leaderboard page
- * Displays rankings of top community members
+ * Displays rankings of top community members and bootcamp participants
  */
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trophy, TrendingUp, Briefcase } from 'lucide-react'
+import { Trophy, TrendingUp, Briefcase, GraduationCap } from 'lucide-react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Progress } from '@/components/ui/progress'
 import { useDirectoryProfiles } from '@/hooks/use-directory'
 
-type RankingCategory = 'earnings' | 'projects'
+type RankingCategory = 'earnings' | 'projects' | 'bootcamp'
 
 export function LeaderboardContent() {
-  const [category, setCategory] = useState<RankingCategory>('earnings')
+  const [category, setCategory] = useState<RankingCategory>('bootcamp')
 
   const { data, isLoading, isError, error } = useDirectoryProfiles({
     limit: 50,
   })
+
+  // Get bootcamp programs and leaderboard
+  const programs = useQuery(api.bootcamp.listPrograms)
+  const activeProgram = programs?.find(p => p.status === 'active')
+  const bootcampLeaderboard = useQuery(
+    api.leaderboard.getLeaderboard,
+    activeProgram ? { programId: activeProgram._id, limit: 20 } : 'skip'
+  )
+  const bootcampStats = useQuery(
+    api.leaderboard.getProgramStats,
+    activeProgram ? { programId: activeProgram._id } : 'skip'
+  )
 
   if (isError) {
     return (
@@ -120,6 +135,13 @@ export function LeaderboardContent() {
         {/* Category Filters */}
         <div className="flex flex-wrap gap-2">
           <Button
+            variant={category === 'bootcamp' ? 'default' : 'outline'}
+            onClick={() => setCategory('bootcamp')}
+          >
+            <GraduationCap className="mr-2 size-4" />
+            Bootcamp
+          </Button>
+          <Button
             variant={category === 'earnings' ? 'default' : 'outline'}
             onClick={() => setCategory('earnings')}
           >
@@ -135,8 +157,127 @@ export function LeaderboardContent() {
           </Button>
         </div>
 
-        {/* Leaderboard List */}
-        {sortedMembers.length > 0 ? (
+        {/* Bootcamp Leaderboard */}
+        {category === 'bootcamp' && (
+          <div className="space-y-6">
+            {/* Bootcamp Stats */}
+            {bootcampStats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="p-4">
+                  <p className="text-sm text-muted-foreground">Participantes</p>
+                  <p className="text-3xl font-bold">{bootcampStats.enrollments.total}</p>
+                  <p className="text-xs text-muted-foreground">{bootcampStats.enrollments.active} activos</p>
+                </Card>
+                <Card className="p-4">
+                  <p className="text-sm text-muted-foreground">Progreso Promedio</p>
+                  <p className="text-3xl font-bold">{bootcampStats.progress.average}%</p>
+                  <p className="text-xs text-muted-foreground">{bootcampStats.progress.distribution.completed} completados</p>
+                </Card>
+                <Card className="p-4">
+                  <p className="text-sm text-muted-foreground">Entregables</p>
+                  <p className="text-3xl font-bold">{bootcampStats.deliverables.total}</p>
+                  <p className="text-xs text-muted-foreground">{bootcampStats.deliverables.approved} aprobados</p>
+                </Card>
+                <Card className="p-4">
+                  <p className="text-sm text-muted-foreground">Dia Mas Activo</p>
+                  <p className="text-3xl font-bold">{bootcampStats.activity.mostActiveDay.count || 0}</p>
+                  <p className="text-xs text-muted-foreground">{bootcampStats.activity.mostActiveDay.date || 'N/A'}</p>
+                </Card>
+              </div>
+            )}
+
+            {/* Progress by Session */}
+            {bootcampStats && (
+              <Card className="p-6">
+                <h3 className="font-bold text-lg mb-4">Progreso por Sesion</h3>
+                <div className="space-y-3">
+                  {Object.entries(bootcampStats.deliverables.bySession).map(([session, data]) => (
+                    <div key={session} className="flex items-center gap-4">
+                      <span className="w-24 text-sm font-medium">Sesion {session}</span>
+                      <Progress 
+                        value={bootcampStats.enrollments.total > 0 
+                          ? (data.approved / bootcampStats.enrollments.total) * 100 
+                          : 0} 
+                        className="flex-1"
+                      />
+                      <span className="text-sm text-muted-foreground w-16 text-right">
+                        {data.approved}/{bootcampStats.enrollments.total}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Bootcamp Ranking */}
+            {bootcampLeaderboard && bootcampLeaderboard.length > 0 ? (
+              <div className="space-y-4">
+                {bootcampLeaderboard.map((participant) => {
+                  const badge = getRankBadge(participant.rank)
+                  return (
+                    <Card
+                      key={participant.enrollmentId}
+                      className={`p-6 ${participant.rank <= 3 ? 'border-2 border-primary/20' : ''}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Rank Badge */}
+                        <div
+                          className={`flex size-12 shrink-0 items-center justify-center rounded-full text-lg font-bold ${badge.color}`}
+                        >
+                          {badge.icon}
+                        </div>
+
+                        {/* Avatar */}
+                        <Avatar className="size-12">
+                          <AvatarImage src={participant.avatarUrl || undefined} alt={participant.displayName} />
+                          <AvatarFallback>
+                            {participant.displayName.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Participant Info */}
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{participant.displayName}</h3>
+                          {participant.username && (
+                            <p className="text-sm text-muted-foreground">@{participant.username}</p>
+                          )}
+                        </div>
+
+                        {/* Progress */}
+                        <div className="w-32">
+                          <div className="flex items-center gap-2">
+                            <Progress value={participant.progress} className="flex-1" />
+                            <span className="text-sm font-medium w-10 text-right">{participant.progress}%</span>
+                          </div>
+                        </div>
+
+                        {/* Deliverables */}
+                        <div className="text-right">
+                          <Badge variant="secondary">
+                            {participant.deliverables.approved}/{participant.deliverables.submitted} entregables
+                          </Badge>
+                        </div>
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="flex min-h-[40vh] items-center justify-center">
+                <div className="text-center">
+                  <GraduationCap className="mx-auto size-16 text-muted-foreground" />
+                  <h3 className="mt-4 text-xl font-semibold">No hay datos del bootcamp</h3>
+                  <p className="mt-2 text-muted-foreground">
+                    {!activeProgram ? 'No hay bootcamps activos' : 'La clasificacion se actualizara cuando haya mas actividad'}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Community Leaderboard List */}
+        {category !== 'bootcamp' && sortedMembers.length > 0 ? (
           <div className="space-y-4">
             {sortedMembers.map((member, index) => {
               const rank = index + 1
@@ -230,7 +371,7 @@ export function LeaderboardContent() {
               )
             })}
           </div>
-        ) : (
+        ) : category !== 'bootcamp' ? (
           <div className="flex min-h-[40vh] items-center justify-center">
             <div className="text-center">
               <Trophy className="mx-auto size-16 text-muted-foreground" />
@@ -240,7 +381,7 @@ export function LeaderboardContent() {
               </p>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </PageWrapper>
   )

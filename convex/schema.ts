@@ -665,4 +665,39 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_program", ["programId"]),
+
+  // ============================================================
+  // STUDIO_PROJECTS - v0 clone deployed projects (1 per student)
+  // ============================================================
+  studioProjects: defineTable({
+    userId: v.id("users"), // Reference to users table
+    code: v.string(), // The HTML/React code
+    title: v.string(),
+    slug: v.string(), // Unique URL slug for preview
+    version: v.number(), // Version number
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    // Metadata
+    metadata: v.optional(v.any()),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_slug", ["slug"]),
+
+  // ============================================================
+  // STUDIO_CHAT_HISTORY - Chat history for studio sessions
+  // ============================================================
+  studioChatHistory: defineTable({
+    userId: v.id("users"), // Reference to users table
+    messages: v.array(
+      v.object({
+        role: v.union(v.literal("user"), v.literal("assistant")),
+        content: v.string(),
+        code: v.optional(v.string()),
+        timestamp: v.number(),
+      })
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"]),
 });

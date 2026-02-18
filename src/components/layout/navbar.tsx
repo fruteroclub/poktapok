@@ -58,6 +58,12 @@ const BOOTCAMP_MENU_ITEM: MenuItemType = {
   isMobileOnly: false,
 }
 
+const STUDIO_MENU_ITEM: MenuItemType = {
+  displayText: '✨ Studio',
+  href: '/bootcamp/studio',
+  isMobileOnly: false,
+}
+
 export default function Navbar() {
   const pathname = usePathname()
   const { ready, authenticated } = usePrivy()
@@ -73,9 +79,9 @@ export default function Navbar() {
     ? [...BASE_PUBLIC_MENU_ITEMS.slice(0, 2), BOUNTIES_MENU_ITEM, ...BASE_PUBLIC_MENU_ITEMS.slice(2)]
     : BASE_PUBLIC_MENU_ITEMS
   
-  // Build auth menu items - include bootcamp if participant
+  // Build auth menu items - include bootcamp and studio if participant
   const FULL_AUTH_MENU_ITEMS = isBootcampParticipant
-    ? [BOOTCAMP_MENU_ITEM, ...AUTH_MENU_ITEMS]
+    ? [BOOTCAMP_MENU_ITEM, STUDIO_MENU_ITEM, ...AUTH_MENU_ITEMS]
     : AUTH_MENU_ITEMS
 
   return (

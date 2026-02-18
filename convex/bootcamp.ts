@@ -654,6 +654,24 @@ export const reviewDeliverable = mutation({
           progress,
           ...(progress >= 100 ? { status: "completed", completedAt: Date.now() } : {}),
         });
+
+        // Auto-assign POAP link on completion
+        if (progress >= 100) {
+          const availableLink = await ctx.db
+            .query("bootcampPoapLinks")
+            .withIndex("by_program", (q) => q.eq("programId", enrollment.programId))
+            .filter((q) => q.eq(q.field("assignedTo"), undefined))
+            .first();
+
+          if (availableLink) {
+            await ctx.db.patch(availableLink._id, {
+              assignedTo: enrollment._id,
+            });
+            await ctx.db.patch(enrollment._id, {
+              poapClaimLink: availableLink.mintLink,
+            });
+          }
+        }
       }
     }
 
@@ -875,5 +893,147 @@ export const updateEnrollmentApiKey = mutation({
       anthropicApiKey: args.anthropicApiKey,
     });
     return { success: true };
+  },
+});
+
+// ============================================================
+// POAP CERTIFICATES
+// ============================================================
+
+/**
+ * Admin: Bulk upload POAP mint links for a program
+ */
+export const uploadPoapLinks = mutation({
+  args: {
+    callerPrivyDid: v.string(),
+    programId: v.id("bootcampPrograms"),
+    links: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
+    const results = { created: 0, duplicate: 0 };
+
+    for (const link of args.links) {
+      const trimmed = link.trim();
+      if (!trimmed) continue;
+
+      // Check for duplicate
+      const existing = await ctx.db
+        .query("bootcampPoapLinks")
+        .withIndex("by_program", (q) => q.eq("programId", args.programId))
+        .filter((q) => q.eq(q.field("mintLink"), trimmed))
+        .first();
+
+      if (existing) {
+        results.duplicate++;
+        continue;
+      }
+
+      await ctx.db.insert("bootcampPoapLinks", {
+        programId: args.programId,
+        mintLink: trimmed,
+        createdAt: Date.now(),
+      });
+      results.created++;
+    }
+
+    return results;
+  },
+});
+
+/**
+ * Admin: Get POAP link stats for a program
+ */
+export const getPoapStats = query({
+  args: {
+    callerPrivyDid: v.string(),
+    programId: v.id("bootcampPrograms"),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      return { total: 0, assigned: 0, available: 0 };
+    }
+
+    const allLinks = await ctx.db
+      .query("bootcampPoapLinks")
+      .withIndex("by_program", (q) => q.eq("programId", args.programId))
+      .collect();
+
+    const total = allLinks.length;
+    const assigned = allLinks.filter((l) => l.assignedTo !== undefined).length;
+    const available = total - assigned;
+
+    return { total, assigned, available };
+  },
+});
+
+/**
+ * Student: Mark POAP as claimed (validates caller owns the enrollment)
+ */
+export const markPoapClaimed = mutation({
+  args: {
+    enrollmentId: v.id("bootcampEnrollments"),
+    callerUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const enrollment = await ctx.db.get(args.enrollmentId);
+    if (!enrollment) throw new Error("Enrollment not found");
+    if (enrollment.userId !== args.callerUserId) throw new Error("Unauthorized");
+    if (!enrollment.poapClaimLink) throw new Error("No POAP link assigned");
+
+    await ctx.db.patch(args.enrollmentId, {
+      poapClaimedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Admin: Manually assign POAP link to an enrollment (for retroactive cases)
+ */
+export const assignPoapLink = mutation({
+  args: {
+    callerPrivyDid: v.string(),
+    enrollmentId: v.id("bootcampEnrollments"),
+    programId: v.id("bootcampPrograms"),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db
+      .query("users")
+      .withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid))
+      .unique();
+    if (!caller || caller.role !== "admin") {
+      throw new Error("Unauthorized: admin access required");
+    }
+
+    const availableLink = await ctx.db
+      .query("bootcampPoapLinks")
+      .withIndex("by_program", (q) => q.eq("programId", args.programId))
+      .filter((q) => q.eq(q.field("assignedTo"), undefined))
+      .first();
+
+    if (!availableLink) {
+      return { assigned: false, reason: "No hay links POAP disponibles" };
+    }
+
+    await ctx.db.patch(availableLink._id, {
+      assignedTo: args.enrollmentId,
+    });
+    await ctx.db.patch(args.enrollmentId, {
+      poapClaimLink: availableLink.mintLink,
+    });
+
+    return { assigned: true, link: availableLink.mintLink };
   },
 });

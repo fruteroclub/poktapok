@@ -24,7 +24,8 @@ import {
   Key,
   Copy,
   Eye,
-  EyeOff
+  EyeOff,
+  Award
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -61,7 +62,8 @@ export default function VibeCodingDashboard() {
   const { user, convexUser, isLoading: authLoading } = useAuthWithConvex()
   const { authenticated } = usePrivy()
   const [showApiKey, setShowApiKey] = useState(false)
-  
+  const markPoapClaimed = useMutation(api.bootcamp.markPoapClaimed)
+
   const enrollmentData = useQuery(
     api.bootcamp.getEnrollmentWithDetails,
     convexUser?._id ? { programSlug: 'vibecoding', userId: convexUser._id } : 'skip'
@@ -222,6 +224,87 @@ export default function VibeCodingDashboard() {
                       ⚠️ No compartas esta key. Es personal y tiene un límite de uso.
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+            </Section>
+          )}
+
+          {/* POAP Certificate Section */}
+          {enrollment.status === 'completed' && (
+            <Section>
+              <Card className="border-purple-500/30 bg-purple-500/5">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-purple-500" />
+                    <CardTitle className="text-lg">Certificado POAP</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Tu certificado de finalizacion como token en tu wallet
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {!enrollment.poapClaimLink ? (
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Clock className="h-5 w-5" />
+                      <p className="text-sm">Tu certificado POAP estara disponible pronto.</p>
+                    </div>
+                  ) : !enrollment.poapClaimedAt ? (
+                    <div className="space-y-4">
+                      <p className="text-sm">Tu POAP esta listo para reclamar. Copia tu wallet y pegala en la pagina de POAP.</p>
+                      <Button
+                        onClick={async () => {
+                          window.open(enrollment.poapClaimLink!, '_blank')
+                          try {
+                            await markPoapClaimed({ enrollmentId: enrollment._id, callerUserId: convexUser!._id })
+                          } catch {
+                            // Non-critical, don't block the claim
+                          }
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Reclamar POAP
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
+                      <CheckCircle className="h-5 w-5" />
+                      <p className="text-sm">
+                        POAP reclamado el {new Date(enrollment.poapClaimedAt).toLocaleDateString('es-MX')}
+                      </p>
+                    </div>
+                  )}
+                  {convexUser?.appWallet && (
+                    <div className="space-y-2">
+                      <div className="space-y-1">
+                        <span className="text-xs font-medium text-muted-foreground">Tu wallet</span>
+                        <div className="flex items-center gap-2">
+                          <code className="flex-1 bg-background/50 border rounded-lg px-3 py-2 font-mono text-xs overflow-hidden truncate">
+                            {convexUser.appWallet}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(convexUser.appWallet!)
+                              toast.success('Wallet copiada')
+                            }}
+                            title="Copiar wallet"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 text-xs text-purple-500"
+                        onClick={() => window.open(`https://collectors.poap.xyz/scan/${convexUser.appWallet}`, '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Ver mi coleccion de POAPs
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </Section>

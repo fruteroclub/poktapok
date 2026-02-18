@@ -28,8 +28,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
-  Loader2, ExternalLink, CheckCircle, XCircle, Clock, 
-  GraduationCap, Users, FileCheck, AlertCircle, Key, Copy
+  Loader2, ExternalLink, CheckCircle, XCircle, Clock,
+  GraduationCap, Users, FileCheck, AlertCircle, Key, Copy, Award
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
@@ -65,7 +65,7 @@ const levelColors: Record<Level, string> = {
 }
 
 export default function AdminBootcampPage() {
-  const { convexUser } = useAuthWithConvex()
+  const { convexUser, privyDid } = useAuthWithConvex()
   const [statusFilter, setStatusFilter] = useState<DeliverableStatus | 'all'>('submitted')
   
   // Get programs
@@ -91,10 +91,19 @@ export default function AdminBootcampPage() {
   const reviewDeliverable = useMutation(api.bootcamp.reviewDeliverable)
   const assignApiKey = useMutation(api.bootcamp.assignApiKey)
   const assignApiKeysBulk = useMutation(api.bootcamp.assignApiKeysBulk)
+  const uploadPoapLinks = useMutation(api.bootcamp.uploadPoapLinks)
+  const poapStats = useQuery(
+    api.bootcamp.getPoapStats,
+    selectedProgramId && privyDid ? { programId: selectedProgramId as Id<'bootcampPrograms'>, callerPrivyDid: privyDid } : 'skip'
+  )
 
   // API Key management state
   const [bulkApiKey, setBulkApiKey] = useState('')
   const [isAssigningKeys, setIsAssigningKeys] = useState(false)
+
+  // POAP management state
+  const [poapLinksInput, setPoapLinksInput] = useState('')
+  const [isUploadingPoap, setIsUploadingPoap] = useState(false)
 
   const [reviewDialog, setReviewDialog] = useState<{
     open: boolean
@@ -355,6 +364,70 @@ export default function AdminBootcampPage() {
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Section>
+            )}
+
+            {/* POAP Links Management */}
+            {selectedProgramId && (
+              <Section>
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Award className="h-5 w-5" />
+                          POAP Certificates
+                        </CardTitle>
+                        <CardDescription>
+                          Carga links de mint de poap.xyz para los graduados
+                        </CardDescription>
+                      </div>
+                      {poapStats && poapStats.total > 0 && (
+                        <div className="flex gap-2">
+                          <Badge variant="secondary">{poapStats.total} total</Badge>
+                          <Badge variant="outline" className="text-green-600 border-green-500/30">{poapStats.available} disponibles</Badge>
+                          <Badge variant="outline" className="text-blue-600 border-blue-500/30">{poapStats.assigned} asignados</Badge>
+                        </div>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Pegar links de POAP (uno por linea)</label>
+                      <Textarea
+                        placeholder={"https://poap.xyz/mint/abc123\nhttps://poap.xyz/mint/def456\nhttps://poap.xyz/mint/ghi789"}
+                        value={poapLinksInput}
+                        onChange={(e) => setPoapLinksInput(e.target.value)}
+                        rows={5}
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        onClick={async () => {
+                          if (!poapLinksInput.trim() || !selectedProgramId) return
+                          setIsUploadingPoap(true)
+                          try {
+                            const links = poapLinksInput.trim().split('\n').map(l => l.trim()).filter(Boolean)
+                            const result = await uploadPoapLinks({
+                              callerPrivyDid: privyDid!,
+                              programId: selectedProgramId as Id<'bootcampPrograms'>,
+                              links,
+                            })
+                            toast.success(`${result.created} links subidos${result.duplicate > 0 ? `, ${result.duplicate} duplicados` : ''}`)
+                            setPoapLinksInput('')
+                          } catch (error: unknown) {
+                            toast.error(error instanceof Error ? error.message : 'Error al subir links')
+                          } finally {
+                            setIsUploadingPoap(false)
+                          }
+                        }}
+                        disabled={!poapLinksInput.trim() || isUploadingPoap}
+                      >
+                        {isUploadingPoap ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                        Subir Links ({poapLinksInput.trim().split('\n').filter(Boolean).length})
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

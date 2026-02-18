@@ -64,6 +64,15 @@ export const deleteUserByEmail = mutation({
       for (const d of deliverables) {
         await ctx.db.delete(d._id);
       }
+      // Delete assigned POAP links
+      const poapLinks = await ctx.db
+        .query("bootcampPoapLinks")
+        .withIndex("by_program", (q) => q.eq("programId", enrollment.programId))
+        .filter((q) => q.eq(q.field("assignedTo"), enrollment._id))
+        .collect();
+      for (const link of poapLinks) {
+        await ctx.db.delete(link._id);
+      }
       await ctx.db.delete(enrollment._id);
     }
 
@@ -102,6 +111,62 @@ export const deleteUserByEmail = mutation({
       email: args.email,
       username: user.username,
     };
+  },
+});
+
+/**
+ * Reset POAP claim status (admin only)
+ */
+export const resetPoapClaim = mutation({
+  args: {
+    callerPrivyDid: v.string(),
+    enrollmentId: v.id("bootcampEnrollments"),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db.query("users").withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid)).unique();
+    if (!caller || caller.role !== "admin") throw new Error("Unauthorized: admin access required");
+    await ctx.db.patch(args.enrollmentId, { poapClaimedAt: undefined });
+    return { success: true };
+  },
+});
+
+/**
+ * Force complete enrollment (admin only)
+ */
+export const forceCompleteEnrollment = mutation({
+  args: {
+    callerPrivyDid: v.string(),
+    enrollmentId: v.id("bootcampEnrollments"),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db.query("users").withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid)).unique();
+    if (!caller || caller.role !== "admin") throw new Error("Unauthorized: admin access required");
+    const enrollment = await ctx.db.get(args.enrollmentId);
+    const program = enrollment ? await ctx.db.get(enrollment.programId) : null;
+    await ctx.db.patch(args.enrollmentId, {
+      progress: 100,
+      sessionsCompleted: program?.sessionsCount || 5,
+      status: "completed",
+      completedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+/**
+ * Set user role (admin only)
+ */
+export const setUserRole = mutation({
+  args: {
+    callerPrivyDid: v.string(),
+    userId: v.id("users"),
+    role: v.union(v.literal("member"), v.literal("moderator"), v.literal("admin")),
+  },
+  handler: async (ctx, args) => {
+    const caller = await ctx.db.query("users").withIndex("by_privy_did", (q) => q.eq("privyDid", args.callerPrivyDid)).unique();
+    if (!caller || caller.role !== "admin") throw new Error("Unauthorized: admin access required");
+    await ctx.db.patch(args.userId, { role: args.role });
+    return { success: true };
   },
 });
 

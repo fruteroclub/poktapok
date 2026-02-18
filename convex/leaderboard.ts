@@ -29,47 +29,32 @@ export const getLeaderboard = query({
       )
       .collect();
 
-    // Get user details and deliverables count for each enrollment
-    const leaderboardData = await Promise.all(
-      enrollments.map(async (enrollment) => {
-        // Get user info if linked
-        let user = null;
-        if (enrollment.userId) {
-          user = await ctx.db.get(enrollment.userId);
-        }
+    // Batch-fetch all users for enrollments with userId
+    const userIds = [...new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!))];
+    const users = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+    const userMap = new Map(users.filter(Boolean).map((u) => [u!._id, u!]));
 
-        // Get deliverables count for this enrollment
-        const deliverables = await ctx.db
-          .query("bootcampDeliverables")
-          .withIndex("by_enrollment", (q) => q.eq("enrollmentId", enrollment._id))
-          .collect();
+    // Build leaderboard using enrollment data (no extra deliverable queries needed)
+    const leaderboardData = enrollments.map((enrollment) => {
+      const user = enrollment.userId ? userMap.get(enrollment.userId) : null;
 
-        const approvedCount = deliverables.filter(d => d.status === "approved").length;
-        const submittedCount = deliverables.length;
+      return {
+        enrollmentId: enrollment._id,
+        userId: enrollment.userId,
+        username: user?.username || null,
+        displayName: user?.displayName || "Participante",
+        avatarUrl: user?.avatarUrl || null,
+        progress: enrollment.progress,
+        sessionsCompleted: enrollment.sessionsCompleted,
+        status: enrollment.status,
+        joinedAt: enrollment.joinedAt || enrollment.createdAt,
+      };
+    });
 
-        return {
-          enrollmentId: enrollment._id,
-          email: enrollment.email,
-          userId: enrollment.userId,
-          username: user?.username || null,
-          displayName: user?.displayName || enrollment.email.split("@")[0],
-          avatarUrl: user?.avatarUrl || null,
-          progress: enrollment.progress,
-          sessionsCompleted: enrollment.sessionsCompleted,
-          deliverables: {
-            submitted: submittedCount,
-            approved: approvedCount,
-          },
-          status: enrollment.status,
-          joinedAt: enrollment.joinedAt || enrollment.createdAt,
-        };
-      })
-    );
-
-    // Sort by progress (descending), then by deliverables approved
+    // Sort by progress (descending), then by sessions completed
     const sorted = leaderboardData.sort((a, b) => {
       if (b.progress !== a.progress) return b.progress - a.progress;
-      return b.deliverables.approved - a.deliverables.approved;
+      return b.sessionsCompleted - a.sessionsCompleted;
     });
 
     // Add rank
@@ -211,6 +196,11 @@ export const listActiveParticipants = query({
       .filter((q) => q.neq(q.field("userId"), undefined))
       .collect();
 
+    // Batch-fetch users
+    const userIds = [...new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!))];
+    const users = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+    const userMap = new Map(users.filter(Boolean).map((u) => [u!._id, u!]));
+
     // Get recent deliverables for each enrollment
     const activeParticipants = await Promise.all(
       enrollments.map(async (enrollment) => {
@@ -222,24 +212,24 @@ export const listActiveParticipants = query({
 
         if (deliverables.length === 0) return null;
 
-        const user = enrollment.userId ? await ctx.db.get(enrollment.userId) : null;
+        const user = enrollment.userId ? userMap.get(enrollment.userId) : null;
 
         return {
           userId: enrollment.userId,
           username: user?.username || null,
-          displayName: user?.displayName || enrollment.email.split("@")[0],
+          displayName: user?.displayName || "Participante",
           avatarUrl: user?.avatarUrl || null,
           progress: enrollment.progress,
           recentDeliverables: deliverables.length,
-          lastActivity: Math.max(...deliverables.map(d => d.submittedAt)),
+          lastActivity: deliverables.length > 0 ? Math.max(...deliverables.map(d => d.submittedAt)) : 0,
         };
       })
     );
 
     // Filter nulls and sort by recent activity
     return activeParticipants
-      .filter(p => p !== null)
-      .sort((a, b) => (b?.lastActivity || 0) - (a?.lastActivity || 0));
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+      .sort((a, b) => b.lastActivity - a.lastActivity);
   },
 });
 

@@ -244,10 +244,15 @@ export default function PublicProfilePage() {
                             <h3 className="font-semibold text-lg">{program?.name}</h3>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {enrollment.status === 'completed' 
-                              ? '✅ Completado' 
+                            {enrollment.status === 'completed'
+                              ? '✅ Completado'
                               : `${enrollment.sessionsCompleted}/${program?.sessionsCount || 5} sesiones`}
                           </p>
+                          {enrollment.status === 'completed' && enrollment.poapClaimedAt && (
+                            <Badge className="mt-1 bg-purple-500/20 text-purple-400 border-purple-500/30">
+                              🏆 POAP Certificado
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">

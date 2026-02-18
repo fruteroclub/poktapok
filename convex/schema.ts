@@ -605,6 +605,9 @@ export default defineSchema({
     metadata: v.optional(v.any()),
     // API Keys - assigned by admin
     anthropicApiKey: v.optional(v.string()),
+    // POAP Certificate
+    poapClaimLink: v.optional(v.string()), // Assigned mint link from poap.xyz
+    poapClaimedAt: v.optional(v.number()), // When student clicked claim
   })
     .index("by_code", ["code"])
     .index("by_email", ["email"])
@@ -651,4 +654,15 @@ export default defineSchema({
     .index("by_program", ["programId"])
     .index("by_session", ["programId", "sessionNumber"])
     .index("by_status", ["status"]),
+
+  // ============================================================
+  // BOOTCAMP_POAP_LINKS - Pool of POAP mint links per program
+  // ============================================================
+  bootcampPoapLinks: defineTable({
+    programId: v.id("bootcampPrograms"),
+    mintLink: v.string(), // https://poap.xyz/mint/XXXXXX
+    assignedTo: v.optional(v.id("bootcampEnrollments")),
+    createdAt: v.number(),
+  })
+    .index("by_program", ["programId"]),
 });

@@ -251,10 +251,10 @@ export function LeaderboardContent() {
                           </div>
                         </div>
 
-                        {/* Deliverables */}
+                        {/* Sessions */}
                         <div className="text-right">
                           <Badge variant="secondary">
-                            {participant.deliverables.approved}/{participant.deliverables.submitted} entregables
+                            {participant.sessionsCompleted} sesiones
                           </Badge>
                         </div>
                       </div>

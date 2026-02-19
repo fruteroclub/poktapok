@@ -47,6 +47,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [tunnelStatus, setTunnelStatus] = useState<"idle" | "checking" | "live" | "dead">("idle");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [visitorId] = useState<string>(() => `${user._id}-${Date.now()}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -70,15 +71,34 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
 
   // Extract tunnel URLs from message content
   const extractTunnelUrl = (content: string): string | null => {
+    if (typeof content !== "string") return null;
     const matches = content.match(TUNNEL_URL_REGEX);
     return matches ? matches[0] : null;
   };
 
+  // Check if a tunnel URL is alive
+  const checkTunnelHealth = async (url: string): Promise<boolean> => {
+    setTunnelStatus("checking");
+    try {
+      // Use no-cors mode — we can't read the response but we know it didn't throw
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      await fetch(url, { mode: "no-cors", signal: controller.signal });
+      clearTimeout(timeout);
+      setTunnelStatus("live");
+      return true;
+    } catch {
+      setTunnelStatus("dead");
+      return false;
+    }
+  };
+
   // Process assistant message for URLs
-  const processAssistantMessage = (content: string) => {
+  const processAssistantMessage = async (content: string) => {
     const tunnelUrl = extractTunnelUrl(content);
     if (tunnelUrl) {
       setPreviewUrl(tunnelUrl);
+      await checkTunnelHealth(tunnelUrl);
     }
   };
 
@@ -115,8 +135,17 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
         throw new Error(data.error || "Failed to send message");
       }
 
-      // Add assistant response
-      const assistantContent = data.response?.response || data.response || "Procesando...";
+      // Extract reply text from OpenClaw response structure
+      const raw = data.response;
+      const assistantContent: string =
+        // Try details.reply first (clean text)
+        (typeof raw?.details?.reply === "string" && raw.details.reply) ||
+        // Try content[0].text (MCP format)
+        (Array.isArray(raw?.content) && typeof raw.content[0]?.text === "string" && raw.content[0].text) ||
+        // Try raw as string directly
+        (typeof raw === "string" && raw) ||
+        // Fallback
+        "Procesando...";
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -238,7 +267,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
                   }`}
                 >
                   <p className="whitespace-pre-wrap">
-                    {message.content.split(TUNNEL_URL_REGEX).map((part, i) => {
+                    {String(message.content).split(TUNNEL_URL_REGEX).map((part, i) => {
                       if (TUNNEL_URL_REGEX.test(part)) {
                         return (
                           <a
@@ -316,10 +345,20 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
             <div className="flex items-center gap-2">
               {previewUrl && (
                 <>
+                  {/* Tunnel status indicator */}
+                  <span className={`w-2 h-2 rounded-full ${
+                    tunnelStatus === "live" ? "bg-green-400" :
+                    tunnelStatus === "checking" ? "bg-yellow-400 animate-pulse" :
+                    tunnelStatus === "dead" ? "bg-red-400" :
+                    "bg-gray-400"
+                  }`} />
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleRefreshPreview}
+                    onClick={() => {
+                      handleRefreshPreview();
+                      checkTunnelHealth(previewUrl);
+                    }}
                     className="text-gray-400 hover:text-white"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -351,13 +390,45 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
 
           {/* Preview Content */}
           <div className="flex-1 overflow-hidden">
-            {previewUrl ? (
+            {previewUrl && tunnelStatus === "live" ? (
               <iframe
                 src={previewUrl}
                 className="w-full h-full bg-white"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 title="Preview"
               />
+            ) : previewUrl && tunnelStatus === "checking" ? (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center p-8">
+                  <Loader2 className="w-12 h-12 mx-auto mb-4 text-orange-500 animate-spin" />
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">
+                    Verificando tunnel...
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-sm">
+                    Comprobando que el preview esta disponible.
+                  </p>
+                </div>
+              </div>
+            ) : previewUrl && tunnelStatus === "dead" ? (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center p-8">
+                  <Globe className="w-16 h-16 mx-auto mb-4 text-red-400" />
+                  <h3 className="text-lg font-medium text-red-300 mb-2">
+                    Tunnel no disponible
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-sm mb-4">
+                    El preview no responde. Pide al agente que genere un nuevo tunnel.
+                  </p>
+                  <Button
+                    onClick={() => checkTunnelHealth(previewUrl)}
+                    variant="outline"
+                    className="border-gray-600 text-gray-300 hover:text-white"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reintentar
+                  </Button>
+                </div>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center p-8">

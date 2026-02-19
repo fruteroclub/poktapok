@@ -4,53 +4,36 @@ import { NextRequest, NextResponse } from "next/server";
  * Studio Session API
  * 
  * Connects Poktapok Studio to Frutero Agent (OpenClaw)
- * 
- * Actions:
- * - start: Create a new session with the agent
- * - send: Send a message to the agent
- * - poll: Get new messages from the agent
- * 
- * The agent is configured to:
- * - Create Next.js/React projects with bun
- * - Run bun dev locally
- * - Create cloudflare tunnels
- * - Send tunnel URLs to students
+ * Uses /tools/invoke endpoint to call sessions_spawn and sessions_send
  */
-
-// In-memory session store (replace with Redis/DB in production)
-const sessions = new Map<string, {
-  userId: string;
-  messages: Array<{
-    id: string;
-    role: "user" | "assistant";
-    content: string;
-    timestamp: number;
-  }>;
-  isProcessing: boolean;
-  lastPollIndex: number;
-}>();
 
 // OpenClaw Gateway configuration
 const OPENCLAW_GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || "http://localhost:18789";
 const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
 
+// In-memory session store (maps visitorId -> openclawSessionKey)
+const sessionStore = new Map<string, {
+  openclawSessionKey: string;
+  createdAt: number;
+}>();
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, userId, enrollmentId, sessionId, message } = body;
+    const { action, visitorId, message } = body;
 
     switch (action) {
       case "start":
-        return handleStartSession(userId, enrollmentId);
+        return handleStartSession(visitorId);
       case "send":
-        return handleSendMessage(sessionId, message, userId);
+        return handleSendMessage(visitorId, message);
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
     console.error("Studio session error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: String(error) },
       { status: 500 }
     );
   }
@@ -58,230 +41,215 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const sessionId = searchParams.get("sessionId");
+  const visitorId = searchParams.get("visitorId");
   const action = searchParams.get("action");
 
-  if (action === "poll" && sessionId) {
-    return handlePollMessages(sessionId);
+  if (action === "history" && visitorId) {
+    return handleGetHistory(visitorId);
   }
 
   return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 }
 
-async function handleStartSession(userId: string, enrollmentId: string) {
-  // Generate session ID
-  const sessionId = `studio-${userId}-${Date.now()}`;
-  
-  // Initialize session
-  sessions.set(sessionId, {
-    userId,
-    messages: [],
-    isProcessing: false,
-    lastPollIndex: 0,
-  });
+async function handleStartSession(visitorId: string) {
+  if (!visitorId) {
+    return NextResponse.json({ error: "visitorId required" }, { status: 400 });
+  }
 
-  // TODO: Connect to OpenClaw and create agent session
-  // For now, we'll use the local gateway
-  
+  // Check if session already exists
+  const existing = sessionStore.get(visitorId);
+  if (existing) {
+    return NextResponse.json({ 
+      ok: true,
+      sessionKey: existing.openclawSessionKey,
+      message: "Session already exists" 
+    });
+  }
+
   try {
-    // Try to spawn a sub-agent session for this student
-    const response = await fetch(`${OPENCLAW_GATEWAY_URL}/api/sessions/spawn`, {
+    // Spawn a new sub-agent session via OpenClaw
+    const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
       },
       body: JSON.stringify({
-        label: `studio-${userId}`,
-        task: getAgentSystemPrompt(userId),
-        agentId: "frutero-studio", // The agent configured for studio work
+        tool: "sessions_spawn",
+        args: {
+          label: `studio-${visitorId}`,
+          task: getStudioAgentTask(),
+          cleanup: "keep", // Keep session for follow-up messages
+        },
       }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      // Store the OpenClaw session key
-      const session = sessions.get(sessionId);
-      if (session) {
-        (session as any).openclawSessionKey = data.sessionKey;
-      }
-    }
-  } catch (error) {
-    console.log("OpenClaw gateway not available, using standalone mode");
-  }
-
-  return NextResponse.json({ 
-    sessionId,
-    message: "Session started" 
-  });
-}
-
-async function handleSendMessage(sessionId: string, message: string, userId: string) {
-  const session = sessions.get(sessionId);
-  
-  if (!session) {
-    return NextResponse.json({ error: "Session not found" }, { status: 404 });
-  }
-
-  // Add user message
-  const userMsg = {
-    id: `msg-${Date.now()}`,
-    role: "user" as const,
-    content: message,
-    timestamp: Date.now(),
-  };
-  session.messages.push(userMsg);
-  session.isProcessing = true;
-
-  // Try to send to OpenClaw agent
-  const openclawSessionKey = (session as any).openclawSessionKey;
-  
-  if (openclawSessionKey) {
-    try {
-      await fetch(`${OPENCLAW_GATEWAY_URL}/api/sessions/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
-        },
-        body: JSON.stringify({
-          sessionKey: openclawSessionKey,
-          message,
-        }),
-      });
-    } catch (error) {
-      console.error("Error sending to OpenClaw:", error);
-    }
-  } else {
-    // Fallback: Generate mock response for demo/testing
-    setTimeout(() => {
-      generateMockResponse(sessionId, message);
-    }, 2000);
-  }
-
-  return NextResponse.json({ success: true });
-}
-
-async function handlePollMessages(sessionId: string) {
-  const session = sessions.get(sessionId);
-  
-  if (!session) {
-    return NextResponse.json({ error: "Session not found" }, { status: 404 });
-  }
-
-  // Get new messages since last poll
-  const newMessages = session.messages.slice(session.lastPollIndex);
-  session.lastPollIndex = session.messages.length;
-
-  // If connected to OpenClaw, try to get new messages
-  const openclawSessionKey = (session as any).openclawSessionKey;
-  
-  if (openclawSessionKey) {
-    try {
-      const response = await fetch(
-        `${OPENCLAW_GATEWAY_URL}/api/sessions/history?sessionKey=${openclawSessionKey}&limit=10`,
-        {
-          headers: {
-            "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
-          },
-        }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        // Process and add any new assistant messages
-        // ...
-      }
-    } catch (error) {
-      console.error("Error polling OpenClaw:", error);
-    }
-  }
-
-  return NextResponse.json({
-    messages: newMessages,
-    isComplete: !session.isProcessing,
-  });
-}
-
-// Mock response generator for testing without OpenClaw
-function generateMockResponse(sessionId: string, userMessage: string) {
-  const session = sessions.get(sessionId);
-  if (!session) return;
-
-  const lowerMessage = userMessage.toLowerCase();
-  let response = "";
-
-  if (lowerMessage.includes("landing") || lowerMessage.includes("pagina")) {
-    response = `Perfecto! Voy a crear una landing page para ti.
-
-Creando proyecto con bun...
-✓ Proyecto creado
-✓ Instalando dependencias con bun install
-✓ Ejecutando bun run dev
-✓ Creando tunnel con cloudflare...
-
-Tu proyecto esta listo! Aqui esta el preview:
-https://demo-landing-${Date.now()}.trycloudflare.com
-
-Puedes ver tu landing page en el panel de la derecha. Si quieres cambios, solo dimelos!`;
-  } else if (lowerMessage.includes("boton") || lowerMessage.includes("color") || lowerMessage.includes("cambiar")) {
-    response = `Entendido! Haciendo los cambios...
-
-✓ Actualizando codigo
-✓ Hot reload activo
-
-Los cambios ya estan reflejados en el preview. Que te parece?`;
-  } else if (lowerMessage.includes("deploy") || lowerMessage.includes("publicar")) {
-    response = `Para hacer deploy permanente, usa el boton "Deploy" arriba a la derecha. 
+    const data = await response.json();
     
-Esto guardara tu proyecto y te dara un link permanente que podras compartir.
+    if (!response.ok || !data.ok) {
+      console.error("OpenClaw spawn error:", data);
+      return NextResponse.json({ 
+        ok: false, 
+        error: data.error?.message || "Failed to create session" 
+      }, { status: 500 });
+    }
 
-Nota: Solo puedes hacer un deploy, asi que asegurate de que todo este como lo quieres!`;
-  } else {
-    response = `Entendido! Estoy trabajando en tu solicitud...
+    // Store session mapping
+    const sessionKey = data.result?.sessionKey || `studio-${visitorId}`;
+    sessionStore.set(visitorId, {
+      openclawSessionKey: sessionKey,
+      createdAt: Date.now(),
+    });
 
-¿Que tipo de proyecto te gustaria crear?
-- Una landing page
-- Un formulario de contacto
-- Una galeria de proyectos
-- Un dashboard
+    return NextResponse.json({ 
+      ok: true,
+      sessionKey,
+      message: "Session created" 
+    });
 
-Solo dime que necesitas y lo creo para ti!`;
+  } catch (error) {
+    console.error("OpenClaw connection error:", error);
+    return NextResponse.json({ 
+      ok: false, 
+      error: "Could not connect to agent",
+      details: String(error)
+    }, { status: 500 });
   }
-
-  // Add assistant message
-  session.messages.push({
-    id: `msg-${Date.now()}`,
-    role: "assistant",
-    content: response,
-    timestamp: Date.now(),
-  });
-  
-  session.isProcessing = false;
 }
 
-// System prompt for the Frutero Studio agent
-function getAgentSystemPrompt(userId: string): string {
-  return `Eres el agente de Frutero Studio, un asistente de desarrollo para estudiantes del VibeCoding Bootcamp.
+async function handleSendMessage(visitorId: string, message: string) {
+  if (!visitorId || !message) {
+    return NextResponse.json({ error: "visitorId and message required" }, { status: 400 });
+  }
 
-Tu trabajo es:
-1. Escuchar lo que el estudiante quiere crear
-2. Crear el proyecto usando bun (no npm)
-3. Correr el proyecto localmente con bun run dev
-4. Crear un tunnel con cloudflare para que el estudiante vea el preview
-5. Enviar el link del tunnel al estudiante
+  // Get or create session
+  let session = sessionStore.get(visitorId);
+  
+  if (!session) {
+    // Auto-create session
+    const startResult = await handleStartSession(visitorId);
+    const startData = await startResult.json();
+    
+    if (!startData.ok) {
+      return NextResponse.json(startData, { status: 500 });
+    }
+    
+    session = sessionStore.get(visitorId);
+  }
 
-Cuando crees un proyecto:
-- Usa bun create next-app o similar
-- Instala dependencias con bun install
-- Corre el dev server con bun run dev
-- Crea tunnel con: cloudflared tunnel --url http://localhost:3000
-- Comparte el link del tunnel
+  if (!session) {
+    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  }
 
-El estudiante solo puede hacer UN deploy, asi que asegurate de que este satisfecho antes de sugerirle que haga deploy.
+  try {
+    // Send message to the session via OpenClaw
+    const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+      },
+      body: JSON.stringify({
+        tool: "sessions_send",
+        args: {
+          label: `studio-${visitorId}`,
+          message: message,
+          timeoutSeconds: 120, // 2 min timeout for project creation
+        },
+      }),
+    });
 
-Siempre incluye el link del tunnel en tu respuesta cuando el proyecto este listo, en formato:
-https://xxxxx.trycloudflare.com
+    const data = await response.json();
+    
+    if (!response.ok || !data.ok) {
+      console.error("OpenClaw send error:", data);
+      return NextResponse.json({ 
+        ok: false, 
+        error: data.error?.message || "Failed to send message" 
+      }, { status: 500 });
+    }
 
-Responde en español mexicano, de forma amigable y directa.`;
+    // sessions_send returns the response directly
+    return NextResponse.json({ 
+      ok: true,
+      response: data.result,
+    });
+
+  } catch (error) {
+    console.error("OpenClaw send error:", error);
+    return NextResponse.json({ 
+      ok: false, 
+      error: "Could not send message",
+      details: String(error)
+    }, { status: 500 });
+  }
+}
+
+async function handleGetHistory(visitorId: string) {
+  const session = sessionStore.get(visitorId);
+  
+  if (!session) {
+    return NextResponse.json({ ok: true, messages: [] });
+  }
+
+  try {
+    // Get history via OpenClaw
+    const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+      },
+      body: JSON.stringify({
+        tool: "sessions_history",
+        args: {
+          label: `studio-${visitorId}`,
+          limit: 50,
+          includeTools: false,
+        },
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok || !data.ok) {
+      return NextResponse.json({ ok: true, messages: [] });
+    }
+
+    return NextResponse.json({ 
+      ok: true,
+      messages: data.result || [],
+    });
+
+  } catch (error) {
+    console.error("OpenClaw history error:", error);
+    return NextResponse.json({ ok: true, messages: [] });
+  }
+}
+
+// The task/prompt for the Studio agent
+function getStudioAgentTask(): string {
+  return `Eres un asistente de desarrollo para estudiantes del VibeCoding Bootcamp de Frutero Club.
+
+Tu trabajo es ayudar a los estudiantes a crear proyectos web. Cuando te pidan crear algo:
+
+1. Crea el proyecto usando bun (no npm):
+   - Para Next.js: bunx create-next-app@latest proyecto --typescript --tailwind --app --use-bun
+   - Instala deps con: bun install
+
+2. Corre el servidor de desarrollo:
+   - bun run dev (en background)
+
+3. Crea un tunnel con cloudflare para que el estudiante vea el preview:
+   - cloudflared tunnel --url http://localhost:3000
+
+4. IMPORTANTE: Cuando el proyecto este listo, incluye el link del tunnel en tu respuesta:
+   "Tu proyecto esta listo! Aqui esta el preview: https://xxxx.trycloudflare.com"
+
+El estudiante vera el link y su navegador lo cargara automaticamente en el panel de preview.
+
+Responde en español mexicano, de forma amigable y directa. Usa emojis con moderacion.
+Muestra progreso con checkmarks: ✓ Proyecto creado, ✓ Servidor corriendo, etc.
+
+El estudiante solo puede hacer UN deploy final, asi que asegurate de que este satisfecho antes.`;
 }

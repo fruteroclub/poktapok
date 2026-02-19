@@ -48,10 +48,9 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [visitorId] = useState<string>(() => `${user._id}-${Date.now()}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get user's deployed project
   const deployedProject = useQuery(api.studio.getDeployedProject, {
@@ -83,68 +82,6 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     }
   };
 
-  // Start a new session with the agent
-  const startSession = async () => {
-    try {
-      const response = await fetch("/api/studio/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "start",
-          userId: user._id,
-          enrollmentId: enrollment._id,
-        }),
-      });
-      const data = await response.json();
-      if (data.sessionId) {
-        setSessionId(data.sessionId);
-        return data.sessionId;
-      }
-    } catch (error) {
-      console.error("Error starting session:", error);
-    }
-    return null;
-  };
-
-  // Poll for new messages from agent
-  const pollMessages = async (sid: string) => {
-    try {
-      const response = await fetch(`/api/studio/session?sessionId=${sid}&action=poll`);
-      const data = await response.json();
-      
-      if (data.messages && data.messages.length > 0) {
-        const newMessages = data.messages.map((msg: any) => ({
-          id: msg.id || Date.now().toString(),
-          role: msg.role as "user" | "assistant",
-          content: msg.content,
-          timestamp: new Date(msg.timestamp || Date.now()),
-        }));
-        
-        // Add new assistant messages
-        newMessages.forEach((msg: Message) => {
-          if (msg.role === "assistant") {
-            setMessages(prev => {
-              // Check if message already exists
-              if (prev.some(m => m.id === msg.id)) return prev;
-              return [...prev, msg];
-            });
-            processAssistantMessage(msg.content);
-          }
-        });
-      }
-      
-      if (data.isComplete) {
-        setIsLoading(false);
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-          pollingRef.current = null;
-        }
-      }
-    } catch (error) {
-      console.error("Error polling messages:", error);
-    }
-  };
-
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -161,47 +98,45 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     setIsLoading(true);
 
     try {
-      // Get or create session
-      let sid = sessionId;
-      if (!sid) {
-        sid = await startSession();
-      }
-
-      if (!sid) {
-        throw new Error("Could not create session");
-      }
-
-      // Send message to agent
+      // Send message to agent (API handles session creation automatically)
       const response = await fetch("/api/studio/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "send",
-          sessionId: sid,
+          visitorId: visitorId,
           message: messageToSend,
-          userId: user._id,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to send message");
+      const data = await response.json();
+
+      if (!data.ok) {
+        throw new Error(data.error || "Failed to send message");
       }
 
-      // Start polling for response
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-      pollingRef.current = setInterval(() => pollMessages(sid!), 2000);
+      // Add assistant response
+      const assistantContent = data.response?.response || data.response || "Procesando...";
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: assistantContent,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, assistantMessage]);
+      processAssistantMessage(assistantContent);
 
     } catch (error) {
       console.error("Error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Hubo un error al procesar tu solicitud. Intenta de nuevo.",
+        content: `Hubo un error: ${error instanceof Error ? error.message : "Intenta de nuevo."}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -244,15 +179,6 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
       setPreviewUrl(url.toString());
     }
   };
-
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FFF8F0]">

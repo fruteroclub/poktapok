@@ -69,10 +69,13 @@ export default function BootcampStudioPage() {
     );
   }
 
+  // Studio uses navbar but no footer for full height
   return (
-    <StudioLayout 
-      user={convexUser} 
-      enrollment={enrollmentData.enrollment} 
-    />
+    <>
+      <StudioLayout 
+        user={convexUser} 
+        enrollment={enrollmentData.enrollment} 
+      />
+    </>
   );
 }

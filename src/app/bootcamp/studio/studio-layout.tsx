@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   Send, 
-  Code, 
   Eye, 
   Rocket, 
   Loader2, 
@@ -19,6 +18,7 @@ import {
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
+import Navbar from "@/components/layout/navbar";
 
 interface Message {
   id: string;
@@ -255,11 +255,14 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-[#FFF8F0]">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b bg-white">
+    <div className="flex flex-col min-h-screen bg-[#FFF8F0]">
+      {/* Main Navbar */}
+      <Navbar />
+      
+      {/* Studio Header */}
+      <header className="flex items-center justify-between px-6 py-3 border-b bg-white sticky top-24 z-30">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-gray-800">Frutero Studio</h1>
+          <h1 className="text-lg font-bold text-gray-800">Studio</h1>
           <Badge variant="secondary" className="bg-orange-100 text-orange-700">
             Beta
           </Badge>
@@ -280,6 +283,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
             onClick={handleDeploy}
             disabled={!previewUrl || isLoading || !!deployedProject}
             className="bg-orange-500 hover:bg-orange-600"
+            size="sm"
           >
             <Rocket className="w-4 h-4 mr-2" />
             {deployedProject ? "Ya desplegado" : "Deploy"}
@@ -287,8 +291,8 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Main Content - height minus navbar (96px) and studio header (~52px) */}
+      <div className="flex overflow-hidden" style={{ height: "calc(100vh - 148px)" }}>
         {/* Chat Panel */}
         <div className={`flex flex-col ${isFullscreen ? "hidden" : "w-1/2"} border-r bg-white`}>
           {/* Messages */}

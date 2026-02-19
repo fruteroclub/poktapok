@@ -671,10 +671,13 @@ export default defineSchema({
   // ============================================================
   studioProjects: defineTable({
     userId: v.id("users"), // Reference to users table
-    code: v.string(), // The HTML/React code
+    previewUrl: v.string(), // The tunnel/deployed URL
     title: v.string(),
-    slug: v.string(), // Unique URL slug for preview
-    version: v.number(), // Version number
+    slug: v.string(), // Unique URL slug for our preview page
+    status: v.union(
+      v.literal("active"),
+      v.literal("archived")
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
     // Metadata
@@ -684,15 +687,26 @@ export default defineSchema({
     .index("by_slug", ["slug"]),
 
   // ============================================================
+  // STUDIO_SESSIONS - Active studio sessions with agent
+  // ============================================================
+  studioSessions: defineTable({
+    userId: v.id("users"),
+    agentSessionId: v.optional(v.union(v.string(), v.null())), // OpenClaw session ID
+    currentPreviewUrl: v.optional(v.union(v.string(), v.null())), // Current preview URL before deploy
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"]),
+
+  // ============================================================
   // STUDIO_CHAT_HISTORY - Chat history for studio sessions
   // ============================================================
   studioChatHistory: defineTable({
-    userId: v.id("users"), // Reference to users table
+    userId: v.id("users"),
     messages: v.array(
       v.object({
         role: v.union(v.literal("user"), v.literal("assistant")),
         content: v.string(),
-        code: v.optional(v.string()),
         timestamp: v.number(),
       })
     ),

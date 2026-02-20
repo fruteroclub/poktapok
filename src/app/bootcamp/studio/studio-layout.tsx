@@ -47,9 +47,11 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [tunnelStatus, setTunnelStatus] = useState<"idle" | "checking" | "live" | "dead">("idle");
+  const [tunnelStatus, setTunnelStatus] = useState<"idle" | "checking" | "live" | "dead" | "recovering">("idle");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [visitorId] = useState<string>(() => `${user._id}-${Date.now()}`);
+  const [tunnelRetryCount, setTunnelRetryCount] = useState(0);
+  const maxTunnelRetries = 3;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -98,9 +100,72 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     const tunnelUrl = extractTunnelUrl(content);
     if (tunnelUrl) {
       setPreviewUrl(tunnelUrl);
+      setTunnelRetryCount(0); // Reset retry count on new URL
       await checkTunnelHealth(tunnelUrl);
     }
   };
+
+  // Auto-request new tunnel when current one dies
+  const requestNewTunnel = async () => {
+    if (isLoading || tunnelRetryCount >= maxTunnelRetries) return;
+    
+    setTunnelStatus("recovering");
+    setTunnelRetryCount(prev => prev + 1);
+    
+    // Add system message to show user we're recovering
+    const recoveryMessage: Message = {
+      id: `recovery-${Date.now()}`,
+      role: "assistant",
+      content: `🔄 El preview se desconectó. Reconectando automáticamente... (intento ${tunnelRetryCount + 1}/${maxTunnelRetries})`,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, recoveryMessage]);
+    
+    try {
+      const response = await fetch("/api/studio/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send",
+          visitorId: visitorId,
+          message: "El tunnel del preview se cayó. Por favor genera un nuevo tunnel para el mismo proyecto y envíame la nueva URL.",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.ok) {
+        const raw = data.response;
+        const assistantContent: string =
+          (typeof raw?.details?.reply === "string" && raw.details.reply) ||
+          (Array.isArray(raw?.content) && typeof raw.content[0]?.text === "string" && raw.content[0].text) ||
+          (typeof raw === "string" && raw) ||
+          "Reconectando...";
+        
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: assistantContent,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+        processAssistantMessage(assistantContent);
+      }
+    } catch (error) {
+      console.error("Error recovering tunnel:", error);
+      setTunnelStatus("dead");
+    }
+  };
+
+  // Auto-trigger recovery when tunnel dies
+  useEffect(() => {
+    if (tunnelStatus === "dead" && previewUrl && tunnelRetryCount < maxTunnelRetries && !isLoading) {
+      const timeout = setTimeout(() => {
+        requestNewTunnel();
+      }, 2000); // Wait 2 seconds before auto-retry
+      return () => clearTimeout(timeout);
+    }
+  }, [tunnelStatus, previewUrl, tunnelRetryCount, isLoading]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -349,6 +414,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
                   <span className={`w-2 h-2 rounded-full ${
                     tunnelStatus === "live" ? "bg-green-400" :
                     tunnelStatus === "checking" ? "bg-yellow-400 animate-pulse" :
+                    tunnelStatus === "recovering" ? "bg-orange-400 animate-pulse" :
                     tunnelStatus === "dead" ? "bg-red-400" :
                     "bg-gray-400"
                   }`} />
@@ -409,6 +475,23 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
                   </p>
                 </div>
               </div>
+            ) : previewUrl && tunnelStatus === "recovering" ? (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center p-8">
+                  <RefreshCw className="w-16 h-16 mx-auto mb-4 text-orange-400 animate-spin" />
+                  <h3 className="text-lg font-medium text-orange-300 mb-2">
+                    Reconectando preview...
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-sm">
+                    El tunnel se desconectó. Generando uno nuevo automáticamente.
+                    {tunnelRetryCount > 0 && (
+                      <span className="block mt-2 text-gray-600">
+                        Intento {tunnelRetryCount} de {maxTunnelRetries}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
             ) : previewUrl && tunnelStatus === "dead" ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center p-8">
@@ -417,10 +500,16 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
                     Tunnel no disponible
                   </h3>
                   <p className="text-sm text-gray-500 max-w-sm mb-4">
-                    El preview no responde. Pide al agente que genere un nuevo tunnel.
+                    {tunnelRetryCount >= maxTunnelRetries 
+                      ? "Se agotaron los reintentos automáticos. Pide al agente que genere un nuevo tunnel."
+                      : "El preview no responde. Pide al agente que genere un nuevo tunnel."
+                    }
                   </p>
                   <Button
-                    onClick={() => checkTunnelHealth(previewUrl)}
+                    onClick={() => {
+                      setTunnelRetryCount(0);
+                      requestNewTunnel();
+                    }}
                     variant="outline"
                     className="border-gray-600 text-gray-300 hover:text-white"
                   >

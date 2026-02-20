@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { Id, Doc } from "./_generated/dataModel";
 
 // ============================================================
 // QUERIES
@@ -60,7 +60,7 @@ export const list = query({
     // Enrich with creator info
     const enriched = await Promise.all(
       filtered.map(async (bounty) => {
-        const creator = await ctx.db.get(bounty.createdByUserId);
+        const creator = await ctx.db.get(bounty.createdByUserId) as Doc<"users"> | null;
         return {
           ...bounty,
           creator: creator
@@ -612,8 +612,8 @@ export const listSubmissions = query({
     // Enrich with bounty and user info
     const enriched = await Promise.all(
       submissions.map(async (sub) => {
-        const bounty = await ctx.db.get(sub.bountyId);
-        const user = await ctx.db.get(sub.userId);
+        const bounty = await ctx.db.get(sub.bountyId) as Doc<"bounties"> | null;
+        const user = await ctx.db.get(sub.userId) as Doc<"users"> | null;
         return {
           ...sub,
           bounty: bounty

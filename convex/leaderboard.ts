@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { Doc } from "./_generated/dataModel";
 
 /**
  * Leaderboard - Queries for bootcamp statistics and rankings
@@ -30,8 +31,8 @@ export const getLeaderboard = query({
       .collect();
 
     // Batch-fetch all users for enrollments with userId
-    const userIds = [...new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!))];
-    const users = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+    const userIds = Array.from(new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!)));
+    const users = await Promise.all(userIds.map((id) => ctx.db.get(id))) as (Doc<"users"> | null)[];
     const userMap = new Map(users.filter(Boolean).map((u) => [u!._id, u!]));
 
     // Build leaderboard using enrollment data (no extra deliverable queries needed)
@@ -197,8 +198,8 @@ export const listActiveParticipants = query({
       .collect();
 
     // Batch-fetch users
-    const userIds = [...new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!))];
-    const users = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+    const userIds = Array.from(new Set(enrollments.filter((e) => e.userId).map((e) => e.userId!)));
+    const users = await Promise.all(userIds.map((id) => ctx.db.get(id))) as (Doc<"users"> | null)[];
     const userMap = new Map(users.filter(Boolean).map((u) => [u!._id, u!]));
 
     // Get recent deliverables for each enrollment

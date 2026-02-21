@@ -123,7 +123,8 @@ async function handleSendMessage(label: string, message: string) {
     const data = await response.json();
     
     // If session doesn't exist, create it and retry
-    if (!response.ok && data.error?.message?.includes("not found")) {
+    const errorMsg = (data.error?.message || "").toLowerCase();
+    if (!response.ok && (errorMsg.includes("not found") || errorMsg.includes("no session"))) {
       console.log("Session not found, spawning new one...");
       const spawnResult = await handleSpawnSession(label);
       const spawnData = await spawnResult.json();

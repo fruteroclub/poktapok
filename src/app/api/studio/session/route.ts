@@ -11,6 +11,17 @@ import { NextRequest, NextResponse } from "next/server";
 const OPENCLAW_GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || "http://localhost:18789";
 const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
 
+// Simple hash function for consistent port assignment
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -21,14 +32,18 @@ export async function POST(req: NextRequest) {
     }
 
     const label = `studio-${visitorId}`;
+    
+    // Calculate unique port for this user (3000-3008)
+    const portOffset = Math.abs(hashCode(visitorId)) % 9;
+    const userPort = 3000 + portOffset;
 
     switch (action) {
       case "start":
-        // Just spawn a new session
-        return handleSpawnSession(label);
+        // Just spawn a new session with assigned port
+        return handleSpawnSession(label, userPort);
       case "send":
         // Send message - will auto-create session if needed
-        return handleSendMessage(label, message);
+        return handleSendMessage(label, message, userPort);
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
@@ -53,7 +68,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 }
 
-async function handleSpawnSession(label: string) {
+async function handleSpawnSession(label: string, userPort: number) {
   try {
     const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
       method: "POST",
@@ -66,7 +81,7 @@ async function handleSpawnSession(label: string) {
         tool: "sessions_spawn",
         args: {
           label,
-          task: getStudioAgentTask(),
+          task: getStudioAgentTask(userPort),
           cleanup: "keep",
         },
       }),
@@ -98,7 +113,7 @@ async function handleSpawnSession(label: string) {
   }
 }
 
-async function handleSendMessage(label: string, message: string) {
+async function handleSendMessage(label: string, message: string, userPort: number) {
   if (!message) {
     return NextResponse.json({ error: "message required" }, { status: 400 });
   }
@@ -165,7 +180,7 @@ async function handleSendMessage(label: string, message: string) {
     
     if (errorMsg.includes("not found") || errorMsg.includes("no session")) {
       console.log("Session not found, spawning new one...");
-      const spawnResult = await handleSpawnSession(label);
+      const spawnResult = await handleSpawnSession(label, userPort);
       const spawnData = await spawnResult.json();
       
       if (!spawnData.ok) {
@@ -266,8 +281,11 @@ async function handleGetHistory(label: string) {
 }
 
 // The task/prompt for the Studio agent
-function getStudioAgentTask(): string {
+function getStudioAgentTask(userPort: number): string {
   return `Eres un asistente de desarrollo para estudiantes del VibeCoding Bootcamp de Frutero Club.
+
+## TU PUERTO ASIGNADO: ${userPort}
+IMPORTANTE: Usa SIEMPRE el puerto ${userPort} para este estudiante. No uses otro puerto.
 
 Tu trabajo es ayudar a los estudiantes a crear proyectos web completos con preview en vivo.
 
@@ -289,8 +307,8 @@ Los estudiantes son principiantes. Siempre dales TODOS los links y explica qué 
 - SIEMPRE dile al estudiante: "Tu código está en: https://github.com/Scarfdrilo/<nombre-proyecto>"
 
 ### 3. Preview con tunnel
-- bun run dev &
-- cloudflared tunnel --url http://localhost:3000 2>&1 | tee /tmp/tunnel.log &
+- bun run dev --port ${userPort} &
+- cloudflared tunnel --url http://localhost:${userPort} 2>&1 | tee /tmp/tunnel-${userPort}.log &
 - Extraer y verificar URL (curl debe dar 200)
 
 ### 4. AL TERMINAR, da este resumen SIEMPRE:

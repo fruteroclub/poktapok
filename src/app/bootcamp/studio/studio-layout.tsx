@@ -32,8 +32,8 @@ interface StudioLayoutProps {
   enrollment: any;
 }
 
-// Regex to detect tunnel URLs
-const TUNNEL_URL_REGEX = /(https?:\/\/[^\s]*(?:trycloudflare\.com|ngrok\.io|ngrok-free\.app|localhost\.run)[^\s]*)/gi;
+// Regex to detect tunnel URLs - stops at markdown chars, parentheses, brackets
+const TUNNEL_URL_REGEX = /(https?:\/\/[a-z0-9-]+\.(?:trycloudflare\.com|ngrok\.io|ngrok-free\.app|localhost\.run)(?:\/[^\s\)\]\*\`\<\>]*)?)/gi;
 
 export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
   const [messages, setMessages] = useState<Message[]>([

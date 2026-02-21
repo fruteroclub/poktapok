@@ -1,32 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Studio Session API
+ * Studio Session API - Simplified
  * 
  * Connects Poktapok Studio to Frutero Agent (OpenClaw)
- * Uses /tools/invoke endpoint to call sessions_spawn and sessions_send
+ * Uses sessions_send with label - OpenClaw handles session creation automatically
  */
 
 // OpenClaw Gateway configuration
 const OPENCLAW_GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || "http://localhost:18789";
 const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
 
-// In-memory session store (maps visitorId -> openclawSessionKey)
-const sessionStore = new Map<string, {
-  openclawSessionKey: string;
-  createdAt: number;
-}>();
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { action, visitorId, message } = body;
 
+    if (!visitorId) {
+      return NextResponse.json({ error: "visitorId required" }, { status: 400 });
+    }
+
+    const label = `studio-${visitorId}`;
+
     switch (action) {
       case "start":
-        return handleStartSession(visitorId);
+        // Just spawn a new session
+        return handleSpawnSession(label);
       case "send":
-        return handleSendMessage(visitorId, message);
+        // Send message - will auto-create session if needed
+        return handleSendMessage(label, message);
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
@@ -45,29 +47,14 @@ export async function GET(req: NextRequest) {
   const action = searchParams.get("action");
 
   if (action === "history" && visitorId) {
-    return handleGetHistory(visitorId);
+    return handleGetHistory(`studio-${visitorId}`);
   }
 
   return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 }
 
-async function handleStartSession(visitorId: string) {
-  if (!visitorId) {
-    return NextResponse.json({ error: "visitorId required" }, { status: 400 });
-  }
-
-  // Check if session already exists
-  const existing = sessionStore.get(visitorId);
-  if (existing) {
-    return NextResponse.json({ 
-      ok: true,
-      sessionKey: existing.openclawSessionKey,
-      message: "Session already exists" 
-    });
-  }
-
+async function handleSpawnSession(label: string) {
   try {
-    // Spawn a new sub-agent session via OpenClaw
     const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
       method: "POST",
       headers: {
@@ -77,9 +64,9 @@ async function handleStartSession(visitorId: string) {
       body: JSON.stringify({
         tool: "sessions_spawn",
         args: {
-          label: `studio-${visitorId}`,
+          label,
           task: getStudioAgentTask(),
-          cleanup: "keep", // Keep session for follow-up messages
+          cleanup: "keep",
         },
       }),
     });
@@ -94,16 +81,9 @@ async function handleStartSession(visitorId: string) {
       }, { status: 500 });
     }
 
-    // Store session mapping
-    const sessionKey = data.result?.sessionKey || `studio-${visitorId}`;
-    sessionStore.set(visitorId, {
-      openclawSessionKey: sessionKey,
-      createdAt: Date.now(),
-    });
-
     return NextResponse.json({ 
       ok: true,
-      sessionKey,
+      sessionKey: data.result?.sessionKey || label,
       message: "Session created" 
     });
 
@@ -117,32 +97,13 @@ async function handleStartSession(visitorId: string) {
   }
 }
 
-async function handleSendMessage(visitorId: string, message: string) {
-  if (!visitorId || !message) {
-    return NextResponse.json({ error: "visitorId and message required" }, { status: 400 });
-  }
-
-  // Get or create session
-  let session = sessionStore.get(visitorId);
-  
-  if (!session) {
-    // Auto-create session
-    const startResult = await handleStartSession(visitorId);
-    const startData = await startResult.json();
-    
-    if (!startData.ok) {
-      return NextResponse.json(startData, { status: 500 });
-    }
-    
-    session = sessionStore.get(visitorId);
-  }
-
-  if (!session) {
-    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+async function handleSendMessage(label: string, message: string) {
+  if (!message) {
+    return NextResponse.json({ error: "message required" }, { status: 400 });
   }
 
   try {
-    // Send message to the session via OpenClaw
+    // First try to send to existing session
     const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
       method: "POST",
       headers: {
@@ -152,15 +113,58 @@ async function handleSendMessage(visitorId: string, message: string) {
       body: JSON.stringify({
         tool: "sessions_send",
         args: {
-          label: `studio-${visitorId}`,
-          message: message,
-          timeoutSeconds: 300, // 5 min timeout for project creation + tunnel verification
+          label,
+          message,
+          timeoutSeconds: 300, // 5 min for project creation
         },
       }),
     });
 
     const data = await response.json();
     
+    // If session doesn't exist, create it and retry
+    if (!response.ok && data.error?.message?.includes("not found")) {
+      console.log("Session not found, spawning new one...");
+      const spawnResult = await handleSpawnSession(label);
+      const spawnData = await spawnResult.json();
+      
+      if (!spawnData.ok) {
+        return NextResponse.json(spawnData, { status: 500 });
+      }
+
+      // Retry send after spawn
+      const retryResponse = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        },
+        body: JSON.stringify({
+          tool: "sessions_send",
+          args: {
+            label,
+            message,
+            timeoutSeconds: 300,
+          },
+        }),
+      });
+
+      const retryData = await retryResponse.json();
+      
+      if (!retryResponse.ok || !retryData.ok) {
+        console.error("OpenClaw retry send error:", retryData);
+        return NextResponse.json({ 
+          ok: false, 
+          error: retryData.error?.message || "Failed to send message" 
+        }, { status: 500 });
+      }
+
+      return NextResponse.json({ 
+        ok: true,
+        response: retryData.result,
+      });
+    }
+
     if (!response.ok || !data.ok) {
       console.error("OpenClaw send error:", data);
       return NextResponse.json({ 
@@ -169,7 +173,6 @@ async function handleSendMessage(visitorId: string, message: string) {
       }, { status: 500 });
     }
 
-    // sessions_send returns the response directly
     return NextResponse.json({ 
       ok: true,
       response: data.result,
@@ -185,15 +188,8 @@ async function handleSendMessage(visitorId: string, message: string) {
   }
 }
 
-async function handleGetHistory(visitorId: string) {
-  const session = sessionStore.get(visitorId);
-  
-  if (!session) {
-    return NextResponse.json({ ok: true, messages: [] });
-  }
-
+async function handleGetHistory(label: string) {
   try {
-    // Get history via OpenClaw
     const response = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
       method: "POST",
       headers: {
@@ -203,7 +199,7 @@ async function handleGetHistory(visitorId: string) {
       body: JSON.stringify({
         tool: "sessions_history",
         args: {
-          label: `studio-${visitorId}`,
+          label,
           limit: 50,
           includeTools: false,
         },

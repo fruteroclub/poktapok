@@ -60,6 +60,7 @@ async function handleSpawnSession(label: string) {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({
         tool: "sessions_spawn",
@@ -109,6 +110,7 @@ async function handleSendMessage(label: string, message: string) {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({
         tool: "sessions_send",
@@ -142,6 +144,7 @@ async function handleSendMessage(label: string, message: string) {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        "ngrok-skip-browser-warning": "true",
           },
           body: JSON.stringify({
             tool: "sessions_send",
@@ -175,6 +178,7 @@ async function handleSendMessage(label: string, message: string) {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
           tool: "sessions_send",
@@ -232,6 +236,7 @@ async function handleGetHistory(label: string) {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({
         tool: "sessions_history",

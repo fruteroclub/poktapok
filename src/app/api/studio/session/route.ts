@@ -131,6 +131,35 @@ async function handleSendMessage(label: string, message: string) {
       ""
     ).toString().toLowerCase();
     
+    // Handle "multiple sessions" by just retrying send (one will work)
+    if (errorMsg.includes("multiple sessions")) {
+      // Extract first session key from error and use sessionKey instead of label
+      const match = errorMsg.match(/\(([^,]+)/);
+      if (match) {
+        const sessionKey = match[1];
+        const retryResponse = await fetch(`${OPENCLAW_GATEWAY_URL}/tools/invoke`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${OPENCLAW_GATEWAY_TOKEN}`,
+          },
+          body: JSON.stringify({
+            tool: "sessions_send",
+            args: {
+              sessionKey,
+              message,
+              timeoutSeconds: 300,
+            },
+          }),
+        });
+        const retryData = await retryResponse.json();
+        return NextResponse.json({ 
+          ok: true,
+          response: retryData.result,
+        });
+      }
+    }
+    
     if (errorMsg.includes("not found") || errorMsg.includes("no session")) {
       console.log("Session not found, spawning new one...");
       const spawnResult = await handleSpawnSession(label);

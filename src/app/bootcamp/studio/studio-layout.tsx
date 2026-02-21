@@ -71,27 +71,6 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     scrollToBottom();
   }, [messages]);
 
-  // Pre-spawn session when component mounts (so first message is faster)
-  const [sessionReady, setSessionReady] = useState(false);
-  useEffect(() => {
-    const initSession = async () => {
-      try {
-        await fetch("/api/studio/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "start",
-            visitorId: visitorId,
-          }),
-        });
-        setSessionReady(true);
-      } catch (e) {
-        console.log("Session pre-spawn failed, will retry on first message");
-      }
-    };
-    initSession();
-  }, [visitorId]);
-
   // Extract tunnel URLs from message content
   const extractTunnelUrl = (content: string): string | null => {
     if (typeof content !== "string") return null;

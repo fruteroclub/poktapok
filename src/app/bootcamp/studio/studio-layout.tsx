@@ -184,6 +184,10 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
 
     try {
       // Send message to agent (API handles session creation automatically)
+      // Use AbortController with 5 minute timeout for long-running project creation
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+      
       const response = await fetch("/api/studio/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -192,7 +196,11 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
           visitorId: visitorId,
           message: messageToSend,
         }),
+        signal: controller.signal,
+        keepalive: true,
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -223,10 +231,24 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
 
     } catch (error) {
       console.error("Error:", error);
+      let errorText = "Intenta de nuevo.";
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          errorText = "La solicitud tardó demasiado. El agente puede estar ocupado creando tu proyecto. Espera un momento y pregunta por el status.";
+        } else if (error.message.includes("NetworkError") || error.message.includes("fetch")) {
+          errorText = "Error de conexión. Reintentando...";
+          // Auto-retry once after 2 seconds
+          setTimeout(() => {
+            setInput(messageToSend);
+          }, 2000);
+        } else {
+          errorText = error.message;
+        }
+      }
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Hubo un error: ${error instanceof Error ? error.message : "Intenta de nuevo."}`,
+        content: `Hubo un error: ${errorText}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);

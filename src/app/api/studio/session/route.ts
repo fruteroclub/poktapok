@@ -243,7 +243,7 @@ Tu trabajo es ayudar a los estudiantes a crear proyectos web completos con previ
 
 ### 2. Inicializar Git y GitHub
 - git init && git add . && git commit -m "initial commit"
-- Crea repo en GitHub: gh repo create fruteroclub/<nombre-proyecto> --public --source=. --push
+- Crea repo en GitHub: gh repo create Scarfdrilo/<nombre-proyecto> --public --source=. --push
 - Si falla el push, intenta: git push -u origin main
 
 ### 3. Correr servidor de desarrollo

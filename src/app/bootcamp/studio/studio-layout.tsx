@@ -264,21 +264,29 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     }
   };
 
+  // Extract GitHub repo name from messages
+  const extractGitHubRepo = (): string => {
+    const allContent = messages.map(m => m.content).join(" ");
+    const match = allContent.match(/github\.com\/Scarfdrilo\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : "mi-proyecto";
+  };
+
   const handleDeploy = async () => {
     if (!previewUrl) return;
 
     try {
+      const repoName = extractGitHubRepo();
       const result = await deployProject({
         userId: user._id,
         previewUrl: previewUrl,
-        title: "Mi Proyecto VibeCoding",
+        title: repoName,
       });
       
-      // Show success feedback
+      // Show success with Vercel link
       const deployMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: `🚀 Proyecto desplegado! Tu link permanente es: ${window.location.origin}/studio/preview/${result.slug}`,
+        content: `🚀 ¡Deploy listo! Da click en "Ver mi deploy" para publicar tu proyecto en Vercel con un link permanente.`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, deployMessage]);
@@ -312,7 +320,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
         <div className="flex items-center gap-4">
           {deployedProject && (
             <a
-              href={`/studio/preview/${deployedProject.slug}`}
+              href={`https://vercel.com/new/import?s=https://github.com/Scarfdrilo/${deployedProject.slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-orange-600 hover:underline flex items-center gap-1"

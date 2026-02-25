@@ -30,6 +30,7 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import Image from 'next/image'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
 import {
@@ -222,6 +223,31 @@ export default function VibeCodingDashboard() {
                     </div>
                     <p className="text-xs text-muted-foreground">
                       ⚠️ No compartas esta key. Es personal y tiene un límite de uso.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Section>
+          )}
+
+          {/* Completion Badge */}
+          {enrollment.status === 'completed' && (
+            <Section>
+              <Card className="border-green-500/30 bg-green-500/5">
+                <CardContent className="flex flex-col items-center py-8 gap-4">
+                  <Image
+                    src="/images/badges/fruta-certificada.jpg"
+                    alt="Fruta Certificada - VibeCoding Bootcamp"
+                    width={180}
+                    height={180}
+                    className="rounded-full"
+                  />
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-green-600 dark:text-green-400">
+                      ¡Felicidades! 🎉
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Completaste el VibeCoding Bootcamp
                     </p>
                   </div>
                 </CardContent>

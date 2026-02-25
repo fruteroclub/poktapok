@@ -37,6 +37,27 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/profile_images/**',
       },
+      {
+        // Convex storage for user avatars
+        protocol: 'https',
+        hostname: '**.convex.cloud',
+        port: '',
+        pathname: '/api/storage/**',
+      },
+      {
+        // Luma CDN for event cover images
+        protocol: 'https',
+        hostname: 'images.lumacdn.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        // Luma alternative CDN
+        protocol: 'https',
+        hostname: 'cdn.lu.ma',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 }

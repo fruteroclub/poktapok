@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as _admin_patch from "../_admin_patch.js";
 import type * as activities from "../activities.js";
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
@@ -35,6 +36,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  _admin_patch: typeof _admin_patch;
   activities: typeof activities;
   applications: typeof applications;
   auth: typeof auth;

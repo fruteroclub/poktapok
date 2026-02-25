@@ -40,7 +40,7 @@ export function StudioLayout({ user, enrollment }: StudioLayoutProps) {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hola! Soy tu asistente de desarrollo. Describeme que proyecto quieres crear y lo construire para ti. Cuando este listo, te dare un link de preview para que lo veas en vivo.",
+      content: "¡Hola! Soy tu asistente de desarrollo. Descríbeme qué proyecto quieres crear y lo construiré para ti. Cuando esté listo, te daré un link de preview para que lo veas en vivo.",
       timestamp: new Date(),
     },
   ]);

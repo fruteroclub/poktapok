@@ -53,13 +53,13 @@ const AUTH_MENU_ITEMS: MenuItemType[] = [
 ]
 
 const BOOTCAMP_MENU_ITEM: MenuItemType = {
-  displayText: '🚀 VibeCoding',
+  displayText: 'vibecoding',
   href: '/bootcamp/vibecoding',
   isMobileOnly: false,
 }
 
 const STUDIO_MENU_ITEM: MenuItemType = {
-  displayText: '✨ Studio',
+  displayText: 'studio',
   href: '/bootcamp/studio',
   isMobileOnly: false,
 }

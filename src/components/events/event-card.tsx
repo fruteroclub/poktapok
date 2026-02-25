@@ -87,8 +87,8 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
             src={event.coverImage}
             alt={event.title}
             fill
+            sizes="320px"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            unoptimized
           />
         ) : (
           <div className="flex h-full items-center justify-center">

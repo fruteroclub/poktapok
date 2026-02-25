@@ -21,12 +21,25 @@ export const listPublic = query({
       .withIndex("by_visibility", (q) => q.eq("profileVisibility", "public"))
       .take(args.limit ?? 50);
 
-    // Get associated users
+    // Get associated users and bootcamp completion status
     const profilesWithUsers = await Promise.all(
       profiles.map(async (profile) => {
         const user = await ctx.db.get(profile.userId);
+        
+        // Check if user has completed any bootcamp
+        let bootcampCompleted = false;
+        if (user) {
+          const completedEnrollment = await ctx.db
+            .query("bootcampEnrollments")
+            .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+            .filter((q) => q.eq(q.field("status"), "completed"))
+            .first();
+          bootcampCompleted = !!completedEnrollment;
+        }
+        
         return {
           ...profile,
+          bootcampCompleted,
           user: user
             ? {
                 _id: user._id,

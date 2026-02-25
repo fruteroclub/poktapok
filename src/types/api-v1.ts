@@ -114,6 +114,7 @@ export interface DirectoryProfile {
   linkedinUrl: string | null
   telegramHandle: string | null
   createdAt: Date
+  bootcampCompleted?: boolean
 }
 
 export interface DirectoryFilters {

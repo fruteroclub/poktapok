@@ -26,7 +26,7 @@ async function testDatabaseConnection() {
     `)
 
     console.log('\n✅ Tables found:')
-    tables.rows.forEach((row: any) => console.log('  -', row.table_name))
+    tables.rows.forEach((row: Record<string, unknown>) => console.log('  -', row.table_name))
 
     console.log('\n🎉 Database connection tests passed!')
   } catch (error) {

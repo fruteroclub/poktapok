@@ -469,7 +469,7 @@ export const update = mutation({
     const { bountyId, callerPrivyDid: _, ...updates } = args;
 
     // Filter out undefined values
-    const patch: Record<string, any> = {};
+    const patch: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
         patch[key] = value;

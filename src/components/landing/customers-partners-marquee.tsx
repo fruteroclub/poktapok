@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Marquee } from '@/components/ui/marquee'
@@ -54,22 +53,7 @@ const partners: Partner[] = [
   },
 ]
 
-// Fisher-Yates shuffle algorithm
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-  }
-  return shuffled
-}
-
 export default function CustomersPartnersMarquee() {
-  const [shuffledPartners, setShuffledPartners] = useState<Partner[]>(partners)
-
-  useEffect(() => {
-    setShuffledPartners(shuffleArray(partners))
-  }, [])
 
   return (
     <div className="page-content space-y-8">
@@ -88,7 +72,7 @@ export default function CustomersPartnersMarquee() {
         <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-linear-to-l from-background to-transparent md:w-32" />
 
         <Marquee pauseOnHover className="[--duration:40s] [--gap:2rem]">
-          {shuffledPartners.map((partner) => (
+          {partners.map((partner) => (
             <Link
               key={partner.name}
               href={partner.url}

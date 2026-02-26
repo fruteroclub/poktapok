@@ -31,7 +31,7 @@ async function checkSubmissions() {
     if (result.rows.length === 0) {
       console.log('⚠️  No submissions found in database')
     } else {
-      result.rows.forEach((row: any) => {
+      result.rows.forEach((row: Record<string, unknown>) => {
         console.log(`✅ Submission ID: ${row.id}`)
         console.log(`   Activity: ${row.activity_title}`)
         const user = row.username || row.email
@@ -55,7 +55,7 @@ async function checkSubmissions() {
     if (statusCounts.rows.length === 0) {
       console.log('   No submissions')
     } else {
-      statusCounts.rows.forEach((row: any) => {
+      statusCounts.rows.forEach((row: Record<string, unknown>) => {
         console.log(`   ${row.status}: ${row.count}`)
       })
     }

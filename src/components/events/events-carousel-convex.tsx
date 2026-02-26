@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import Image from 'next/image'
 import { CalendarDays, ChevronRight, MapPin, Clock } from 'lucide-react'
 import { Marquee } from '@/components/ui/marquee'
 import { Button } from '@/components/ui/button'
@@ -40,14 +41,18 @@ export default function EventsCarouselConvex({
 
   const isLoading = upcomingEvents === undefined || allEvents === undefined
 
+  // Stable timestamp per mount for filtering past events
+  const [now] = useState(() => Date.now())
+
   // Filter events based on tab
-  const now = Date.now()
-  const events = activeTab === 'upcoming'
-    ? (upcomingEvents ?? []).slice(0, limit)
-    : (allEvents ?? [])
-        .filter(e => e.startDate < now)
-        .sort((a, b) => b.startDate - a.startDate)
-        .slice(0, limit)
+  const events = useMemo(() => {
+    return activeTab === 'upcoming'
+      ? (upcomingEvents ?? []).slice(0, limit)
+      : (allEvents ?? [])
+          .filter(e => e.startDate < now)
+          .sort((a, b) => b.startDate - a.startDate)
+          .slice(0, limit)
+  }, [activeTab, upcomingEvents, allEvents, limit, now])
 
   if (isLoading) {
     return (
@@ -187,10 +192,12 @@ function ConvexEventCard({ event }: { event: NonNullable<ReturnType<typeof usePu
       {/* Cover Image */}
       {event.coverImage && (
         <div className="relative h-40 w-full overflow-hidden">
-          <img
+          <Image
             src={event.coverImage}
             alt={event.title}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            fill
+            sizes="320px"
+            className="object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
@@ -229,10 +236,12 @@ function ConvexEventCard({ event }: { event: NonNullable<ReturnType<typeof usePu
                   className="h-6 w-6 overflow-hidden rounded-full border-2 border-background"
                 >
                   {host.avatarUrl ? (
-                    <img
+                    <Image
                       src={host.avatarUrl}
                       alt={host.name}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="24px"
+                      className="object-cover"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-primary text-xs text-primary-foreground">

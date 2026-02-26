@@ -7,7 +7,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trophy, TrendingUp, Briefcase, GraduationCap } from 'lucide-react'
+import { Trophy, TrendingUp, Briefcase, GraduationCap, Award } from 'lucide-react'
+import Image from 'next/image'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import PageWrapper from '@/components/layout/page-wrapper'
@@ -115,10 +116,10 @@ export function LeaderboardContent() {
   })
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return { icon: '🥇', color: 'bg-yellow-100 text-yellow-800' }
-    if (rank === 2) return { icon: '🥈', color: 'bg-gray-100 text-gray-800' }
-    if (rank === 3) return { icon: '🥉', color: 'bg-orange-100 text-orange-800' }
-    return { icon: `#${rank}`, color: 'bg-muted text-muted-foreground' }
+    if (rank >= 1 && rank <= 3) {
+      return { image: `/images/badges/Fruit-badges-${rank}.png`, color: '' }
+    }
+    return { image: null, icon: `#${rank}`, color: 'bg-muted text-muted-foreground' }
   }
 
   return (
@@ -217,43 +218,69 @@ export function LeaderboardContent() {
                   return (
                     <Card
                       key={participant.enrollmentId}
-                      className={`p-6 ${participant.rank <= 3 ? 'border-2 border-primary/20' : ''}`}
+                      className={`p-4 md:p-6 ${participant.rank <= 3 ? 'border-2 border-primary/20' : ''}`}
                     >
-                      <div className="flex items-center gap-4">
-                        {/* Rank Badge */}
-                        <div
-                          className={`flex size-12 shrink-0 items-center justify-center rounded-full text-lg font-bold ${badge.color}`}
-                        >
-                          {badge.icon}
-                        </div>
-
-                        {/* Avatar */}
-                        <Avatar className="size-12">
-                          <AvatarImage src={participant.avatarUrl || undefined} alt={participant.displayName} />
-                          <AvatarFallback>
-                            {participant.displayName.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        {/* Participant Info */}
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{participant.displayName}</h3>
-                          {participant.username && (
-                            <p className="text-sm text-muted-foreground">@{participant.username}</p>
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                        {/* Top row on mobile: Rank + Avatar + Name */}
+                        <div className="flex items-center gap-3">
+                          {/* Rank Badge */}
+                          {badge.image ? (
+                            <Image
+                              src={badge.image}
+                              alt={`Rank ${participant.rank}`}
+                              width={48}
+                              height={48}
+                              className="size-10 md:size-12 shrink-0"
+                            />
+                          ) : (
+                            <div
+                              className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
+                            >
+                              {badge.icon}
+                            </div>
                           )}
-                        </div>
 
-                        {/* Progress */}
-                        <div className="w-32">
-                          <div className="flex items-center gap-2">
-                            <Progress value={participant.progress} className="flex-1" />
-                            <span className="text-sm font-medium w-10 text-right">{participant.progress}%</span>
+                          {/* Avatar */}
+                          <Avatar className="size-10 md:size-12 shrink-0">
+                            <AvatarImage src={participant.avatarUrl || undefined} alt={participant.displayName} />
+                            <AvatarFallback>
+                              {participant.displayName.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          {/* Participant Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold truncate">{participant.displayName}</h3>
+                              {/* Fruta Certificada badge for 100% completion */}
+                              {participant.progress === 100 && (
+                                <Image
+                                  src="/images/badges/fruta-certificada.png"
+                                  alt="Fruta Certificada"
+                                  width={24}
+                                  height={24}
+                                  className="rounded-full shrink-0"
+                                />
+                              )}
+                            </div>
+                            {participant.username && (
+                              <p className="text-sm text-muted-foreground truncate">@{participant.username}</p>
+                            )}
                           </div>
                         </div>
 
-                        {/* Sessions */}
-                        <div className="text-right">
-                          <Badge variant="secondary">
+                        {/* Bottom row on mobile: Progress + Sessions */}
+                        <div className="flex items-center gap-3 md:gap-4 pl-[52px] md:pl-0 md:flex-1 md:justify-end">
+                          {/* Progress */}
+                          <div className="flex-1 md:w-32 md:flex-none">
+                            <div className="flex items-center gap-2">
+                              <Progress value={participant.progress} className="flex-1" />
+                              <span className="text-sm font-medium w-10 text-right">{participant.progress}%</span>
+                            </div>
+                          </div>
+
+                          {/* Sessions */}
+                          <Badge variant="secondary" className="shrink-0">
                             {participant.sessionsCompleted} sesiones
                           </Badge>
                         </div>
@@ -290,43 +317,56 @@ export function LeaderboardContent() {
               return (
                 <Link key={member.id} href={`/profile/${member.username}`}>
                   <Card
-                    className={`p-6 transition-colors hover:bg-accent ${
+                    className={`p-4 md:p-6 transition-colors hover:bg-accent ${
                       rank <= 3 ? 'border-2 border-primary/20' : ''
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      {/* Rank Badge */}
-                      <div
-                        className={`flex size-12 shrink-0 items-center justify-center rounded-full text-lg font-bold ${badge.color}`}
-                      >
-                        {badge.icon}
-                      </div>
-
-                      {/* Avatar */}
-                      <Avatar className="size-12">
-                        <AvatarImage src={member.avatarUrl || undefined} alt={member.username} />
-                        <AvatarFallback>
-                          {member.displayName?.[0] || member.username[0]}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      {/* Member Info */}
-                      <div className="flex-1">
-                        <h3 className="font-semibold">
-                          {member.displayName || member.username}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">@{member.username}</p>
-                        {member.city && member.country && (
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {member.city}, {member.country}
-                          </p>
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                      {/* Top row: Rank + Avatar + Name */}
+                      <div className="flex items-center gap-3">
+                        {/* Rank Badge */}
+                        {badge.image ? (
+                          <Image
+                            src={badge.image}
+                            alt={`Rank ${rank}`}
+                            width={48}
+                            height={48}
+                            className="size-10 md:size-12 shrink-0"
+                          />
+                        ) : (
+                          <div
+                            className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
+                          >
+                            {badge.icon}
+                          </div>
                         )}
+
+                        {/* Avatar */}
+                        <Avatar className="size-10 md:size-12 shrink-0">
+                          <AvatarImage src={member.avatarUrl || undefined} alt={member.username} />
+                          <AvatarFallback>
+                            {member.displayName?.[0] || member.username[0]}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Member Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold truncate">
+                            {member.displayName || member.username}
+                          </h3>
+                          <p className="text-sm text-muted-foreground truncate">@{member.username}</p>
+                          {member.city && member.country && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {member.city}, {member.country}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Stats */}
-                      <div className="text-right">
-                        <p className="text-2xl font-bold">{value}</p>
-                        <div className="mt-2 flex flex-wrap justify-end gap-2">
+                      {/* Stats - right side on desktop, below on mobile */}
+                      <div className="flex items-center justify-between pl-[52px] md:pl-0 md:text-right md:flex-col md:items-end">
+                        <p className="text-xl md:text-2xl font-bold">{value}</p>
+                        <div className="flex flex-wrap gap-2 md:mt-2 md:justify-end">
                           {member.learningTracks &&
                             member.learningTracks.slice(0, 2).map((track) => (
                               <Badge key={track} variant="secondary" className="text-xs">

@@ -10,7 +10,7 @@ export default function HeroV2Section() {
         {/* Badge - Social Proof */}
         <div className="flex justify-center">
           <Badge className="border-2 border-primary bg-primary/10 px-6 py-3 text-base font-bold text-foreground">
-            🏆 25+ victorias en hackathons · 6 ganadores ETHDenver '25
+            🏆 25+ victorias en hackathons · 6 ganadores ETHDenver &apos;25
           </Badge>
         </div>
 

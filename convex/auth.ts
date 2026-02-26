@@ -210,7 +210,7 @@ export const updateUser = mutation({
       throw new Error("User not found");
     }
 
-    const updates: Record<string, any> = {};
+    const updates: Record<string, unknown> = {};
     if (args.displayName !== undefined) updates.displayName = args.displayName;
     if (args.bio !== undefined) updates.bio = args.bio;
     if (args.avatarUrl !== undefined) updates.avatarUrl = args.avatarUrl;

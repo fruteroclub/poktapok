@@ -20,7 +20,7 @@ async function verifyCompleteSchema() {
       console.log('   Need: activities_completed, total_pulpa_earned')
     } else {
       console.log('✅ Profiles table has PULPA columns:')
-      profilesColumns.rows.forEach((row: any) => {
+      profilesColumns.rows.forEach((row: Record<string, unknown>) => {
         console.log(`   - ${row.column_name}: ${row.data_type}`)
       })
     }
@@ -65,7 +65,7 @@ async function verifyCompleteSchema() {
     `)
 
     console.log(`Found ${constraints.rows.length} foreign key constraints:`)
-    constraints.rows.forEach((row: any) => {
+    constraints.rows.forEach((row: Record<string, unknown>) => {
       console.log(
         `   ${row.table_name}.${row.column_name} → ${row.foreign_table_name}.${row.foreign_column_name}`,
       )
@@ -84,7 +84,7 @@ async function verifyCompleteSchema() {
     `)
 
     console.log(`Found ${indexes.rows.length} indexes:`)
-    indexes.rows.forEach((row: any) => {
+    indexes.rows.forEach((row: Record<string, unknown>) => {
       console.log(`   ${row.tablename}.${row.indexname}`)
     })
 

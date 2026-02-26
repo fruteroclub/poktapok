@@ -52,7 +52,7 @@ async function testSync() {
 
     if (events.length > 0) {
       console.log("\nRecent events:");
-      events.slice(0, 3).forEach((event: any) => {
+      events.slice(0, 3).forEach((event: Record<string, unknown>) => {
         console.log(`  - ${event.title}`);
         console.log(`    Start: ${new Date(event.startDate).toLocaleString()}`);
         console.log(`    Luma: ${event.lumaUrl}`);

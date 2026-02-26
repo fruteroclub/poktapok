@@ -45,7 +45,7 @@ interface ProjectForm {
   demoUrl: string
   videoUrl: string
   techStack: string
-  status: 'draft' | 'active' | 'completed'
+  status: 'draft' | 'active' | 'completed' | 'archived'
   isPublic: boolean
 }
 
@@ -87,7 +87,7 @@ export default function ProjectsPage() {
     setIsDialogOpen(true)
   }
 
-  const handleOpenEdit = (project: any) => {
+  const handleOpenEdit = (project: { _id: string; name: string; description?: string; githubUrl?: string; demoUrl?: string; videoUrl?: string; techStack?: string[]; status: 'draft' | 'active' | 'completed' | 'archived'; isPublic: boolean }) => {
     setForm({
       name: project.name,
       description: project.description || '',

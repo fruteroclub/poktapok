@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, Filter } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
@@ -176,9 +177,18 @@ export default function DirectoryPage() {
                           return (
                             <div className="flex w-full items-center justify-center gap-2">
                               {bp.status === 'completed' ? (
-                                <Badge variant="default" className="text-xs gap-1 bg-green-600 hover:bg-green-700">
-                                  🏅 {displayName} 100%
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                  <Image
+                                    src="/images/badges/fruta-certificada.png"
+                                    alt="Fruta Certificada"
+                                    width={28}
+                                    height={28}
+                                    className="rounded-full"
+                                  />
+                                  <Badge variant="default" className="text-xs bg-green-600 hover:bg-green-700">
+                                    VibeCoding
+                                  </Badge>
+                                </div>
                               ) : (
                                 <>
                                   <Badge variant="outline" className="text-xs gap-1">

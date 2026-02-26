@@ -67,8 +67,8 @@ export default function JoinBootcampPage() {
           router.push('/bootcamp/vibecoding')
         }
       }, 2000)
-    } catch (err: any) {
-      setError(err.message || 'Error al unirse al bootcamp')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al unirse al bootcamp')
     } finally {
       setJoining(false)
     }

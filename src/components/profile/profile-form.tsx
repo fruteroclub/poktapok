@@ -54,6 +54,7 @@ export function ProfileForm({ userInfo }: ProfileFormProps) {
 
   const handleSubmit = async (data: ProfileFormData) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- privyDid injected by hook
       await createProfileMutation.mutate(data as any)
       toast.success('¡Perfil creado exitosamente!')
       router.push('/dashboard')

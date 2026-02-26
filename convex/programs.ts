@@ -92,7 +92,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const { programId, ...updates } = args;
 
-    const cleanUpdates: Record<string, any> = {};
+    const cleanUpdates: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
         cleanUpdates[key] = value;

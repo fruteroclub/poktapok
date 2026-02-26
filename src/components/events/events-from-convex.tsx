@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useUpcomingEvents } from '@/hooks/use-events-convex'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -71,10 +72,12 @@ export default function EventsFromConvex() {
               {/* Cover Image */}
               {event.coverImage && (
                 <div className="relative h-48 w-full overflow-hidden">
-                  <img
+                  <Image
                     src={event.coverImage}
                     alt={event.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {event.isFeatured && (
                     <span className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">

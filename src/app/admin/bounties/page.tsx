@@ -103,7 +103,7 @@ export default function AdminBountiesPage() {
     setIsDialogOpen(true);
   };
 
-  const handleOpenEdit = (bounty: any) => {
+  const handleOpenEdit = (bounty: Record<string, unknown> & { _id: string; title: string; description: string; requirements?: string; difficulty: BountyDifficulty; techStack?: string[]; category?: string; rewardAmount: number; rewardCurrency: string; deadlineDays?: number; resourceUrl?: string; status: string }) => {
     setForm({
       title: bounty.title,
       description: bounty.description,

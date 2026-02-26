@@ -102,9 +102,9 @@ export default function TestimonialsSection() {
                   {/* Quote */}
                   <div className="mb-6">
                     <blockquote className="text-sm leading-relaxed text-foreground">
-                      <span className="text-2xl font-serif text-primary">"</span>
+                      <span className="text-2xl font-serif text-primary">&quot;</span>
                       {testimonial.quote}
-                      <span className="text-2xl font-serif text-primary">"</span>
+                      <span className="text-2xl font-serif text-primary">&quot;</span>
                     </blockquote>
                   </div>
 

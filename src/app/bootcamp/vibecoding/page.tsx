@@ -236,7 +236,7 @@ export default function VibeCodingDashboard() {
               <Card className="border-green-500/30 bg-green-500/5">
                 <CardContent className="flex flex-col items-center py-8 gap-4">
                   <Image
-                    src="/images/badges/fruta-certificada.jpg"
+                    src="/images/badges/fruta-certificada.png"
                     alt="Fruta Certificada - VibeCoding Bootcamp"
                     width={180}
                     height={180}

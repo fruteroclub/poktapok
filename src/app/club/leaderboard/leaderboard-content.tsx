@@ -245,7 +245,7 @@ export function LeaderboardContent() {
                               {/* Fruta Certificada badge for 100% completion */}
                               {participant.progress === 100 && (
                                 <Image
-                                  src="/images/badges/fruta-certificada.jpg"
+                                  src="/images/badges/fruta-certificada.png"
                                   alt="Fruta Certificada"
                                   width={24}
                                   height={24}

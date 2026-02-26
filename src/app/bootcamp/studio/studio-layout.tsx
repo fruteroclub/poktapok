@@ -29,7 +29,7 @@ interface Message {
 
 interface StudioLayoutProps {
   user: { _id: Id<"users">; username?: string; displayName?: string };
-  enrollment: any;
+  enrollment: { _id: string; programId: string; status: string; progress: number; sessionsCompleted: number };
 }
 
 // Regex to detect tunnel URLs - stops at markdown chars, parentheses, brackets

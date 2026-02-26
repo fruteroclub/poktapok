@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Marquee } from '@/components/ui/marquee'
@@ -65,11 +65,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function CustomersPartnersMarquee() {
-  const [shuffledPartners, setShuffledPartners] = useState<Partner[]>(partners)
-
-  useEffect(() => {
-    setShuffledPartners(shuffleArray(partners))
-  }, [])
+  const [shuffledPartners] = useState<Partner[]>(() => shuffleArray(partners))
 
   return (
     <div className="page-content space-y-8">

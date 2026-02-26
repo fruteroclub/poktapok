@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { CalendarDays, Filter, MapPin, Clock } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
@@ -19,14 +19,17 @@ export function EventosContent() {
 
   const isLoading = upcomingEvents === undefined || allEvents === undefined
 
+  // Stable timestamp per mount for filtering past events
+  const [now] = useState(() => Date.now())
+
   // Filter events based on tab
-  const now = Date.now()
-  const events =
-    activeTab === 'upcoming'
+  const events = useMemo(() => {
+    return activeTab === 'upcoming'
       ? upcomingEvents ?? []
       : (allEvents ?? [])
           .filter((e) => e.startDate < now)
           .sort((a, b) => b.startDate - a.startDate)
+  }, [activeTab, upcomingEvents, allEvents, now])
 
   if (isLoading) {
     return (

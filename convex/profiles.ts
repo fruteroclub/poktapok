@@ -31,7 +31,7 @@ export const listPublic = query({
         if (user) {
           const completedEnrollment = await ctx.db
             .query("bootcampEnrollments")
-            .withIndex("by_user_id", (q) => q.eq("userId", user._id))
+            .withIndex("by_user", (q) => q.eq("userId", user._id))
             .filter((q) => q.eq(q.field("status"), "completed"))
             .first();
           bootcampCompleted = !!completedEnrollment;
@@ -199,7 +199,7 @@ export const updateStats = mutation({
   handler: async (ctx, args) => {
     const { profileId, ...updates } = args;
 
-    const cleanUpdates: Record<string, any> = {};
+    const cleanUpdates: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
         cleanUpdates[key] = value;
@@ -242,7 +242,7 @@ export const update = mutation({
     const { profileId, ...updates } = args;
 
     // Filter out undefined values
-    const cleanUpdates: Record<string, any> = {};
+    const cleanUpdates: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
         cleanUpdates[key] = value;

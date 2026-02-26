@@ -179,14 +179,14 @@ export default function DirectoryPage() {
                               {bp.status === 'completed' ? (
                                 <div className="flex items-center gap-2">
                                   <Image
-                                    src="/images/badges/fruta-certificada.jpg"
+                                    src="/images/badges/fruta-certificada.png"
                                     alt="Fruta Certificada"
                                     width={28}
                                     height={28}
                                     className="rounded-full"
                                   />
                                   <Badge variant="default" className="text-xs bg-green-600 hover:bg-green-700">
-                                    100%
+                                    VibeCoding
                                   </Badge>
                                 </div>
                               ) : (

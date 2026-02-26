@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { CalendarDays, ChevronRight, MapPin, Clock } from 'lucide-react'
 import { Marquee } from '@/components/ui/marquee'
 import { Button } from '@/components/ui/button'
@@ -40,14 +40,18 @@ export default function EventsCarouselConvex({
 
   const isLoading = upcomingEvents === undefined || allEvents === undefined
 
+  // Stable timestamp per mount for filtering past events
+  const [now] = useState(() => Date.now())
+
   // Filter events based on tab
-  const now = Date.now()
-  const events = activeTab === 'upcoming'
-    ? (upcomingEvents ?? []).slice(0, limit)
-    : (allEvents ?? [])
-        .filter(e => e.startDate < now)
-        .sort((a, b) => b.startDate - a.startDate)
-        .slice(0, limit)
+  const events = useMemo(() => {
+    return activeTab === 'upcoming'
+      ? (upcomingEvents ?? []).slice(0, limit)
+      : (allEvents ?? [])
+          .filter(e => e.startDate < now)
+          .sort((a, b) => b.startDate - a.startDate)
+          .slice(0, limit)
+  }, [activeTab, upcomingEvents, allEvents, limit, now])
 
   if (isLoading) {
     return (

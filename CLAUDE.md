@@ -595,6 +595,54 @@ const { data, isLoading, isError } = useMe()
 2. Check the project structure to avoid duplicates
 3. Follow the existing naming conventions in the directory
 
+### Image Optimization (Convex + Next.js)
+
+**Problem:** Convex File Bandwidth exceeded (2.91GB / 1GB free tier) because avatars were served as raw `<img>` without caching or optimization.
+
+**Root cause:**
+- `AvatarImage` used `<img>` directly → every request = hit to Convex storage
+- `EventCard` had `unoptimized` prop → bypassed Next.js Image optimization
+- No caching headers → browser re-downloads every time
+
+**Solution:**
+
+1. **`next.config.ts`** - Allowlist external domains:
+```ts
+images: {
+  remotePatterns: [
+    { hostname: '**.convex.cloud', pathname: '/api/storage/**' },
+    { hostname: 'images.lumacdn.com' },
+    { hostname: 'cdn.lu.ma' },
+  ]
+}
+```
+
+2. **`avatar.tsx`** - Use Next.js Image instead of raw img:
+```tsx
+import Image from 'next/image'
+
+<Image
+  src={src}
+  alt={alt || ''}
+  fill
+  sizes="80px"  // Important for optimization
+  className="aspect-square size-full object-cover"
+  onLoad={() => setIsLoaded(true)}
+  onError={() => setHasError(true)}
+/>
+```
+
+3. **Never use `unoptimized`** on any Image in production:
+```tsx
+// ❌ WRONG
+<Image src={url} unoptimized />
+
+// ✅ CORRECT
+<Image src={url} sizes="320px" />
+```
+
+**Rule:** Always use `next/image` with `sizes` prop for Convex Storage and external CDN images. Add domains to `next.config.ts` `remotePatterns`.
+
 ## Important Notes
 
 ### Database Schema Changes

@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import Image from 'next/image'
 import { Loader2, MapPin, Github, Twitter, Linkedin, MessageCircle, ArrowLeft, ExternalLink, Play, GraduationCap } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Section } from '@/components/layout/section'
@@ -239,15 +240,21 @@ export default function PublicProfilePage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             {enrollment.status === 'completed' && (
-                              <span className="text-2xl">🏅</span>
+                              <Image
+                                src="/images/badges/fruta-certificada.png"
+                                alt="Fruta Certificada"
+                                width={32}
+                                height={32}
+                                className="rounded-full"
+                              />
                             )}
                             <h3 className="font-semibold text-lg">{program?.name}</h3>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {enrollment.status === 'completed'
-                              ? '✅ Completado'
-                              : `${enrollment.sessionsCompleted}/${program?.sessionsCount || 5} sesiones`}
-                          </p>
+                          {enrollment.status !== 'completed' && (
+                            <p className="text-sm text-muted-foreground">
+                              {enrollment.sessionsCompleted}/{program?.sessionsCount || 5} sesiones
+                            </p>
+                          )}
                           {enrollment.status === 'completed' && enrollment.poapClaimedAt && (
                             <Badge className="mt-1 bg-purple-500/20 text-purple-400 border-purple-500/30">
                               🏆 POAP Certificado

@@ -30,7 +30,7 @@ export default function ProblemV2Section() {
               </p>
               <p className="text-2xl text-white">
                 Pero hay una brecha entre
-                <br />"esto es increíble" y
+                <br />&quot;esto es increíble&quot; y
               </p>
               <p className="text-3xl text-white leading-snug font-medium">
                 estoy <br /><span className='underline decoration-primary decoration-2 underline-offset-10'>ganando dinero</span><br />con esto

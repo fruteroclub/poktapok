@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Image from 'next/image'
 import { CalendarDays, Filter, MapPin, Clock } from 'lucide-react'
 import PageWrapper from '@/components/layout/page-wrapper'
 import { Button } from '@/components/ui/button'
@@ -189,10 +190,12 @@ function EventCard({
       {/* Cover Image */}
       {event.coverImage && (
         <div className="relative h-40 w-full overflow-hidden">
-          <img
+          <Image
             src={event.coverImage}
             alt={event.title}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            fill
+            sizes="320px"
+            className="object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           {event.isFeatured && (

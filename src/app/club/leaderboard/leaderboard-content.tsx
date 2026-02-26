@@ -116,10 +116,10 @@ export function LeaderboardContent() {
   })
 
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return { icon: '🥇', color: 'bg-yellow-100 text-yellow-800' }
-    if (rank === 2) return { icon: '🥈', color: 'bg-gray-100 text-gray-800' }
-    if (rank === 3) return { icon: '🥉', color: 'bg-orange-100 text-orange-800' }
-    return { icon: `#${rank}`, color: 'bg-muted text-muted-foreground' }
+    if (rank >= 1 && rank <= 3) {
+      return { image: `/images/badges/Fruit-badges-${rank}.png`, color: '' }
+    }
+    return { image: null, icon: `#${rank}`, color: 'bg-muted text-muted-foreground' }
   }
 
   return (
@@ -224,11 +224,21 @@ export function LeaderboardContent() {
                         {/* Top row on mobile: Rank + Avatar + Name */}
                         <div className="flex items-center gap-3">
                           {/* Rank Badge */}
-                          <div
-                            className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
-                          >
-                            {badge.icon}
-                          </div>
+                          {badge.image ? (
+                            <Image
+                              src={badge.image}
+                              alt={`Rank ${participant.rank}`}
+                              width={48}
+                              height={48}
+                              className="size-10 md:size-12 shrink-0"
+                            />
+                          ) : (
+                            <div
+                              className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
+                            >
+                              {badge.icon}
+                            </div>
+                          )}
 
                           {/* Avatar */}
                           <Avatar className="size-10 md:size-12 shrink-0">
@@ -315,11 +325,21 @@ export function LeaderboardContent() {
                       {/* Top row: Rank + Avatar + Name */}
                       <div className="flex items-center gap-3">
                         {/* Rank Badge */}
-                        <div
-                          className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
-                        >
-                          {badge.icon}
-                        </div>
+                        {badge.image ? (
+                          <Image
+                            src={badge.image}
+                            alt={`Rank ${rank}`}
+                            width={48}
+                            height={48}
+                            className="size-10 md:size-12 shrink-0"
+                          />
+                        ) : (
+                          <div
+                            className={`flex size-10 md:size-12 shrink-0 items-center justify-center rounded-full text-base md:text-lg font-bold ${badge.color}`}
+                          >
+                            {badge.icon}
+                          </div>
+                        )}
 
                         {/* Avatar */}
                         <Avatar className="size-10 md:size-12 shrink-0">

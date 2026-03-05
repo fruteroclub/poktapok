@@ -128,7 +128,7 @@ export default function Navbar() {
           ) : isSignedIn && user ? (
             <MobileMenuDropdown ready={ready} user={user} />
           ) : (
-            <AuthButton size="lg" className="hidden lg:flex">
+            <AuthButton size="lg" className="hidden sm:flex">
               Únete
               <SparklesIcon className="ml-2 h-4 w-4 fill-background" />
             </AuthButton>

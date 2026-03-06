@@ -122,13 +122,10 @@ export default function Navbar() {
         </div>
 
         <div className="col-span-1 flex justify-end">
-          {!ready || isLoading ? (
-            // Placeholder maintains layout space during initialization
-            <div className="h-10 w-32" />
-          ) : isSignedIn && user ? (
+          {isSignedIn && user ? (
             <MobileMenuDropdown ready={ready} user={user} />
           ) : (
-            <AuthButton size="lg" className="hidden lg:flex">
+            <AuthButton size="lg" className="hidden sm:flex">
               Únete
               <SparklesIcon className="ml-2 h-4 w-4 fill-background" />
             </AuthButton>
